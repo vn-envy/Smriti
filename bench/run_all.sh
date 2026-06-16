@@ -26,6 +26,8 @@ EMBEDDER="${EMBEDDER:-ollama}"                  # ollama | openai | hash
 EMBED_MODEL="${EMBED_MODEL:-nomic-embed-text}"
 LIMIT="${LIMIT:-50}"                            # FIRST N questions (one type — quick but skewed)
 SAMPLE="${SAMPLE:-}"                             # ~N questions spread EVENLY across types (preferred)
+FEATURES="${FEATURES:-}"                         # extra retrieval flags for FULL-mode steps,
+                                                 # e.g. "--observations" or "--observations --iterative"
 DATA_DIR="${DATA_DIR:-data}"
 OUT_DIR="${OUT_DIR:-bench_results/$(date +%Y%m%d_%H%M%S)}"
 
@@ -47,7 +49,7 @@ step() { printf '\n========== %s ==========\n' "$1"; }
 
 echo "SMRITI benchmark pass"
 echo "  provider=$PROVIDER  answer=$ANSWER_MODEL  judge=$JUDGE_MODEL  memory=$MEMORY_MODEL"
-echo "  embedder=$EMBEDDER/$EMBED_MODEL  selection=${SEL[*]}"
+echo "  embedder=$EMBEDDER/$EMBED_MODEL  selection=${SEL[*]}  features=${FEATURES:-none}"
 echo "  results -> $OUT_DIR"
 
 # --- 1. datasets -----------------------------------------------------------
@@ -64,15 +66,17 @@ $PYTHON -m bench.run --bench longmemeval --data "$DATA_DIR/longmemeval_oracle.js
     --mode lite "${COMMON[@]}" --out "$OUT_DIR/lme_oracle_lite.json"
 
 # --- 4. full mode, longmemeval_s (the comparable number) -------------------
+# shellcheck disable=SC2086
 step "4/5  full mode — longmemeval_s"
 $PYTHON -m bench.run --bench longmemeval --data "$DATA_DIR/longmemeval_s_cleaned.json" \
-    --mode full --memory-model "$MEMORY_MODEL" "${COMMON[@]}" \
+    --mode full --memory-model "$MEMORY_MODEL" "${COMMON[@]}" $FEATURES \
     --out "$OUT_DIR/lme_s_full.json"
 
 # --- 5. LoCoMo, full mode --------------------------------------------------
+# shellcheck disable=SC2086
 step "5/5  full mode — LoCoMo"
 $PYTHON -m bench.run --bench locomo --data "$DATA_DIR/locomo10.json" \
-    --mode full --memory-model "$MEMORY_MODEL" "${COMMON[@]}" \
+    --mode full --memory-model "$MEMORY_MODEL" "${COMMON[@]}" $FEATURES \
     --out "$OUT_DIR/locomo_full.json"
 
 # --- summary ---------------------------------------------------------------
