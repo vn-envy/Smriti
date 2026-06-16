@@ -43,6 +43,25 @@ def build_extraction_prompt(turns: List[dict], session_ts: Optional[str]) -> Lis
     ]
 
 
+OBSERVATION_SYSTEM = """You synthesize a concise, objective profile of an entity from a list of known facts about it.
+
+Rules:
+- Produce 1-3 sentences capturing the salient, durable properties: roles, attributes, relationships, and any totals/counts the facts collectively imply.
+- If the facts describe several instances of the same kind of thing (e.g. multiple trips, purchases, or events), state the COUNT and list them — this is the main value of the summary.
+- Be objective and preference-neutral. Use ONLY what the facts support; invent nothing.
+- Output ONLY the summary sentence(s), no preamble or list markers."""
+
+
+def build_observation_prompt(entity: str, facts: List[Fact]) -> List[dict]:
+    lines = [f"Entity: {entity}", "Known facts:"]
+    for f in facts:
+        lines.append(f"- {f.statement}")
+    return [
+        {"role": "system", "content": OBSERVATION_SYSTEM},
+        {"role": "user", "content": "\n".join(lines)},
+    ]
+
+
 def parse_facts(raw: str, session_id: Optional[str], session_ts: Optional[str]) -> List[Fact]:
     data = extract_json(raw)
     if not isinstance(data, list):

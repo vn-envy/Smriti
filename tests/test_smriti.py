@@ -106,6 +106,58 @@ def test_entity_channel():
     assert any("SigmaFlow" in r.text and "entity" in r.channels for r in results)
 
 
+# ------------------------------------------------------- observations (Build 1)
+def _charity_fact(stmt, obj):
+    return Fact(id=None, statement=stmt, subject="user", predicate="attended",
+                object=obj, entities=["charity"])
+
+
+def test_observation_synthesis_and_supersession():
+    """Per-entity observation summary is created, retrievable, and regenerating
+    it supersedes the prior one (history preserved, never duplicated)."""
+    llm = MockLLM([
+        "The user attended 2 charity events: Walk for Hunger and the 5K Gala.",
+        "The user attended 3 charity events: Walk for Hunger, the 5K Gala, and Run for Hope.",
+    ])
+    mem = Smriti(path=":memory:", embedder=HashEmbedder(), llm=llm, mode="full")
+    mem.add_fact(_charity_fact("The user attended the Walk for Hunger event.", "Walk for Hunger"),
+                 resolve_conflicts=False)
+    mem.add_fact(_charity_fact("The user attended the 5K Gala event.", "5K Gala"),
+                 resolve_conflicts=False)
+
+    out = mem.refresh_observations(min_facts=2)
+    assert out["observations"] == 1
+    obs = mem.store.similar_valid_facts("charity", "observation")
+    assert len(obs) == 1 and obs[0].kind == "observation"
+    assert "2 charity events" in obs[0].statement
+
+    # observation is retrievable via the normal channels
+    results = mem.search("how many charity events did I attend?", k=8)
+    assert any(r.kind == "fact" and "2 charity events" in r.text for r in results)
+
+    # new fact + refresh -> supersede prior observation, don't duplicate
+    mem.add_fact(_charity_fact("The user attended the Run for Hope event.", "Run for Hope"),
+                 resolve_conflicts=False)
+    mem.refresh_observations(min_facts=2)
+    valid = mem.store.similar_valid_facts("charity", "observation")
+    assert len(valid) == 1 and "3 charity events" in valid[0].statement
+    all_obs = [f for f in mem.store.facts_for_entity("charity", valid_only=False,
+                                                     include_observations=True)
+               if f.kind == "observation"]
+    assert len(all_obs) == 2  # prior kept as superseded history
+
+
+def test_observation_skips_sparse_entities():
+    """An entity with fewer than min_facts gets no observation (no wasted LLM call)."""
+    llm = MockLLM(["unused"])
+    mem = Smriti(path=":memory:", embedder=HashEmbedder(), llm=llm, mode="full")
+    mem.add_fact(Fact(id=None, statement="The user owns a kayak.", subject="user",
+                      predicate="owns", object="kayak", entities=["kayak"]),
+                 resolve_conflicts=False)
+    out = mem.refresh_observations(min_facts=2)
+    assert out["observations"] == 0 and llm.calls == 0
+
+
 # ---------------------------------------------------------------- temporal
 def test_extract_dates_variants():
     assert "2024-03-12" in extract_dates("what happened on 2024-03-12?")

@@ -164,6 +164,36 @@ class Store:
         ).fetchall()
         return [self.get_fact(r[0]) for r in rows]
 
+    def facts_for_entity(self, name: str, valid_only: bool = True,
+                         include_observations: bool = False) -> List[Fact]:
+        """All facts linked to an entity. By default only currently-valid facts,
+        and excluding observation summaries (so we summarize raw facts, not
+        prior summaries)."""
+        rows = self.db.execute(
+            "SELECT DISTINCT fact_id FROM entities WHERE name=?", (name.lower().strip(),)
+        ).fetchall()
+        out = []
+        for (fid,) in rows:
+            f = self.get_fact(fid)
+            if not f:
+                continue
+            if valid_only and f.invalid_at is not None:
+                continue
+            if not include_observations and f.kind == "observation":
+                continue
+            out.append(f)
+        return out
+
+    def entities_of_facts(self, fact_ids: Sequence[int]) -> List[str]:
+        """Entities mentioned by the given facts (for graph-lite multi-hop)."""
+        if not fact_ids:
+            return []
+        marks = ",".join("?" for _ in fact_ids)
+        rows = self.db.execute(
+            f"SELECT DISTINCT name FROM entities WHERE fact_id IN ({marks})", list(fact_ids)
+        ).fetchall()
+        return [r[0] for r in rows]
+
     # --------------------------------------------------------------- search
     def fts_search(self, query: str, table: str, limit: int = 20) -> List[Tuple[int, float]]:
         q = _fts_query(query)
