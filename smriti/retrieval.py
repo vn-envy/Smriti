@@ -94,7 +94,7 @@ DEFAULT_WEIGHTS = {
 def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
              k: int = 12, weights: Optional[Dict[str, float]] = None,
              per_channel: int = 24, entity_hops: int = 2,
-             reranker=None, rerank_top: int = 48) -> List[RetrievalResult]:
+             reranker=None, rerank_top: int = 48, obs_k: int = 4) -> List[RetrievalResult]:
     weights = weights or DEFAULT_WEIGHTS
     qvec = embedder.embed([query])[0] if embedder else None
 
@@ -131,18 +131,33 @@ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
     # Materialize a larger pool when a reranker will re-sort it, else just k.
     pool = max(k, rerank_top) if reranker is not None else k
     results: List[RetrievalResult] = []
+    observations: List[RetrievalResult] = []
     seen_sessions_text = set()
     for (kind, rid), (score, chans) in ordered:
-        if len(results) >= pool:
+        if len(results) >= pool and len(observations) >= obs_k:
             break
         if kind == "fact":
             f = store.get_fact(rid)
             if not f:
                 continue
+            if f.kind == "observation":
+                # additive: observation summaries get their OWN slots and never
+                # displace raw facts/episodes from the k budget — they supplement
+                # the evidence rather than competing with it (fixes crowding-out).
+                if len(observations) >= obs_k:
+                    continue
+                observations.append(RetrievalResult(
+                    kind="observation", id=rid, text=f.statement, score=score,
+                    valid_from=f.valid_from, invalid_at=f.invalid_at, channels=chans))
+                continue
+            if len(results) >= pool:
+                continue
             results.append(RetrievalResult(
                 kind="fact", id=rid, text=f.statement, score=score,
                 valid_from=f.valid_from, invalid_at=f.invalid_at, channels=chans))
         else:
+            if len(results) >= pool:
+                continue
             e = store.get_episode(rid)
             if not e:
                 continue
@@ -154,7 +169,7 @@ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
                 kind="episode", id=rid, text=e.content, score=score,
                 ts=e.ts, role=e.role, channels=chans))
 
-    # cross-encoder re-examination of the fused pool, then trim to k
+    # cross-encoder re-examination of the raw pool, then trim to k
     if reranker is not None and results:
         scores = reranker.rerank(query, [r.text for r in results])
         for r, sc in zip(results, scores):
@@ -163,7 +178,7 @@ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
                 r.channels = r.channels + ["rerank"]
         results.sort(key=lambda r: -r.score)
         results = results[:k]
-    return results
+    return observations + results
 
 
 def _fmt_date(iso: Optional[str]) -> str:
@@ -175,11 +190,19 @@ def _fmt_date(iso: Optional[str]) -> str:
 def pack_context(results: List[RetrievalResult], now: Optional[str] = None,
                  char_budget: int = 9000) -> str:
     """Render retrieval into an answer-ready context block with provenance."""
-    facts, episodes = [], []
+    observations, facts, episodes = [], [], []
     for r in results:
-        (facts if r.kind == "fact" else episodes).append(r)
+        (observations if r.kind == "observation" else
+         facts if r.kind == "fact" else episodes).append(r)
 
     lines: List[str] = []
+    if observations:
+        lines.append("ENTITY SUMMARIES (synthesized overviews of what's known about key "
+                      "entities; useful for spotting counts/totals, but confirm the specifics "
+                      "against the FACTS and EVIDENCE below):")
+        for r in observations:
+            lines.append(f"- {r.text}")
+        lines.append("")
     if facts:
         lines.append("KNOWN FACTS (each with validity window; CURRENT means still true, "
                       "SUPERSEDED means it was true then but later changed):")

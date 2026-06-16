@@ -131,9 +131,9 @@ def test_observation_synthesis_and_supersession():
     assert len(obs) == 1 and obs[0].kind == "observation"
     assert "2 charity events" in obs[0].statement
 
-    # observation is retrievable via the normal channels
+    # observation is retrievable and surfaced in its own (observation) slot
     results = mem.search("how many charity events did I attend?", k=8)
-    assert any(r.kind == "fact" and "2 charity events" in r.text for r in results)
+    assert any(r.kind == "observation" and "2 charity events" in r.text for r in results)
 
     # new fact + refresh -> supersede prior observation, don't duplicate
     mem.add_fact(_charity_fact("The user attended the Run for Hope event.", "Run for Hope"),
@@ -164,6 +164,27 @@ def test_two_hop_entity_traversal():
     from smriti.retrieval import retrieve
     one_hop = retrieve(mem.store, mem.embedder, q, k=8, entity_hops=1)
     assert not any("entity_hop2" in r.channels for r in one_hop)
+
+
+def test_observations_are_additive_not_competing():
+    """Build 6: observations occupy their own slots and must NOT displace raw
+    facts from the k budget; context renders them in a dedicated section."""
+    llm = MockLLM(["pets — cat Pixel, dog Bruno, fish Coral."])
+    mem = Smriti(path=":memory:", embedder=HashEmbedder(), llm=llm, mode="full")
+    raw = [("The user has a cat named Pixel.", "Pixel"),
+           ("The user has a dog named Bruno.", "Bruno"),
+           ("The user has a fish named Coral.", "Coral")]
+    for i, (s, o) in enumerate(raw):
+        mem.add_fact(Fact(id=None, statement=s, subject="user", predicate=f"has_{i}",
+                          object=o, entities=["pet"]), resolve_conflicts=False)
+    mem.refresh_observations(min_facts=2)
+
+    res = mem.search("tell me about my pets", k=3)
+    obs = [r for r in res if r.kind == "observation"]
+    facts = [r for r in res if r.kind == "fact"]
+    assert obs, "observation should be surfaced in its own slot"
+    assert len(facts) >= 3, "raw facts must not be displaced by the observation (additive)"
+    assert "ENTITY SUMMARIES" in mem.context("tell me about my pets", k=3)
 
 
 def test_observation_skips_sparse_entities():

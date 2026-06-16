@@ -46,10 +46,11 @@ def build_extraction_prompt(turns: List[dict], session_ts: Optional[str]) -> Lis
 OBSERVATION_SYSTEM = """You synthesize a concise, objective profile of an entity from a list of known facts about it.
 
 Rules:
-- Produce 1-3 sentences capturing the salient, durable properties: roles, attributes, relationships, and any totals/counts the facts collectively imply.
-- If the facts describe several instances of the same kind of thing (e.g. multiple trips, purchases, or events), state the COUNT and list them — this is the main value of the summary.
+- Produce a short overview capturing the salient, durable properties: roles, attributes, and relationships.
+- If the facts describe several instances of the same kind of thing (e.g. multiple trips, purchases, or events), ENUMERATE every instance explicitly so a reader can count them — e.g. "events: A, B, C" — rather than only asserting a total. State a number only alongside the explicit list, and only if you are listing every instance.
+- Do not guess or round. If you are unsure whether the list is complete, list what is supported and do not assert a total.
 - Be objective and preference-neutral. Use ONLY what the facts support; invent nothing.
-- Output ONLY the summary sentence(s), no preamble or list markers."""
+- Output ONLY the summary text, no preamble."""
 
 
 def build_observation_prompt(entity: str, facts: List[Fact]) -> List[dict]:
