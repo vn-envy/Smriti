@@ -144,12 +144,28 @@ smriti-teaser.html     36-second self-contained launch teaser — open, it plays
 
 ## Roadmap
 
-- [ ] Publish LongMemEval-S and LoCoMo numbers (lite + full, local + hosted models)
-- [ ] Optional cross-encoder reranking channel
-- [ ] Session summaries as a third retrieval granularity
-- [ ] MCP server wrapper (drop-in memory for coding agents)
-- [ ] Async ingest queue and batched embeddings
-- [ ] Multi-user namespacing (`user_id` scoping)
+### Shipped (research-driven builds)
+
+Informed by Hindsight (observation paradigm), StructMem / MemGAS (multi-granularity, cross-event consolidation), and the multi-hop RAG literature:
+
+- [x] Observation/summary layer — per-entity synthesized summaries (`refresh_observations`)
+- [x] Observations additive + enumerate — own context section, list instances instead of asserting totals
+- [x] Multi-granularity digests — per-`(subject, predicate)` enumerations for cross-entity aggregation
+- [x] 2-hop entity traversal — graph-lite multi-hop over the entity table
+- [x] Optional cross-encoder reranking channel — RRF + rerank (`reranker=`)
+- [x] Iterative retrieval — LLM-seeded second pass for multi-hop (`search_iterative`)
+- [x] Benchmark harness hardening — stratified `--sample`, `--question-type`, A/B (`bench/ab.sh`), DeepSeek preset
+
+### Next (post-benchmark)
+
+- [ ] Publish LongMemEval-S and LoCoMo numbers (lite + full, local + hosted; observations on/off)
+- [ ] **Entity canonicalization** — confidence-scored alias merge at write time ("Rachel" / "my cousin Rachel" / "Rachel Smith" → one entity). Attacks the fragmentation that limits cross-entity aggregation. *(adapted from Codebase-Memory's resolution cascade)*
+- [ ] **Recursive-CTE N-hop traversal** — replace Python 2-hop with arbitrary-depth traversal in pure SQL. *(Codebase-Memory technique)*
+- [ ] **`sqlite-vec` ANN backend** — optional, fixes the O(N) vector scan past ~100k rows; falls back to numpy. Keeps single-file zero-infra.
+- [ ] **Incremental observation refresh** — content-hash so only changed entities/predicates are re-summarized. *(XXH3 pattern from Codebase-Memory)*
+- [ ] **MCP server** — typed memory tools (`recall`, `context`, `facts_about`, `timeline`, `why_superseded`) returning structured JSON, with a least-privilege/verification security posture for a tool that runs with the agent's permissions. *(design + security blueprint from Codebase-Memory)*
+- [ ] Embedding-dimension guard (reject silent model swaps) + async ingest queue and batched embeddings
+- [ ] Multi-user namespacing (`user_id` scoping) and concurrency-safe store
 
 ## License
 
