@@ -4,7 +4,7 @@ import json
 from smriti import Fact, HashEmbedder, MockLLM, MockReranker, Smriti
 from smriti.retrieval import extract_dates
 from bench.judge import is_abstention
-from bench.longmemeval import parse_lme_date
+from bench.longmemeval import parse_lme_date, run_longmemeval
 from bench.locomo import iter_sessions, parse_locomo_date
 
 
@@ -242,6 +242,38 @@ def test_locomo_session_iteration():
     key, ts, turns = sessions[0]
     assert key == "session_1" and ts.startswith("2023-05-08") and len(turns) == 2
     assert "a dog photo" in turns[1]["content"]
+
+
+def test_bench_wiring_observations_and_iterative():
+    """The harness runs end-to-end with Build 1 (observations) and Build 5
+    (iterative) enabled — integration smoke that the wiring doesn't break."""
+    extraction = json.dumps([
+        {"statement": "The user's cat is named Pixel.", "subject": "user",
+         "predicate": "has_cat", "object": "Pixel", "entities": ["pet"],
+         "event_date": None, "kind": "profile"},
+        {"statement": "The user's dog is named Bruno.", "subject": "user",
+         "predicate": "has_dog", "object": "Bruno", "entities": ["pet"],
+         "event_date": None, "kind": "profile"},
+    ])
+    memory_llm = MockLLM([extraction, "The user has 2 pets: Pixel and Bruno.",
+                          "NONE", "NONE"])
+    answer_llm = MockLLM(["The user has 2 pets."])
+    judge_llm = MockLLM(["yes"])
+    item = {
+        "question_id": "t1", "question_type": "multi-session",
+        "question": "How many pets does the user have?", "answer": "2",
+        "question_date": "2025/06/01 (Sun) 10:00",
+        "haystack_dates": ["2025/01/01 (Wed) 10:00"],
+        "haystack_sessions": [[{"role": "user",
+                                "content": "I have a cat Pixel and a dog Bruno."}]],
+    }
+
+    def factory():
+        return Smriti(path=":memory:", embedder=HashEmbedder(), llm=memory_llm, mode="full")
+
+    summary = run_longmemeval([item], answer_llm, judge_llm, factory,
+                              observations=True, iterative=True, verbose=False)
+    assert summary["n"] == 1 and "accuracy" in summary and "multi-session" in summary["per_type"]
 
 
 def test_abstention_detection():

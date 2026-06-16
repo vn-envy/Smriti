@@ -82,6 +82,8 @@ def run_locomo(
     verbose: bool = True,
     out_path: Optional[str] = None,
     sample: Optional[int] = None,
+    observations: bool = False,
+    iterative: bool = False,
 ) -> dict:
     from .longmemeval import stratified_sample
     results, per_cat = [], {}
@@ -109,6 +111,8 @@ def run_locomo(
         t0 = time.time()
         for key, ts, turns in iter_sessions(conv):
             mem.add(turns, session_id=f"c{c_idx}-{key}", timestamp=ts)
+        if observations and mem.llm is not None:
+            mem.refresh_observations()  # Build 1: synthesize entity summaries post-ingest
         ingest_s = time.time() - t0
 
         for qi, q in enumerate(qa):
@@ -122,7 +126,9 @@ def run_locomo(
             gold = str(q.get("answer", q.get("adversarial_answer", "")))
             cat = int(q.get("category", 0))
 
-            ctx = mem.context(question, k=k, char_budget=char_budget)
+            ctx = (mem.context_iterative(question, k=k, char_budget=char_budget)
+                   if iterative else
+                   mem.context(question, k=k, char_budget=char_budget))
             hypothesis = answer_llm.complete(
                 [{"role": "system", "content": ANSWER_SYSTEM.format(today="unknown")},
                  {"role": "user", "content": f"MEMORY CONTEXT:\n{ctx}\n\nQUESTION: {question}"}],

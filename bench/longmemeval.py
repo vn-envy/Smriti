@@ -90,6 +90,8 @@ def run_longmemeval(
     verbose: bool = True,
     out_path: Optional[str] = None,
     sample: Optional[int] = None,
+    observations: bool = False,
+    iterative: bool = False,
 ) -> dict:
     if sample:
         items = stratified_sample(data, sample, lambda it: it.get("question_type", "unknown"))
@@ -113,10 +115,14 @@ def run_longmemeval(
                      for t in session if t.get("content")]
             if turns:
                 mem.add(turns, session_id=f"{qid}-s{s_idx}", timestamp=ts)
+        if observations and mem.llm is not None:
+            mem.refresh_observations()  # Build 1: synthesize entity summaries post-ingest
         ingest_s = time.time() - t0
 
         t0 = time.time()
-        ctx = mem.context(question, k=k, now=qdate, char_budget=char_budget)
+        ctx = (mem.context_iterative(question, k=k, now=qdate, char_budget=char_budget)
+               if iterative else
+               mem.context(question, k=k, now=qdate, char_budget=char_budget))
         today = (qdate or "")[:10] or "unknown"
         hypothesis = answer_llm.complete(
             [{"role": "system", "content": ANSWER_SYSTEM.format(today=today)},

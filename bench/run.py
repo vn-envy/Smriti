@@ -21,7 +21,7 @@ from __future__ import annotations
 import argparse
 import json
 
-from smriti import LLM, HashEmbedder, OllamaEmbedder, OpenAICompatEmbedder, Smriti
+from smriti import LLM, HashEmbedder, HTTPReranker, OllamaEmbedder, OpenAICompatEmbedder, Smriti
 from smriti.llm import PRESETS
 
 from .locomo import load_locomo, run_locomo
@@ -57,6 +57,14 @@ def main():
     p.add_argument("--embedder", choices=["ollama", "openai", "hash"], default="ollama")
     p.add_argument("--embed-model", default="nomic-embed-text")
     p.add_argument("--embed-base-url", default="")
+    # research-driven retrieval features (opt-in, so runs are A/B comparable)
+    p.add_argument("--observations", action="store_true",
+                   help="Build 1: synthesize per-entity observation summaries after ingest (full mode)")
+    p.add_argument("--iterative", action="store_true",
+                   help="Build 5: LLM-seeded second retrieval round for multi-hop (full mode)")
+    p.add_argument("--reranker-model", default="", help="Build 4: rerank model id")
+    p.add_argument("--reranker-url", default="", help="Build 4: rerank endpoint base url (enables reranking)")
+    p.add_argument("--reranker-key", default="")
     p.add_argument("--out", default="bench_results.json")
     args = p.parse_args()
 
@@ -68,22 +76,27 @@ def main():
     judge_llm = mk_llm(args.judge_model or args.answer_model)
     memory_llm = mk_llm(args.memory_model or args.answer_model) if args.mode == "full" else None
     embedder = build_embedder(args)
+    reranker = (HTTPReranker(args.reranker_model, args.reranker_url, args.reranker_key)
+                if args.reranker_url else None)
 
     def memory_factory():
-        return Smriti(path=":memory:", embedder=embedder, llm=memory_llm, mode=args.mode)
+        return Smriti(path=":memory:", embedder=embedder, llm=memory_llm,
+                      mode=args.mode, reranker=reranker)
 
     if args.bench == "longmemeval":
         data = load_longmemeval(args.data)
         summary = run_longmemeval(data, answer_llm, judge_llm, memory_factory,
                                   limit=args.limit, k=args.k,
                                   char_budget=args.char_budget, out_path=args.out,
-                                  sample=args.sample)
+                                  sample=args.sample, observations=args.observations,
+                                  iterative=args.iterative)
     else:
         data = load_locomo(args.data)
         summary = run_locomo(data, answer_llm, judge_llm, memory_factory,
                              limit_questions=args.limit, k=args.k,
                              char_budget=args.char_budget, out_path=args.out,
-                             sample=args.sample)
+                             sample=args.sample, observations=args.observations,
+                             iterative=args.iterative)
 
     print("\n" + json.dumps(summary, indent=2))
     print(f"\nFull per-question results written to {args.out}")
