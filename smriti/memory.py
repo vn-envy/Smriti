@@ -32,12 +32,15 @@ MODE_ALIASES = {"laghu": "lite", "purna": "full"}
 
 class Smriti:
     def __init__(self, path: str = ":memory:", embedder=None, llm: Optional[LLM] = None,
-                 mode: str = "auto", embed_episodes: bool = True):
+                 mode: str = "auto", embed_episodes: bool = True, reranker=None):
         """mode: "full"/"purna" (LLM extraction+consolidation), "lite"/"laghu"
-        (episodic only), or "auto" (full if an llm is provided, else lite)."""
+        (episodic only), or "auto" (full if an llm is provided, else lite).
+        reranker: optional cross-encoder (any .rerank(query, docs)->scores) applied
+        to fused candidates at read time."""
         self.store = Store(path)
         self.embedder = embedder or HashEmbedder()
         self.llm = llm
+        self.reranker = reranker
         mode = MODE_ALIASES.get(mode, mode)
         if mode == "auto":
             mode = "full" if llm is not None else "lite"
@@ -90,7 +93,7 @@ class Smriti:
 
     # --------------------------------------------------------------- search
     def search(self, query: str, k: int = 12, now: Optional[str] = None) -> List[RetrievalResult]:
-        return retrieve(self.store, self.embedder, query, now=now, k=k)
+        return retrieve(self.store, self.embedder, query, now=now, k=k, reranker=self.reranker)
 
     def context(self, query: str, k: int = 12, now: Optional[str] = None,
                 char_budget: int = 9000) -> str:

@@ -1,7 +1,7 @@
 """Offline tests: HashEmbedder + MockLLM, no network, no API keys."""
 import json
 
-from smriti import Fact, HashEmbedder, MockLLM, Smriti
+from smriti import Fact, HashEmbedder, MockLLM, MockReranker, Smriti
 from smriti.retrieval import extract_dates
 from bench.judge import is_abstention
 from bench.longmemeval import parse_lme_date
@@ -175,6 +175,25 @@ def test_observation_skips_sparse_entities():
                  resolve_conflicts=False)
     out = mem.refresh_observations(min_facts=2)
     assert out["observations"] == 0 and llm.calls == 0
+
+
+# ------------------------------------------------------- reranking (Build 4)
+def test_reranker_reorders_and_tags():
+    """An optional cross-encoder re-sorts the fused pool and tags results."""
+    facts = [
+        "The user enjoys hiking in the Western Ghats on weekends.",
+        "The user adopted a cat named Pixel last winter.",
+        "The user's favorite programming language is Python.",
+    ]
+    mem = Smriti(path=":memory:", embedder=HashEmbedder(), mode="lite",
+                 reranker=MockReranker())
+    for f in facts:
+        mem.add_fact(Fact(id=None, statement=f, subject="user", predicate="note",
+                          object="", entities=[]))
+    res = mem.search("What programming language does the user like?", k=3)
+    assert res and "rerank" in res[0].channels
+    # reranker promotes the query-overlapping fact to the top
+    assert "Python" in res[0].text
 
 
 # ---------------------------------------------------------------- temporal

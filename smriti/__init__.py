@@ -6,10 +6,12 @@ smriti (स्मृति): Sanskrit for "that which is remembered".
 from .embedder import HashEmbedder, OllamaEmbedder, OpenAICompatEmbedder
 from .llm import LLM, MockLLM
 from .memory import Smriti
+from .rerank import HTTPReranker, MockReranker
 from .types import Episode, Fact, RetrievalResult
 
 __version__ = "0.1.0"
 __all__ = [
     "Smriti", "Fact", "Episode", "RetrievalResult",
     "LLM", "MockLLM", "HashEmbedder", "OllamaEmbedder", "OpenAICompatEmbedder",
+    "HTTPReranker", "MockReranker",
 ]

@@ -93,7 +93,8 @@ DEFAULT_WEIGHTS = {
 
 def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
              k: int = 12, weights: Optional[Dict[str, float]] = None,
-             per_channel: int = 24, entity_hops: int = 2) -> List[RetrievalResult]:
+             per_channel: int = 24, entity_hops: int = 2,
+             reranker=None, rerank_top: int = 48) -> List[RetrievalResult]:
     weights = weights or DEFAULT_WEIGHTS
     qvec = embedder.embed([query])[0] if embedder else None
 
@@ -127,10 +128,12 @@ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
     fused = _rrf(rankings, weights)
     ordered = sorted(fused.items(), key=lambda kv: -kv[1][0])
 
+    # Materialize a larger pool when a reranker will re-sort it, else just k.
+    pool = max(k, rerank_top) if reranker is not None else k
     results: List[RetrievalResult] = []
     seen_sessions_text = set()
     for (kind, rid), (score, chans) in ordered:
-        if len(results) >= k:
+        if len(results) >= pool:
             break
         if kind == "fact":
             f = store.get_fact(rid)
@@ -150,6 +153,16 @@ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
             results.append(RetrievalResult(
                 kind="episode", id=rid, text=e.content, score=score,
                 ts=e.ts, role=e.role, channels=chans))
+
+    # cross-encoder re-examination of the fused pool, then trim to k
+    if reranker is not None and results:
+        scores = reranker.rerank(query, [r.text for r in results])
+        for r, sc in zip(results, scores):
+            r.score = float(sc)
+            if "rerank" not in r.channels:
+                r.channels = r.channels + ["rerank"]
+        results.sort(key=lambda r: -r.score)
+        results = results[:k]
     return results
 
 
