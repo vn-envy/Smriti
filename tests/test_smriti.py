@@ -177,6 +177,26 @@ def test_observation_skips_sparse_entities():
     assert out["observations"] == 0 and llm.calls == 0
 
 
+# ----------------------------------------------- iterative retrieval (Build 5)
+def test_iterative_retrieval_finds_second_hop():
+    """A fact the single pass misses (no entity link, no lexical overlap with the
+    question) is found via an LLM-proposed follow-up retrieval."""
+    llm = MockLLM(["Photonics study of light technologies"])  # the follow-up query
+    mem = Smriti(path=":memory:", embedder=HashEmbedder(), llm=llm, mode="full")
+    mem.add_fact(Fact(id=None, statement="The user is enrolled in the Helios program.",
+                      subject="user", predicate="enrolled_in", object="Helios",
+                      entities=["Helios"]), resolve_conflicts=False)
+    mem.add_fact(Fact(id=None, statement="Photonics is the study of light-based technologies.",
+                      subject="photonics", predicate="is", object="study of light",
+                      entities=["Photonics"]), resolve_conflicts=False)
+    q = "What field is the user's program about?"
+
+    one = mem.search(q, k=1)
+    assert not any("Photonics" in r.text for r in one)        # single pass misses it
+    two = mem.search_iterative(q, k=1, rounds=2)
+    assert any("Photonics" in r.text for r in two)            # follow-up pass finds it
+
+
 # ------------------------------------------------------- reranking (Build 4)
 def test_reranker_reorders_and_tags():
     """An optional cross-encoder re-sorts the fused pool and tags results."""

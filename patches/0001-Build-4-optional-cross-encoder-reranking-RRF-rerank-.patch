@@ -1,0 +1,539 @@
+From 8ac2e968c4c542d1b49fea271a53d639729a0739 Mon Sep 17 00:00:00 2001
+From: Neekhil Vatsa <vatsaneekhil@gmail.com>
+Date: Tue, 16 Jun 2026 15:21:42 +0000
+Subject: [PATCH] Build 4: optional cross-encoder reranking (RRF + rerank,
+ Hindsight-style)
+
+New smriti/rerank.py (MockReranker, HTTPReranker for TEI/Jina/Cohere /rerank).
+retrieve() materializes a larger fused pool then re-sorts by a model-agnostic
+reranker and tags results 'rerank'. Wired through Smriti(reranker=...). Opt-in,
+stdlib-only core. +1 test, 16/16 passing.
+---
+ ...ntity-traversal-graph-lite-multi-hop.patch | 311 ++++++++++++++++++
+ smriti/__init__.py                            |   2 +
+ smriti/memory.py                              |   9 +-
+ smriti/rerank.py                              |  60 ++++
+ smriti/retrieval.py                           |  17 +-
+ tests/test_smriti.py                          |  21 +-
+ 6 files changed, 414 insertions(+), 6 deletions(-)
+ create mode 100644 patches/0001-Build-2-2-hop-entity-traversal-graph-lite-multi-hop.patch
+ create mode 100644 smriti/rerank.py
+
+diff --git a/patches/0001-Build-2-2-hop-entity-traversal-graph-lite-multi-hop.patch b/patches/0001-Build-2-2-hop-entity-traversal-graph-lite-multi-hop.patch
+new file mode 100644
+index 0000000..666b263
+--- /dev/null
++++ b/patches/0001-Build-2-2-hop-entity-traversal-graph-lite-multi-hop.patch
+@@ -0,0 +1,311 @@
++From 6805fe157d8a86b25c620fef38df308cbca93a9f Mon Sep 17 00:00:00 2001
++From: Neekhil Vatsa <vatsaneekhil@gmail.com>
++Date: Tue, 16 Jun 2026 15:10:14 +0000
++Subject: [PATCH] Build 2: 2-hop entity traversal (graph-lite multi-hop)
++
++Extend the sambandha channel with a bounded, down-weighted second entity hop
++so facts one link away from query entities are reachable (Rachel->Acme->Berlin).
++Pure SQL over the existing entities table, no graph DB. +1 test, 15/15 passing.
++---
++ ...ion-summary-layer-Hindsight-observat.patch | 214 ++++++++++++++++++
++ smriti/retrieval.py                           |  20 +-
++ tests/test_smriti.py                          |  19 ++
++ 3 files changed, 250 insertions(+), 3 deletions(-)
++ create mode 100644 patches/0001-Build-1-observation-summary-layer-Hindsight-observat.patch
++
++diff --git a/patches/0001-Build-1-observation-summary-layer-Hindsight-observat.patch b/patches/0001-Build-1-observation-summary-layer-Hindsight-observat.patch
++new file mode 100644
++index 0000000..f386c96
++--- /dev/null
+++++ b/patches/0001-Build-1-observation-summary-layer-Hindsight-observat.patch
++@@ -0,0 +1,214 @@
+++From 5298dcf1edf15797c3208120b1e47f5dedc091d3 Mon Sep 17 00:00:00 2001
+++From: Neekhil Vatsa <vatsaneekhil@gmail.com>
+++Date: Tue, 16 Jun 2026 15:08:07 +0000
+++Subject: [PATCH] =?UTF-8?q?Build=201:=20observation/summary=20layer=20(Hin?=
+++ =?UTF-8?q?dsight=20observation=20paradigm)=20=E2=80=94=20+2=20tests,=2014?=
+++ =?UTF-8?q?/14=20passing?=
+++MIME-Version: 1.0
+++Content-Type: text/plain; charset=UTF-8
+++Content-Transfer-Encoding: 8bit
+++
+++---
+++ smriti/extraction.py | 19 ++++++++++++++++
+++ smriti/memory.py     | 42 ++++++++++++++++++++++++++++++++++-
+++ smriti/store.py      | 30 +++++++++++++++++++++++++
+++ tests/test_smriti.py | 52 ++++++++++++++++++++++++++++++++++++++++++++
+++ 4 files changed, 142 insertions(+), 1 deletion(-)
+++
+++diff --git a/smriti/extraction.py b/smriti/extraction.py
+++index ce5a382..2a412b2 100644
+++--- a/smriti/extraction.py
++++++ b/smriti/extraction.py
+++@@ -43,6 +43,25 @@ def build_extraction_prompt(turns: List[dict], session_ts: Optional[str]) -> Lis
+++     ]
+++ 
+++ 
++++OBSERVATION_SYSTEM = """You synthesize a concise, objective profile of an entity from a list of known facts about it.
++++
++++Rules:
++++- Produce 1-3 sentences capturing the salient, durable properties: roles, attributes, relationships, and any totals/counts the facts collectively imply.
++++- If the facts describe several instances of the same kind of thing (e.g. multiple trips, purchases, or events), state the COUNT and list them — this is the main value of the summary.
++++- Be objective and preference-neutral. Use ONLY what the facts support; invent nothing.
++++- Output ONLY the summary sentence(s), no preamble or list markers."""
++++
++++
++++def build_observation_prompt(entity: str, facts: List[Fact]) -> List[dict]:
++++    lines = [f"Entity: {entity}", "Known facts:"]
++++    for f in facts:
++++        lines.append(f"- {f.statement}")
++++    return [
++++        {"role": "system", "content": OBSERVATION_SYSTEM},
++++        {"role": "user", "content": "\n".join(lines)},
++++    ]
++++
++++
+++ def parse_facts(raw: str, session_id: Optional[str], session_ts: Optional[str]) -> List[Fact]:
+++     data = extract_json(raw)
+++     if not isinstance(data, list):
+++diff --git a/smriti/memory.py b/smriti/memory.py
+++index 43d2319..51b264b 100644
+++--- a/smriti/memory.py
++++++ b/smriti/memory.py
+++@@ -20,7 +20,7 @@ from typing import List, Optional
+++ 
+++ from .consolidation import consolidate, heuristic_conflicts
+++ from .embedder import HashEmbedder
+++-from .extraction import build_extraction_prompt, parse_facts
++++from .extraction import build_extraction_prompt, build_observation_prompt, parse_facts
+++ from .llm import LLM
+++ from .retrieval import pack_context, retrieve
+++ from .store import Store, utcnow
+++@@ -96,6 +96,46 @@ class Smriti:
+++                 char_budget: int = 9000) -> str:
+++         return pack_context(self.search(query, k=k, now=now), now=now, char_budget=char_budget)
+++ 
++++    # -------------------------------------------------------- observations
++++    def refresh_observations(self, min_facts: int = 2,
++++                             entities: Optional[List[str]] = None) -> dict:
++++        """Synthesize a per-entity 'observation' summary fact from that entity's
++++        currently-valid facts — the Hindsight-style observation paradigm.
++++
++++        Observations sit on top of raw facts and pre-compute the aggregates
++++        ("attended 3 charity events: X, Y, Z") that the answering model is bad
++++        at tallying from scattered fragments — directly targeting the
++++        multi-session / aggregation weak spot. Stored as ordinary facts
++++        (kind='observation'), so they ride the existing retrieval channels;
++++        regenerating one supersedes the prior observation (full audit trail).
++++
++++        Opt-in and idempotent: call it after a batch of adds or on a schedule,
++++        keeping write latency and the zero-cost default intact. Requires an llm.
++++        """
++++        if self.llm is None:
++++            raise ValueError("refresh_observations requires an llm (full mode)")
++++        targets = ([e.lower().strip() for e in entities]
++++                   if entities is not None else self.store.all_entities())
++++        made = 0
++++        for ent in targets:
++++            facts = self.store.facts_for_entity(ent, valid_only=True)
++++            if len(facts) < min_facts:
++++                continue
++++            summary = self.llm.complete(
++++                build_observation_prompt(ent, facts), max_tokens=256
++++            ).strip()
++++            if not summary:
++++                continue
++++            obs = Fact(id=None, statement=summary, subject=ent, predicate="observation",
++++                       object="", kind="observation", entities=[ent], valid_from=utcnow())
++++            emb = self.embedder.embed([summary])[0]
++++            prior = self.store.similar_valid_facts(ent, "observation")
++++            new_id = self.store.add_fact(obs, emb)
++++            for p in prior:
++++                self.store.invalidate_fact(p.id, new_id)
++++            made += 1
++++        return {"observations": made}
++++
+++     # ---------------------------------------------------------------- misc
+++     def stats(self) -> dict:
+++         s = self.store.stats()
+++diff --git a/smriti/store.py b/smriti/store.py
+++index a34e1d1..3f8f78d 100644
+++--- a/smriti/store.py
++++++ b/smriti/store.py
+++@@ -164,6 +164,36 @@ class Store:
+++         ).fetchall()
+++         return [self.get_fact(r[0]) for r in rows]
+++ 
++++    def facts_for_entity(self, name: str, valid_only: bool = True,
++++                         include_observations: bool = False) -> List[Fact]:
++++        """All facts linked to an entity. By default only currently-valid facts,
++++        and excluding observation summaries (so we summarize raw facts, not
++++        prior summaries)."""
++++        rows = self.db.execute(
++++            "SELECT DISTINCT fact_id FROM entities WHERE name=?", (name.lower().strip(),)
++++        ).fetchall()
++++        out = []
++++        for (fid,) in rows:
++++            f = self.get_fact(fid)
++++            if not f:
++++                continue
++++            if valid_only and f.invalid_at is not None:
++++                continue
++++            if not include_observations and f.kind == "observation":
++++                continue
++++            out.append(f)
++++        return out
++++
++++    def entities_of_facts(self, fact_ids: Sequence[int]) -> List[str]:
++++        """Entities mentioned by the given facts (for graph-lite multi-hop)."""
++++        if not fact_ids:
++++            return []
++++        marks = ",".join("?" for _ in fact_ids)
++++        rows = self.db.execute(
++++            f"SELECT DISTINCT name FROM entities WHERE fact_id IN ({marks})", list(fact_ids)
++++        ).fetchall()
++++        return [r[0] for r in rows]
++++
+++     # --------------------------------------------------------------- search
+++     def fts_search(self, query: str, table: str, limit: int = 20) -> List[Tuple[int, float]]:
+++         q = _fts_query(query)
+++diff --git a/tests/test_smriti.py b/tests/test_smriti.py
+++index 2d03dd0..0443f13 100644
+++--- a/tests/test_smriti.py
++++++ b/tests/test_smriti.py
+++@@ -106,6 +106,58 @@ def test_entity_channel():
+++     assert any("SigmaFlow" in r.text and "entity" in r.channels for r in results)
+++ 
+++ 
++++# ------------------------------------------------------- observations (Build 1)
++++def _charity_fact(stmt, obj):
++++    return Fact(id=None, statement=stmt, subject="user", predicate="attended",
++++                object=obj, entities=["charity"])
++++
++++
++++def test_observation_synthesis_and_supersession():
++++    """Per-entity observation summary is created, retrievable, and regenerating
++++    it supersedes the prior one (history preserved, never duplicated)."""
++++    llm = MockLLM([
++++        "The user attended 2 charity events: Walk for Hunger and the 5K Gala.",
++++        "The user attended 3 charity events: Walk for Hunger, the 5K Gala, and Run for Hope.",
++++    ])
++++    mem = Smriti(path=":memory:", embedder=HashEmbedder(), llm=llm, mode="full")
++++    mem.add_fact(_charity_fact("The user attended the Walk for Hunger event.", "Walk for Hunger"),
++++                 resolve_conflicts=False)
++++    mem.add_fact(_charity_fact("The user attended the 5K Gala event.", "5K Gala"),
++++                 resolve_conflicts=False)
++++
++++    out = mem.refresh_observations(min_facts=2)
++++    assert out["observations"] == 1
++++    obs = mem.store.similar_valid_facts("charity", "observation")
++++    assert len(obs) == 1 and obs[0].kind == "observation"
++++    assert "2 charity events" in obs[0].statement
++++
++++    # observation is retrievable via the normal channels
++++    results = mem.search("how many charity events did I attend?", k=8)
++++    assert any(r.kind == "fact" and "2 charity events" in r.text for r in results)
++++
++++    # new fact + refresh -> supersede prior observation, don't duplicate
++++    mem.add_fact(_charity_fact("The user attended the Run for Hope event.", "Run for Hope"),
++++                 resolve_conflicts=False)
++++    mem.refresh_observations(min_facts=2)
++++    valid = mem.store.similar_valid_facts("charity", "observation")
++++    assert len(valid) == 1 and "3 charity events" in valid[0].statement
++++    all_obs = [f for f in mem.store.facts_for_entity("charity", valid_only=False,
++++                                                     include_observations=True)
++++               if f.kind == "observation"]
++++    assert len(all_obs) == 2  # prior kept as superseded history
++++
++++
++++def test_observation_skips_sparse_entities():
++++    """An entity with fewer than min_facts gets no observation (no wasted LLM call)."""
++++    llm = MockLLM(["unused"])
++++    mem = Smriti(path=":memory:", embedder=HashEmbedder(), llm=llm, mode="full")
++++    mem.add_fact(Fact(id=None, statement="The user owns a kayak.", subject="user",
++++                      predicate="owns", object="kayak", entities=["kayak"]),
++++                 resolve_conflicts=False)
++++    out = mem.refresh_observations(min_facts=2)
++++    assert out["observations"] == 0 and llm.calls == 0
++++
++++
+++ # ---------------------------------------------------------------- temporal
+++ def test_extract_dates_variants():
+++     assert "2024-03-12" in extract_dates("what happened on 2024-03-12?")
+++-- 
+++2.34.1
+++
++diff --git a/smriti/retrieval.py b/smriti/retrieval.py
++index 2c34716..64aaba8 100644
++--- a/smriti/retrieval.py
+++++ b/smriti/retrieval.py
++@@ -87,13 +87,13 @@ def _rrf(rankings: Dict[str, List[Tuple[str, int]]], weights: Dict[str, float],
++ DEFAULT_WEIGHTS = {
++     "vec_fact": 1.0, "vec_episode": 1.0,
++     "bm25_fact": 0.9, "bm25_episode": 0.9,
++-    "entity": 0.6, "temporal": 0.6,
+++    "entity": 0.6, "entity_hop2": 0.4, "temporal": 0.6,
++ }
++ 
++ 
++ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
++              k: int = 12, weights: Optional[Dict[str, float]] = None,
++-             per_channel: int = 24) -> List[RetrievalResult]:
+++             per_channel: int = 24, entity_hops: int = 2) -> List[RetrievalResult]:
++     weights = weights or DEFAULT_WEIGHTS
++     qvec = embedder.embed([query])[0] if embedder else None
++ 
++@@ -105,7 +105,21 @@ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
++         rankings["vec_episode"] = [("episode", i) for i, _ in store.vector_search(qvec, "episode", per_channel)]
++     ents = query_entities(store, query)
++     if ents:
++-        rankings["entity"] = [("fact", i) for i, _ in store.entity_facts(ents, per_channel)]
+++        hop1 = store.entity_facts(ents, per_channel)
+++        rankings["entity"] = [("fact", i) for i, _ in hop1]
+++        # graph-lite multi-hop: facts one entity-link away from the hop-1 facts.
+++        # "Rachel works at Acme" + "Acme is in Berlin" -> reach Berlin from Rachel.
+++        # Bounded (one extra hop, deduped, down-weighted) — no graph DB.
+++        if entity_hops >= 2 and hop1:
+++            hop1_ids = [i for i, _ in hop1]
+++            seen = set(hop1_ids)
+++            hop2_ents = [e for e in store.entities_of_facts(hop1_ids)
+++                         if e not in set(ents)][:20]
+++            if hop2_ents:
+++                rankings["entity_hop2"] = [
+++                    ("fact", i) for i, _ in store.entity_facts(hop2_ents, per_channel)
+++                    if i not in seen
+++                ]
++     for d in extract_dates(query)[:2]:
++         rankings.setdefault("temporal", [])
++         rankings["temporal"] += [("episode", i) for i, _ in store.episodes_near(d, per_channel // 2)]
++diff --git a/tests/test_smriti.py b/tests/test_smriti.py
++index 0443f13..a0f636b 100644
++--- a/tests/test_smriti.py
+++++ b/tests/test_smriti.py
++@@ -147,6 +147,25 @@ def test_observation_synthesis_and_supersession():
++     assert len(all_obs) == 2  # prior kept as superseded history
++ 
++ 
+++def test_two_hop_entity_traversal():
+++    """A fact reachable only by hopping query-entity -> intermediate-entity ->
+++    answer-fact is surfaced by the 2-hop entity channel (graph-lite multi-hop)."""
+++    mem = make_lite()
+++    mem.add_fact(Fact(id=None, statement="Rachel works at Acme.", subject="rachel",
+++                      predicate="works_at", object="Acme", entities=["Rachel", "Acme"]))
+++    mem.add_fact(Fact(id=None, statement="Acme is headquartered in Berlin.", subject="acme",
+++                      predicate="located_in", object="Berlin", entities=["Acme"]))
+++    q = "Where is the company Rachel works for located?"
+++    hits = [r for r in mem.search(q, k=8) if "Berlin" in r.text]
+++    assert hits, "2-hop fact not retrieved"
+++    assert any("entity_hop2" in r.channels for r in hits)
+++
+++    # without the second hop, the Berlin fact isn't reachable via entities
+++    from smriti.retrieval import retrieve
+++    one_hop = retrieve(mem.store, mem.embedder, q, k=8, entity_hops=1)
+++    assert not any("entity_hop2" in r.channels for r in one_hop)
+++
+++
++ def test_observation_skips_sparse_entities():
++     """An entity with fewer than min_facts gets no observation (no wasted LLM call)."""
++     llm = MockLLM(["unused"])
++-- 
++2.34.1
++
+diff --git a/smriti/__init__.py b/smriti/__init__.py
+index e4da678..5189990 100644
+--- a/smriti/__init__.py
++++ b/smriti/__init__.py
+@@ -6,10 +6,12 @@ smriti (स्मृति): Sanskrit for "that which is remembered".
+ from .embedder import HashEmbedder, OllamaEmbedder, OpenAICompatEmbedder
+ from .llm import LLM, MockLLM
+ from .memory import Smriti
++from .rerank import HTTPReranker, MockReranker
+ from .types import Episode, Fact, RetrievalResult
+ 
+ __version__ = "0.1.0"
+ __all__ = [
+     "Smriti", "Fact", "Episode", "RetrievalResult",
+     "LLM", "MockLLM", "HashEmbedder", "OllamaEmbedder", "OpenAICompatEmbedder",
++    "HTTPReranker", "MockReranker",
+ ]
+diff --git a/smriti/memory.py b/smriti/memory.py
+index 51b264b..7eae666 100644
+--- a/smriti/memory.py
++++ b/smriti/memory.py
+@@ -32,12 +32,15 @@ MODE_ALIASES = {"laghu": "lite", "purna": "full"}
+ 
+ class Smriti:
+     def __init__(self, path: str = ":memory:", embedder=None, llm: Optional[LLM] = None,
+-                 mode: str = "auto", embed_episodes: bool = True):
++                 mode: str = "auto", embed_episodes: bool = True, reranker=None):
+         """mode: "full"/"purna" (LLM extraction+consolidation), "lite"/"laghu"
+-        (episodic only), or "auto" (full if an llm is provided, else lite)."""
++        (episodic only), or "auto" (full if an llm is provided, else lite).
++        reranker: optional cross-encoder (any .rerank(query, docs)->scores) applied
++        to fused candidates at read time."""
+         self.store = Store(path)
+         self.embedder = embedder or HashEmbedder()
+         self.llm = llm
++        self.reranker = reranker
+         mode = MODE_ALIASES.get(mode, mode)
+         if mode == "auto":
+             mode = "full" if llm is not None else "lite"
+@@ -90,7 +93,7 @@ class Smriti:
+ 
+     # --------------------------------------------------------------- search
+     def search(self, query: str, k: int = 12, now: Optional[str] = None) -> List[RetrievalResult]:
+-        return retrieve(self.store, self.embedder, query, now=now, k=k)
++        return retrieve(self.store, self.embedder, query, now=now, k=k, reranker=self.reranker)
+ 
+     def context(self, query: str, k: int = 12, now: Optional[str] = None,
+                 char_budget: int = 9000) -> str:
+diff --git a/smriti/rerank.py b/smriti/rerank.py
+new file mode 100644
+index 0000000..b8905f0
+--- /dev/null
++++ b/smriti/rerank.py
+@@ -0,0 +1,60 @@
++"""Optional cross-encoder reranking — *punarvichara* (पुनर्विचार, re-examination).
++
++Reciprocal Rank Fusion is cheap and order-robust, but it scores a candidate by
++its *ranks* across channels, not by a joint reading of (query, document). A
++cross-encoder re-examines the top fused candidates by scoring each query/doc
++pair directly, which is the lever the strongest systems (e.g. Hindsight) add
++on top of RRF.
++
++Model-agnostic by design: any object exposing ``rerank(query, docs) -> list[float]``
++(higher = more relevant) plugs in. Stdlib HTTP only, consistent with the rest
++of SMRITI — no torch, no sentence-transformers required in the core.
++"""
++from __future__ import annotations
++
++from typing import List, Sequence
++
++from .embedder import _post_json
++
++
++class MockReranker:
++    """Deterministic, dependency-free reranker for tests and offline use.
++
++    Scores by query/document token overlap. Not semantically smart, but stable
++    and good enough to exercise the rerank plumbing without a model server.
++    """
++
++    def rerank(self, query: str, docs: Sequence[str]) -> List[float]:
++        q = set(query.lower().split())
++        return [len(q & set(d.lower().split())) for d in docs]
++
++
++class HTTPReranker:
++    """Calls a TEI / Jina / Cohere-style ``/rerank`` endpoint.
++
++    Accepts the common response shapes: ``{"results": [{"index", "relevance_score"}]}``
++    or a bare list of ``{"index", "score"}``. Missing scores default to 0.
++    """
++
++    def __init__(self, model: str, base_url: str, api_key: str = ""):
++        self.model = model
++        self.base_url = base_url.rstrip("/")
++        self.api_key = api_key
++
++    def rerank(self, query: str, docs: Sequence[str]) -> List[float]:
++        docs = list(docs)
++        if not docs:
++            return []
++        headers = {"Authorization": f"Bearer {self.api_key}"} if self.api_key else {}
++        resp = _post_json(
++            f"{self.base_url}/rerank",
++            {"model": self.model, "query": query, "documents": docs},
++            headers,
++        )
++        rows = resp.get("results", resp) if isinstance(resp, dict) else resp
++        scores = [0.0] * len(docs)
++        for r in rows or []:
++            idx = r.get("index")
++            if idx is not None and 0 <= idx < len(docs):
++                scores[idx] = float(r.get("relevance_score", r.get("score", 0.0)))
++        return scores
+diff --git a/smriti/retrieval.py b/smriti/retrieval.py
+index 64aaba8..542b284 100644
+--- a/smriti/retrieval.py
++++ b/smriti/retrieval.py
+@@ -93,7 +93,8 @@ DEFAULT_WEIGHTS = {
+ 
+ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
+              k: int = 12, weights: Optional[Dict[str, float]] = None,
+-             per_channel: int = 24, entity_hops: int = 2) -> List[RetrievalResult]:
++             per_channel: int = 24, entity_hops: int = 2,
++             reranker=None, rerank_top: int = 48) -> List[RetrievalResult]:
+     weights = weights or DEFAULT_WEIGHTS
+     qvec = embedder.embed([query])[0] if embedder else None
+ 
+@@ -127,10 +128,12 @@ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
+     fused = _rrf(rankings, weights)
+     ordered = sorted(fused.items(), key=lambda kv: -kv[1][0])
+ 
++    # Materialize a larger pool when a reranker will re-sort it, else just k.
++    pool = max(k, rerank_top) if reranker is not None else k
+     results: List[RetrievalResult] = []
+     seen_sessions_text = set()
+     for (kind, rid), (score, chans) in ordered:
+-        if len(results) >= k:
++        if len(results) >= pool:
+             break
+         if kind == "fact":
+             f = store.get_fact(rid)
+@@ -150,6 +153,16 @@ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
+             results.append(RetrievalResult(
+                 kind="episode", id=rid, text=e.content, score=score,
+                 ts=e.ts, role=e.role, channels=chans))
++
++    # cross-encoder re-examination of the fused pool, then trim to k
++    if reranker is not None and results:
++        scores = reranker.rerank(query, [r.text for r in results])
++        for r, sc in zip(results, scores):
++            r.score = float(sc)
++            if "rerank" not in r.channels:
++                r.channels = r.channels + ["rerank"]
++        results.sort(key=lambda r: -r.score)
++        results = results[:k]
+     return results
+ 
+ 
+diff --git a/tests/test_smriti.py b/tests/test_smriti.py
+index a0f636b..c02ea13 100644
+--- a/tests/test_smriti.py
++++ b/tests/test_smriti.py
+@@ -1,7 +1,7 @@
+ """Offline tests: HashEmbedder + MockLLM, no network, no API keys."""
+ import json
+ 
+-from smriti import Fact, HashEmbedder, MockLLM, Smriti
++from smriti import Fact, HashEmbedder, MockLLM, MockReranker, Smriti
+ from smriti.retrieval import extract_dates
+ from bench.judge import is_abstention
+ from bench.longmemeval import parse_lme_date
+@@ -177,6 +177,25 @@ def test_observation_skips_sparse_entities():
+     assert out["observations"] == 0 and llm.calls == 0
+ 
+ 
++# ------------------------------------------------------- reranking (Build 4)
++def test_reranker_reorders_and_tags():
++    """An optional cross-encoder re-sorts the fused pool and tags results."""
++    facts = [
++        "The user enjoys hiking in the Western Ghats on weekends.",
++        "The user adopted a cat named Pixel last winter.",
++        "The user's favorite programming language is Python.",
++    ]
++    mem = Smriti(path=":memory:", embedder=HashEmbedder(), mode="lite",
++                 reranker=MockReranker())
++    for f in facts:
++        mem.add_fact(Fact(id=None, statement=f, subject="user", predicate="note",
++                          object="", entities=[]))
++    res = mem.search("What programming language does the user like?", k=3)
++    assert res and "rerank" in res[0].channels
++    # reranker promotes the query-overlapping fact to the top
++    assert "Python" in res[0].text
++
++
+ # ---------------------------------------------------------------- temporal
+ def test_extract_dates_variants():
+     assert "2024-03-12" in extract_dates("what happened on 2024-03-12?")
+-- 
+2.34.1
+

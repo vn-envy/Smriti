@@ -62,6 +62,20 @@ def build_observation_prompt(entity: str, facts: List[Fact]) -> List[dict]:
     ]
 
 
+FOLLOWUP_SYSTEM = """You help a memory system answer a multi-hop question by deciding what to look up next.
+Given the QUESTION and the NOTES retrieved so far:
+- If the notes already contain everything needed to answer, reply with exactly: NONE
+- Otherwise reply with a SINGLE short search query (no explanation, no quotes) for the missing piece — typically a bridging entity, date, or fact the question still needs."""
+
+
+def build_followup_prompt(question: str, notes: str) -> List[dict]:
+    return [
+        {"role": "system", "content": FOLLOWUP_SYSTEM},
+        {"role": "user",
+         "content": f"QUESTION: {question}\n\nNOTES:\n{notes}\n\nNext search query or NONE:"},
+    ]
+
+
 def parse_facts(raw: str, session_id: Optional[str], session_ts: Optional[str]) -> List[Fact]:
     data = extract_json(raw)
     if not isinstance(data, list):

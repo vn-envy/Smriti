@@ -20,7 +20,8 @@ from typing import List, Optional
 
 from .consolidation import consolidate, heuristic_conflicts
 from .embedder import HashEmbedder
-from .extraction import build_extraction_prompt, build_observation_prompt, parse_facts
+from .extraction import (build_extraction_prompt, build_followup_prompt,
+                         build_observation_prompt, parse_facts)
 from .llm import LLM
 from .retrieval import pack_context, retrieve
 from .store import Store, utcnow
@@ -98,6 +99,39 @@ class Smriti:
     def context(self, query: str, k: int = 12, now: Optional[str] = None,
                 char_budget: int = 9000) -> str:
         return pack_context(self.search(query, k=k, now=now), now=now, char_budget=char_budget)
+
+    def search_iterative(self, query: str, k: int = 12, now: Optional[str] = None,
+                         rounds: int = 2) -> List[RetrievalResult]:
+        """Multi-step retrieval for multi-hop questions (DualRAG-style).
+
+        After the first pass, ask the LLM what's still missing, issue a
+        follow-up retrieval seeded by that, and merge — so chains the single
+        pass can't resolve in one shot ("my mentor's research field" needs the
+        mentor, then the mentor's field) get a second look. Full mode only;
+        with no llm or rounds<2 it degrades to a normal single-pass search.
+        """
+        results = self.search(query, k=k, now=now)
+        if self.llm is None or rounds < 2:
+            return results
+        seen = {(r.kind, r.id) for r in results}
+        for _ in range(rounds - 1):
+            notes = pack_context(results, now=now)
+            follow = self.llm.complete(
+                build_followup_prompt(query, notes), max_tokens=64
+            ).strip()
+            if not follow or follow.upper().startswith("NONE"):
+                break
+            for r in retrieve(self.store, self.embedder, follow, now=now, k=k,
+                              reranker=self.reranker):
+                if (r.kind, r.id) not in seen:
+                    seen.add((r.kind, r.id))
+                    results.append(r)
+        return results
+
+    def context_iterative(self, query: str, k: int = 12, now: Optional[str] = None,
+                          char_budget: int = 9000, rounds: int = 2) -> str:
+        return pack_context(self.search_iterative(query, k=k, now=now, rounds=rounds),
+                            now=now, char_budget=char_budget)
 
     # -------------------------------------------------------- observations
     def refresh_observations(self, min_facts: int = 2,
