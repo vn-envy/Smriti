@@ -147,6 +147,25 @@ def test_observation_synthesis_and_supersession():
     assert len(all_obs) == 2  # prior kept as superseded history
 
 
+def test_two_hop_entity_traversal():
+    """A fact reachable only by hopping query-entity -> intermediate-entity ->
+    answer-fact is surfaced by the 2-hop entity channel (graph-lite multi-hop)."""
+    mem = make_lite()
+    mem.add_fact(Fact(id=None, statement="Rachel works at Acme.", subject="rachel",
+                      predicate="works_at", object="Acme", entities=["Rachel", "Acme"]))
+    mem.add_fact(Fact(id=None, statement="Acme is headquartered in Berlin.", subject="acme",
+                      predicate="located_in", object="Berlin", entities=["Acme"]))
+    q = "Where is the company Rachel works for located?"
+    hits = [r for r in mem.search(q, k=8) if "Berlin" in r.text]
+    assert hits, "2-hop fact not retrieved"
+    assert any("entity_hop2" in r.channels for r in hits)
+
+    # without the second hop, the Berlin fact isn't reachable via entities
+    from smriti.retrieval import retrieve
+    one_hop = retrieve(mem.store, mem.embedder, q, k=8, entity_hops=1)
+    assert not any("entity_hop2" in r.channels for r in one_hop)
+
+
 def test_observation_skips_sparse_entities():
     """An entity with fewer than min_facts gets no observation (no wasted LLM call)."""
     llm = MockLLM(["unused"])

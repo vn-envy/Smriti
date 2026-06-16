@@ -87,13 +87,13 @@ def _rrf(rankings: Dict[str, List[Tuple[str, int]]], weights: Dict[str, float],
 DEFAULT_WEIGHTS = {
     "vec_fact": 1.0, "vec_episode": 1.0,
     "bm25_fact": 0.9, "bm25_episode": 0.9,
-    "entity": 0.6, "temporal": 0.6,
+    "entity": 0.6, "entity_hop2": 0.4, "temporal": 0.6,
 }
 
 
 def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
              k: int = 12, weights: Optional[Dict[str, float]] = None,
-             per_channel: int = 24) -> List[RetrievalResult]:
+             per_channel: int = 24, entity_hops: int = 2) -> List[RetrievalResult]:
     weights = weights or DEFAULT_WEIGHTS
     qvec = embedder.embed([query])[0] if embedder else None
 
@@ -105,7 +105,21 @@ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
         rankings["vec_episode"] = [("episode", i) for i, _ in store.vector_search(qvec, "episode", per_channel)]
     ents = query_entities(store, query)
     if ents:
-        rankings["entity"] = [("fact", i) for i, _ in store.entity_facts(ents, per_channel)]
+        hop1 = store.entity_facts(ents, per_channel)
+        rankings["entity"] = [("fact", i) for i, _ in hop1]
+        # graph-lite multi-hop: facts one entity-link away from the hop-1 facts.
+        # "Rachel works at Acme" + "Acme is in Berlin" -> reach Berlin from Rachel.
+        # Bounded (one extra hop, deduped, down-weighted) — no graph DB.
+        if entity_hops >= 2 and hop1:
+            hop1_ids = [i for i, _ in hop1]
+            seen = set(hop1_ids)
+            hop2_ents = [e for e in store.entities_of_facts(hop1_ids)
+                         if e not in set(ents)][:20]
+            if hop2_ents:
+                rankings["entity_hop2"] = [
+                    ("fact", i) for i, _ in store.entity_facts(hop2_ents, per_channel)
+                    if i not in seen
+                ]
     for d in extract_dates(query)[:2]:
         rankings.setdefault("temporal", [])
         rankings["temporal"] += [("episode", i) for i, _ in store.episodes_near(d, per_channel // 2)]
