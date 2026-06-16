@@ -125,7 +125,7 @@ def test_observation_synthesis_and_supersession():
     mem.add_fact(_charity_fact("The user attended the 5K Gala event.", "5K Gala"),
                  resolve_conflicts=False)
 
-    out = mem.refresh_observations(min_facts=2)
+    out = mem.refresh_observations(min_facts=2, granularity=("entity",))
     assert out["observations"] == 1
     obs = mem.store.similar_valid_facts("charity", "observation")
     assert len(obs) == 1 and obs[0].kind == "observation"
@@ -138,7 +138,7 @@ def test_observation_synthesis_and_supersession():
     # new fact + refresh -> supersede prior observation, don't duplicate
     mem.add_fact(_charity_fact("The user attended the Run for Hope event.", "Run for Hope"),
                  resolve_conflicts=False)
-    mem.refresh_observations(min_facts=2)
+    mem.refresh_observations(min_facts=2, granularity=("entity",))
     valid = mem.store.similar_valid_facts("charity", "observation")
     assert len(valid) == 1 and "3 charity events" in valid[0].statement
     all_obs = [f for f in mem.store.facts_for_entity("charity", valid_only=False,
@@ -164,6 +164,25 @@ def test_two_hop_entity_traversal():
     from smriti.retrieval import retrieve
     one_hop = retrieve(mem.store, mem.embedder, q, k=8, entity_hops=1)
     assert not any("entity_hop2" in r.channels for r in one_hop)
+
+
+def test_predicate_digest_for_cross_entity_aggregation():
+    """Build 7: when N events each have their own entity (so no per-entity summary
+    fires), the (subject, predicate) digest still enumerates them all — the cross-
+    entity aggregation per-entity observations structurally miss."""
+    llm = MockLLM(["user attended events: Walk for Hunger, 5K Gala, Run for Hope (3)."])
+    mem = Smriti(path=":memory:", embedder=HashEmbedder(), llm=llm, mode="full")
+    for obj in ["Walk for Hunger", "5K Gala", "Run for Hope"]:
+        mem.add_fact(Fact(id=None, statement=f"The user attended {obj}.", subject="user",
+                          predicate="attended", object=obj, entities=[obj]),
+                     resolve_conflicts=False)
+    out = mem.refresh_observations(min_facts=2)
+    # no single entity has >=2 facts, so the value comes from the predicate digest
+    assert out["entity"] == 0 and out["predicate"] == 1
+    dig = mem.store.similar_valid_facts("user", "digest:attended")
+    assert len(dig) == 1 and dig[0].kind == "observation"
+    res = mem.search("how many events did I attend?", k=8)
+    assert any(r.kind == "observation" and "Run for Hope" in r.text for r in res)
 
 
 def test_observations_are_additive_not_competing():

@@ -134,44 +134,68 @@ class Smriti:
                             now=now, char_budget=char_budget)
 
     # -------------------------------------------------------- observations
+    def _write_observation(self, subject: str, predicate: str, label: str,
+                           facts: List[Fact]) -> bool:
+        """Synthesize one observation/digest fact from `facts`, superseding any
+        prior one with the same (subject, predicate). Returns True if written."""
+        summary = self.llm.complete(
+            build_observation_prompt(label, facts), max_tokens=256
+        ).strip()
+        if not summary:
+            return False
+        ents = self.store.entities_of_facts([f.id for f in facts if f.id])[:10]
+        obs = Fact(id=None, statement=summary, subject=subject, predicate=predicate,
+                   object="", kind="observation", entities=ents, valid_from=utcnow())
+        emb = self.embedder.embed([summary])[0]
+        prior = self.store.similar_valid_facts(subject, predicate)
+        new_id = self.store.add_fact(obs, emb)
+        for p in prior:
+            self.store.invalidate_fact(p.id, new_id)
+        return True
+
     def refresh_observations(self, min_facts: int = 2,
-                             entities: Optional[List[str]] = None) -> dict:
-        """Synthesize a per-entity 'observation' summary fact from that entity's
-        currently-valid facts — the Hindsight-style observation paradigm.
+                             entities: Optional[List[str]] = None,
+                             granularity=("entity", "predicate")) -> dict:
+        """Synthesize 'observation' summary facts at multiple granularities — the
+        Hindsight observation paradigm plus MemGAS-style multi-granularity.
 
-        Observations sit on top of raw facts and pre-compute the aggregates
-        ("attended 3 charity events: X, Y, Z") that the answering model is bad
-        at tallying from scattered fragments — directly targeting the
-        multi-session / aggregation weak spot. Stored as ordinary facts
-        (kind='observation'), so they ride the existing retrieval channels;
-        regenerating one supersedes the prior observation (full audit trail).
+        Two granularities, because aggregation questions span two units:
+          * entity    — "tell me about Acme" → one summary per entity.
+          * predicate — "how many events did I attend / doctors did I see" →
+                        one digest per (subject, predicate) that ENUMERATES every
+                        object across all entities/sessions. This is the cross-
+                        entity aggregation per-entity summaries structurally miss.
 
-        Opt-in and idempotent: call it after a batch of adds or on a schedule,
-        keeping write latency and the zero-cost default intact. Requires an llm.
+        Summaries sit on top of raw facts (kind='observation'), ride the existing
+        channels, and supersede their prior version (full audit trail). Opt-in
+        and idempotent; keeps write latency and the zero-cost default intact.
+        Requires an llm.
         """
         if self.llm is None:
             raise ValueError("refresh_observations requires an llm (full mode)")
-        targets = ([e.lower().strip() for e in entities]
-                   if entities is not None else self.store.all_entities())
-        made = 0
-        for ent in targets:
-            facts = self.store.facts_for_entity(ent, valid_only=True)
-            if len(facts) < min_facts:
-                continue
-            summary = self.llm.complete(
-                build_observation_prompt(ent, facts), max_tokens=256
-            ).strip()
-            if not summary:
-                continue
-            obs = Fact(id=None, statement=summary, subject=ent, predicate="observation",
-                       object="", kind="observation", entities=[ent], valid_from=utcnow())
-            emb = self.embedder.embed([summary])[0]
-            prior = self.store.similar_valid_facts(ent, "observation")
-            new_id = self.store.add_fact(obs, emb)
-            for p in prior:
-                self.store.invalidate_fact(p.id, new_id)
-            made += 1
-        return {"observations": made}
+        made = {"entity": 0, "predicate": 0}
+
+        if "entity" in granularity:
+            targets = ([e.lower().strip() for e in entities]
+                       if entities is not None else self.store.all_entities())
+            for ent in targets:
+                facts = self.store.facts_for_entity(ent, valid_only=True)
+                if len(facts) >= min_facts and self._write_observation(ent, "observation", ent, facts):
+                    made["entity"] += 1
+
+        # predicate digests are global; skip when caller targets specific entities
+        if "predicate" in granularity and entities is None:
+            for subj, pred, _c in self.store.predicate_groups(min_facts=min_facts):
+                facts = [f for f in self.store.similar_valid_facts(subj, pred)
+                         if f.kind != "observation"]
+                if len(facts) < min_facts:
+                    continue
+                label = f"{subj} — {pred.replace('_', ' ')}"
+                if self._write_observation(subj, f"digest:{pred}", label, facts):
+                    made["predicate"] += 1
+
+        made["observations"] = made["entity"] + made["predicate"]
+        return made
 
     # ---------------------------------------------------------------- misc
     def stats(self) -> dict:

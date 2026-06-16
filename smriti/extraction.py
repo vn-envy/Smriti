@@ -53,8 +53,8 @@ Rules:
 - Output ONLY the summary text, no preamble."""
 
 
-def build_observation_prompt(entity: str, facts: List[Fact]) -> List[dict]:
-    lines = [f"Entity: {entity}", "Known facts:"]
+def build_observation_prompt(label: str, facts: List[Fact]) -> List[dict]:
+    lines = [f"Subject: {label}", "Known facts:"]
     for f in facts:
         lines.append(f"- {f.statement}")
     return [

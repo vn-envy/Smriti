@@ -184,6 +184,19 @@ class Store:
             out.append(f)
         return out
 
+    def predicate_groups(self, min_facts: int = 2, valid_only: bool = True) -> List[Tuple[str, str, int]]:
+        """(subject, predicate) groups with >= min_facts valid facts — the unit
+        for cross-entity aggregation ("user/attended" spans many event entities).
+        Excludes observation/digest rows so digests aren't summarized again."""
+        cond = "AND invalid_at IS NULL" if valid_only else ""
+        rows = self.db.execute(
+            f"SELECT subject, predicate, COUNT(*) c FROM facts "
+            f"WHERE kind != 'observation' AND subject != '' AND predicate != '' {cond} "
+            f"GROUP BY subject, predicate HAVING COUNT(*) >= ?",
+            (min_facts,),
+        ).fetchall()
+        return [(r[0], r[1], r[2]) for r in rows]
+
     def entities_of_facts(self, fact_ids: Sequence[int]) -> List[str]:
         """Entities mentioned by the given facts (for graph-lite multi-hop)."""
         if not fact_ids:
