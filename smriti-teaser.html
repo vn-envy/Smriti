@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SMRITI — teaser</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0A0E1A; --ink2:#121829; --line:#26304A; --line2:#33405F;
+    --paper:#E9EDF6; --mute:#8B94AC; --faint:#5D6780;
+    --amber:#F4A43C; --teal:#52C7BE; --violet:#B794E0; --rose:#E08AA0;
+    --slate:#4A5570;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:#000;overflow:hidden;
+    font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  .mono{font-family:'JetBrains Mono',monospace}
+
+  /* ── 16:9 stage, letterboxed ── */
+  #frame{position:fixed;inset:0;display:grid;place-items:center}
+  #stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;
+    background:var(--ink);overflow:hidden;transform-origin:0 0;
+    box-shadow:0 0 0 1px #000}
+  #vignette{position:absolute;inset:0;pointer-events:none;z-index:5;
+    background:radial-gradient(120% 95% at 50% 45%, transparent 55%, rgba(0,0,0,.5));}
+  #grain{position:absolute;inset:0;z-index:6;pointer-events:none;opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E")}
+
+  #rivers{position:absolute;inset:0;z-index:1;opacity:0;transition:opacity 1.2s ease}
+
+  /* ── chrome ── */
+  #brandtag{position:absolute;top:36px;left:44px;z-index:7;font-family:'JetBrains Mono';
+    font-size:15px;color:var(--faint);letter-spacing:.14em;opacity:0;transition:opacity .8s}
+  #brandtag b{color:var(--mute);font-weight:500}
+  #brandtag .dv{color:var(--amber)}
+  #bar{position:absolute;left:0;bottom:0;height:3px;background:var(--amber);width:0%;
+    z-index:8;box-shadow:0 0 12px rgba(244,164,60,.8)}
+  #tc{position:absolute;right:44px;bottom:24px;z-index:8;font-family:'JetBrains Mono';
+    font-size:13px;color:var(--faint);letter-spacing:.1em}
+  #replay{position:absolute;right:44px;top:36px;z-index:9;font-family:'JetBrains Mono';
+    font-size:13px;color:var(--mute);border:1px solid var(--line2);border-radius:8px;
+    background:rgba(10,14,26,.6);padding:9px 16px;cursor:pointer;opacity:0;
+    pointer-events:none;transition:opacity .5s;letter-spacing:.08em}
+  #replay.show{opacity:1;pointer-events:auto}
+  #replay:hover{color:var(--paper);border-color:var(--amber)}
+
+  /* ── scenes ── */
+  .scene{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;opacity:0;pointer-events:none;
+    transition:opacity .55s ease;text-align:center;padding:0 120px}
+  .scene.on{opacity:1}
+
+  .kicker{font-family:'JetBrains Mono';font-size:17px;letter-spacing:.3em;
+    text-transform:uppercase;color:var(--faint);margin-bottom:34px}
+  .big{font-family:'Space Grotesk';font-weight:600;font-size:104px;line-height:1.06;
+    letter-spacing:-.02em;color:var(--paper)}
+  .big .a{color:var(--amber)}
+  .big .dim{color:var(--faint);text-decoration:line-through;
+    text-decoration-color:rgba(244,164,60,.6);text-decoration-thickness:4px}
+  .caret{display:inline-block;width:5px;height:.92em;background:var(--amber);
+    vertical-align:-.12em;margin-left:10px;animation:blink 0.9s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  #s2 .big,#s6 .big{font-size:76px}
+  .rise{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+  .rise.in{opacity:1;transform:none}
+
+  /* S3 badha card */
+  .memcard{width:980px;background:var(--ink2);border:1px solid var(--line);
+    border-radius:20px;padding:46px 52px;text-align:left}
+  .memcard .q{font-family:'JetBrains Mono';font-size:19px;color:var(--mute);margin-bottom:38px}
+  .memcard .q b{color:var(--paper)}
+  .frow{display:flex;align-items:center;font-size:30px;font-weight:500;color:#fff;
+    margin-bottom:14px;transition:color .9s}
+  .frow .dot{width:12px;height:12px;border-radius:50%;background:var(--amber);
+    box-shadow:0 0 16px var(--amber);margin-right:20px;flex:none;transition:all .9s}
+  .frow .badge{font-family:'JetBrains Mono';font-size:14px;letter-spacing:.08em;
+    margin-left:22px;padding:5px 13px;border-radius:7px;background:var(--amber);
+    color:var(--ink);font-weight:700;white-space:nowrap;transition:all .9s}
+  .frow.sup{color:var(--faint)}
+  .frow.sup .dot{background:var(--slate);box-shadow:none}
+  .frow.sup .badge{background:transparent;border:1px solid var(--line2);
+    color:var(--faint);font-weight:400}
+  .frow.ghost{opacity:0;transform:translateY(16px);transition:opacity .7s,transform .7s,color .9s}
+  .frow.ghost.in{opacity:1;transform:none}
+  .wline{height:8px;border-radius:5px;background:var(--ink);border:1px solid var(--line);
+    margin:4px 0 26px 32px;position:relative;overflow:hidden}
+  .wline i{position:absolute;top:0;bottom:0;border-radius:4px;
+    background:linear-gradient(90deg,var(--amber),rgba(244,164,60,.45))}
+  .frow.sup + .wline i{background:linear-gradient(90deg,var(--slate),rgba(74,85,112,.4))}
+  .qa{font-family:'JetBrains Mono';font-size:21px;color:var(--mute);margin-top:34px;
+    border-top:1px solid var(--line);padding-top:28px;line-height:2.1}
+  .qa b{color:var(--amber);font-weight:500}
+  .qa .h{color:var(--paper)}
+  .cap{font-family:'JetBrains Mono';font-size:19px;color:var(--mute);margin-top:36px;
+    letter-spacing:.04em}
+  .cap .dv{color:var(--amber)}
+
+  /* S4 river labels */
+  .chlabel{position:absolute;font-family:'JetBrains Mono';font-size:21px;color:var(--paper);
+    letter-spacing:.04em;text-shadow:0 2px 18px rgba(10,14,26,.95)}
+  .chlabel small{display:block;font-size:14px;color:var(--mute);letter-spacing:.1em}
+  .chlabel .d{display:inline-block;width:11px;height:11px;border-radius:50%;
+    margin-right:11px;vertical-align:1px}
+  .conf-label{position:absolute;left:1190px;top:392px;transform:translateX(-50%);
+    text-align:center}
+  .conf-label .ring{width:90px;height:90px;border:2px solid var(--amber);border-radius:50%;
+    margin:0 auto 18px;opacity:0}
+  .conf-label.flash .ring{animation:ring 1.4s ease-out forwards}
+  @keyframes ring{0%{transform:scale(.3);opacity:.95}100%{transform:scale(2.4);opacity:0}}
+  .conf-label .t{font-family:'Space Grotesk';font-size:44px;font-weight:600;color:#fff;
+    text-shadow:0 2px 24px rgba(10,14,26,.9)}
+  .conf-label .t .dv{color:var(--amber)}
+  .conf-label small{font-family:'JetBrains Mono';font-size:17px;color:var(--mute);
+    letter-spacing:.06em}
+
+  /* S5 receipts */
+  .chips{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;max-width:1200px}
+  .chips .chip{font-family:'JetBrains Mono';font-size:23px;color:var(--paper);
+    border:1px solid var(--line2);border-radius:999px;padding:16px 30px;
+    background:rgba(255,255,255,.02);opacity:0;transform:scale(.7)}
+  .chips .chip b{color:var(--amber);font-weight:600}
+  .chips .chip.in{animation:stamp .5s cubic-bezier(.2,1.4,.4,1) forwards}
+  @keyframes stamp{0%{opacity:0;transform:scale(.6)}100%{opacity:1;transform:scale(1)}}
+
+  /* end card */
+  .logo-big{font-family:'Space Grotesk';font-weight:700;font-size:140px;color:var(--paper);
+    letter-spacing:-.02em;line-height:1}
+  .logo-big .dv{color:var(--amber);font-weight:500;font-size:110px;margin-left:26px}
+  .tagline{font-family:'Space Grotesk';font-size:46px;font-weight:500;color:var(--mute);
+    margin-top:26px}
+  .tagline .a{color:var(--amber)}
+  .url{font-family:'JetBrains Mono';font-size:22px;color:var(--faint);margin-top:52px;
+    letter-spacing:.06em}
+  .url b{color:var(--mute);font-weight:500}
+  .pulse-dot{display:inline-block;width:14px;height:14px;border-radius:50%;
+    background:var(--amber);margin-left:6px;animation:pp 1.6s ease-in-out infinite}
+  @keyframes pp{0%,100%{box-shadow:0 0 0 0 rgba(244,164,60,.6)}50%{box-shadow:0 0 0 16px rgba(244,164,60,0)}}
+</style>
+</head>
+<body>
+<div id="frame">
+  <div id="stage">
+    <canvas id="rivers" width="1920" height="1080"></canvas>
+    <div id="vignette"></div><div id="grain"></div>
+
+    <span id="brandtag"><b>smriti</b> <span class="dv">स्मृति</span> · teaser · 0:36</span>
+    <button id="replay">↺ replay</button>
+    <div id="bar"></div><span id="tc" class="mono">00:00 / 00:36</span>
+
+    <!-- S1 cold open -->
+    <section class="scene" id="s1">
+      <p class="kicker rise" id="s1k">june 2026 · open source</p>
+      <h1 class="big"><span id="type1"></span><span class="caret" id="car1"></span></h1>
+    </section>
+
+    <!-- S2 thesis -->
+    <section class="scene" id="s2">
+      <h1 class="big">
+        <span class="rise" id="s2a">memory layers store <span class="dim">what's&nbsp;true.</span></span><br>
+        <span class="rise" id="s2b" style="transition-delay:.1s">smriti stores what <span class="a">was</span> true —</span><br>
+        <span class="rise" id="s2c" style="transition-delay:.2s">and <span class="a">until when.</span></span>
+      </h1>
+    </section>
+
+    <!-- S3 badha -->
+    <section class="scene" id="s3">
+      <div class="memcard rise" id="s3card">
+        <p class="q">query · <b>"where does the user live?"</b></p>
+        <div class="frow" id="fA"><span class="dot"></span>user lives in Hyderabad<span class="badge" id="bA">CURRENT</span></div>
+        <div class="wline"><i id="wA" style="left:3%;right:50%"></i></div>
+        <div class="frow ghost" id="fB"><span class="dot"></span>user lives in Bengaluru<span class="badge">CURRENT</span></div>
+        <div class="wline" id="wBl" style="opacity:0"><i style="left:50%;right:3%"></i></div>
+        <div class="qa" id="qa" style="opacity:0">
+          <span class="h">"where now?"</span> → <b>Bengaluru</b><br>
+          <span class="h">"before June?"</span> → <b>Hyderabad</b> &nbsp;<span style="color:var(--faint)">· one store, both answers</span>
+        </div>
+      </div>
+      <p class="cap rise" id="s3cap"><span class="dv">badha बाध</span> — superseded, never deleted</p>
+    </section>
+
+    <!-- S4 rivers (canvas behind) -->
+    <section class="scene" id="s4">
+      <span class="chlabel rise" id="l1" style="left:120px;top:208px"><i class="d" style="background:var(--amber)"></i>shabda शब्द<small>word · bm25</small></span>
+      <span class="chlabel rise" id="l2" style="left:150px;top:392px"><i class="d" style="background:var(--teal)"></i>artha अर्थ<small>meaning · vectors</small></span>
+      <span class="chlabel rise" id="l3" style="left:150px;top:636px"><i class="d" style="background:var(--violet)"></i>sambandha सम्बन्ध<small>relation · entity hop</small></span>
+      <span class="chlabel rise" id="l4" style="left:120px;top:826px"><i class="d" style="background:var(--rose)"></i>kala काल<small>time · date proximity</small></span>
+      <span class="conf-label" id="conf" style="opacity:0;transition:opacity .7s">
+        <span class="ring"></span>
+        <span class="t">sangama <span class="dv">संगम</span></span><br>
+        <small>four channels · one answer</small>
+      </span>
+    </section>
+
+    <!-- S5 receipts -->
+    <section class="scene" id="s5">
+      <p class="kicker">no postgres · no docker · no cloud account</p>
+      <div class="chips">
+        <span class="chip" id="c1"><b>1</b> sqlite file</span>
+        <span class="chip" id="c2"><b>0</b> infrastructure</span>
+        <span class="chip" id="c3">~<b>1.5k</b> readable lines</span>
+        <span class="chip" id="c4"><b>12</b> offline tests</span>
+        <span class="chip" id="c5">apache-<b>2.0</b> · everything</span>
+      </div>
+    </section>
+
+    <!-- S6 honesty -->
+    <section class="scene" id="s6">
+      <h1 class="big">
+        <span class="rise" id="s6a">no leaderboard claims.</span><br>
+        <span class="rise" id="s6b" style="transition-delay:.15s">the <span class="a">benchmark harness</span> ships in the box.</span>
+      </h1>
+      <p class="cap rise" id="s6c" style="transition-delay:.3s">run your own <span class="dv">pariksha परीक्षा</span> · longmemeval + locomo</p>
+    </section>
+
+    <!-- S7 end card -->
+    <section class="scene" id="s7">
+      <h1 class="logo-big rise" id="s7a">smriti<span class="dv">स्मृति</span></h1>
+      <p class="tagline rise" id="s7b" style="transition-delay:.15s">memory that knows <span class="a">when</span><span class="pulse-dot"></span></p>
+      <p class="url rise" id="s7c" style="transition-delay:.3s">github.com/<b>YOUR-ORG</b>/smriti · open source · india-built 🇮🇳</p>
+    </section>
+  </div>
+</div>
+
+<script>
+(() => {
+  const DUR = 36, stage = document.getElementById('stage');
+  const $ = id => document.getElementById(id);
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // fit 16:9 stage to window
+  function fit(){
+    const s = Math.min(innerWidth/1920, innerHeight/1080);
+    stage.style.transform = `scale(${s}) translate(-50%,-50%)`;
+  }
+  addEventListener('resize', fit); fit();
+
+  // ── canvas rivers (2D, self-contained) ──
+  const cv = $('rivers'), ctx = cv.getContext('2d');
+  const COLS = ['#F4A43C','#52C7BE','#B794E0','#E08AA0'], MERGED = '#FFD9A0';
+  const CONF = [1190, 560];
+  function cubic(p0,p1,p2,p3,t){
+    const u=1-t;
+    return [u*u*u*p0[0]+3*u*u*t*p1[0]+3*u*t*t*p2[0]+t*t*t*p3[0],
+            u*u*u*p0[1]+3*u*u*t*p1[1]+3*u*t*t*p2[1]+t*t*t*p3[1]];
+  }
+  const chans = [
+    [[-60,210],[420,160],[760,470],CONF],
+    [[-60,420],[460,560],[820,420],CONF],
+    [[-60,670],[420,560],[800,690],CONF],
+    [[-60,880],[480,930],[820,640],CONF],
+  ];
+  const EXIT = [CONF,[1430,505],[1680,600],[2020,545]];
+  const S=560, SPLIT=Math.floor(S*0.62), MERGE_T=0.62;
+  const paths = chans.map(c=>{
+    const pts=[];
+    for(let i=0;i<SPLIT;i++) pts.push(cubic(...c, i/(SPLIT-1)));
+    for(let i=0;i<S-SPLIT;i++) pts.push(cubic(...EXIT, i/(S-SPLIT-1)));
+    return pts;
+  });
+  // pre-rendered glow sprites
+  function sprite(col){
+    const c=document.createElement('canvas'); c.width=c.height=48;
+    const g=c.getContext('2d').createRadialGradient(24,24,0,24,24,24);
+    g.addColorStop(0,col); g.addColorStop(.35,col+'aa'); g.addColorStop(1,col+'00');
+    const x=c.getContext('2d'); x.fillStyle=g; x.fillRect(0,0,48,48);
+    return c;
+  }
+  const sprites = COLS.map(sprite), mSprite = sprite(MERGED);
+  const PN = 760, P=[];
+  for(let i=0;i<PN;i++) P.push({ch:i%4,t:Math.random(),sp:.05+Math.random()*.09,
+    ox:(Math.random()*2-1),oy:(Math.random()*2-1),r:Math.pow(Math.random(),1.5),sd:Math.random()*9});
+  const sm=(a,b,x)=>{x=Math.min(1,Math.max(0,(x-a)/(b-a)));return x*x*(3-2*x)};
+  function spread(t){return t<MERGE_T ? 84-66*sm(.4,MERGE_T,t) : 26+30*sm(MERGE_T,1,t)}
+  let pulse=-1;
+  function drawRivers(dt, time){
+    ctx.fillStyle='rgba(10,14,26,0.26)'; ctx.fillRect(0,0,1920,1080);
+    ctx.globalCompositeOperation='lighter';
+    for(const p of P){
+      p.t+=dt*p.sp; if(p.t>=1)p.t-=1;
+      const f=p.t*(S-1), i0=f|0, fr=f-i0;
+      const a=paths[p.ch][i0], b=paths[p.ch][Math.min(S-1,i0+1)];
+      const sx=a[0]+(b[0]-a[0])*fr, sy=a[1]+(b[1]-a[1])*fr;
+      const sp=spread(p.t)*p.r, w=Math.sin(time*1.1+p.sd)*9;
+      const x=sx+p.ox*sp+w*p.oy, y=sy+p.oy*sp+w*.4;
+      const merged=p.t>MERGE_T;
+      let sz=(merged?13:10)+p.r*7;
+      let al=merged?.5:.42;
+      if(pulse>=0 && Math.abs(p.t-pulse)<.03){sz*=2.1;al=.95}
+      ctx.globalAlpha=al;
+      ctx.drawImage(merged?mSprite:sprites[p.ch], x-sz/2, y-sz/2, sz, sz);
+    }
+    ctx.globalAlpha=1; ctx.globalCompositeOperation='source-over';
+  }
+
+  // ── timeline engine ──
+  let start=0, fired=[], raf, ended=false;
+  const on = id => $(id).classList.add('on');
+  const off= id => $(id).classList.remove('on');
+  const inn= id => $(id).classList.add('in');
+
+  function typeInto(el, text, cps=22){
+    el.textContent='';
+    let i=0; const iv=setInterval(()=>{
+      el.textContent=text.slice(0,++i);
+      if(i>=text.length) clearInterval(iv);
+    }, 1000/cps);
+    fired.push(()=>clearInterval(iv));
+  }
+
+  const CUES = [
+    [0.2, ()=>{ on('s1'); inn('s1k'); }],
+    [0.9, ()=>typeInto($('type1'), 'agents forget.')],
+    [3.4, ()=>{ off('s1'); }],
+    [3.9, ()=>{ on('s2'); inn('s2a'); $('brandtag').style.opacity=1; }],
+    [4.7, ()=>{ inn('s2b'); inn('s2c'); }],
+    [8.0, ()=>off('s2')],
+    [8.5, ()=>{ on('s3'); inn('s3card'); }],
+    [9.9, ()=>{ // badha: new fact arrives, old one sublated
+      $('fB').classList.add('in'); $('wBl').style.opacity=1;
+      $('fA').classList.add('sup'); $('bA').textContent='SUPERSEDED · 2026-06-01';
+      $('wA').style.right='50%';
+    }],
+    [10.9, ()=>inn('s3cap')],
+    [12.0, ()=>{ $('qa').style.transition='opacity .7s'; $('qa').style.opacity=1; }],
+    [15.2, ()=>off('s3')],
+    [15.7, ()=>{ cv.style.opacity=1; on('s4'); }],
+    [16.3, ()=>inn('l1')], [16.7, ()=>inn('l2')],
+    [17.1, ()=>inn('l3')], [17.5, ()=>inn('l4')],
+    [18.6, ()=>{ pulse=0; }],
+    [20.0, ()=>{ const c=$('conf'); c.style.opacity=1; c.classList.add('flash'); }],
+    [23.4, ()=>{ off('s4'); cv.style.opacity=.22; }],
+    [23.9, ()=>on('s5')],
+    [24.2, ()=>inn('c1')], [24.6, ()=>inn('c2')], [25.0, ()=>inn('c3')],
+    [25.4, ()=>inn('c4')], [25.8, ()=>inn('c5')],
+    [28.2, ()=>off('s5')],
+    [28.7, ()=>{ on('s6'); inn('s6a'); }],
+    [29.5, ()=>{ inn('s6b'); inn('s6c'); }],
+    [32.2, ()=>off('s6')],
+    [32.7, ()=>{ on('s7'); inn('s7a'); inn('s7b'); inn('s7c'); }],
+    [35.6, ()=>{ $('replay').classList.add('show'); ended=true; }],
+    [41.0, ()=>restart()],   // auto-loop for easy recording
+  ];
+
+  function pad(n){return String(n|0).padStart(2,'0')}
+  let lastT=0;
+  function loop(now){
+    raf=requestAnimationFrame(loop);
+    const t=(now-start)/1000, dt=Math.min((t-lastT)||0.016,0.05); lastT=t;
+    for(const c of CUES){ if(t>=c[0] && !c.fired){ c.fired=true; c[1](); } }
+    if(pulse>=0){ pulse+=dt*.34; if(pulse>1.25)pulse=-1; }
+    const shown=Math.min(t,DUR);
+    $('bar').style.width=(shown/DUR*100)+'%';
+    $('tc').textContent=`00:${pad(shown)} / 00:${DUR}`;
+    if(cv.style.opacity!=='0') drawRivers(dt,t);
+  }
+
+  function restart(){
+    cancelAnimationFrame(raf);
+    fired.forEach(f=>f()); fired=[];
+    CUES.forEach(c=>c.fired=false);
+    ended=false; pulse=-1; lastT=0;
+    // reset DOM state
+    document.querySelectorAll('.scene').forEach(s=>s.classList.remove('on'));
+    document.querySelectorAll('.rise,.chip').forEach(e=>e.classList.remove('in'));
+    $('fA').classList.remove('sup'); $('bA').textContent='CURRENT';
+    $('wA').style.right='50%';
+    $('fB').classList.remove('in'); $('wBl').style.opacity=0;
+    $('qa').style.opacity=0; $('type1').textContent='';
+    $('conf').style.opacity=0; $('conf').classList.remove('flash');
+    $('replay').classList.remove('show'); $('brandtag').style.opacity=0;
+    cv.style.opacity=0; ctx.fillStyle='#0A0E1A'; ctx.fillRect(0,0,1920,1080);
+    start=performance.now();
+    raf=requestAnimationFrame(loop);
+  }
+
+  $('replay').addEventListener('click', e=>{ e.stopPropagation(); restart(); });
+  stage.addEventListener('click', ()=>{ if(ended) restart(); });
+
+  if(reduce){
+    // static poster: end card
+    ctx.fillStyle='#0A0E1A'; ctx.fillRect(0,0,1920,1080);
+    on('s7'); inn('s7a'); inn('s7b'); inn('s7c');
+    $('bar').style.width='100%'; $('tc').textContent=`00:${DUR} / 00:${DUR}`;
+    $('replay').classList.add('show'); ended=true;
+    $('replay').textContent='▶ play';
+    $('replay').addEventListener('click', ()=>{ location.reload(); }, {once:true});
+  } else {
+    ctx.fillStyle='#0A0E1A'; ctx.fillRect(0,0,1920,1080);
+    cv.style.opacity=0;
+    start=performance.now();
+    raf=requestAnimationFrame(loop);
+  }
+})();
+</script>
+</body>
+</html>

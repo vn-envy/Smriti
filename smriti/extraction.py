@@ -1,0 +1,66 @@
+"""Write-time fact extraction — *grahana* (ग्रहण, "grasping").
+
+The stage where raw experience (anubhava) is grasped into durable
+impressions (samskara).
+
+Design choice (token efficiency learned from the field): one extraction
+call per *session*, not per turn. Facts are atomic, entity-tagged, and
+carry explicit event dates where stated, which is what makes the
+bi-temporal store and the temporal retrieval channel work.
+"""
+from __future__ import annotations
+
+from typing import List, Optional
+
+from .llm import extract_json
+from .types import Fact
+
+EXTRACT_SYSTEM = """You are a memory extraction engine for an AI assistant.
+Given a conversation session (with its timestamp), extract durable, atomic facts worth remembering long-term about the user, their world, and important things the assistant said or produced.
+
+Rules:
+- One fact per item, self-contained ("The user's sister Riya lives in Pune", not "she lives there").
+- Include facts stated by the USER and substantive information the ASSISTANT provided that the user may rely on later.
+- Capture preferences, profile details, events, plans, relationships, and decisions.
+- If a fact has an explicit date/time attached (e.g. "I ran the marathon on 12 March 2024"), set event_date in ISO format (YYYY-MM-DD). Resolve relative dates ("last Tuesday", "next month") against the session timestamp. Otherwise null.
+- subject/predicate/object: a normalized triple, subject is usually "user". predicate is a short snake_case relation (e.g. lives_in, works_at, prefers, owns, plans_to).
+- entities: proper nouns and key concrete nouns in the fact.
+- kind: one of profile | preference | event | knowledge.
+- Skip chit-chat, pleasantries, and information with no future value.
+- Output ONLY a JSON array. If nothing is worth remembering, output [].
+
+Format:
+[{"statement": "...", "subject": "user", "predicate": "lives_in", "object": "Hyderabad", "entities": ["Hyderabad"], "event_date": null, "kind": "profile"}]"""
+
+
+def build_extraction_prompt(turns: List[dict], session_ts: Optional[str]) -> List[dict]:
+    lines = [f"Session timestamp: {session_ts or 'unknown'}", "---"]
+    for t in turns:
+        lines.append(f"{t.get('role', 'user').upper()}: {t.get('content', '')}")
+    return [
+        {"role": "system", "content": EXTRACT_SYSTEM},
+        {"role": "user", "content": "\n".join(lines)},
+    ]
+
+
+def parse_facts(raw: str, session_id: Optional[str], session_ts: Optional[str]) -> List[Fact]:
+    data = extract_json(raw)
+    if not isinstance(data, list):
+        return []
+    facts = []
+    for item in data:
+        if not isinstance(item, dict) or not item.get("statement"):
+            continue
+        facts.append(Fact(
+            id=None,
+            statement=str(item["statement"]).strip(),
+            subject=str(item.get("subject", "user")),
+            predicate=str(item.get("predicate", "")),
+            object=str(item.get("object", "")),
+            kind=str(item.get("kind", "knowledge")),
+            entities=[str(e) for e in item.get("entities", []) if e],
+            event_date=item.get("event_date") or None,
+            valid_from=item.get("event_date") or session_ts,
+            session_id=session_id,
+        ))
+    return facts

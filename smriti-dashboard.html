@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SMRITI — memory that knows when</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0E1322;        /* archival ink base */
+    --ink2:#141B2D;       /* raised panel */
+    --ink3:#1B2438;       /* card */
+    --line:#27314A;       /* hairline */
+    --line2:#323E5C;
+    --paper:#E8ECF5;      /* primary text */
+    --mute:#8A93AB;       /* secondary text */
+    --faint:#5C667E;      /* superseded / past */
+    --amber:#F4A43C;      /* CURRENT signal + smriti */
+    --amber-dim:#7a5a2c;
+    --teal:#52C7BE;       /* fusion / retrieval */
+    --teal-dim:#2c5450;
+    --r:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'Inter',system-ui,sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--amber);color:var(--ink)}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 28px}
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--mute);
+  }
+  .mono{font-family:'JetBrains Mono',monospace}
+  h1,h2,h3{font-family:'Space Grotesk',sans-serif;font-weight:600;line-height:1.08;letter-spacing:-.02em}
+  a{color:var(--amber);text-decoration:none}
+
+  /* ───────────────────────── HERO ───────────────────────── */
+  header{
+    position:relative;
+    padding:72px 0 56px;
+    border-bottom:1px solid var(--line);
+    background:
+      radial-gradient(900px 420px at 78% -8%, rgba(244,164,60,.10), transparent 60%),
+      radial-gradient(700px 400px at 8% 120%, rgba(82,199,190,.07), transparent 60%);
+  }
+  .brand{display:flex;align-items:baseline;gap:14px;margin-bottom:54px}
+  .brand .logo{
+    font-family:'Space Grotesk';font-weight:700;font-size:22px;letter-spacing:-.01em;
+  }
+  .brand .deva{font-size:20px;color:var(--amber);font-weight:500}
+  .brand .tag{margin-left:auto;font-family:'JetBrains Mono';font-size:11px;color:var(--mute);
+    border:1px solid var(--line);border-radius:999px;padding:5px 12px;letter-spacing:.12em}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+  h1{font-size:clamp(40px,6.2vw,68px)}
+  h1 .when{
+    color:var(--amber);position:relative;white-space:nowrap;
+  }
+  h1 .when::after{
+    content:"";position:absolute;left:0;right:0;bottom:.08em;height:3px;
+    background:linear-gradient(90deg,var(--amber),transparent);border-radius:2px;
+  }
+  .lede{margin-top:22px;font-size:18px;color:var(--mute);max-width:30ch}
+  .lede b{color:var(--paper);font-weight:600}
+  .facts{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
+  .chip{
+    font-family:'JetBrains Mono';font-size:12px;color:var(--paper);
+    border:1px solid var(--line2);border-radius:999px;padding:7px 13px;background:rgba(255,255,255,.015)
+  }
+  .chip b{color:var(--amber);font-weight:500}
+
+  /* signature element: live supersession timeline */
+  .stage{
+    background:var(--ink2);border:1px solid var(--line);border-radius:var(--r);
+    padding:22px 22px 18px;position:relative;overflow:hidden;
+  }
+  .stage-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+  .stage-h .q{font-family:'JetBrains Mono';font-size:12px;color:var(--mute)}
+  .stage-h .q b{color:var(--paper)}
+
+  /* stacked fact rows, each carrying its own validity window */
+  .trow{margin-bottom:16px;transition:opacity .8s ease,max-height .8s ease,margin .8s ease;overflow:hidden}
+  .trow.hidden{opacity:0;max-height:0;margin-bottom:0}
+  .flabel{display:flex;align-items:center;font-size:14px;font-weight:500;
+    transition:color .8s ease}
+  .flabel .dot{width:7px;height:7px;border-radius:50%;margin-right:10px;flex:none;transition:all .8s ease}
+  .flabel .state{font-family:'JetBrains Mono';font-size:9.5px;letter-spacing:.08em;
+    margin-left:11px;padding:2px 7px;border-radius:4px;white-space:nowrap;transition:all .8s ease}
+  .trow.current .flabel{color:#fff}
+  .trow.current .dot{background:var(--amber);box-shadow:0 0 10px var(--amber)}
+  .trow.current .state{background:var(--amber);color:var(--ink)}
+  .trow.superseded .flabel{color:var(--faint)}
+  .trow.superseded .dot{background:var(--faint);box-shadow:none}
+  .trow.superseded .state{background:transparent;border:1px solid var(--line2);color:var(--faint)}
+  .wtrack{position:relative;height:7px;margin-top:9px;background:var(--ink);
+    border:1px solid var(--line);border-radius:5px}
+  .wseg{position:absolute;top:0;bottom:0;border-radius:4px;transition:background .8s ease}
+  .trow.current .wseg{background:linear-gradient(90deg,var(--amber),rgba(244,164,60,.5))}
+  .trow.superseded .wseg{background:linear-gradient(90deg,var(--faint),rgba(92,102,126,.4))}
+  .axis2{display:flex;justify-content:space-between;margin-top:8px;
+    font-family:'JetBrains Mono';font-size:10px;color:var(--faint)}
+  .stage-note{font-family:'JetBrains Mono';font-size:11px;color:var(--mute);
+    border-top:1px solid var(--line);padding-top:12px;display:flex;gap:8px;align-items:center}
+  .stage-note .k{color:var(--teal)}
+  .replay{margin-left:auto;cursor:pointer;color:var(--mute);border:1px solid var(--line);
+    border-radius:6px;padding:4px 9px;font-size:11px;background:none;font-family:'JetBrains Mono'}
+  .replay:hover{color:var(--paper);border-color:var(--line2)}
+
+  /* ───────────────────────── SECTIONS ───────────────────────── */
+  section{padding:64px 0;border-bottom:1px solid var(--line)}
+  .sec-head{margin-bottom:34px}
+  .sec-head .eyebrow{display:block;margin-bottom:12px}
+  .sec-head h2{font-size:clamp(26px,3.4vw,36px)}
+  .sec-head p{color:var(--mute);margin-top:12px;max-width:62ch}
+
+  /* matrix */
+  .matrix{width:100%;border-collapse:collapse;font-size:14px}
+  .matrix th,.matrix td{padding:13px 10px;text-align:center;border-bottom:1px solid var(--line)}
+  .matrix thead th{
+    font-family:'JetBrains Mono';font-size:11px;font-weight:500;letter-spacing:.04em;
+    color:var(--mute);vertical-align:bottom;border-bottom:1px solid var(--line2)
+  }
+  .matrix thead th.smr{color:var(--amber)}
+  .matrix th.axis-name,.matrix td.axis-name{
+    text-align:left;color:var(--paper);font-weight:500;width:36%;padding-left:2px
+  }
+  .matrix tbody tr:hover{background:rgba(255,255,255,.018)}
+  .matrix col.smr-col{background:rgba(244,164,60,.05)}
+  .dotc{display:inline-flex;align-items:center;justify-content:center}
+  .d{width:15px;height:15px;border-radius:50%;display:inline-block}
+  .d.yes{background:var(--amber);box-shadow:0 0 0 1px rgba(244,164,60,.3)}
+  .d.no{background:transparent;border:1.5px solid var(--faint)}
+  .d.part{background:linear-gradient(90deg,var(--amber) 50%,transparent 50%);
+    border:1.5px solid var(--amber-dim)}
+  .smr-yes{box-shadow:0 0 12px -2px var(--amber)}
+  .legend{display:flex;gap:20px;margin-top:18px;font-family:'JetBrains Mono';
+    font-size:11px;color:var(--mute);flex-wrap:wrap}
+  .legend span{display:flex;align-items:center;gap:7px}
+
+  /* head to head cards */
+  .h2h{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .card{
+    background:var(--ink3);border:1px solid var(--line);border-radius:var(--r);
+    padding:24px;transition:border-color .25s,transform .25s;
+  }
+  .card:hover{border-color:var(--line2);transform:translateY(-2px)}
+  .card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+  .card h3{font-size:20px}
+  .card .by{font-family:'JetBrains Mono';font-size:10.5px;color:var(--faint);letter-spacing:.06em}
+  .card .pub{font-family:'JetBrains Mono';font-size:10px;color:var(--mute);
+    border:1px solid var(--line);border-radius:5px;padding:3px 7px}
+  .row{display:flex;gap:11px;margin-top:16px}
+  .row .ic{flex:none;width:20px;height:20px;border-radius:6px;display:grid;place-items:center;
+    font-size:11px;font-weight:700;font-family:'JetBrains Mono';margin-top:1px}
+  .ic.s{background:var(--teal-dim);color:var(--teal)}
+  .ic.g{background:#3a2230;color:#e08aa0}
+  .ic.a{background:var(--amber-dim);color:var(--amber)}
+  .ic.q{background:#2c2342;color:#b794e0}
+  .row.challenge .txt{color:var(--mute)}
+  .row.challenge .txt b{color:#b794e0;font-weight:600}
+
+  /* lexicon */
+  .lex-strip{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-bottom:26px}
+  .lex-card{
+    background:var(--ink3);border:1px solid var(--line);border-radius:12px;
+    padding:16px 12px 14px;position:relative;transition:border-color .25s,transform .25s;
+  }
+  .lex-card:hover{border-color:var(--amber-dim);transform:translateY(-2px)}
+  .lex-card .stg{font-family:'JetBrains Mono';font-size:9px;color:var(--faint);letter-spacing:.14em}
+  .lex-card .deva2{font-size:24px;color:var(--amber);margin:8px 0 2px;line-height:1.2}
+  .lex-card .rom{font-family:'JetBrains Mono';font-size:11.5px;color:var(--paper);font-weight:500}
+  .lex-card .gloss{font-size:11px;color:var(--mute);margin-top:3px;line-height:1.45}
+  .lex-card .maps{font-family:'JetBrains Mono';font-size:9.5px;color:var(--teal);
+    margin-top:9px;padding-top:8px;border-top:1px solid var(--line);line-height:1.5}
+  .lex-aux{
+    font-family:'JetBrains Mono';font-size:11.5px;color:var(--mute);line-height:2.1;
+    background:var(--ink2);border:1px solid var(--line);border-radius:12px;padding:16px 20px;
+  }
+  .lex-aux b{color:var(--paper);font-weight:500}
+  .lex-aux .dv{color:var(--amber)}
+  .lex-aux .sep{color:var(--faint);margin:0 7px}
+  .row .lab{font-family:'JetBrains Mono';font-size:10px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--mute);margin-bottom:2px}
+  .row .txt{font-size:13.5px;color:var(--paper);line-height:1.5}
+  .row.answer .txt{color:#fff}
+  .row.answer .txt b{color:var(--amber);font-weight:600}
+
+  /* honesty panel */
+  .honest{background:
+      repeating-linear-gradient(135deg,transparent,transparent 9px,rgba(244,164,60,.025) 9px,rgba(244,164,60,.025) 18px),
+      var(--ink2);
+    border:1px solid var(--amber-dim);border-radius:var(--r);padding:30px}
+  .honest h2{font-size:26px}
+  .honest .sub{color:var(--mute);margin:10px 0 26px;max-width:64ch}
+  .bars{display:flex;flex-direction:column;gap:16px;margin-top:8px}
+  .bar-row{display:grid;grid-template-columns:140px 1fr 64px;align-items:center;gap:14px}
+  .bar-row .nm{font-family:'JetBrains Mono';font-size:12.5px}
+  .bar-row .nm small{display:block;color:var(--faint);font-size:10px;letter-spacing:.04em}
+  .track{height:10px;background:var(--ink);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+  .fill{height:100%;border-radius:5px;width:0;transition:width 1.1s cubic-bezier(.4,0,.2,1)}
+  .bar-row .pct{font-family:'JetBrains Mono';font-size:13px;text-align:right;font-weight:500}
+  .target{display:flex;gap:12px;margin-top:24px;align-items:flex-start;
+    border-top:1px solid var(--line);padding-top:20px}
+  .target .mark{font-family:'Space Grotesk';font-size:26px;color:var(--amber);line-height:1;flex:none}
+  .target p{font-size:13.5px;color:var(--mute)}
+  .target p b{color:var(--paper);font-weight:600}
+
+  /* architecture / run */
+  .arch{display:grid;grid-template-columns:1.1fr .9fr;gap:30px;align-items:start}
+  .flow{font-family:'JetBrains Mono';font-size:12px;line-height:1.9;color:var(--mute);
+    background:var(--ink2);border:1px solid var(--line);border-radius:var(--r);padding:22px;overflow-x:auto}
+  .flow .hi{color:var(--amber)}
+  .flow .ti{color:var(--teal)}
+  .flow .cm{color:var(--faint)}
+  .run code{display:block;font-family:'JetBrains Mono';font-size:12.5px;color:var(--paper);
+    background:var(--ink2);border:1px solid var(--line);border-radius:9px;padding:12px 15px;margin-bottom:10px;
+    white-space:pre-wrap;word-break:break-word}
+  .run code .c{color:var(--faint)}
+  .run code .p{color:var(--teal)}
+
+  footer{padding:38px 0 56px;color:var(--faint);font-family:'JetBrains Mono';font-size:12px}
+  footer b{color:var(--mute);font-weight:500}
+
+  @media(max-width:880px){
+    .hero-grid{grid-template-columns:1fr;gap:34px}
+    .lede{max-width:none}
+    .h2h{grid-template-columns:1fr}
+    .arch{grid-template-columns:1fr}
+    .lex-strip{grid-template-columns:repeat(2,1fr)}
+    .matrix{font-size:12.5px}
+    .matrix th.axis-name,.matrix td.axis-name{width:auto}
+    .bar-row{grid-template-columns:96px 1fr 52px;gap:9px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *{transition:none!important;animation:none!important;scroll-behavior:auto!important}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <span class="logo">smriti</span>
+      <span class="deva">स्मृति</span>
+      <span class="tag">apache-2.0 · open memory layer</span>
+    </div>
+
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow">a memory layer for agents</p>
+        <h1>Memory that&nbsp;knows <span class="when">when</span>.</h1>
+        <p class="lede">Most memory layers store what's true. SMRITI also remembers <b>what was true, and until when</b> — facts are superseded, never deleted, with the validity window handed to the model at read time.</p>
+        <div class="facts">
+          <span class="chip"><b>one</b> sqlite file</span>
+          <span class="chip">no postgres · no docker · no binary</span>
+          <span class="chip"><b>4</b>-channel fusion retrieval</span>
+          <span class="chip">~<b>1.5k</b> lines you can read in a sitting</span>
+        </div>
+      </div>
+
+      <!-- SIGNATURE: live supersession via validity windows -->
+      <div class="stage" id="stage">
+        <div class="stage-h">
+          <span class="q">query · <b>"where does the user live?"</b></span>
+        </div>
+
+        <div class="trow current" id="row1">
+          <div class="flabel">
+            <span class="dot"></span>user lives in Hyderabad
+            <span class="state" id="s1">CURRENT</span>
+          </div>
+          <div class="wtrack"><div class="wseg" style="left:3%;right:50%"></div></div>
+        </div>
+
+        <div class="trow current hidden" id="row2">
+          <div class="flabel">
+            <span class="dot"></span>user lives in Bengaluru
+            <span class="state" id="s2">CURRENT</span>
+          </div>
+          <div class="wtrack"><div class="wseg" style="left:50%;right:3%"></div></div>
+        </div>
+
+        <div class="axis2"><span>2026-01</span><span>2026-06-01</span><span>today</span></div>
+
+        <div class="stage-note">
+          <span class="k">▸</span><span id="note">ingesting…</span>
+          <button class="replay" id="replay">↺ replay</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ─────────────── THE FIELD ─────────────── -->
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">the field · june 2026</span>
+      <h2>Where SMRITI is built differently</h2>
+      <p>The strong open layers landed within weeks of each other — Garry Tan's <b>GBrain</b> (Apr 5), Supermemory's fully-local pivot, and the established <b>mem0</b> / <b>Zep</b>. This compares <em>architecture you can verify by reading the code</em>, not accuracy claims. Benchmarks get their own panel below, honestly.</p>
+    </div>
+
+    <table class="matrix">
+      <colgroup><col><col class="smr-col"><col><col><col><col></colgroup>
+      <thead>
+        <tr>
+          <th class="axis-name">Capability</th>
+          <th class="smr">SMRITI</th>
+          <th>GBrain</th>
+          <th>Supermemory<br><span style="font-weight:400;color:var(--faint)">local</span></th>
+          <th>mem0</th>
+          <th>Zep</th>
+        </tr>
+      </thead>
+      <tbody id="matrix-body"><!-- filled by JS --></tbody>
+    </table>
+
+    <div class="legend">
+      <span><i class="d yes"></i> full</span>
+      <span><i class="d part"></i> partial / gated</span>
+      <span><i class="d no"></i> none</span>
+      <span style="color:var(--faint)">— honest read; SMRITI does not sweep every row (Zep matches on temporal; all match on openness).</span>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────── HEAD TO HEAD ─────────────── -->
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">head to head</span>
+      <h2>Credit where due, gap where real</h2>
+      <p>Each of these solved something genuinely — but the headline strengths deserve scrutiny too. Four rows per card: the strength, the strength challenged, the gap, and SMRITI's answer.</p>
+    </div>
+
+    <div class="h2h">
+      <!-- GBrain -->
+      <div class="card">
+        <div class="card-top">
+          <div><h3>GBrain</h3><span class="by">garry tan · yc · mit</span></div>
+          <span class="pub">Postgres + pgvector</span>
+        </div>
+        <div class="row"><div class="ic g">+</div><div><div class="lab">Their strength</div><div class="txt">Self-wiring typed knowledge graph with <b style="color:#e08aa0">zero LLM calls</b> for extraction, proven at 146k pages in Tan's own production agents.</div></div></div>
+        <div class="row challenge"><div class="ic q">≠</div><div><div class="lab">The strength, challenged</div><div class="txt">"Zero-LLM" shifts the cost to <b>you</b> — the graph self-wires only inside operator-authored skills. 146k pages is one brain, curated by its own author. Headline accuracy comes from <b>BrainBench — a benchmark GBrain wrote for itself</b>.</div></div></div>
+        <div class="row"><div class="ic g">!</div><div><div class="lab">The gap</div><div class="txt">Needs Postgres; you hand-author the markdown skills (no structure synthesised for facts that don't fit one); no <em>as-of-date</em> validity model; coupled to OpenClaw / Hermes.</div></div></div>
+        <div class="row answer"><div class="ic a">→</div><div><div class="lab">SMRITI's answer</div><div class="txt">Same entity graph idea as one of four channels — but in <b>a single SQLite file</b>, framework-agnostic, with <b>bi-temporal supersession</b> GBrain doesn't model.</div></div></div>
+      </div>
+
+      <!-- Supermemory -->
+      <div class="card">
+        <div class="card-top">
+          <div><h3>Supermemory</h3><span class="by">supermemory.ai · mit · local</span></div>
+          <span class="pub">one binary</span>
+        </div>
+        <div class="row"><div class="ic s">+</div><div><div class="lab">Their strength</div><div class="txt">Claims <b style="color:var(--teal)">#1 on LongMemEval, LoCoMo & ConvoMem</b>. One-binary local mode, RAG + connectors + embedded agent. The mature, full-stack option.</div></div></div>
+        <div class="row challenge"><div class="ic q">≠</div><div><div class="lab">The strength, challenged</div><div class="txt">#1 is <b>self-graded</b> — own judge, own splits, the pattern by which every vendor tops a board at once. The open local binary is <b>days old</b>; the track record belongs to the closed cloud product.</div></div></div>
+        <div class="row"><div class="ic s">!</div><div><div class="lab">The gap</div><div class="txt">A large system you trust rather than read; temporal handling and "forgetting" are internal — you can't see <em>why</em> a fact was dropped or which window applied.</div></div></div>
+        <div class="row answer"><div class="ic a">→</div><div><div class="lab">SMRITI's answer</div><div class="txt">Not racing it on accuracy — <b>racing it on transparency</b>. ~1.5k readable lines, supersession that's auditable, and validity windows printed into the context the model sees.</div></div></div>
+      </div>
+
+      <!-- mem0 -->
+      <div class="card">
+        <div class="card-top">
+          <div><h3>mem0</h3><span class="by">90k+ devs · open core</span></div>
+          <span class="pub">graph = $249/mo</span>
+        </div>
+        <div class="row"><div class="ic s">+</div><div><div class="lab">Their strength</div><div class="txt">Mature SDK and the widest ecosystem — CrewAI, LangGraph, Flowise drop-ins. The pragmatic production default.</div></div></div>
+        <div class="row challenge"><div class="ic q">≠</div><div><div class="lab">The strength, challenged</div><div class="txt">90k devs is a <b>distribution moat, not an architecture one</b> — maturity hasn't bought accuracy: third-party runs place mem0 near 49% on LongMemEval vs Hindsight's 91.4%.</div></div></div>
+        <div class="row"><div class="ic s">!</div><div><div class="lab">The gap</div><div class="txt">Graph features sit behind a paid tier; local self-host wants Docker + Postgres + Qdrant; knowledge-updates can leave stale facts competing with fresh ones.</div></div></div>
+        <div class="row answer"><div class="ic a">→</div><div><div class="lab">SMRITI's answer</div><div class="txt">Graph, temporal and fusion are <b>all in the free Apache-2.0 core</b>, and write-time supersession retires the stale fact instead of leaving it to fight the new one.</div></div></div>
+      </div>
+
+      <!-- Zep -->
+      <div class="card">
+        <div class="card-top">
+          <div><h3>Zep / Graphiti</h3><span class="by">temporal kg · open core</span></div>
+          <span class="pub">graph DB infra</span>
+        </div>
+        <div class="row"><div class="ic s">+</div><div><div class="lab">Their strength</div><div class="txt">The <b style="color:var(--teal)">right temporal model</b> — a true bi-temporal knowledge graph for reasoning about how facts changed over time. SMRITI borrows this thesis.</div></div></div>
+        <div class="row challenge"><div class="ic q">≠</div><div><div class="lab">The strength, challenged</div><div class="txt">The right model is <b>no longer practically open</b> — and despite the purpose-built temporal graph, Zep lands mid-pack (~63.8%). The model alone doesn't win; <b>retrieval fusion does the rest</b>.</div></div></div>
+        <div class="row"><div class="ic s">!</div><div><div class="lab">The gap</div><div class="txt">Carries a graph database as infrastructure; the community edition was deprecated; the advanced temporal features are cloud-only.</div></div></div>
+        <div class="row answer"><div class="ic a">→</div><div><div class="lab">SMRITI's answer</div><div class="txt">Keep Zep's temporal model, <b>drop the database tax</b> — the same validity windows and supersession in one SQLite file, fully local, nothing gated.</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────── NOMENCLATURE ─────────────── -->
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">nomenclature · borrowed precision</span>
+      <h2>The stack, named in its own tongue</h2>
+      <p>Not branding — Indian epistemology worked out a technical vocabulary for memory two millennia before vector databases, and the pipeline maps almost one-to-one. The Nyaya line <b style="color:var(--paper)">anubhava → samskara → smriti</b> (experience leaves impressions; recollection arises from them) <em>is</em> the write path. Vedanta's <b style="color:var(--paper)">badha</b> — sublation, a later cognition invalidating an earlier one without erasing that it occurred — <em>is</em> supersession.</p>
+    </div>
+
+    <div class="lex-strip">
+      <div class="lex-card"><span class="stg">STAGE 01</span><div class="deva2">अनुभव</div><div class="rom">anubhava</div><div class="gloss">direct experience</div><div class="maps">episodic store<br>append-only turns</div></div>
+      <div class="lex-card"><span class="stg">STAGE 02</span><div class="deva2">ग्रहण</div><div class="rom">grahana</div><div class="gloss">grasping, apprehension</div><div class="maps">fact extraction<br>1 call / session</div></div>
+      <div class="lex-card"><span class="stg">STAGE 03</span><div class="deva2">संस्कार</div><div class="rom">samskara</div><div class="gloss">impression left by experience</div><div class="maps">consolidated<br>fact store</div></div>
+      <div class="lex-card"><span class="stg">STAGE 04</span><div class="deva2">बाध</div><div class="rom">badha</div><div class="gloss">sublation — invalidated, never erased</div><div class="maps">supersession<br>invalid_at + pointer</div></div>
+      <div class="lex-card"><span class="stg">STAGE 05</span><div class="deva2">स्मरण</div><div class="rom">smarana</div><div class="gloss">the act of recollection</div><div class="maps">retrieval — shabda<br>artha · sambandha · kala</div></div>
+      <div class="lex-card"><span class="stg">STAGE 06</span><div class="deva2">संगम</div><div class="rom">sangama</div><div class="gloss">confluence of rivers</div><div class="maps">RRF fusion<br>4 streams → 1 ranking</div></div>
+      <div class="lex-card"><span class="stg">STAGE 07</span><div class="deva2">प्रसंग</div><div class="rom">prasanga</div><div class="gloss">context, occasion</div><div class="maps">packed context<br>with provenance</div></div>
+    </div>
+
+    <div class="lex-aux">
+      <b>the four channels of smarana</b> — <span class="dv">शब्द</span> shabda · word · BM25<span class="sep">/</span><span class="dv">अर्थ</span> artha · meaning · vectors<span class="sep">/</span><span class="dv">सम्बन्ध</span> sambandha · relation · entity hop<span class="sep">/</span><span class="dv">काल</span> kala · time · date proximity<br>
+      <b>and the rest</b> — <span class="dv">अवधि</span> avadhi · a fact's validity window<span class="sep">/</span><span class="dv">पदार्थ</span> padartha · the entity table<span class="sep">/</span><span class="dv">लघु</span> laghu &amp; <span class="dv">पूर्ण</span> purna · mode aliases, accepted in code<span class="sep">/</span><span class="dv">परीक्षा</span> pariksha · benchmark harness<span class="sep">/</span><span class="dv">न्याय</span> nyaya · the judge<span class="sep">/</span><span class="dv">मौन</span> mauna · abstention, knowing when not to answer
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────── HONESTY ─────────────── -->
+<section>
+  <div class="wrap">
+    <div class="honest">
+      <span class="eyebrow">what SMRITI has not proven yet</span>
+      <h2 style="margin-top:12px">The numbers are targets, not trophies</h2>
+      <p class="sub">SMRITI ships the LongMemEval + LoCoMo harness so <em>you</em> generate its score on your hardware. Until that run exists, here are the published reference points it has to meet — shown as the bar to clear, not a win to claim.</p>
+
+      <div class="bars" id="bars">
+        <div class="bar-row" data-pct="91">
+          <div class="nm">Hindsight<small>LongMemEval</small></div>
+          <div class="track"><div class="fill" style="background:var(--teal)"></div></div>
+          <div class="pct">91.4%</div>
+        </div>
+        <div class="bar-row" data-pct="64">
+          <div class="nm">Zep<small>LongMemEval</small></div>
+          <div class="track"><div class="fill" style="background:var(--teal)"></div></div>
+          <div class="pct">63.8%</div>
+        </div>
+        <div class="bar-row" data-pct="49">
+          <div class="nm">mem0<small>LongMemEval</small></div>
+          <div class="track"><div class="fill" style="background:var(--teal)"></div></div>
+          <div class="pct">49.0%</div>
+        </div>
+        <div class="bar-row" data-pct="100" id="smriti-bar">
+          <div class="nm" style="color:var(--amber)">SMRITI<small>your run goes here</small></div>
+          <div class="track" style="border-color:var(--amber-dim)">
+            <div class="fill" style="background:repeating-linear-gradient(90deg,var(--amber),var(--amber) 6px,transparent 6px,transparent 12px)"></div>
+          </div>
+          <div class="pct" style="color:var(--amber)">— · —</div>
+        </div>
+      </div>
+
+      <div class="target">
+        <span class="mark">⌖</span>
+        <p><b>Why this panel exists.</b> Vendor numbers use different judges, answer models and splits — they aren't directly comparable, which is exactly how everyone "wins" at once. The only honest comparison is one you run yourself with a fixed judge. Run lite and full modes side by side; report both.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────── ARCHITECTURE ─────────────── -->
+<section style="border-bottom:none">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">how it works · the whole thing</span>
+      <h2>Write consolidates. Read reflects.</h2>
+    </div>
+    <div class="arch">
+      <div class="flow"><span class="cm"># WRITE — consolidation at write time</span>
+session ─▸ <span class="hi">episodic log</span> · अनुभव  <span class="cm">append-only · embedded · FTS5</span>
+        └▸ <span class="hi">fact extraction</span> · ग्रहण <span class="cm">1 LLM call / session</span>
+             └▸ conflict resolve:
+                tier 1  key collision  ─▸ supersede  <span class="cm">0 tokens</span>
+                tier 2  semantic clash ─▸ arbitrate  <span class="cm">1 tiny call</span>
+             supersession = <span class="hi">badha · बाध</span> — never deleted
+             invalid_at + superseded_by = full history
+
+<span class="cm"># READ — reflection at read time</span>
+query ─▸ <span class="ti">smarana · स्मरण</span>, 4 channels:
+          1 shabda    <span class="cm">bm25 · sqlite fts5</span>
+          2 artha     <span class="cm">vectors · facts + episodes</span>
+          3 sambandha <span class="cm">entity hop · graph-lite</span>
+          4 kala      <span class="cm">nearest dates</span>
+      ─▸ fuse · <span class="ti">sangama · संगम</span> (RRF)
+      ─▸ annotate <span class="hi">CURRENT / SUPERSEDED-on</span>
+      ─▸ packed context · <span class="hi">prasanga · प्रसंग</span></div>
+
+      <div class="run">
+        <p class="eyebrow" style="margin-bottom:14px">run it</p>
+        <code><span class="c"># 11 offline tests, no keys, no network</span>
+pip install -e . && pytest tests/</code>
+        <code><span class="c"># see supersession live</span>
+python examples/quickstart.py</code>
+        <code><span class="c"># your benchmark number</span>
+python -m bench.download
+python -m bench.run <span class="p">--bench</span> longmemeval \
+  <span class="p">--data</span> data/longmemeval_oracle.json \
+  <span class="p">--mode</span> lite <span class="p">--limit</span> 50</code>
+        <p style="font-family:'JetBrains Mono';font-size:11.5px;color:var(--mute);margin-top:14px;line-height:1.7">
+          <b style="color:var(--paper)">lite</b> — zero LLM at write time, fully offline.<br>
+          <b style="color:var(--paper)">full</b> — adds extraction + supersession via any OpenAI-compatible endpoint.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <b>SMRITI</b> · स्मृति, "that which is remembered" · structured memory with reflective indexing &amp; temporal inference<br>
+    apache-2.0 · single sqlite file · stdlib + numpy · anubhava → samskara → smriti · comparison reflects publicly reported details as of june 2026
+  </div>
+</footer>
+
+<script>
+// ── matrix data ──────────────────────────────────────────────
+// states: 2=full, 1=partial, 0=none  | order: SMRITI, GBrain, Supermemory, mem0, Zep
+const ROWS = [
+  ["Single file · no external infra",        [2,0,1,0,0]],
+  ["Bi-temporal validity windows (as-of)",   [2,0,1,1,2]],
+  ["Supersession, not deletion (audit)",     [2,0,1,0,2]],
+  ["Multi-channel fusion retrieval",         [2,1,2,1,1]],
+  ["Framework-agnostic library",             [2,0,2,2,2]],
+  ["Readable end-to-end (~1.5k LoC)",        [2,0,0,0,0]],
+  ["Ships its own benchmark harness",        [2,1,1,1,1]],
+  ["Fully open · no gated tier",             [2,2,2,1,1]],
+];
+const cls = ['no','part','yes'];
+const body = document.getElementById('matrix-body');
+ROWS.forEach(([name,states])=>{
+  const tr=document.createElement('tr');
+  const th=document.createElement('td');
+  th.className='axis-name'; th.textContent=name; tr.appendChild(th);
+  states.forEach((s,i)=>{
+    const td=document.createElement('td');
+    const sp=document.createElement('span'); sp.className='dotc';
+    const dot=document.createElement('i');
+    dot.className='d '+cls[s];
+    if(i===0 && s===2) dot.classList.add('smr-yes');
+    sp.appendChild(dot); td.appendChild(sp); tr.appendChild(td);
+  });
+  body.appendChild(tr);
+});
+
+// ── hero supersession animation ──────────────────────────────
+const row1=document.getElementById('row1'), row2=document.getElementById('row2'),
+      s1=document.getElementById('s1'), note=document.getElementById('note');
+const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+function play(){
+  row1.className='trow current'; s1.textContent='CURRENT';
+  row2.className='trow current hidden';
+  note.textContent='ingesting "I live in Hyderabad"…';
+  if(reduce){
+    row1.className='trow superseded'; s1.textContent='SUPERSEDED · 2026-06-01';
+    row2.className='trow current';
+    note.innerHTML='one fact superseded, both kept — history stays queryable';
+    return;
+  }
+  setTimeout(()=>{ note.textContent='new session: "I just moved to Bengaluru"'; },1500);
+  setTimeout(()=>{
+    row1.className='trow superseded'; s1.textContent='SUPERSEDED · 2026-06-01';
+    row2.className='trow current';
+    note.innerHTML='badha बाध ▸ old fact kept with <span class="k">invalid_at</span>, not deleted';
+  },2700);
+  setTimeout(()=>{
+    note.innerHTML='“where now?” ▸ <b style="color:var(--amber)">Bengaluru</b> &nbsp;·&nbsp; “before June?” ▸ Hyderabad';
+  },4400);
+}
+let played=false;
+const io=new IntersectionObserver(es=>{
+  es.forEach(e=>{ if(e.isIntersecting && !played){ played=true; play(); }});
+},{threshold:.4});
+io.observe(document.getElementById('stage'));
+document.getElementById('replay').onclick=play;
+
+// ── reveal benchmark bars on scroll ──────────────────────────
+const barWrap=document.getElementById('bars');
+const bio=new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    if(e.isIntersecting){
+      [...barWrap.querySelectorAll('.bar-row')].forEach((r,i)=>{
+        const pct=r.dataset.pct, fill=r.querySelector('.fill');
+        setTimeout(()=>{ fill.style.width = (r.id==='smriti-bar'?100:pct)+'%'; }, i*140);
+      });
+      bio.disconnect();
+    }
+  });
+},{threshold:.5});
+bio.observe(barWrap);
+</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+build/
+dist/
+
+# benchmark data & outputs (large / regenerable)
+data/
+bench_results/
+bench_results.json
+
+# editor / backups
+*.bak
+.DS_Store
