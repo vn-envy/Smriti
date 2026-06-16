@@ -65,6 +65,8 @@ def main():
     p.add_argument("--reranker-model", default="", help="Build 4: rerank model id")
     p.add_argument("--reranker-url", default="", help="Build 4: rerank endpoint base url (enables reranking)")
     p.add_argument("--reranker-key", default="")
+    p.add_argument("--question-type", default="",
+                   help="LongMemEval: restrict to one type, e.g. multi-session (focus a gap)")
     p.add_argument("--out", default="bench_results.json")
     args = p.parse_args()
 
@@ -89,7 +91,8 @@ def main():
                                   limit=args.limit, k=args.k,
                                   char_budget=args.char_budget, out_path=args.out,
                                   sample=args.sample, observations=args.observations,
-                                  iterative=args.iterative)
+                                  iterative=args.iterative,
+                                  question_type=args.question_type or None)
     else:
         data = load_locomo(args.data)
         summary = run_locomo(data, answer_llm, judge_llm, memory_factory,

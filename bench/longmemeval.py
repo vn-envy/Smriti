@@ -92,7 +92,10 @@ def run_longmemeval(
     sample: Optional[int] = None,
     observations: bool = False,
     iterative: bool = False,
+    question_type: Optional[str] = None,
 ) -> dict:
+    if question_type:
+        data = [it for it in data if it.get("question_type") == question_type]
     if sample:
         items = stratified_sample(data, sample, lambda it: it.get("question_type", "unknown"))
     else:
