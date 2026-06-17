@@ -23,7 +23,7 @@ from .embedder import HashEmbedder
 from .extraction import (build_extraction_prompt, build_followup_prompt,
                          build_observation_prompt, compute_numeric_totals, parse_facts)
 from .llm import LLM
-from .retrieval import pack_context, retrieve
+from .retrieval import is_aggregation_query, pack_context, retrieve
 from .store import Store, utcnow
 from .types import Episode, Fact, RetrievalResult
 
@@ -33,15 +33,23 @@ MODE_ALIASES = {"laghu": "lite", "purna": "full"}
 
 class Smriti:
     def __init__(self, path: str = ":memory:", embedder=None, llm: Optional[LLM] = None,
-                 mode: str = "auto", embed_episodes: bool = True, reranker=None):
+                 mode: str = "auto", embed_episodes: bool = True, reranker=None,
+                 expand_keys: bool = True, aggregate: bool = True, k_agg: int = 40):
         """mode: "full"/"purna" (LLM extraction+consolidation), "lite"/"laghu"
         (episodic only), or "auto" (full if an llm is provided, else lite).
         reranker: optional cross-encoder (any .rerank(query, docs)->scores) applied
-        to fused candidates at read time."""
+        to fused candidates at read time.
+        expand_keys: index fact-augmented search keys for recall (Build 9 Part A).
+        aggregate: use a high-recall, enumerate-and-count read path on aggregation
+        queries (Build 9 Part B); non-aggregation queries are unaffected.
+        k_agg: retrieval depth for the aggregation path."""
         self.store = Store(path)
         self.embedder = embedder or HashEmbedder()
         self.llm = llm
         self.reranker = reranker
+        self.expand_keys = expand_keys
+        self.aggregate = aggregate
+        self.k_agg = k_agg
         mode = MODE_ALIASES.get(mode, mode)
         if mode == "auto":
             mode = "full" if llm is not None else "lite"
@@ -76,7 +84,10 @@ class Smriti:
             )
             facts = parse_facts(raw, session_id, timestamp)
             if facts:
-                fembs = self.embedder.embed([f.statement for f in facts])
+                if not self.expand_keys:
+                    for f in facts:
+                        f.search_keys = []
+                fembs = self.embedder.embed([self._index_text(f) for f in facts])
                 for f, femb in zip(facts, fembs):
                     f.episode_id = episode_ids[0] if episode_ids else None
                     if consolidate(self.store, f, femb, self.embedder, self.llm) is not None:
@@ -84,9 +95,18 @@ class Smriti:
 
         return {"session_id": session_id, "episodes": len(episode_ids), "facts": facts_added}
 
+    @staticmethod
+    def _index_text(fact: Fact) -> str:
+        """Text used for embedding/FTS: statement plus expansion keys (Build 9 A)."""
+        if fact.search_keys:
+            return fact.statement + " " + " ".join(fact.search_keys)
+        return fact.statement
+
     def add_fact(self, fact: Fact, resolve_conflicts: bool = True) -> Optional[int]:
         """Directly insert a fact (e.g. from an agent's own observations)."""
-        emb = self.embedder.embed([fact.statement])[0]
+        if not self.expand_keys:
+            fact.search_keys = []
+        emb = self.embedder.embed([self._index_text(fact)])[0]
         if resolve_conflicts:
             return consolidate(self.store, fact, emb, self.embedder,
                                self.llm if self.mode == "full" else None)
@@ -98,6 +118,13 @@ class Smriti:
 
     def context(self, query: str, k: int = 12, now: Optional[str] = None,
                 char_budget: int = 9000) -> str:
+        # Build 9 Part B: aggregation queries get a high-recall, enumerate-and-count
+        # path. Strictly gated by intent — every other query takes the exact path
+        # as before, so nothing that already works can regress here.
+        if self.aggregate and is_aggregation_query(query):
+            results = retrieve(self.store, self.embedder, query, now=now, k=self.k_agg,
+                               reranker=self.reranker, per_channel=max(24, self.k_agg))
+            return pack_context(results, now=now, char_budget=char_budget, aggregate=True)
         return pack_context(self.search(query, k=k, now=now), now=now, char_budget=char_budget)
 
     def search_iterative(self, query: str, k: int = 12, now: Optional[str] = None,

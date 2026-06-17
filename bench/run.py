@@ -62,6 +62,10 @@ def main():
                    help="Build 1: synthesize per-entity observation summaries after ingest (full mode)")
     p.add_argument("--iterative", action="store_true",
                    help="Build 5: LLM-seeded second retrieval round for multi-hop (full mode)")
+    p.add_argument("--key-expansion", action="store_true",
+                   help="Build 9A: index fact-augmented search keys for recall (full mode)")
+    p.add_argument("--aggregate", action="store_true",
+                   help="Build 9B: high-recall enumerate-and-count path on aggregation queries")
     p.add_argument("--reranker-model", default="", help="Build 4: rerank model id")
     p.add_argument("--reranker-url", default="", help="Build 4: rerank endpoint base url (enables reranking)")
     p.add_argument("--reranker-key", default="")
@@ -83,7 +87,8 @@ def main():
 
     def memory_factory():
         return Smriti(path=":memory:", embedder=embedder, llm=memory_llm,
-                      mode=args.mode, reranker=reranker)
+                      mode=args.mode, reranker=reranker,
+                      expand_keys=args.key_expansion, aggregate=args.aggregate)
 
     if args.bench == "longmemeval":
         data = load_longmemeval(args.data)

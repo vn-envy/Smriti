@@ -32,6 +32,10 @@ class Fact:
     object: str = ""
     kind: str = "knowledge"          # profile | preference | event | knowledge
     entities: List[str] = field(default_factory=list)
+    # fact-augmented key expansion (Build 9): alternate search terms / category
+    # synonyms indexed alongside the statement to bridge query-vocabulary gaps
+    # ("lime" fact also findable under "citrus"). Not persisted; used at index time.
+    search_keys: List[str] = field(default_factory=list)
     event_date: Optional[str] = None  # explicit date mentioned in the fact
     ingested_at: Optional[str] = None
     valid_from: Optional[str] = None

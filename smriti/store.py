@@ -123,8 +123,13 @@ class Store:
             ),
         )
         rowid = cur.lastrowid
+        # index statement + expansion keys (Build 9 Part A) for lexical recall;
+        # the stored statement (display/provenance) stays clean.
+        fts_text = f.statement
+        if getattr(f, "search_keys", None):
+            fts_text = f.statement + " " + " ".join(f.search_keys)
         self.db.execute(
-            "INSERT INTO facts_fts(rowid, statement) VALUES(?,?)", (rowid, f.statement)
+            "INSERT INTO facts_fts(rowid, statement) VALUES(?,?)", (rowid, fts_text)
         )
         if emb is not None:
             self.db.execute("UPDATE facts SET emb=? WHERE id=?", (_to_blob(emb), rowid))

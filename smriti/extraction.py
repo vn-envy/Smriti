@@ -74,12 +74,13 @@ Rules:
 - If a fact has an explicit date/time attached (e.g. "I ran the marathon on 12 March 2024"), set event_date in ISO format (YYYY-MM-DD). Resolve relative dates ("last Tuesday", "next month") against the session timestamp. Otherwise null.
 - subject/predicate/object: a normalized triple, subject is usually "user". predicate is a short snake_case relation (e.g. lives_in, works_at, prefers, owns, plans_to).
 - entities: proper nouns and key concrete nouns in the fact.
+- search_keys: 2-5 alternate search terms a person might use to find this fact that are NOT already in the statement — category words, synonyms, or hypernyms (e.g. for "lime" include "citrus", "fruit"; for "gallery opening" include "art", "event"; for a doctor visit include "doctor", "appointment", "health"). This widens recall for aggregation/category questions.
 - kind: one of profile | preference | event | knowledge.
 - Skip chit-chat, pleasantries, and information with no future value.
 - Output ONLY a JSON array. If nothing is worth remembering, output [].
 
 Format:
-[{"statement": "...", "subject": "user", "predicate": "lives_in", "object": "Hyderabad", "entities": ["Hyderabad"], "event_date": null, "kind": "profile"}]"""
+[{"statement": "...", "subject": "user", "predicate": "lives_in", "object": "Hyderabad", "entities": ["Hyderabad"], "search_keys": ["city", "residence", "location"], "event_date": null, "kind": "profile"}]"""
 
 
 def build_extraction_prompt(turns: List[dict], session_ts: Optional[str]) -> List[dict]:
@@ -142,6 +143,7 @@ def parse_facts(raw: str, session_id: Optional[str], session_ts: Optional[str]) 
             object=str(item.get("object", "")),
             kind=str(item.get("kind", "knowledge")),
             entities=[str(e) for e in item.get("entities", []) if e],
+            search_keys=[str(k) for k in item.get("search_keys", []) if k],
             event_date=item.get("event_date") or None,
             valid_from=item.get("event_date") or session_ts,
             session_id=session_id,

@@ -284,6 +284,49 @@ def test_reranker_reorders_and_tags():
     assert "Python" in res[0].text
 
 
+# ------------------------------------------------- recall track (Build 9)
+def test_fact_key_expansion_recall():
+    """A category word absent from the statement matches the fact in the lexical
+    index only when indexed as a search key (Build 9 Part A)."""
+    f = lambda: Fact(id=None, statement="The user added lime to the mojito.",
+                     subject="user", predicate="used", object="lime",
+                     entities=["lime"], search_keys=["citrus", "fruit"])
+    on = Smriti(path=":memory:", embedder=HashEmbedder(), mode="lite", expand_keys=True)
+    on.add_fact(f())
+    off = Smriti(path=":memory:", embedder=HashEmbedder(), mode="lite", expand_keys=False)
+    off.add_fact(f())
+    # "citrus" appears only in the expansion keys, not the statement
+    assert on.store.fts_search("citrus", "fact")        # found via expanded key
+    assert not off.store.fts_search("citrus", "fact")   # not found without expansion
+
+
+def test_aggregation_intent_detection():
+    from smriti.retrieval import is_aggregation_query
+    for q in ["How many doctors did I visit?", "What is the total I spent?",
+              "how much time on average", "how many different cuisines"]:
+        assert is_aggregation_query(q)
+    for q in ["Where do I live?", "What is my dog's name?", "When did I move?"]:
+        assert not is_aggregation_query(q)
+
+
+def test_aggregation_path_is_gated_no_harm():
+    """Non-aggregation queries take the byte-identical existing path whether or
+    not the aggregate flag is on — the no-harm guarantee for Build 9 Part B."""
+    def build(agg):
+        m = Smriti(path=":memory:", embedder=HashEmbedder(), mode="lite", aggregate=agg)
+        m.add_fact(Fact(id=None, statement="The user lives in Pune.", subject="user",
+                        predicate="lives_in", object="Pune", entities=["Pune"]))
+        return m
+    q = "Where does the user live?"  # not an aggregation query
+    assert build(True).context(q) == build(False).context(q)
+
+    # an aggregation query DOES get the counting instruction when enabled
+    agg = Smriti(path=":memory:", embedder=HashEmbedder(), mode="lite", aggregate=True)
+    agg.add_fact(Fact(id=None, statement="The user attended a jazz night.", subject="user",
+                      predicate="attended", object="jazz night", entities=["jazz night"]))
+    assert "COUNTING / AGGREGATION" in agg.context("how many events did I attend?")
+
+
 # ---------------------------------------------------------------- temporal
 def test_extract_dates_variants():
     assert "2024-03-12" in extract_dates("what happened on 2024-03-12?")

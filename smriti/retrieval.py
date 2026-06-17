@@ -41,6 +41,19 @@ _DATE_PATTERNS = [
 ]
 
 
+_AGG_RE = re.compile(
+    r"\b(how many|how much|how often|how long|number of|count of|total|in total|"
+    r"combined|altogether|sum of|on average|average)\b|\bdifferent\b",
+    re.IGNORECASE,
+)
+
+
+def is_aggregation_query(query: str) -> bool:
+    """True for counting/summing/averaging questions — the queries that need
+    exhaustive recall of every instance rather than top-k precision (Build 9)."""
+    return bool(_AGG_RE.search(query or ""))
+
+
 def extract_dates(text: str) -> List[str]:
     """Pull explicit dates out of free text -> ISO strings (best effort)."""
     found = []
@@ -188,14 +201,24 @@ def _fmt_date(iso: Optional[str]) -> str:
 
 
 def pack_context(results: List[RetrievalResult], now: Optional[str] = None,
-                 char_budget: int = 9000) -> str:
-    """Render retrieval into an answer-ready context block with provenance."""
+                 char_budget: int = 9000, aggregate: bool = False) -> str:
+    """Render retrieval into an answer-ready context block with provenance.
+
+    When aggregate=True (counting/aggregation query), prepend an instruction to
+    enumerate-and-count every relevant item and give a best-effort total rather
+    than abstaining — directly countering the abstention failure mode."""
     observations, facts, episodes = [], [], []
     for r in results:
         (observations if r.kind == "observation" else
          facts if r.kind == "fact" else episodes).append(r)
 
     lines: List[str] = []
+    if aggregate:
+        lines.append("COUNTING / AGGREGATION QUESTION — go through the FACTS, SUMMARIES and "
+                     "EVIDENCE below, enumerate every item relevant to the question, and give "
+                     "your best count or total from what is shown. Do NOT reply that you lack "
+                     "information if relevant items are present; count them.")
+        lines.append("")
     if observations:
         lines.append("ENTITY SUMMARIES (synthesized overviews of what's known about key "
                       "entities; useful for spotting counts/totals, but confirm the specifics "
