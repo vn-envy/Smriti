@@ -316,6 +316,28 @@ def test_bench_wiring_observations_and_iterative():
     assert summary["n"] == 1 and "accuracy" in summary and "multi-session" in summary["per_type"]
 
 
+def test_post_json_retries_transient_errors(monkeypatch):
+    """A transient network blip is retried, not fatal (harness resilience)."""
+    import smriti.embedder as emb
+    calls = {"n": 0}
+
+    class _Resp:
+        def __enter__(self): return self
+        def __exit__(self, *a): return False
+        def read(self): return b'{"ok": true}'
+
+    def flaky_urlopen(req, timeout=0):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise TimeoutError("read timed out")
+        return _Resp()
+
+    monkeypatch.setattr(emb.time, "sleep", lambda *_: None)
+    monkeypatch.setattr(emb.urllib.request, "urlopen", flaky_urlopen)
+    out = emb._post_json("http://x/y", {"a": 1})
+    assert out == {"ok": True} and calls["n"] == 2  # failed once, succeeded on retry
+
+
 def test_abstention_detection():
     assert is_abstention("I don't have enough information to answer that.")
     assert not is_abstention("Your sister lives in Pune.")

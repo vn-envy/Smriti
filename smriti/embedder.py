@@ -9,21 +9,41 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import time
 import urllib.request
 from typing import List, Optional, Sequence
 
 
-def _post_json(url: str, payload: dict, headers: Optional[dict] = None, timeout: int = 120) -> dict:
+def _post_json(url: str, payload: dict, headers: Optional[dict] = None,
+               timeout: int = 120, retries: int = 2) -> dict:
+    """POST JSON with bounded retry on transient network errors.
+
+    Hosted endpoints occasionally drop a connection or stall (socket.timeout);
+    a single such blip should not abandon a long benchmark or ingest run, so we
+    retry with linear backoff before giving up. Retried POSTs may re-execute a
+    completed request server-side, but SMRITI's consolidation dedups facts, so
+    at-least-once delivery is safe here.
+    """
     data = json.dumps(payload).encode()
-    req = urllib.request.Request(url, data=data, method="POST")
-    req.add_header("Content-Type", "application/json")
-    # Some providers (e.g. Groq behind Cloudflare) reject the default
-    # "Python-urllib/x.y" User-Agent with HTTP 403. Send an explicit one.
-    req.add_header("User-Agent", "smriti/0.1")
-    for k, v in (headers or {}).items():
-        req.add_header(k, v)
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return json.loads(resp.read().decode())
+    last_err = None
+    for attempt in range(retries + 1):
+        req = urllib.request.Request(url, data=data, method="POST")
+        req.add_header("Content-Type", "application/json")
+        # Some providers (e.g. Groq behind Cloudflare) reject the default
+        # "Python-urllib/x.y" User-Agent with HTTP 403. Send an explicit one.
+        req.add_header("User-Agent", "smriti/0.1")
+        for k, v in (headers or {}).items():
+            req.add_header(k, v)
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                return json.loads(resp.read().decode())
+        except Exception as e:  # noqa: BLE001 - retry any transient transport error
+            last_err = e
+            if attempt < retries:
+                time.sleep(1.5 * (attempt + 1))
+            else:
+                raise
+    raise last_err  # pragma: no cover
 
 
 class HashEmbedder:

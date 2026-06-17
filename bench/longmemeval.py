@@ -102,39 +102,54 @@ def run_longmemeval(
         items = data[:limit] if limit else data
     results, per_type = [], {}
 
+    def _flush_partial():
+        if not out_path:
+            return
+        parent = os.path.dirname(out_path)
+        if parent:
+            os.makedirs(parent, exist_ok=True)
+        with open(out_path, "w") as f:
+            json.dump({"summary": {"benchmark": "LongMemEval", "n": len(results),
+                                   "partial": True}, "results": results}, f, indent=2)
+
     for idx, item in enumerate(items):
-        qid = item.get("question_id", str(idx))
-        qtype = item.get("question_type", "unknown")
-        question = item["question"]
-        gold = str(item.get("answer", ""))
-        qdate = parse_lme_date(item.get("question_date"))
+        try:
+            qid = item.get("question_id", str(idx))
+            qtype = item.get("question_type", "unknown")
+            question = item["question"]
+            gold = str(item.get("answer", ""))
+            qdate = parse_lme_date(item.get("question_date"))
 
-        mem = memory_factory()
-        t0 = time.time()
-        dates = item.get("haystack_dates") or []
-        for s_idx, session in enumerate(item.get("haystack_sessions", [])):
-            ts = parse_lme_date(dates[s_idx]) if s_idx < len(dates) else None
-            turns = [{"role": t.get("role", "user"), "content": t.get("content", "")}
-                     for t in session if t.get("content")]
-            if turns:
-                mem.add(turns, session_id=f"{qid}-s{s_idx}", timestamp=ts)
-        if observations and mem.llm is not None:
-            mem.refresh_observations()  # Build 1: synthesize entity summaries post-ingest
-        ingest_s = time.time() - t0
+            mem = memory_factory()
+            t0 = time.time()
+            dates = item.get("haystack_dates") or []
+            for s_idx, session in enumerate(item.get("haystack_sessions", [])):
+                ts = parse_lme_date(dates[s_idx]) if s_idx < len(dates) else None
+                turns = [{"role": t.get("role", "user"), "content": t.get("content", "")}
+                         for t in session if t.get("content")]
+                if turns:
+                    mem.add(turns, session_id=f"{qid}-s{s_idx}", timestamp=ts)
+            if observations and mem.llm is not None:
+                mem.refresh_observations()  # Build 1: synthesize entity summaries post-ingest
+            ingest_s = time.time() - t0
 
-        t0 = time.time()
-        ctx = (mem.context_iterative(question, k=k, now=qdate, char_budget=char_budget)
-               if iterative else
-               mem.context(question, k=k, now=qdate, char_budget=char_budget))
-        today = (qdate or "")[:10] or "unknown"
-        hypothesis = answer_llm.complete(
-            [{"role": "system", "content": ANSWER_SYSTEM.format(today=today)},
-             {"role": "user", "content": f"MEMORY CONTEXT:\n{ctx}\n\nQUESTION ({today}): {question}"}],
-            max_tokens=256,
-        )
-        answer_s = time.time() - t0
+            t0 = time.time()
+            ctx = (mem.context_iterative(question, k=k, now=qdate, char_budget=char_budget)
+                   if iterative else
+                   mem.context(question, k=k, now=qdate, char_budget=char_budget))
+            today = (qdate or "")[:10] or "unknown"
+            hypothesis = answer_llm.complete(
+                [{"role": "system", "content": ANSWER_SYSTEM.format(today=today)},
+                 {"role": "user", "content": f"MEMORY CONTEXT:\n{ctx}\n\nQUESTION ({today}): {question}"}],
+                max_tokens=256,
+            )
+            answer_s = time.time() - t0
+            correct = judge(judge_llm, question, gold, hypothesis, question_id=qid)
+        except Exception as e:  # one flaky question must not abandon the whole run
+            if verbose:
+                print(f"[{idx+1}/{len(items)}] ERR {type(e).__name__}: {str(e)[:50]} — skipped")
+            continue
 
-        correct = judge(judge_llm, question, gold, hypothesis, question_id=qid)
         per_type.setdefault(qtype, []).append(correct)
         rec = {
             "question_id": qid, "question_type": qtype, "question": question,
@@ -146,6 +161,8 @@ def run_longmemeval(
         if verbose:
             mark = "Y" if correct else "N"
             print(f"[{idx+1}/{len(items)}] {mark} {qtype:<26} {question[:60]}")
+        if out_path and (idx + 1) % 10 == 0:
+            _flush_partial()  # checkpoint so a wall-clock timeout keeps progress
 
     summary = {
         "benchmark": "LongMemEval",
