@@ -1,0 +1,2017 @@
+From bb28845b406e7454dea82b0ef3cf5e863dcd813d Mon Sep 17 00:00:00 2001
+From: Neekhil Vatsa <vatsaneekhil@gmail.com>
+Date: Wed, 17 Jun 2026 05:05:43 +0000
+Subject: [PATCH] ab.sh: let QTYPE= clear the type filter (all-types runs)
+
+---
+ bench/ab.sh                                   |    2 +-
+ ...ric-sum-digests-ab.sh-SAMPLE-support.patch | 1984 +++++++++++++++++
+ 2 files changed, 1985 insertions(+), 1 deletion(-)
+ create mode 100644 patches/0001-Build-8-numeric-sum-digests-ab.sh-SAMPLE-support.patch
+
+diff --git a/bench/ab.sh b/bench/ab.sh
+index 5cc9c09..368479f 100755
+--- a/bench/ab.sh
++++ b/bench/ab.sh
+@@ -24,7 +24,7 @@ EMBED_MODEL="${EMBED_MODEL:-nomic-embed-text}"
+ 
+ BENCH="${BENCH:-longmemeval}"
+ DATA="${DATA:-data/longmemeval_oracle.json}"
+-QTYPE="${QTYPE:-multi-session}"          # LongMemEval question type to focus ("" = all types)
++QTYPE="${QTYPE-multi-session}"           # LongMemEval question type to focus (QTYPE= clears it -> all types)
+ LIMIT="${LIMIT:-40}"                      # first-N (used when SAMPLE unset)
+ SAMPLE="${SAMPLE:-}"                      # ~N spread across types (preferred for larger n)
+ MODE="${MODE:-full}"                      # observations need full mode
+diff --git a/patches/0001-Build-8-numeric-sum-digests-ab.sh-SAMPLE-support.patch b/patches/0001-Build-8-numeric-sum-digests-ab.sh-SAMPLE-support.patch
+new file mode 100644
+index 0000000..f556690
+--- /dev/null
++++ b/patches/0001-Build-8-numeric-sum-digests-ab.sh-SAMPLE-support.patch
+@@ -0,0 +1,1984 @@
++From 265a8d29f3ec3d649edef72c4430197f47b32f1a Mon Sep 17 00:00:00 2001
++From: Neekhil Vatsa <vatsaneekhil@gmail.com>
++Date: Wed, 17 Jun 2026 05:05:12 +0000
++Subject: [PATCH] Build 8: numeric/sum digests + ab.sh SAMPLE support
++MIME-Version: 1.0
++Content-Type: text/plain; charset=UTF-8
++Content-Transfer-Encoding: 8bit
++
++compute_numeric_totals() sums same-unit quantities (currency, hours, days, …)
++deterministically in Python and carries the total into observations/digests, so
++SUM-type aggregation questions ('how much total money / hours') get a trustworthy
++pre-computed total instead of relying on LLM arithmetic. ab.sh gains SAMPLE for
++larger stratified A/B runs. +1 test, 22/22.
++---
++ README.md                                     |    1 +
++ bench/ab.sh                                   |   14 +-
++ ...etry-per-question-fault-tolerance-pa.patch | 1780 +++++++++++++++++
++ smriti/extraction.py                          |   49 +
++ smriti/memory.py                              |    7 +-
++ tests/test_smriti.py                          |   28 +
++ 6 files changed, 1875 insertions(+), 4 deletions(-)
++ create mode 100644 patches/0001-harden-network-retry-per-question-fault-tolerance-pa.patch
++
++diff --git a/README.md b/README.md
++index 58703bc..6825652 100644
++--- a/README.md
+++++ b/README.md
++@@ -151,6 +151,7 @@ Informed by Hindsight (observation paradigm), StructMem / MemGAS (multi-granular
++ - [x] Observation/summary layer — per-entity synthesized summaries (`refresh_observations`)
++ - [x] Observations additive + enumerate — own context section, list instances instead of asserting totals
++ - [x] Multi-granularity digests — per-`(subject, predicate)` enumerations for cross-entity aggregation
+++- [x] Numeric/sum digests — Python-computed same-unit totals carried into digests (SUM-type aggregation)
++ - [x] 2-hop entity traversal — graph-lite multi-hop over the entity table
++ - [x] Optional cross-encoder reranking channel — RRF + rerank (`reranker=`)
++ - [x] Iterative retrieval — LLM-seeded second pass for multi-hop (`search_iterative`)
++diff --git a/bench/ab.sh b/bench/ab.sh
++index ee7f6ad..5cc9c09 100755
++--- a/bench/ab.sh
+++++ b/bench/ab.sh
++@@ -24,15 +24,23 @@ EMBED_MODEL="${EMBED_MODEL:-nomic-embed-text}"
++ 
++ BENCH="${BENCH:-longmemeval}"
++ DATA="${DATA:-data/longmemeval_oracle.json}"
++-QTYPE="${QTYPE:-multi-session}"          # LongMemEval question type to focus (gap under test)
++-LIMIT="${LIMIT:-40}"
+++QTYPE="${QTYPE:-multi-session}"          # LongMemEval question type to focus ("" = all types)
+++LIMIT="${LIMIT:-40}"                      # first-N (used when SAMPLE unset)
+++SAMPLE="${SAMPLE:-}"                      # ~N spread across types (preferred for larger n)
++ MODE="${MODE:-full}"                      # observations need full mode
++ TREATMENT="${TREATMENT:---observations}" # the feature flag being measured
++ 
++ OUT_DIR="${OUT_DIR:-bench_results/ab_$(date +%Y%m%d_%H%M%S)}"
++ mkdir -p "$OUT_DIR"
++ 
++-COMMON=(--bench "$BENCH" --data "$DATA" --mode "$MODE" --limit "$LIMIT"
+++# SAMPLE (stratified) takes precedence over LIMIT (first-N) when set
+++if [ -n "$SAMPLE" ]; then
+++    SEL=(--sample "$SAMPLE")
+++else
+++    SEL=(--limit "$LIMIT")
+++fi
+++
+++COMMON=(--bench "$BENCH" --data "$DATA" --mode "$MODE" "${SEL[@]}"
++         --provider "$PROVIDER" --api-key "$API_KEY"
++         --answer-model "$ANSWER_MODEL" --judge-model "$JUDGE_MODEL"
++         --memory-model "$MEMORY_MODEL"
++diff --git a/patches/0001-harden-network-retry-per-question-fault-tolerance-pa.patch b/patches/0001-harden-network-retry-per-question-fault-tolerance-pa.patch
++new file mode 100644
++index 0000000..96a5631
++--- /dev/null
+++++ b/patches/0001-harden-network-retry-per-question-fault-tolerance-pa.patch
++@@ -0,0 +1,1780 @@
+++From d2cb10a2d4c0947bea40dc6e4b3c1d706cd67eb3 Mon Sep 17 00:00:00 2001
+++From: Neekhil Vatsa <vatsaneekhil@gmail.com>
+++Date: Wed, 17 Jun 2026 04:59:20 +0000
+++Subject: [PATCH] harden: network retry + per-question fault tolerance +
+++ partial-result flush
+++
+++_post_json retries transient errors (the socket.timeout that killed a full-S run
+++at 52/80). run_longmemeval wraps each question in try/except (one flaky question
+++skips, not aborts) and checkpoints results every 10 questions so a wall-clock
+++timeout keeps progress. +1 test, 21/21.
+++---
+++ bench/longmemeval.py                          |   81 +-
+++ ...map-mark-shipped-builds-add-post-ben.patch | 1564 +++++++++++++++++
+++ smriti/embedder.py                            |   40 +-
+++ tests/test_smriti.py                          |   22 +
+++ 4 files changed, 1665 insertions(+), 42 deletions(-)
+++ create mode 100644 patches/0001-docs-update-roadmap-mark-shipped-builds-add-post-ben.patch
+++
+++diff --git a/bench/longmemeval.py b/bench/longmemeval.py
+++index 4f7f35a..7d4bee2 100644
+++--- a/bench/longmemeval.py
++++++ b/bench/longmemeval.py
+++@@ -102,39 +102,54 @@ def run_longmemeval(
+++         items = data[:limit] if limit else data
+++     results, per_type = [], {}
+++ 
++++    def _flush_partial():
++++        if not out_path:
++++            return
++++        parent = os.path.dirname(out_path)
++++        if parent:
++++            os.makedirs(parent, exist_ok=True)
++++        with open(out_path, "w") as f:
++++            json.dump({"summary": {"benchmark": "LongMemEval", "n": len(results),
++++                                   "partial": True}, "results": results}, f, indent=2)
++++
+++     for idx, item in enumerate(items):
+++-        qid = item.get("question_id", str(idx))
+++-        qtype = item.get("question_type", "unknown")
+++-        question = item["question"]
+++-        gold = str(item.get("answer", ""))
+++-        qdate = parse_lme_date(item.get("question_date"))
+++-
+++-        mem = memory_factory()
+++-        t0 = time.time()
+++-        dates = item.get("haystack_dates") or []
+++-        for s_idx, session in enumerate(item.get("haystack_sessions", [])):
+++-            ts = parse_lme_date(dates[s_idx]) if s_idx < len(dates) else None
+++-            turns = [{"role": t.get("role", "user"), "content": t.get("content", "")}
+++-                     for t in session if t.get("content")]
+++-            if turns:
+++-                mem.add(turns, session_id=f"{qid}-s{s_idx}", timestamp=ts)
+++-        if observations and mem.llm is not None:
+++-            mem.refresh_observations()  # Build 1: synthesize entity summaries post-ingest
+++-        ingest_s = time.time() - t0
+++-
+++-        t0 = time.time()
+++-        ctx = (mem.context_iterative(question, k=k, now=qdate, char_budget=char_budget)
+++-               if iterative else
+++-               mem.context(question, k=k, now=qdate, char_budget=char_budget))
+++-        today = (qdate or "")[:10] or "unknown"
+++-        hypothesis = answer_llm.complete(
+++-            [{"role": "system", "content": ANSWER_SYSTEM.format(today=today)},
+++-             {"role": "user", "content": f"MEMORY CONTEXT:\n{ctx}\n\nQUESTION ({today}): {question}"}],
+++-            max_tokens=256,
+++-        )
+++-        answer_s = time.time() - t0
+++-
+++-        correct = judge(judge_llm, question, gold, hypothesis, question_id=qid)
++++        try:
++++            qid = item.get("question_id", str(idx))
++++            qtype = item.get("question_type", "unknown")
++++            question = item["question"]
++++            gold = str(item.get("answer", ""))
++++            qdate = parse_lme_date(item.get("question_date"))
++++
++++            mem = memory_factory()
++++            t0 = time.time()
++++            dates = item.get("haystack_dates") or []
++++            for s_idx, session in enumerate(item.get("haystack_sessions", [])):
++++                ts = parse_lme_date(dates[s_idx]) if s_idx < len(dates) else None
++++                turns = [{"role": t.get("role", "user"), "content": t.get("content", "")}
++++                         for t in session if t.get("content")]
++++                if turns:
++++                    mem.add(turns, session_id=f"{qid}-s{s_idx}", timestamp=ts)
++++            if observations and mem.llm is not None:
++++                mem.refresh_observations()  # Build 1: synthesize entity summaries post-ingest
++++            ingest_s = time.time() - t0
++++
++++            t0 = time.time()
++++            ctx = (mem.context_iterative(question, k=k, now=qdate, char_budget=char_budget)
++++                   if iterative else
++++                   mem.context(question, k=k, now=qdate, char_budget=char_budget))
++++            today = (qdate or "")[:10] or "unknown"
++++            hypothesis = answer_llm.complete(
++++                [{"role": "system", "content": ANSWER_SYSTEM.format(today=today)},
++++                 {"role": "user", "content": f"MEMORY CONTEXT:\n{ctx}\n\nQUESTION ({today}): {question}"}],
++++                max_tokens=256,
++++            )
++++            answer_s = time.time() - t0
++++            correct = judge(judge_llm, question, gold, hypothesis, question_id=qid)
++++        except Exception as e:  # one flaky question must not abandon the whole run
++++            if verbose:
++++                print(f"[{idx+1}/{len(items)}] ERR {type(e).__name__}: {str(e)[:50]} — skipped")
++++            continue
++++
+++         per_type.setdefault(qtype, []).append(correct)
+++         rec = {
+++             "question_id": qid, "question_type": qtype, "question": question,
+++@@ -146,6 +161,8 @@ def run_longmemeval(
+++         if verbose:
+++             mark = "Y" if correct else "N"
+++             print(f"[{idx+1}/{len(items)}] {mark} {qtype:<26} {question[:60]}")
++++        if out_path and (idx + 1) % 10 == 0:
++++            _flush_partial()  # checkpoint so a wall-clock timeout keeps progress
+++ 
+++     summary = {
+++         "benchmark": "LongMemEval",
+++diff --git a/patches/0001-docs-update-roadmap-mark-shipped-builds-add-post-ben.patch b/patches/0001-docs-update-roadmap-mark-shipped-builds-add-post-ben.patch
+++new file mode 100644
+++index 0000000..054f778
+++--- /dev/null
++++++ b/patches/0001-docs-update-roadmap-mark-shipped-builds-add-post-ben.patch
+++@@ -0,0 +1,1564 @@
++++From a545d121ba140cf1df847d19014ae62e84bbca0a Mon Sep 17 00:00:00 2001
++++From: Neekhil Vatsa <vatsaneekhil@gmail.com>
++++Date: Tue, 16 Jun 2026 19:33:08 +0000
++++Subject: [PATCH] =?UTF-8?q?docs:=20update=20roadmap=20=E2=80=94=20mark=20s?=
++++ =?UTF-8?q?hipped=20builds,=20add=20post-benchmark=20next=20steps?=
++++MIME-Version: 1.0
++++Content-Type: text/plain; charset=UTF-8
++++Content-Transfer-Encoding: 8bit
++++
++++Shipped: observations (+ additive/enumerate/multi-granularity), 2-hop, rerank,
++++iterative, harness hardening. Next (post-bench): entity canonicalization,
++++recursive-CTE N-hop, sqlite-vec ANN, incremental refresh, MCP server+security
++++(borrowings from Codebase-Memory paper), dim guard, namespacing.
++++---
++++ README.md                                     |   28 +-
++++ ...anularity-digests-predicate-level-cr.patch | 1497 +++++++++++++++++
++++ 2 files changed, 1519 insertions(+), 6 deletions(-)
++++ create mode 100644 patches/0001-Build-7-multi-granularity-digests-predicate-level-cr.patch
++++
++++diff --git a/README.md b/README.md
++++index 3ef2d7c..58703bc 100644
++++--- a/README.md
+++++++ b/README.md
++++@@ -144,12 +144,28 @@ smriti-teaser.html     36-second self-contained launch teaser — open, it plays
++++ 
++++ ## Roadmap
++++ 
++++-- [ ] Publish LongMemEval-S and LoCoMo numbers (lite + full, local + hosted models)
++++-- [ ] Optional cross-encoder reranking channel
++++-- [ ] Session summaries as a third retrieval granularity
++++-- [ ] MCP server wrapper (drop-in memory for coding agents)
++++-- [ ] Async ingest queue and batched embeddings
++++-- [ ] Multi-user namespacing (`user_id` scoping)
+++++### Shipped (research-driven builds)
+++++
+++++Informed by Hindsight (observation paradigm), StructMem / MemGAS (multi-granularity, cross-event consolidation), and the multi-hop RAG literature:
+++++
+++++- [x] Observation/summary layer — per-entity synthesized summaries (`refresh_observations`)
+++++- [x] Observations additive + enumerate — own context section, list instances instead of asserting totals
+++++- [x] Multi-granularity digests — per-`(subject, predicate)` enumerations for cross-entity aggregation
+++++- [x] 2-hop entity traversal — graph-lite multi-hop over the entity table
+++++- [x] Optional cross-encoder reranking channel — RRF + rerank (`reranker=`)
+++++- [x] Iterative retrieval — LLM-seeded second pass for multi-hop (`search_iterative`)
+++++- [x] Benchmark harness hardening — stratified `--sample`, `--question-type`, A/B (`bench/ab.sh`), DeepSeek preset
+++++
+++++### Next (post-benchmark)
+++++
+++++- [ ] Publish LongMemEval-S and LoCoMo numbers (lite + full, local + hosted; observations on/off)
+++++- [ ] **Entity canonicalization** — confidence-scored alias merge at write time ("Rachel" / "my cousin Rachel" / "Rachel Smith" → one entity). Attacks the fragmentation that limits cross-entity aggregation. *(adapted from Codebase-Memory's resolution cascade)*
+++++- [ ] **Recursive-CTE N-hop traversal** — replace Python 2-hop with arbitrary-depth traversal in pure SQL. *(Codebase-Memory technique)*
+++++- [ ] **`sqlite-vec` ANN backend** — optional, fixes the O(N) vector scan past ~100k rows; falls back to numpy. Keeps single-file zero-infra.
+++++- [ ] **Incremental observation refresh** — content-hash so only changed entities/predicates are re-summarized. *(XXH3 pattern from Codebase-Memory)*
+++++- [ ] **MCP server** — typed memory tools (`recall`, `context`, `facts_about`, `timeline`, `why_superseded`) returning structured JSON, with a least-privilege/verification security posture for a tool that runs with the agent's permissions. *(design + security blueprint from Codebase-Memory)*
+++++- [ ] Embedding-dimension guard (reject silent model swaps) + async ingest queue and batched embeddings
+++++- [ ] Multi-user namespacing (`user_id` scoping) and concurrency-safe store
++++ 
++++ ## License
++++ 
++++diff --git a/patches/0001-Build-7-multi-granularity-digests-predicate-level-cr.patch b/patches/0001-Build-7-multi-granularity-digests-predicate-level-cr.patch
++++new file mode 100644
++++index 0000000..4008498
++++--- /dev/null
+++++++ b/patches/0001-Build-7-multi-granularity-digests-predicate-level-cr.patch
++++@@ -0,0 +1,1497 @@
+++++From 1f4b8a79757677398b025cea739fb22f8288a879 Mon Sep 17 00:00:00 2001
+++++From: Neekhil Vatsa <vatsaneekhil@gmail.com>
+++++Date: Tue, 16 Jun 2026 18:50:20 +0000
+++++Subject: [PATCH] Build 7: multi-granularity digests (predicate-level,
+++++ cross-entity aggregation)
+++++MIME-Version: 1.0
+++++Content-Type: text/plain; charset=UTF-8
+++++Content-Transfer-Encoding: 8bit
+++++
+++++refresh_observations now also emits per-(subject,predicate) digests that
+++++enumerate every object across all entities/sessions (kind='observation',
+++++predicate='digest:<pred>'). Targets the cross-entity totals per-entity
+++++summaries structurally miss (camping trips, distinct doctors, babies, charity
+++++totals) — the MemGAS multi-granularity lesson. +1 test, 20/20.
+++++---
+++++ ...ions-additive-enumerate-fix-crowding.patch | 1271 +++++++++++++++++
+++++ smriti/extraction.py                          |    4 +-
+++++ smriti/memory.py                              |   92 +-
+++++ smriti/store.py                               |   13 +
+++++ tests/test_smriti.py                          |   23 +-
+++++ 5 files changed, 1365 insertions(+), 38 deletions(-)
+++++ create mode 100644 patches/0001-Build-6-observations-additive-enumerate-fix-crowding.patch
+++++
+++++diff --git a/patches/0001-Build-6-observations-additive-enumerate-fix-crowding.patch b/patches/0001-Build-6-observations-additive-enumerate-fix-crowding.patch
+++++new file mode 100644
+++++index 0000000..de1d979
+++++--- /dev/null
++++++++ b/patches/0001-Build-6-observations-additive-enumerate-fix-crowding.patch
+++++@@ -0,0 +1,1271 @@
++++++From bf34eba8684ecda65f4556ee41f977f257379fb7 Mon Sep 17 00:00:00 2001
++++++From: Neekhil Vatsa <vatsaneekhil@gmail.com>
++++++Date: Tue, 16 Jun 2026 17:50:21 +0000
++++++Subject: [PATCH] Build 6: observations additive + enumerate (fix crowding-out
++++++ & wrong-totals)
++++++
++++++Fix 1: observations get their own context slots (obs_k), never displacing raw
++++++facts/episodes from the k budget; rendered as a dedicated ENTITY SUMMARIES
++++++section with a verify-against-facts caveat. Fix 2: observation prompt enumerates
++++++every instance instead of asserting possibly-incomplete totals. Informed by
++++++Mastra Observational Memory (SOTA) + MemGAS multi-granularity. +1 test, 19/19.
++++++---
++++++ ...RES-env-to-enable-observations-itera.patch | 1092 +++++++++++++++++
++++++ smriti/extraction.py                          |    7 +-
++++++ smriti/retrieval.py                           |   35 +-
++++++ tests/test_smriti.py                          |   25 +-
++++++ 4 files changed, 1148 insertions(+), 11 deletions(-)
++++++ create mode 100644 patches/0001-run_all.sh-FEATURES-env-to-enable-observations-itera.patch
++++++
++++++diff --git a/patches/0001-run_all.sh-FEATURES-env-to-enable-observations-itera.patch b/patches/0001-run_all.sh-FEATURES-env-to-enable-observations-itera.patch
++++++new file mode 100644
++++++index 0000000..9364ed8
++++++--- /dev/null
+++++++++ b/patches/0001-run_all.sh-FEATURES-env-to-enable-observations-itera.patch
++++++@@ -0,0 +1,1092 @@
+++++++From 49cf44eea7de3e90b35b3061791ccf4fcc3749f4 Mon Sep 17 00:00:00 2001
+++++++From: Neekhil Vatsa <vatsaneekhil@gmail.com>
+++++++Date: Tue, 16 Jun 2026 15:40:39 +0000
+++++++Subject: [PATCH] run_all.sh: FEATURES env to enable --observations/--iterative
+++++++ on full-mode steps
+++++++
+++++++---
+++++++ bench/run_all.sh                              |   10 +-
+++++++ ...command-A-B-of-a-feature-flag-with-a.patch | 1029 +++++++++++++++++
+++++++ 2 files changed, 1036 insertions(+), 3 deletions(-)
+++++++ create mode 100644 patches/0001-bench-ab.sh-one-command-A-B-of-a-feature-flag-with-a.patch
+++++++
+++++++diff --git a/bench/run_all.sh b/bench/run_all.sh
+++++++index 2edcf49..a1345be 100755
+++++++--- a/bench/run_all.sh
++++++++++ b/bench/run_all.sh
+++++++@@ -26,6 +26,8 @@ EMBEDDER="${EMBEDDER:-ollama}"                  # ollama | openai | hash
+++++++ EMBED_MODEL="${EMBED_MODEL:-nomic-embed-text}"
+++++++ LIMIT="${LIMIT:-50}"                            # FIRST N questions (one type — quick but skewed)
+++++++ SAMPLE="${SAMPLE:-}"                             # ~N questions spread EVENLY across types (preferred)
++++++++FEATURES="${FEATURES:-}"                         # extra retrieval flags for FULL-mode steps,
++++++++                                                 # e.g. "--observations" or "--observations --iterative"
+++++++ DATA_DIR="${DATA_DIR:-data}"
+++++++ OUT_DIR="${OUT_DIR:-bench_results/$(date +%Y%m%d_%H%M%S)}"
+++++++ 
+++++++@@ -47,7 +49,7 @@ step() { printf '\n========== %s ==========\n' "$1"; }
+++++++ 
+++++++ echo "SMRITI benchmark pass"
+++++++ echo "  provider=$PROVIDER  answer=$ANSWER_MODEL  judge=$JUDGE_MODEL  memory=$MEMORY_MODEL"
+++++++-echo "  embedder=$EMBEDDER/$EMBED_MODEL  selection=${SEL[*]}"
++++++++echo "  embedder=$EMBEDDER/$EMBED_MODEL  selection=${SEL[*]}  features=${FEATURES:-none}"
+++++++ echo "  results -> $OUT_DIR"
+++++++ 
+++++++ # --- 1. datasets -----------------------------------------------------------
+++++++@@ -64,15 +66,17 @@ $PYTHON -m bench.run --bench longmemeval --data "$DATA_DIR/longmemeval_oracle.js
+++++++     --mode lite "${COMMON[@]}" --out "$OUT_DIR/lme_oracle_lite.json"
+++++++ 
+++++++ # --- 4. full mode, longmemeval_s (the comparable number) -------------------
++++++++# shellcheck disable=SC2086
+++++++ step "4/5  full mode — longmemeval_s"
+++++++ $PYTHON -m bench.run --bench longmemeval --data "$DATA_DIR/longmemeval_s_cleaned.json" \
+++++++-    --mode full --memory-model "$MEMORY_MODEL" "${COMMON[@]}" \
++++++++    --mode full --memory-model "$MEMORY_MODEL" "${COMMON[@]}" $FEATURES \
+++++++     --out "$OUT_DIR/lme_s_full.json"
+++++++ 
+++++++ # --- 5. LoCoMo, full mode --------------------------------------------------
++++++++# shellcheck disable=SC2086
+++++++ step "5/5  full mode — LoCoMo"
+++++++ $PYTHON -m bench.run --bench locomo --data "$DATA_DIR/locomo10.json" \
+++++++-    --mode full --memory-model "$MEMORY_MODEL" "${COMMON[@]}" \
++++++++    --mode full --memory-model "$MEMORY_MODEL" "${COMMON[@]}" $FEATURES \
+++++++     --out "$OUT_DIR/locomo_full.json"
+++++++ 
+++++++ # --- summary ---------------------------------------------------------------
+++++++diff --git a/patches/0001-bench-ab.sh-one-command-A-B-of-a-feature-flag-with-a.patch b/patches/0001-bench-ab.sh-one-command-A-B-of-a-feature-flag-with-a.patch
+++++++new file mode 100644
+++++++index 0000000..c136c03
+++++++--- /dev/null
++++++++++ b/patches/0001-bench-ab.sh-one-command-A-B-of-a-feature-flag-with-a.patch
+++++++@@ -0,0 +1,1029 @@
++++++++From 73c9cea5bb46964613564a4338c8bfa322c12c05 Mon Sep 17 00:00:00 2001
++++++++From: Neekhil Vatsa <vatsaneekhil@gmail.com>
++++++++Date: Tue, 16 Jun 2026 15:37:50 +0000
++++++++Subject: [PATCH] bench/ab.sh: one-command A/B of a feature flag with accuracy
++++++++ delta
++++++++
++++++++---
++++++++ bench/ab.sh                                   |  65 ++
++++++++ ...ype-filter-to-focus-a-single-gap-e.g.patch | 936 ++++++++++++++++++
++++++++ 2 files changed, 1001 insertions(+)
++++++++ create mode 100755 bench/ab.sh
++++++++ create mode 100644 patches/0001-bench-question-type-filter-to-focus-a-single-gap-e.g.patch
++++++++
++++++++diff --git a/bench/ab.sh b/bench/ab.sh
++++++++new file mode 100755
++++++++index 0000000..ee7f6ad
++++++++--- /dev/null
+++++++++++ b/bench/ab.sh
++++++++@@ -0,0 +1,65 @@
+++++++++#!/usr/bin/env bash
+++++++++# ---------------------------------------------------------------------------
+++++++++# A/B one feature flag on a focused slice and print the accuracy delta.
+++++++++# Runs the SAME questions twice — once baseline, once with the treatment flag —
+++++++++# so the only variable is the feature under test.
+++++++++#
+++++++++#   bash bench/ab.sh                 # --observations on multi-session (oracle, full)
+++++++++#   TREATMENT=--iterative bash bench/ab.sh
+++++++++#   QTYPE=temporal-reasoning TREATMENT=--iterative bash bench/ab.sh
+++++++++#   LIMIT=60 bash bench/ab.sh
+++++++++#
+++++++++# Defaults assume DeepSeek for the LLM + local Ollama embeddings; override via env.
+++++++++# ---------------------------------------------------------------------------
+++++++++set -euo pipefail
+++++++++
+++++++++PYTHON="${PYTHON:-python3}"
+++++++++PROVIDER="${PROVIDER:-deepseek}"
+++++++++API_KEY="${API_KEY:-${DEEPSEEK_API_KEY:-}}"
+++++++++ANSWER_MODEL="${ANSWER_MODEL:-deepseek-v4-flash}"
+++++++++JUDGE_MODEL="${JUDGE_MODEL:-$ANSWER_MODEL}"
+++++++++MEMORY_MODEL="${MEMORY_MODEL:-$ANSWER_MODEL}"
+++++++++EMBEDDER="${EMBEDDER:-ollama}"
+++++++++EMBED_MODEL="${EMBED_MODEL:-nomic-embed-text}"
+++++++++
+++++++++BENCH="${BENCH:-longmemeval}"
+++++++++DATA="${DATA:-data/longmemeval_oracle.json}"
+++++++++QTYPE="${QTYPE:-multi-session}"          # LongMemEval question type to focus (gap under test)
+++++++++LIMIT="${LIMIT:-40}"
+++++++++MODE="${MODE:-full}"                      # observations need full mode
+++++++++TREATMENT="${TREATMENT:---observations}" # the feature flag being measured
+++++++++
+++++++++OUT_DIR="${OUT_DIR:-bench_results/ab_$(date +%Y%m%d_%H%M%S)}"
+++++++++mkdir -p "$OUT_DIR"
+++++++++
+++++++++COMMON=(--bench "$BENCH" --data "$DATA" --mode "$MODE" --limit "$LIMIT"
+++++++++        --provider "$PROVIDER" --api-key "$API_KEY"
+++++++++        --answer-model "$ANSWER_MODEL" --judge-model "$JUDGE_MODEL"
+++++++++        --memory-model "$MEMORY_MODEL"
+++++++++        --embedder "$EMBEDDER" --embed-model "$EMBED_MODEL")
+++++++++if [ "$BENCH" = "longmemeval" ] && [ -n "$QTYPE" ]; then
+++++++++    COMMON+=(--question-type "$QTYPE")
+++++++++fi
+++++++++
+++++++++echo "A/B: '$TREATMENT' on $BENCH/${QTYPE:-all} ($MODE, n<=$LIMIT) via $PROVIDER/$ANSWER_MODEL"
+++++++++echo "  results -> $OUT_DIR"
+++++++++
+++++++++echo; echo "========== A: baseline =========="
+++++++++$PYTHON -m bench.run "${COMMON[@]}" --out "$OUT_DIR/base.json"
+++++++++
+++++++++echo; echo "========== B: with $TREATMENT =========="
+++++++++# shellcheck disable=SC2086
+++++++++$PYTHON -m bench.run "${COMMON[@]}" $TREATMENT --out "$OUT_DIR/treat.json"
+++++++++
+++++++++echo; echo "========== RESULT =========="
+++++++++$PYTHON - "$OUT_DIR/base.json" "$OUT_DIR/treat.json" "$TREATMENT" <<'PY'
+++++++++import json, sys
+++++++++base = json.load(open(sys.argv[1]))["summary"]
+++++++++treat = json.load(open(sys.argv[2]))["summary"]
+++++++++flag = sys.argv[3]
+++++++++b, t = base["accuracy"], treat["accuracy"]
+++++++++print(f"  baseline        : {b:.4f}  (n={base['n']})")
+++++++++print(f"  {flag:<16}: {t:.4f}  (n={treat['n']})")
+++++++++print(f"  delta           : {t-b:+.4f}  ({(t-b)*100:+.1f} pts)")
+++++++++PY
+++++++++echo; echo "(full per-question JSONL in $OUT_DIR/{base,treat}.json)"
++++++++diff --git a/patches/0001-bench-question-type-filter-to-focus-a-single-gap-e.g.patch b/patches/0001-bench-question-type-filter-to-focus-a-single-gap-e.g.patch
++++++++new file mode 100644
++++++++index 0000000..cf54357
++++++++--- /dev/null
+++++++++++ b/patches/0001-bench-question-type-filter-to-focus-a-single-gap-e.g.patch
++++++++@@ -0,0 +1,936 @@
+++++++++From b6fb35701969b371c0f854689b9bfc454afb4b2c Mon Sep 17 00:00:00 2001
+++++++++From: Neekhil Vatsa <vatsaneekhil@gmail.com>
+++++++++Date: Tue, 16 Jun 2026 15:33:22 +0000
+++++++++Subject: [PATCH] bench: --question-type filter to focus a single gap (e.g.
+++++++++ multi-session A/B)
+++++++++
+++++++++---
+++++++++ bench/longmemeval.py                          |   3 +
+++++++++ bench/run.py                                  |   5 +-
+++++++++ ...5-into-the-benchmark-harness-opt-in-.patch | 876 ++++++++++++++++++
+++++++++ 3 files changed, 883 insertions(+), 1 deletion(-)
+++++++++ create mode 100644 patches/0001-Wire-Builds-1-4-5-into-the-benchmark-harness-opt-in-.patch
+++++++++
+++++++++diff --git a/bench/longmemeval.py b/bench/longmemeval.py
+++++++++index 20b5b50..4f7f35a 100644
+++++++++--- a/bench/longmemeval.py
++++++++++++ b/bench/longmemeval.py
+++++++++@@ -92,7 +92,10 @@ def run_longmemeval(
+++++++++     sample: Optional[int] = None,
+++++++++     observations: bool = False,
+++++++++     iterative: bool = False,
++++++++++    question_type: Optional[str] = None,
+++++++++ ) -> dict:
++++++++++    if question_type:
++++++++++        data = [it for it in data if it.get("question_type") == question_type]
+++++++++     if sample:
+++++++++         items = stratified_sample(data, sample, lambda it: it.get("question_type", "unknown"))
+++++++++     else:
+++++++++diff --git a/bench/run.py b/bench/run.py
+++++++++index b8c7476..b327250 100644
+++++++++--- a/bench/run.py
++++++++++++ b/bench/run.py
+++++++++@@ -65,6 +65,8 @@ def main():
+++++++++     p.add_argument("--reranker-model", default="", help="Build 4: rerank model id")
+++++++++     p.add_argument("--reranker-url", default="", help="Build 4: rerank endpoint base url (enables reranking)")
+++++++++     p.add_argument("--reranker-key", default="")
++++++++++    p.add_argument("--question-type", default="",
++++++++++                   help="LongMemEval: restrict to one type, e.g. multi-session (focus a gap)")
+++++++++     p.add_argument("--out", default="bench_results.json")
+++++++++     args = p.parse_args()
+++++++++ 
+++++++++@@ -89,7 +91,8 @@ def main():
+++++++++                                   limit=args.limit, k=args.k,
+++++++++                                   char_budget=args.char_budget, out_path=args.out,
+++++++++                                   sample=args.sample, observations=args.observations,
+++++++++-                                  iterative=args.iterative)
++++++++++                                  iterative=args.iterative,
++++++++++                                  question_type=args.question_type or None)
+++++++++     else:
+++++++++         data = load_locomo(args.data)
+++++++++         summary = run_locomo(data, answer_llm, judge_llm, memory_factory,
+++++++++diff --git a/patches/0001-Wire-Builds-1-4-5-into-the-benchmark-harness-opt-in-.patch b/patches/0001-Wire-Builds-1-4-5-into-the-benchmark-harness-opt-in-.patch
+++++++++new file mode 100644
+++++++++index 0000000..b31ba6d
+++++++++--- /dev/null
++++++++++++ b/patches/0001-Wire-Builds-1-4-5-into-the-benchmark-harness-opt-in-.patch
+++++++++@@ -0,0 +1,876 @@
++++++++++From 1326f33a67fb2ea3f65766c8598c3698e6e8474c Mon Sep 17 00:00:00 2001
++++++++++From: Neekhil Vatsa <vatsaneekhil@gmail.com>
++++++++++Date: Tue, 16 Jun 2026 15:32:16 +0000
++++++++++Subject: [PATCH] Wire Builds 1/4/5 into the benchmark harness (opt-in flags
++++++++++ for A/B)
++++++++++
++++++++++bench/run.py: --observations (refresh_observations after ingest), --iterative
++++++++++(context_iterative), --reranker-url/-model/-key (HTTPReranker). Runners gain
++++++++++observations/iterative params, guarded to full mode. +1 integration test, 18/18.
++++++++++---
++++++++++ bench/locomo.py                               |   8 +-
++++++++++ bench/longmemeval.py                          |   8 +-
++++++++++ bench/run.py                                  |  21 +-
++++++++++ ...e-retrieval-for-multi-hop-full-mode-.patch | 676 ++++++++++++++++++
++++++++++ tests/test_smriti.py                          |  34 +-
++++++++++ 5 files changed, 740 insertions(+), 7 deletions(-)
++++++++++ create mode 100644 patches/0001-Build-5-iterative-retrieval-for-multi-hop-full-mode-.patch
++++++++++
++++++++++diff --git a/bench/locomo.py b/bench/locomo.py
++++++++++index 04c2306..05cfcc4 100644
++++++++++--- a/bench/locomo.py
+++++++++++++ b/bench/locomo.py
++++++++++@@ -82,6 +82,8 @@ def run_locomo(
++++++++++     verbose: bool = True,
++++++++++     out_path: Optional[str] = None,
++++++++++     sample: Optional[int] = None,
+++++++++++    observations: bool = False,
+++++++++++    iterative: bool = False,
++++++++++ ) -> dict:
++++++++++     from .longmemeval import stratified_sample
++++++++++     results, per_cat = [], {}
++++++++++@@ -109,6 +111,8 @@ def run_locomo(
++++++++++         t0 = time.time()
++++++++++         for key, ts, turns in iter_sessions(conv):
++++++++++             mem.add(turns, session_id=f"c{c_idx}-{key}", timestamp=ts)
+++++++++++        if observations and mem.llm is not None:
+++++++++++            mem.refresh_observations()  # Build 1: synthesize entity summaries post-ingest
++++++++++         ingest_s = time.time() - t0
++++++++++ 
++++++++++         for qi, q in enumerate(qa):
++++++++++@@ -122,7 +126,9 @@ def run_locomo(
++++++++++             gold = str(q.get("answer", q.get("adversarial_answer", "")))
++++++++++             cat = int(q.get("category", 0))
++++++++++ 
++++++++++-            ctx = mem.context(question, k=k, char_budget=char_budget)
+++++++++++            ctx = (mem.context_iterative(question, k=k, char_budget=char_budget)
+++++++++++                   if iterative else
+++++++++++                   mem.context(question, k=k, char_budget=char_budget))
++++++++++             hypothesis = answer_llm.complete(
++++++++++                 [{"role": "system", "content": ANSWER_SYSTEM.format(today="unknown")},
++++++++++                  {"role": "user", "content": f"MEMORY CONTEXT:\n{ctx}\n\nQUESTION: {question}"}],
++++++++++diff --git a/bench/longmemeval.py b/bench/longmemeval.py
++++++++++index 69ae73a..20b5b50 100644
++++++++++--- a/bench/longmemeval.py
+++++++++++++ b/bench/longmemeval.py
++++++++++@@ -90,6 +90,8 @@ def run_longmemeval(
++++++++++     verbose: bool = True,
++++++++++     out_path: Optional[str] = None,
++++++++++     sample: Optional[int] = None,
+++++++++++    observations: bool = False,
+++++++++++    iterative: bool = False,
++++++++++ ) -> dict:
++++++++++     if sample:
++++++++++         items = stratified_sample(data, sample, lambda it: it.get("question_type", "unknown"))
++++++++++@@ -113,10 +115,14 @@ def run_longmemeval(
++++++++++                      for t in session if t.get("content")]
++++++++++             if turns:
++++++++++                 mem.add(turns, session_id=f"{qid}-s{s_idx}", timestamp=ts)
+++++++++++        if observations and mem.llm is not None:
+++++++++++            mem.refresh_observations()  # Build 1: synthesize entity summaries post-ingest
++++++++++         ingest_s = time.time() - t0
++++++++++ 
++++++++++         t0 = time.time()
++++++++++-        ctx = mem.context(question, k=k, now=qdate, char_budget=char_budget)
+++++++++++        ctx = (mem.context_iterative(question, k=k, now=qdate, char_budget=char_budget)
+++++++++++               if iterative else
+++++++++++               mem.context(question, k=k, now=qdate, char_budget=char_budget))
++++++++++         today = (qdate or "")[:10] or "unknown"
++++++++++         hypothesis = answer_llm.complete(
++++++++++             [{"role": "system", "content": ANSWER_SYSTEM.format(today=today)},
++++++++++diff --git a/bench/run.py b/bench/run.py
++++++++++index 03383b9..b8c7476 100644
++++++++++--- a/bench/run.py
+++++++++++++ b/bench/run.py
++++++++++@@ -21,7 +21,7 @@ from __future__ import annotations
++++++++++ import argparse
++++++++++ import json
++++++++++ 
++++++++++-from smriti import LLM, HashEmbedder, OllamaEmbedder, OpenAICompatEmbedder, Smriti
+++++++++++from smriti import LLM, HashEmbedder, HTTPReranker, OllamaEmbedder, OpenAICompatEmbedder, Smriti
++++++++++ from smriti.llm import PRESETS
++++++++++ 
++++++++++ from .locomo import load_locomo, run_locomo
++++++++++@@ -57,6 +57,14 @@ def main():
++++++++++     p.add_argument("--embedder", choices=["ollama", "openai", "hash"], default="ollama")
++++++++++     p.add_argument("--embed-model", default="nomic-embed-text")
++++++++++     p.add_argument("--embed-base-url", default="")
+++++++++++    # research-driven retrieval features (opt-in, so runs are A/B comparable)
+++++++++++    p.add_argument("--observations", action="store_true",
+++++++++++                   help="Build 1: synthesize per-entity observation summaries after ingest (full mode)")
+++++++++++    p.add_argument("--iterative", action="store_true",
+++++++++++                   help="Build 5: LLM-seeded second retrieval round for multi-hop (full mode)")
+++++++++++    p.add_argument("--reranker-model", default="", help="Build 4: rerank model id")
+++++++++++    p.add_argument("--reranker-url", default="", help="Build 4: rerank endpoint base url (enables reranking)")
+++++++++++    p.add_argument("--reranker-key", default="")
++++++++++     p.add_argument("--out", default="bench_results.json")
++++++++++     args = p.parse_args()
++++++++++ 
++++++++++@@ -68,22 +76,27 @@ def main():
++++++++++     judge_llm = mk_llm(args.judge_model or args.answer_model)
++++++++++     memory_llm = mk_llm(args.memory_model or args.answer_model) if args.mode == "full" else None
++++++++++     embedder = build_embedder(args)
+++++++++++    reranker = (HTTPReranker(args.reranker_model, args.reranker_url, args.reranker_key)
+++++++++++                if args.reranker_url else None)
++++++++++ 
++++++++++     def memory_factory():
++++++++++-        return Smriti(path=":memory:", embedder=embedder, llm=memory_llm, mode=args.mode)
+++++++++++        return Smriti(path=":memory:", embedder=embedder, llm=memory_llm,
+++++++++++                      mode=args.mode, reranker=reranker)
++++++++++ 
++++++++++     if args.bench == "longmemeval":
++++++++++         data = load_longmemeval(args.data)
++++++++++         summary = run_longmemeval(data, answer_llm, judge_llm, memory_factory,
++++++++++                                   limit=args.limit, k=args.k,
++++++++++                                   char_budget=args.char_budget, out_path=args.out,
++++++++++-                                  sample=args.sample)
+++++++++++                                  sample=args.sample, observations=args.observations,
+++++++++++                                  iterative=args.iterative)
++++++++++     else:
++++++++++         data = load_locomo(args.data)
++++++++++         summary = run_locomo(data, answer_llm, judge_llm, memory_factory,
++++++++++                              limit_questions=args.limit, k=args.k,
++++++++++                              char_budget=args.char_budget, out_path=args.out,
++++++++++-                             sample=args.sample)
+++++++++++                             sample=args.sample, observations=args.observations,
+++++++++++                             iterative=args.iterative)
++++++++++ 
++++++++++     print("\n" + json.dumps(summary, indent=2))
++++++++++     print(f"\nFull per-question results written to {args.out}")
++++++++++diff --git a/patches/0001-Build-5-iterative-retrieval-for-multi-hop-full-mode-.patch b/patches/0001-Build-5-iterative-retrieval-for-multi-hop-full-mode-.patch
++++++++++new file mode 100644
++++++++++index 0000000..e9bbbe0
++++++++++--- /dev/null
+++++++++++++ b/patches/0001-Build-5-iterative-retrieval-for-multi-hop-full-mode-.patch
++++++++++@@ -0,0 +1,676 @@
+++++++++++From d672c65fb165c41d694a7068ce5c6289a11fe05b Mon Sep 17 00:00:00 2001
+++++++++++From: Neekhil Vatsa <vatsaneekhil@gmail.com>
+++++++++++Date: Tue, 16 Jun 2026 15:23:09 +0000
+++++++++++Subject: [PATCH] Build 5: iterative retrieval for multi-hop (full mode,
+++++++++++ optional)
+++++++++++
+++++++++++mem.search_iterative()/context_iterative(): after the first pass, the LLM
+++++++++++proposes a follow-up query for the missing piece (DualRAG-style), a second
+++++++++++retrieval runs, and results merge. Degrades to single-pass without an llm.
++++++++++++1 test, 17/17 passing.
+++++++++++---
+++++++++++ ...-cross-encoder-reranking-RRF-rerank-.patch | 539 ++++++++++++++++++
+++++++++++ smriti/extraction.py                          |  14 +
+++++++++++ smriti/memory.py                              |  36 +-
+++++++++++ tests/test_smriti.py                          |  20 +
+++++++++++ 4 files changed, 608 insertions(+), 1 deletion(-)
+++++++++++ create mode 100644 patches/0001-Build-4-optional-cross-encoder-reranking-RRF-rerank-.patch
+++++++++++
+++++++++++diff --git a/patches/0001-Build-4-optional-cross-encoder-reranking-RRF-rerank-.patch b/patches/0001-Build-4-optional-cross-encoder-reranking-RRF-rerank-.patch
+++++++++++new file mode 100644
+++++++++++index 0000000..4774c39
+++++++++++--- /dev/null
++++++++++++++ b/patches/0001-Build-4-optional-cross-encoder-reranking-RRF-rerank-.patch
+++++++++++@@ -0,0 +1,539 @@
++++++++++++From 8ac2e968c4c542d1b49fea271a53d639729a0739 Mon Sep 17 00:00:00 2001
++++++++++++From: Neekhil Vatsa <vatsaneekhil@gmail.com>
++++++++++++Date: Tue, 16 Jun 2026 15:21:42 +0000
++++++++++++Subject: [PATCH] Build 4: optional cross-encoder reranking (RRF + rerank,
++++++++++++ Hindsight-style)
++++++++++++
++++++++++++New smriti/rerank.py (MockReranker, HTTPReranker for TEI/Jina/Cohere /rerank).
++++++++++++retrieve() materializes a larger fused pool then re-sorts by a model-agnostic
++++++++++++reranker and tags results 'rerank'. Wired through Smriti(reranker=...). Opt-in,
++++++++++++stdlib-only core. +1 test, 16/16 passing.
++++++++++++---
++++++++++++ ...ntity-traversal-graph-lite-multi-hop.patch | 311 ++++++++++++++++++
++++++++++++ smriti/__init__.py                            |   2 +
++++++++++++ smriti/memory.py                              |   9 +-
++++++++++++ smriti/rerank.py                              |  60 ++++
++++++++++++ smriti/retrieval.py                           |  17 +-
++++++++++++ tests/test_smriti.py                          |  21 +-
++++++++++++ 6 files changed, 414 insertions(+), 6 deletions(-)
++++++++++++ create mode 100644 patches/0001-Build-2-2-hop-entity-traversal-graph-lite-multi-hop.patch
++++++++++++ create mode 100644 smriti/rerank.py
++++++++++++
++++++++++++diff --git a/patches/0001-Build-2-2-hop-entity-traversal-graph-lite-multi-hop.patch b/patches/0001-Build-2-2-hop-entity-traversal-graph-lite-multi-hop.patch
++++++++++++new file mode 100644
++++++++++++index 0000000..666b263
++++++++++++--- /dev/null
+++++++++++++++ b/patches/0001-Build-2-2-hop-entity-traversal-graph-lite-multi-hop.patch
++++++++++++@@ -0,0 +1,311 @@
+++++++++++++From 6805fe157d8a86b25c620fef38df308cbca93a9f Mon Sep 17 00:00:00 2001
+++++++++++++From: Neekhil Vatsa <vatsaneekhil@gmail.com>
+++++++++++++Date: Tue, 16 Jun 2026 15:10:14 +0000
+++++++++++++Subject: [PATCH] Build 2: 2-hop entity traversal (graph-lite multi-hop)
+++++++++++++
+++++++++++++Extend the sambandha channel with a bounded, down-weighted second entity hop
+++++++++++++so facts one link away from query entities are reachable (Rachel->Acme->Berlin).
+++++++++++++Pure SQL over the existing entities table, no graph DB. +1 test, 15/15 passing.
+++++++++++++---
+++++++++++++ ...ion-summary-layer-Hindsight-observat.patch | 214 ++++++++++++++++++
+++++++++++++ smriti/retrieval.py                           |  20 +-
+++++++++++++ tests/test_smriti.py                          |  19 ++
+++++++++++++ 3 files changed, 250 insertions(+), 3 deletions(-)
+++++++++++++ create mode 100644 patches/0001-Build-1-observation-summary-layer-Hindsight-observat.patch
+++++++++++++
+++++++++++++diff --git a/patches/0001-Build-1-observation-summary-layer-Hindsight-observat.patch b/patches/0001-Build-1-observation-summary-layer-Hindsight-observat.patch
+++++++++++++new file mode 100644
+++++++++++++index 0000000..f386c96
+++++++++++++--- /dev/null
++++++++++++++++ b/patches/0001-Build-1-observation-summary-layer-Hindsight-observat.patch
+++++++++++++@@ -0,0 +1,214 @@
++++++++++++++From 5298dcf1edf15797c3208120b1e47f5dedc091d3 Mon Sep 17 00:00:00 2001
++++++++++++++From: Neekhil Vatsa <vatsaneekhil@gmail.com>
++++++++++++++Date: Tue, 16 Jun 2026 15:08:07 +0000
++++++++++++++Subject: [PATCH] =?UTF-8?q?Build=201:=20observation/summary=20layer=20(Hin?=
++++++++++++++ =?UTF-8?q?dsight=20observation=20paradigm)=20=E2=80=94=20+2=20tests,=2014?=
++++++++++++++ =?UTF-8?q?/14=20passing?=
++++++++++++++MIME-Version: 1.0
++++++++++++++Content-Type: text/plain; charset=UTF-8
++++++++++++++Content-Transfer-Encoding: 8bit
++++++++++++++
++++++++++++++---
++++++++++++++ smriti/extraction.py | 19 ++++++++++++++++
++++++++++++++ smriti/memory.py     | 42 ++++++++++++++++++++++++++++++++++-
++++++++++++++ smriti/store.py      | 30 +++++++++++++++++++++++++
++++++++++++++ tests/test_smriti.py | 52 ++++++++++++++++++++++++++++++++++++++++++++
++++++++++++++ 4 files changed, 142 insertions(+), 1 deletion(-)
++++++++++++++
++++++++++++++diff --git a/smriti/extraction.py b/smriti/extraction.py
++++++++++++++index ce5a382..2a412b2 100644
++++++++++++++--- a/smriti/extraction.py
+++++++++++++++++ b/smriti/extraction.py
++++++++++++++@@ -43,6 +43,25 @@ def build_extraction_prompt(turns: List[dict], session_ts: Optional[str]) -> Lis
++++++++++++++     ]
++++++++++++++ 
++++++++++++++ 
+++++++++++++++OBSERVATION_SYSTEM = """You synthesize a concise, objective profile of an entity from a list of known facts about it.
+++++++++++++++
+++++++++++++++Rules:
+++++++++++++++- Produce 1-3 sentences capturing the salient, durable properties: roles, attributes, relationships, and any totals/counts the facts collectively imply.
+++++++++++++++- If the facts describe several instances of the same kind of thing (e.g. multiple trips, purchases, or events), state the COUNT and list them — this is the main value of the summary.
+++++++++++++++- Be objective and preference-neutral. Use ONLY what the facts support; invent nothing.
+++++++++++++++- Output ONLY the summary sentence(s), no preamble or list markers."""
+++++++++++++++
+++++++++++++++
+++++++++++++++def build_observation_prompt(entity: str, facts: List[Fact]) -> List[dict]:
+++++++++++++++    lines = [f"Entity: {entity}", "Known facts:"]
+++++++++++++++    for f in facts:
+++++++++++++++        lines.append(f"- {f.statement}")
+++++++++++++++    return [
+++++++++++++++        {"role": "system", "content": OBSERVATION_SYSTEM},
+++++++++++++++        {"role": "user", "content": "\n".join(lines)},
+++++++++++++++    ]
+++++++++++++++
+++++++++++++++
++++++++++++++ def parse_facts(raw: str, session_id: Optional[str], session_ts: Optional[str]) -> List[Fact]:
++++++++++++++     data = extract_json(raw)
++++++++++++++     if not isinstance(data, list):
++++++++++++++diff --git a/smriti/memory.py b/smriti/memory.py
++++++++++++++index 43d2319..51b264b 100644
++++++++++++++--- a/smriti/memory.py
+++++++++++++++++ b/smriti/memory.py
++++++++++++++@@ -20,7 +20,7 @@ from typing import List, Optional
++++++++++++++ 
++++++++++++++ from .consolidation import consolidate, heuristic_conflicts
++++++++++++++ from .embedder import HashEmbedder
++++++++++++++-from .extraction import build_extraction_prompt, parse_facts
+++++++++++++++from .extraction import build_extraction_prompt, build_observation_prompt, parse_facts
++++++++++++++ from .llm import LLM
++++++++++++++ from .retrieval import pack_context, retrieve
++++++++++++++ from .store import Store, utcnow
++++++++++++++@@ -96,6 +96,46 @@ class Smriti:
++++++++++++++                 char_budget: int = 9000) -> str:
++++++++++++++         return pack_context(self.search(query, k=k, now=now), now=now, char_budget=char_budget)
++++++++++++++ 
+++++++++++++++    # -------------------------------------------------------- observations
+++++++++++++++    def refresh_observations(self, min_facts: int = 2,
+++++++++++++++                             entities: Optional[List[str]] = None) -> dict:
+++++++++++++++        """Synthesize a per-entity 'observation' summary fact from that entity's
+++++++++++++++        currently-valid facts — the Hindsight-style observation paradigm.
+++++++++++++++
+++++++++++++++        Observations sit on top of raw facts and pre-compute the aggregates
+++++++++++++++        ("attended 3 charity events: X, Y, Z") that the answering model is bad
+++++++++++++++        at tallying from scattered fragments — directly targeting the
+++++++++++++++        multi-session / aggregation weak spot. Stored as ordinary facts
+++++++++++++++        (kind='observation'), so they ride the existing retrieval channels;
+++++++++++++++        regenerating one supersedes the prior observation (full audit trail).
+++++++++++++++
+++++++++++++++        Opt-in and idempotent: call it after a batch of adds or on a schedule,
+++++++++++++++        keeping write latency and the zero-cost default intact. Requires an llm.
+++++++++++++++        """
+++++++++++++++        if self.llm is None:
+++++++++++++++            raise ValueError("refresh_observations requires an llm (full mode)")
+++++++++++++++        targets = ([e.lower().strip() for e in entities]
+++++++++++++++                   if entities is not None else self.store.all_entities())
+++++++++++++++        made = 0
+++++++++++++++        for ent in targets:
+++++++++++++++            facts = self.store.facts_for_entity(ent, valid_only=True)
+++++++++++++++            if len(facts) < min_facts:
+++++++++++++++                continue
+++++++++++++++            summary = self.llm.complete(
+++++++++++++++                build_observation_prompt(ent, facts), max_tokens=256
+++++++++++++++            ).strip()
+++++++++++++++            if not summary:
+++++++++++++++                continue
+++++++++++++++            obs = Fact(id=None, statement=summary, subject=ent, predicate="observation",
+++++++++++++++                       object="", kind="observation", entities=[ent], valid_from=utcnow())
+++++++++++++++            emb = self.embedder.embed([summary])[0]
+++++++++++++++            prior = self.store.similar_valid_facts(ent, "observation")
+++++++++++++++            new_id = self.store.add_fact(obs, emb)
+++++++++++++++            for p in prior:
+++++++++++++++                self.store.invalidate_fact(p.id, new_id)
+++++++++++++++            made += 1
+++++++++++++++        return {"observations": made}
+++++++++++++++
++++++++++++++     # ---------------------------------------------------------------- misc
++++++++++++++     def stats(self) -> dict:
++++++++++++++         s = self.store.stats()
++++++++++++++diff --git a/smriti/store.py b/smriti/store.py
++++++++++++++index a34e1d1..3f8f78d 100644
++++++++++++++--- a/smriti/store.py
+++++++++++++++++ b/smriti/store.py
++++++++++++++@@ -164,6 +164,36 @@ class Store:
++++++++++++++         ).fetchall()
++++++++++++++         return [self.get_fact(r[0]) for r in rows]
++++++++++++++ 
+++++++++++++++    def facts_for_entity(self, name: str, valid_only: bool = True,
+++++++++++++++                         include_observations: bool = False) -> List[Fact]:
+++++++++++++++        """All facts linked to an entity. By default only currently-valid facts,
+++++++++++++++        and excluding observation summaries (so we summarize raw facts, not
+++++++++++++++        prior summaries)."""
+++++++++++++++        rows = self.db.execute(
+++++++++++++++            "SELECT DISTINCT fact_id FROM entities WHERE name=?", (name.lower().strip(),)
+++++++++++++++        ).fetchall()
+++++++++++++++        out = []
+++++++++++++++        for (fid,) in rows:
+++++++++++++++            f = self.get_fact(fid)
+++++++++++++++            if not f:
+++++++++++++++                continue
+++++++++++++++            if valid_only and f.invalid_at is not None:
+++++++++++++++                continue
+++++++++++++++            if not include_observations and f.kind == "observation":
+++++++++++++++                continue
+++++++++++++++            out.append(f)
+++++++++++++++        return out
+++++++++++++++
+++++++++++++++    def entities_of_facts(self, fact_ids: Sequence[int]) -> List[str]:
+++++++++++++++        """Entities mentioned by the given facts (for graph-lite multi-hop)."""
+++++++++++++++        if not fact_ids:
+++++++++++++++            return []
+++++++++++++++        marks = ",".join("?" for _ in fact_ids)
+++++++++++++++        rows = self.db.execute(
+++++++++++++++            f"SELECT DISTINCT name FROM entities WHERE fact_id IN ({marks})", list(fact_ids)
+++++++++++++++        ).fetchall()
+++++++++++++++        return [r[0] for r in rows]
+++++++++++++++
++++++++++++++     # --------------------------------------------------------------- search
++++++++++++++     def fts_search(self, query: str, table: str, limit: int = 20) -> List[Tuple[int, float]]:
++++++++++++++         q = _fts_query(query)
++++++++++++++diff --git a/tests/test_smriti.py b/tests/test_smriti.py
++++++++++++++index 2d03dd0..0443f13 100644
++++++++++++++--- a/tests/test_smriti.py
+++++++++++++++++ b/tests/test_smriti.py
++++++++++++++@@ -106,6 +106,58 @@ def test_entity_channel():
++++++++++++++     assert any("SigmaFlow" in r.text and "entity" in r.channels for r in results)
++++++++++++++ 
++++++++++++++ 
+++++++++++++++# ------------------------------------------------------- observations (Build 1)
+++++++++++++++def _charity_fact(stmt, obj):
+++++++++++++++    return Fact(id=None, statement=stmt, subject="user", predicate="attended",
+++++++++++++++                object=obj, entities=["charity"])
+++++++++++++++
+++++++++++++++
+++++++++++++++def test_observation_synthesis_and_supersession():
+++++++++++++++    """Per-entity observation summary is created, retrievable, and regenerating
+++++++++++++++    it supersedes the prior one (history preserved, never duplicated)."""
+++++++++++++++    llm = MockLLM([
+++++++++++++++        "The user attended 2 charity events: Walk for Hunger and the 5K Gala.",
+++++++++++++++        "The user attended 3 charity events: Walk for Hunger, the 5K Gala, and Run for Hope.",
+++++++++++++++    ])
+++++++++++++++    mem = Smriti(path=":memory:", embedder=HashEmbedder(), llm=llm, mode="full")
+++++++++++++++    mem.add_fact(_charity_fact("The user attended the Walk for Hunger event.", "Walk for Hunger"),
+++++++++++++++                 resolve_conflicts=False)
+++++++++++++++    mem.add_fact(_charity_fact("The user attended the 5K Gala event.", "5K Gala"),
+++++++++++++++                 resolve_conflicts=False)
+++++++++++++++
+++++++++++++++    out = mem.refresh_observations(min_facts=2)
+++++++++++++++    assert out["observations"] == 1
+++++++++++++++    obs = mem.store.similar_valid_facts("charity", "observation")
+++++++++++++++    assert len(obs) == 1 and obs[0].kind == "observation"
+++++++++++++++    assert "2 charity events" in obs[0].statement
+++++++++++++++
+++++++++++++++    # observation is retrievable via the normal channels
+++++++++++++++    results = mem.search("how many charity events did I attend?", k=8)
+++++++++++++++    assert any(r.kind == "fact" and "2 charity events" in r.text for r in results)
+++++++++++++++
+++++++++++++++    # new fact + refresh -> supersede prior observation, don't duplicate
+++++++++++++++    mem.add_fact(_charity_fact("The user attended the Run for Hope event.", "Run for Hope"),
+++++++++++++++                 resolve_conflicts=False)
+++++++++++++++    mem.refresh_observations(min_facts=2)
+++++++++++++++    valid = mem.store.similar_valid_facts("charity", "observation")
+++++++++++++++    assert len(valid) == 1 and "3 charity events" in valid[0].statement
+++++++++++++++    all_obs = [f for f in mem.store.facts_for_entity("charity", valid_only=False,
+++++++++++++++                                                     include_observations=True)
+++++++++++++++               if f.kind == "observation"]
+++++++++++++++    assert len(all_obs) == 2  # prior kept as superseded history
+++++++++++++++
+++++++++++++++
+++++++++++++++def test_observation_skips_sparse_entities():
+++++++++++++++    """An entity with fewer than min_facts gets no observation (no wasted LLM call)."""
+++++++++++++++    llm = MockLLM(["unused"])
+++++++++++++++    mem = Smriti(path=":memory:", embedder=HashEmbedder(), llm=llm, mode="full")
+++++++++++++++    mem.add_fact(Fact(id=None, statement="The user owns a kayak.", subject="user",
+++++++++++++++                      predicate="owns", object="kayak", entities=["kayak"]),
+++++++++++++++                 resolve_conflicts=False)
+++++++++++++++    out = mem.refresh_observations(min_facts=2)
+++++++++++++++    assert out["observations"] == 0 and llm.calls == 0
+++++++++++++++
+++++++++++++++
++++++++++++++ # ---------------------------------------------------------------- temporal
++++++++++++++ def test_extract_dates_variants():
++++++++++++++     assert "2024-03-12" in extract_dates("what happened on 2024-03-12?")
++++++++++++++-- 
++++++++++++++2.34.1
++++++++++++++
+++++++++++++diff --git a/smriti/retrieval.py b/smriti/retrieval.py
+++++++++++++index 2c34716..64aaba8 100644
+++++++++++++--- a/smriti/retrieval.py
++++++++++++++++ b/smriti/retrieval.py
+++++++++++++@@ -87,13 +87,13 @@ def _rrf(rankings: Dict[str, List[Tuple[str, int]]], weights: Dict[str, float],
+++++++++++++ DEFAULT_WEIGHTS = {
+++++++++++++     "vec_fact": 1.0, "vec_episode": 1.0,
+++++++++++++     "bm25_fact": 0.9, "bm25_episode": 0.9,
+++++++++++++-    "entity": 0.6, "temporal": 0.6,
++++++++++++++    "entity": 0.6, "entity_hop2": 0.4, "temporal": 0.6,
+++++++++++++ }
+++++++++++++ 
+++++++++++++ 
+++++++++++++ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
+++++++++++++              k: int = 12, weights: Optional[Dict[str, float]] = None,
+++++++++++++-             per_channel: int = 24) -> List[RetrievalResult]:
++++++++++++++             per_channel: int = 24, entity_hops: int = 2) -> List[RetrievalResult]:
+++++++++++++     weights = weights or DEFAULT_WEIGHTS
+++++++++++++     qvec = embedder.embed([query])[0] if embedder else None
+++++++++++++ 
+++++++++++++@@ -105,7 +105,21 @@ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
+++++++++++++         rankings["vec_episode"] = [("episode", i) for i, _ in store.vector_search(qvec, "episode", per_channel)]
+++++++++++++     ents = query_entities(store, query)
+++++++++++++     if ents:
+++++++++++++-        rankings["entity"] = [("fact", i) for i, _ in store.entity_facts(ents, per_channel)]
++++++++++++++        hop1 = store.entity_facts(ents, per_channel)
++++++++++++++        rankings["entity"] = [("fact", i) for i, _ in hop1]
++++++++++++++        # graph-lite multi-hop: facts one entity-link away from the hop-1 facts.
++++++++++++++        # "Rachel works at Acme" + "Acme is in Berlin" -> reach Berlin from Rachel.
++++++++++++++        # Bounded (one extra hop, deduped, down-weighted) — no graph DB.
++++++++++++++        if entity_hops >= 2 and hop1:
++++++++++++++            hop1_ids = [i for i, _ in hop1]
++++++++++++++            seen = set(hop1_ids)
++++++++++++++            hop2_ents = [e for e in store.entities_of_facts(hop1_ids)
++++++++++++++                         if e not in set(ents)][:20]
++++++++++++++            if hop2_ents:
++++++++++++++                rankings["entity_hop2"] = [
++++++++++++++                    ("fact", i) for i, _ in store.entity_facts(hop2_ents, per_channel)
++++++++++++++                    if i not in seen
++++++++++++++                ]
+++++++++++++     for d in extract_dates(query)[:2]:
+++++++++++++         rankings.setdefault("temporal", [])
+++++++++++++         rankings["temporal"] += [("episode", i) for i, _ in store.episodes_near(d, per_channel // 2)]
+++++++++++++diff --git a/tests/test_smriti.py b/tests/test_smriti.py
+++++++++++++index 0443f13..a0f636b 100644
+++++++++++++--- a/tests/test_smriti.py
++++++++++++++++ b/tests/test_smriti.py
+++++++++++++@@ -147,6 +147,25 @@ def test_observation_synthesis_and_supersession():
+++++++++++++     assert len(all_obs) == 2  # prior kept as superseded history
+++++++++++++ 
+++++++++++++ 
++++++++++++++def test_two_hop_entity_traversal():
++++++++++++++    """A fact reachable only by hopping query-entity -> intermediate-entity ->
++++++++++++++    answer-fact is surfaced by the 2-hop entity channel (graph-lite multi-hop)."""
++++++++++++++    mem = make_lite()
++++++++++++++    mem.add_fact(Fact(id=None, statement="Rachel works at Acme.", subject="rachel",
++++++++++++++                      predicate="works_at", object="Acme", entities=["Rachel", "Acme"]))
++++++++++++++    mem.add_fact(Fact(id=None, statement="Acme is headquartered in Berlin.", subject="acme",
++++++++++++++                      predicate="located_in", object="Berlin", entities=["Acme"]))
++++++++++++++    q = "Where is the company Rachel works for located?"
++++++++++++++    hits = [r for r in mem.search(q, k=8) if "Berlin" in r.text]
++++++++++++++    assert hits, "2-hop fact not retrieved"
++++++++++++++    assert any("entity_hop2" in r.channels for r in hits)
++++++++++++++
++++++++++++++    # without the second hop, the Berlin fact isn't reachable via entities
++++++++++++++    from smriti.retrieval import retrieve
++++++++++++++    one_hop = retrieve(mem.store, mem.embedder, q, k=8, entity_hops=1)
++++++++++++++    assert not any("entity_hop2" in r.channels for r in one_hop)
++++++++++++++
++++++++++++++
+++++++++++++ def test_observation_skips_sparse_entities():
+++++++++++++     """An entity with fewer than min_facts gets no observation (no wasted LLM call)."""
+++++++++++++     llm = MockLLM(["unused"])
+++++++++++++-- 
+++++++++++++2.34.1
+++++++++++++
++++++++++++diff --git a/smriti/__init__.py b/smriti/__init__.py
++++++++++++index e4da678..5189990 100644
++++++++++++--- a/smriti/__init__.py
+++++++++++++++ b/smriti/__init__.py
++++++++++++@@ -6,10 +6,12 @@ smriti (स्मृति): Sanskrit for "that which is remembered".
++++++++++++ from .embedder import HashEmbedder, OllamaEmbedder, OpenAICompatEmbedder
++++++++++++ from .llm import LLM, MockLLM
++++++++++++ from .memory import Smriti
+++++++++++++from .rerank import HTTPReranker, MockReranker
++++++++++++ from .types import Episode, Fact, RetrievalResult
++++++++++++ 
++++++++++++ __version__ = "0.1.0"
++++++++++++ __all__ = [
++++++++++++     "Smriti", "Fact", "Episode", "RetrievalResult",
++++++++++++     "LLM", "MockLLM", "HashEmbedder", "OllamaEmbedder", "OpenAICompatEmbedder",
+++++++++++++    "HTTPReranker", "MockReranker",
++++++++++++ ]
++++++++++++diff --git a/smriti/memory.py b/smriti/memory.py
++++++++++++index 51b264b..7eae666 100644
++++++++++++--- a/smriti/memory.py
+++++++++++++++ b/smriti/memory.py
++++++++++++@@ -32,12 +32,15 @@ MODE_ALIASES = {"laghu": "lite", "purna": "full"}
++++++++++++ 
++++++++++++ class Smriti:
++++++++++++     def __init__(self, path: str = ":memory:", embedder=None, llm: Optional[LLM] = None,
++++++++++++-                 mode: str = "auto", embed_episodes: bool = True):
+++++++++++++                 mode: str = "auto", embed_episodes: bool = True, reranker=None):
++++++++++++         """mode: "full"/"purna" (LLM extraction+consolidation), "lite"/"laghu"
++++++++++++-        (episodic only), or "auto" (full if an llm is provided, else lite)."""
+++++++++++++        (episodic only), or "auto" (full if an llm is provided, else lite).
+++++++++++++        reranker: optional cross-encoder (any .rerank(query, docs)->scores) applied
+++++++++++++        to fused candidates at read time."""
++++++++++++         self.store = Store(path)
++++++++++++         self.embedder = embedder or HashEmbedder()
++++++++++++         self.llm = llm
+++++++++++++        self.reranker = reranker
++++++++++++         mode = MODE_ALIASES.get(mode, mode)
++++++++++++         if mode == "auto":
++++++++++++             mode = "full" if llm is not None else "lite"
++++++++++++@@ -90,7 +93,7 @@ class Smriti:
++++++++++++ 
++++++++++++     # --------------------------------------------------------------- search
++++++++++++     def search(self, query: str, k: int = 12, now: Optional[str] = None) -> List[RetrievalResult]:
++++++++++++-        return retrieve(self.store, self.embedder, query, now=now, k=k)
+++++++++++++        return retrieve(self.store, self.embedder, query, now=now, k=k, reranker=self.reranker)
++++++++++++ 
++++++++++++     def context(self, query: str, k: int = 12, now: Optional[str] = None,
++++++++++++                 char_budget: int = 9000) -> str:
++++++++++++diff --git a/smriti/rerank.py b/smriti/rerank.py
++++++++++++new file mode 100644
++++++++++++index 0000000..b8905f0
++++++++++++--- /dev/null
+++++++++++++++ b/smriti/rerank.py
++++++++++++@@ -0,0 +1,60 @@
+++++++++++++"""Optional cross-encoder reranking — *punarvichara* (पुनर्विचार, re-examination).
+++++++++++++
+++++++++++++Reciprocal Rank Fusion is cheap and order-robust, but it scores a candidate by
+++++++++++++its *ranks* across channels, not by a joint reading of (query, document). A
+++++++++++++cross-encoder re-examines the top fused candidates by scoring each query/doc
+++++++++++++pair directly, which is the lever the strongest systems (e.g. Hindsight) add
+++++++++++++on top of RRF.
+++++++++++++
+++++++++++++Model-agnostic by design: any object exposing ``rerank(query, docs) -> list[float]``
+++++++++++++(higher = more relevant) plugs in. Stdlib HTTP only, consistent with the rest
+++++++++++++of SMRITI — no torch, no sentence-transformers required in the core.
+++++++++++++"""
+++++++++++++from __future__ import annotations
+++++++++++++
+++++++++++++from typing import List, Sequence
+++++++++++++
+++++++++++++from .embedder import _post_json
+++++++++++++
+++++++++++++
+++++++++++++class MockReranker:
+++++++++++++    """Deterministic, dependency-free reranker for tests and offline use.
+++++++++++++
+++++++++++++    Scores by query/document token overlap. Not semantically smart, but stable
+++++++++++++    and good enough to exercise the rerank plumbing without a model server.
+++++++++++++    """
+++++++++++++
+++++++++++++    def rerank(self, query: str, docs: Sequence[str]) -> List[float]:
+++++++++++++        q = set(query.lower().split())
+++++++++++++        return [len(q & set(d.lower().split())) for d in docs]
+++++++++++++
+++++++++++++
+++++++++++++class HTTPReranker:
+++++++++++++    """Calls a TEI / Jina / Cohere-style ``/rerank`` endpoint.
+++++++++++++
+++++++++++++    Accepts the common response shapes: ``{"results": [{"index", "relevance_score"}]}``
+++++++++++++    or a bare list of ``{"index", "score"}``. Missing scores default to 0.
+++++++++++++    """
+++++++++++++
+++++++++++++    def __init__(self, model: str, base_url: str, api_key: str = ""):
+++++++++++++        self.model = model
+++++++++++++        self.base_url = base_url.rstrip("/")
+++++++++++++        self.api_key = api_key
+++++++++++++
+++++++++++++    def rerank(self, query: str, docs: Sequence[str]) -> List[float]:
+++++++++++++        docs = list(docs)
+++++++++++++        if not docs:
+++++++++++++            return []
+++++++++++++        headers = {"Authorization": f"Bearer {self.api_key}"} if self.api_key else {}
+++++++++++++        resp = _post_json(
+++++++++++++            f"{self.base_url}/rerank",
+++++++++++++            {"model": self.model, "query": query, "documents": docs},
+++++++++++++            headers,
+++++++++++++        )
+++++++++++++        rows = resp.get("results", resp) if isinstance(resp, dict) else resp
+++++++++++++        scores = [0.0] * len(docs)
+++++++++++++        for r in rows or []:
+++++++++++++            idx = r.get("index")
+++++++++++++            if idx is not None and 0 <= idx < len(docs):
+++++++++++++                scores[idx] = float(r.get("relevance_score", r.get("score", 0.0)))
+++++++++++++        return scores
++++++++++++diff --git a/smriti/retrieval.py b/smriti/retrieval.py
++++++++++++index 64aaba8..542b284 100644
++++++++++++--- a/smriti/retrieval.py
+++++++++++++++ b/smriti/retrieval.py
++++++++++++@@ -93,7 +93,8 @@ DEFAULT_WEIGHTS = {
++++++++++++ 
++++++++++++ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
++++++++++++              k: int = 12, weights: Optional[Dict[str, float]] = None,
++++++++++++-             per_channel: int = 24, entity_hops: int = 2) -> List[RetrievalResult]:
+++++++++++++             per_channel: int = 24, entity_hops: int = 2,
+++++++++++++             reranker=None, rerank_top: int = 48) -> List[RetrievalResult]:
++++++++++++     weights = weights or DEFAULT_WEIGHTS
++++++++++++     qvec = embedder.embed([query])[0] if embedder else None
++++++++++++ 
++++++++++++@@ -127,10 +128,12 @@ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
++++++++++++     fused = _rrf(rankings, weights)
++++++++++++     ordered = sorted(fused.items(), key=lambda kv: -kv[1][0])
++++++++++++ 
+++++++++++++    # Materialize a larger pool when a reranker will re-sort it, else just k.
+++++++++++++    pool = max(k, rerank_top) if reranker is not None else k
++++++++++++     results: List[RetrievalResult] = []
++++++++++++     seen_sessions_text = set()
++++++++++++     for (kind, rid), (score, chans) in ordered:
++++++++++++-        if len(results) >= k:
+++++++++++++        if len(results) >= pool:
++++++++++++             break
++++++++++++         if kind == "fact":
++++++++++++             f = store.get_fact(rid)
++++++++++++@@ -150,6 +153,16 @@ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
++++++++++++             results.append(RetrievalResult(
++++++++++++                 kind="episode", id=rid, text=e.content, score=score,
++++++++++++                 ts=e.ts, role=e.role, channels=chans))
+++++++++++++
+++++++++++++    # cross-encoder re-examination of the fused pool, then trim to k
+++++++++++++    if reranker is not None and results:
+++++++++++++        scores = reranker.rerank(query, [r.text for r in results])
+++++++++++++        for r, sc in zip(results, scores):
+++++++++++++            r.score = float(sc)
+++++++++++++            if "rerank" not in r.channels:
+++++++++++++                r.channels = r.channels + ["rerank"]
+++++++++++++        results.sort(key=lambda r: -r.score)
+++++++++++++        results = results[:k]
++++++++++++     return results
++++++++++++ 
++++++++++++ 
++++++++++++diff --git a/tests/test_smriti.py b/tests/test_smriti.py
++++++++++++index a0f636b..c02ea13 100644
++++++++++++--- a/tests/test_smriti.py
+++++++++++++++ b/tests/test_smriti.py
++++++++++++@@ -1,7 +1,7 @@
++++++++++++ """Offline tests: HashEmbedder + MockLLM, no network, no API keys."""
++++++++++++ import json
++++++++++++ 
++++++++++++-from smriti import Fact, HashEmbedder, MockLLM, Smriti
+++++++++++++from smriti import Fact, HashEmbedder, MockLLM, MockReranker, Smriti
++++++++++++ from smriti.retrieval import extract_dates
++++++++++++ from bench.judge import is_abstention
++++++++++++ from bench.longmemeval import parse_lme_date
++++++++++++@@ -177,6 +177,25 @@ def test_observation_skips_sparse_entities():
++++++++++++     assert out["observations"] == 0 and llm.calls == 0
++++++++++++ 
++++++++++++ 
+++++++++++++# ------------------------------------------------------- reranking (Build 4)
+++++++++++++def test_reranker_reorders_and_tags():
+++++++++++++    """An optional cross-encoder re-sorts the fused pool and tags results."""
+++++++++++++    facts = [
+++++++++++++        "The user enjoys hiking in the Western Ghats on weekends.",
+++++++++++++        "The user adopted a cat named Pixel last winter.",
+++++++++++++        "The user's favorite programming language is Python.",
+++++++++++++    ]
+++++++++++++    mem = Smriti(path=":memory:", embedder=HashEmbedder(), mode="lite",
+++++++++++++                 reranker=MockReranker())
+++++++++++++    for f in facts:
+++++++++++++        mem.add_fact(Fact(id=None, statement=f, subject="user", predicate="note",
+++++++++++++                          object="", entities=[]))
+++++++++++++    res = mem.search("What programming language does the user like?", k=3)
+++++++++++++    assert res and "rerank" in res[0].channels
+++++++++++++    # reranker promotes the query-overlapping fact to the top
+++++++++++++    assert "Python" in res[0].text
+++++++++++++
+++++++++++++
++++++++++++ # ---------------------------------------------------------------- temporal
++++++++++++ def test_extract_dates_variants():
++++++++++++     assert "2024-03-12" in extract_dates("what happened on 2024-03-12?")
++++++++++++-- 
++++++++++++2.34.1
++++++++++++
+++++++++++diff --git a/smriti/extraction.py b/smriti/extraction.py
+++++++++++index 2a412b2..67a7737 100644
+++++++++++--- a/smriti/extraction.py
++++++++++++++ b/smriti/extraction.py
+++++++++++@@ -62,6 +62,20 @@ def build_observation_prompt(entity: str, facts: List[Fact]) -> List[dict]:
+++++++++++     ]
+++++++++++ 
+++++++++++ 
++++++++++++FOLLOWUP_SYSTEM = """You help a memory system answer a multi-hop question by deciding what to look up next.
++++++++++++Given the QUESTION and the NOTES retrieved so far:
++++++++++++- If the notes already contain everything needed to answer, reply with exactly: NONE
++++++++++++- Otherwise reply with a SINGLE short search query (no explanation, no quotes) for the missing piece — typically a bridging entity, date, or fact the question still needs."""
++++++++++++
++++++++++++
++++++++++++def build_followup_prompt(question: str, notes: str) -> List[dict]:
++++++++++++    return [
++++++++++++        {"role": "system", "content": FOLLOWUP_SYSTEM},
++++++++++++        {"role": "user",
++++++++++++         "content": f"QUESTION: {question}\n\nNOTES:\n{notes}\n\nNext search query or NONE:"},
++++++++++++    ]
++++++++++++
++++++++++++
+++++++++++ def parse_facts(raw: str, session_id: Optional[str], session_ts: Optional[str]) -> List[Fact]:
+++++++++++     data = extract_json(raw)
+++++++++++     if not isinstance(data, list):
+++++++++++diff --git a/smriti/memory.py b/smriti/memory.py
+++++++++++index 7eae666..f9c16a2 100644
+++++++++++--- a/smriti/memory.py
++++++++++++++ b/smriti/memory.py
+++++++++++@@ -20,7 +20,8 @@ from typing import List, Optional
+++++++++++ 
+++++++++++ from .consolidation import consolidate, heuristic_conflicts
+++++++++++ from .embedder import HashEmbedder
+++++++++++-from .extraction import build_extraction_prompt, build_observation_prompt, parse_facts
++++++++++++from .extraction import (build_extraction_prompt, build_followup_prompt,
++++++++++++                         build_observation_prompt, parse_facts)
+++++++++++ from .llm import LLM
+++++++++++ from .retrieval import pack_context, retrieve
+++++++++++ from .store import Store, utcnow
+++++++++++@@ -99,6 +100,39 @@ class Smriti:
+++++++++++                 char_budget: int = 9000) -> str:
+++++++++++         return pack_context(self.search(query, k=k, now=now), now=now, char_budget=char_budget)
+++++++++++ 
++++++++++++    def search_iterative(self, query: str, k: int = 12, now: Optional[str] = None,
++++++++++++                         rounds: int = 2) -> List[RetrievalResult]:
++++++++++++        """Multi-step retrieval for multi-hop questions (DualRAG-style).
++++++++++++
++++++++++++        After the first pass, ask the LLM what's still missing, issue a
++++++++++++        follow-up retrieval seeded by that, and merge — so chains the single
++++++++++++        pass can't resolve in one shot ("my mentor's research field" needs the
++++++++++++        mentor, then the mentor's field) get a second look. Full mode only;
++++++++++++        with no llm or rounds<2 it degrades to a normal single-pass search.
++++++++++++        """
++++++++++++        results = self.search(query, k=k, now=now)
++++++++++++        if self.llm is None or rounds < 2:
++++++++++++            return results
++++++++++++        seen = {(r.kind, r.id) for r in results}
++++++++++++        for _ in range(rounds - 1):
++++++++++++            notes = pack_context(results, now=now)
++++++++++++            follow = self.llm.complete(
++++++++++++                build_followup_prompt(query, notes), max_tokens=64
++++++++++++            ).strip()
++++++++++++            if not follow or follow.upper().startswith("NONE"):
++++++++++++                break
++++++++++++            for r in retrieve(self.store, self.embedder, follow, now=now, k=k,
++++++++++++                              reranker=self.reranker):
++++++++++++                if (r.kind, r.id) not in seen:
++++++++++++                    seen.add((r.kind, r.id))
++++++++++++                    results.append(r)
++++++++++++        return results
++++++++++++
++++++++++++    def context_iterative(self, query: str, k: int = 12, now: Optional[str] = None,
++++++++++++                          char_budget: int = 9000, rounds: int = 2) -> str:
++++++++++++        return pack_context(self.search_iterative(query, k=k, now=now, rounds=rounds),
++++++++++++                            now=now, char_budget=char_budget)
++++++++++++
+++++++++++     # -------------------------------------------------------- observations
+++++++++++     def refresh_observations(self, min_facts: int = 2,
+++++++++++                              entities: Optional[List[str]] = None) -> dict:
+++++++++++diff --git a/tests/test_smriti.py b/tests/test_smriti.py
+++++++++++index c02ea13..0f6fc12 100644
+++++++++++--- a/tests/test_smriti.py
++++++++++++++ b/tests/test_smriti.py
+++++++++++@@ -177,6 +177,26 @@ def test_observation_skips_sparse_entities():
+++++++++++     assert out["observations"] == 0 and llm.calls == 0
+++++++++++ 
+++++++++++ 
++++++++++++# ----------------------------------------------- iterative retrieval (Build 5)
++++++++++++def test_iterative_retrieval_finds_second_hop():
++++++++++++    """A fact the single pass misses (no entity link, no lexical overlap with the
++++++++++++    question) is found via an LLM-proposed follow-up retrieval."""
++++++++++++    llm = MockLLM(["Photonics study of light technologies"])  # the follow-up query
++++++++++++    mem = Smriti(path=":memory:", embedder=HashEmbedder(), llm=llm, mode="full")
++++++++++++    mem.add_fact(Fact(id=None, statement="The user is enrolled in the Helios program.",
++++++++++++                      subject="user", predicate="enrolled_in", object="Helios",
++++++++++++                      entities=["Helios"]), resolve_conflicts=False)
++++++++++++    mem.add_fact(Fact(id=None, statement="Photonics is the study of light-based technologies.",
++++++++++++                      subject="photonics", predicate="is", object="study of light",
++++++++++++                      entities=["Photonics"]), resolve_conflicts=False)
++++++++++++    q = "What field is the user's program about?"
++++++++++++
++++++++++++    one = mem.search(q, k=1)
++++++++++++    assert not any("Photonics" in r.text for r in one)        # single pass misses it
++++++++++++    two = mem.search_iterative(q, k=1, rounds=2)
++++++++++++    assert any("Photonics" in r.text for r in two)            # follow-up pass finds it
++++++++++++
++++++++++++
+++++++++++ # ------------------------------------------------------- reranking (Build 4)
+++++++++++ def test_reranker_reorders_and_tags():
+++++++++++     """An optional cross-encoder re-sorts the fused pool and tags results."""
+++++++++++-- 
+++++++++++2.34.1
+++++++++++
++++++++++diff --git a/tests/test_smriti.py b/tests/test_smriti.py
++++++++++index 0f6fc12..8b69e0e 100644
++++++++++--- a/tests/test_smriti.py
+++++++++++++ b/tests/test_smriti.py
++++++++++@@ -4,7 +4,7 @@ import json
++++++++++ from smriti import Fact, HashEmbedder, MockLLM, MockReranker, Smriti
++++++++++ from smriti.retrieval import extract_dates
++++++++++ from bench.judge import is_abstention
++++++++++-from bench.longmemeval import parse_lme_date
+++++++++++from bench.longmemeval import parse_lme_date, run_longmemeval
++++++++++ from bench.locomo import iter_sessions, parse_locomo_date
++++++++++ 
++++++++++ 
++++++++++@@ -244,6 +244,38 @@ def test_locomo_session_iteration():
++++++++++     assert "a dog photo" in turns[1]["content"]
++++++++++ 
++++++++++ 
+++++++++++def test_bench_wiring_observations_and_iterative():
+++++++++++    """The harness runs end-to-end with Build 1 (observations) and Build 5
+++++++++++    (iterative) enabled — integration smoke that the wiring doesn't break."""
+++++++++++    extraction = json.dumps([
+++++++++++        {"statement": "The user's cat is named Pixel.", "subject": "user",
+++++++++++         "predicate": "has_cat", "object": "Pixel", "entities": ["pet"],
+++++++++++         "event_date": None, "kind": "profile"},
+++++++++++        {"statement": "The user's dog is named Bruno.", "subject": "user",
+++++++++++         "predicate": "has_dog", "object": "Bruno", "entities": ["pet"],
+++++++++++         "event_date": None, "kind": "profile"},
+++++++++++    ])
+++++++++++    memory_llm = MockLLM([extraction, "The user has 2 pets: Pixel and Bruno.",
+++++++++++                          "NONE", "NONE"])
+++++++++++    answer_llm = MockLLM(["The user has 2 pets."])
+++++++++++    judge_llm = MockLLM(["yes"])
+++++++++++    item = {
+++++++++++        "question_id": "t1", "question_type": "multi-session",
+++++++++++        "question": "How many pets does the user have?", "answer": "2",
+++++++++++        "question_date": "2025/06/01 (Sun) 10:00",
+++++++++++        "haystack_dates": ["2025/01/01 (Wed) 10:00"],
+++++++++++        "haystack_sessions": [[{"role": "user",
+++++++++++                                "content": "I have a cat Pixel and a dog Bruno."}]],
+++++++++++    }
+++++++++++
+++++++++++    def factory():
+++++++++++        return Smriti(path=":memory:", embedder=HashEmbedder(), llm=memory_llm, mode="full")
+++++++++++
+++++++++++    summary = run_longmemeval([item], answer_llm, judge_llm, factory,
+++++++++++                              observations=True, iterative=True, verbose=False)
+++++++++++    assert summary["n"] == 1 and "accuracy" in summary and "multi-session" in summary["per_type"]
+++++++++++
+++++++++++
++++++++++ def test_abstention_detection():
++++++++++     assert is_abstention("I don't have enough information to answer that.")
++++++++++     assert not is_abstention("Your sister lives in Pune.")
++++++++++-- 
++++++++++2.34.1
++++++++++
+++++++++-- 
+++++++++2.34.1
+++++++++
++++++++-- 
++++++++2.34.1
++++++++
+++++++-- 
+++++++2.34.1
+++++++
++++++diff --git a/smriti/extraction.py b/smriti/extraction.py
++++++index 67a7737..fece5b2 100644
++++++--- a/smriti/extraction.py
+++++++++ b/smriti/extraction.py
++++++@@ -46,10 +46,11 @@ def build_extraction_prompt(turns: List[dict], session_ts: Optional[str]) -> Lis
++++++ OBSERVATION_SYSTEM = """You synthesize a concise, objective profile of an entity from a list of known facts about it.
++++++ 
++++++ Rules:
++++++-- Produce 1-3 sentences capturing the salient, durable properties: roles, attributes, relationships, and any totals/counts the facts collectively imply.
++++++-- If the facts describe several instances of the same kind of thing (e.g. multiple trips, purchases, or events), state the COUNT and list them — this is the main value of the summary.
+++++++- Produce a short overview capturing the salient, durable properties: roles, attributes, and relationships.
+++++++- If the facts describe several instances of the same kind of thing (e.g. multiple trips, purchases, or events), ENUMERATE every instance explicitly so a reader can count them — e.g. "events: A, B, C" — rather than only asserting a total. State a number only alongside the explicit list, and only if you are listing every instance.
+++++++- Do not guess or round. If you are unsure whether the list is complete, list what is supported and do not assert a total.
++++++ - Be objective and preference-neutral. Use ONLY what the facts support; invent nothing.
++++++-- Output ONLY the summary sentence(s), no preamble or list markers."""
+++++++- Output ONLY the summary text, no preamble."""
++++++ 
++++++ 
++++++ def build_observation_prompt(entity: str, facts: List[Fact]) -> List[dict]:
++++++diff --git a/smriti/retrieval.py b/smriti/retrieval.py
++++++index 542b284..3448c8a 100644
++++++--- a/smriti/retrieval.py
+++++++++ b/smriti/retrieval.py
++++++@@ -94,7 +94,7 @@ DEFAULT_WEIGHTS = {
++++++ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
++++++              k: int = 12, weights: Optional[Dict[str, float]] = None,
++++++              per_channel: int = 24, entity_hops: int = 2,
++++++-             reranker=None, rerank_top: int = 48) -> List[RetrievalResult]:
+++++++             reranker=None, rerank_top: int = 48, obs_k: int = 4) -> List[RetrievalResult]:
++++++     weights = weights or DEFAULT_WEIGHTS
++++++     qvec = embedder.embed([query])[0] if embedder else None
++++++ 
++++++@@ -131,18 +131,33 @@ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
++++++     # Materialize a larger pool when a reranker will re-sort it, else just k.
++++++     pool = max(k, rerank_top) if reranker is not None else k
++++++     results: List[RetrievalResult] = []
+++++++    observations: List[RetrievalResult] = []
++++++     seen_sessions_text = set()
++++++     for (kind, rid), (score, chans) in ordered:
++++++-        if len(results) >= pool:
+++++++        if len(results) >= pool and len(observations) >= obs_k:
++++++             break
++++++         if kind == "fact":
++++++             f = store.get_fact(rid)
++++++             if not f:
++++++                 continue
+++++++            if f.kind == "observation":
+++++++                # additive: observation summaries get their OWN slots and never
+++++++                # displace raw facts/episodes from the k budget — they supplement
+++++++                # the evidence rather than competing with it (fixes crowding-out).
+++++++                if len(observations) >= obs_k:
+++++++                    continue
+++++++                observations.append(RetrievalResult(
+++++++                    kind="observation", id=rid, text=f.statement, score=score,
+++++++                    valid_from=f.valid_from, invalid_at=f.invalid_at, channels=chans))
+++++++                continue
+++++++            if len(results) >= pool:
+++++++                continue
++++++             results.append(RetrievalResult(
++++++                 kind="fact", id=rid, text=f.statement, score=score,
++++++                 valid_from=f.valid_from, invalid_at=f.invalid_at, channels=chans))
++++++         else:
+++++++            if len(results) >= pool:
+++++++                continue
++++++             e = store.get_episode(rid)
++++++             if not e:
++++++                 continue
++++++@@ -154,7 +169,7 @@ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
++++++                 kind="episode", id=rid, text=e.content, score=score,
++++++                 ts=e.ts, role=e.role, channels=chans))
++++++ 
++++++-    # cross-encoder re-examination of the fused pool, then trim to k
+++++++    # cross-encoder re-examination of the raw pool, then trim to k
++++++     if reranker is not None and results:
++++++         scores = reranker.rerank(query, [r.text for r in results])
++++++         for r, sc in zip(results, scores):
++++++@@ -163,7 +178,7 @@ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
++++++                 r.channels = r.channels + ["rerank"]
++++++         results.sort(key=lambda r: -r.score)
++++++         results = results[:k]
++++++-    return results
+++++++    return observations + results
++++++ 
++++++ 
++++++ def _fmt_date(iso: Optional[str]) -> str:
++++++@@ -175,11 +190,19 @@ def _fmt_date(iso: Optional[str]) -> str:
++++++ def pack_context(results: List[RetrievalResult], now: Optional[str] = None,
++++++                  char_budget: int = 9000) -> str:
++++++     """Render retrieval into an answer-ready context block with provenance."""
++++++-    facts, episodes = [], []
+++++++    observations, facts, episodes = [], [], []
++++++     for r in results:
++++++-        (facts if r.kind == "fact" else episodes).append(r)
+++++++        (observations if r.kind == "observation" else
+++++++         facts if r.kind == "fact" else episodes).append(r)
++++++ 
++++++     lines: List[str] = []
+++++++    if observations:
+++++++        lines.append("ENTITY SUMMARIES (synthesized overviews of what's known about key "
+++++++                      "entities; useful for spotting counts/totals, but confirm the specifics "
+++++++                      "against the FACTS and EVIDENCE below):")
+++++++        for r in observations:
+++++++            lines.append(f"- {r.text}")
+++++++        lines.append("")
++++++     if facts:
++++++         lines.append("KNOWN FACTS (each with validity window; CURRENT means still true, "
++++++                       "SUPERSEDED means it was true then but later changed):")
++++++diff --git a/tests/test_smriti.py b/tests/test_smriti.py
++++++index 8b69e0e..0373d13 100644
++++++--- a/tests/test_smriti.py
+++++++++ b/tests/test_smriti.py
++++++@@ -131,9 +131,9 @@ def test_observation_synthesis_and_supersession():
++++++     assert len(obs) == 1 and obs[0].kind == "observation"
++++++     assert "2 charity events" in obs[0].statement
++++++ 
++++++-    # observation is retrievable via the normal channels
+++++++    # observation is retrievable and surfaced in its own (observation) slot
++++++     results = mem.search("how many charity events did I attend?", k=8)
++++++-    assert any(r.kind == "fact" and "2 charity events" in r.text for r in results)
+++++++    assert any(r.kind == "observation" and "2 charity events" in r.text for r in results)
++++++ 
++++++     # new fact + refresh -> supersede prior observation, don't duplicate
++++++     mem.add_fact(_charity_fact("The user attended the Run for Hope event.", "Run for Hope"),
++++++@@ -166,6 +166,27 @@ def test_two_hop_entity_traversal():
++++++     assert not any("entity_hop2" in r.channels for r in one_hop)
++++++ 
++++++ 
+++++++def test_observations_are_additive_not_competing():
+++++++    """Build 6: observations occupy their own slots and must NOT displace raw
+++++++    facts from the k budget; context renders them in a dedicated section."""
+++++++    llm = MockLLM(["pets — cat Pixel, dog Bruno, fish Coral."])
+++++++    mem = Smriti(path=":memory:", embedder=HashEmbedder(), llm=llm, mode="full")
+++++++    raw = [("The user has a cat named Pixel.", "Pixel"),
+++++++           ("The user has a dog named Bruno.", "Bruno"),
+++++++           ("The user has a fish named Coral.", "Coral")]
+++++++    for i, (s, o) in enumerate(raw):
+++++++        mem.add_fact(Fact(id=None, statement=s, subject="user", predicate=f"has_{i}",
+++++++                          object=o, entities=["pet"]), resolve_conflicts=False)
+++++++    mem.refresh_observations(min_facts=2)
+++++++
+++++++    res = mem.search("tell me about my pets", k=3)
+++++++    obs = [r for r in res if r.kind == "observation"]
+++++++    facts = [r for r in res if r.kind == "fact"]
+++++++    assert obs, "observation should be surfaced in its own slot"
+++++++    assert len(facts) >= 3, "raw facts must not be displaced by the observation (additive)"
+++++++    assert "ENTITY SUMMARIES" in mem.context("tell me about my pets", k=3)
+++++++
+++++++
++++++ def test_observation_skips_sparse_entities():
++++++     """An entity with fewer than min_facts gets no observation (no wasted LLM call)."""
++++++     llm = MockLLM(["unused"])
++++++-- 
++++++2.34.1
++++++
+++++diff --git a/smriti/extraction.py b/smriti/extraction.py
+++++index fece5b2..ab622e5 100644
+++++--- a/smriti/extraction.py
++++++++ b/smriti/extraction.py
+++++@@ -53,8 +53,8 @@ Rules:
+++++ - Output ONLY the summary text, no preamble."""
+++++ 
+++++ 
+++++-def build_observation_prompt(entity: str, facts: List[Fact]) -> List[dict]:
+++++-    lines = [f"Entity: {entity}", "Known facts:"]
++++++def build_observation_prompt(label: str, facts: List[Fact]) -> List[dict]:
++++++    lines = [f"Subject: {label}", "Known facts:"]
+++++     for f in facts:
+++++         lines.append(f"- {f.statement}")
+++++     return [
+++++diff --git a/smriti/memory.py b/smriti/memory.py
+++++index f9c16a2..5c67a1c 100644
+++++--- a/smriti/memory.py
++++++++ b/smriti/memory.py
+++++@@ -134,44 +134,68 @@ class Smriti:
+++++                             now=now, char_budget=char_budget)
+++++ 
+++++     # -------------------------------------------------------- observations
++++++    def _write_observation(self, subject: str, predicate: str, label: str,
++++++                           facts: List[Fact]) -> bool:
++++++        """Synthesize one observation/digest fact from `facts`, superseding any
++++++        prior one with the same (subject, predicate). Returns True if written."""
++++++        summary = self.llm.complete(
++++++            build_observation_prompt(label, facts), max_tokens=256
++++++        ).strip()
++++++        if not summary:
++++++            return False
++++++        ents = self.store.entities_of_facts([f.id for f in facts if f.id])[:10]
++++++        obs = Fact(id=None, statement=summary, subject=subject, predicate=predicate,
++++++                   object="", kind="observation", entities=ents, valid_from=utcnow())
++++++        emb = self.embedder.embed([summary])[0]
++++++        prior = self.store.similar_valid_facts(subject, predicate)
++++++        new_id = self.store.add_fact(obs, emb)
++++++        for p in prior:
++++++            self.store.invalidate_fact(p.id, new_id)
++++++        return True
++++++
+++++     def refresh_observations(self, min_facts: int = 2,
+++++-                             entities: Optional[List[str]] = None) -> dict:
+++++-        """Synthesize a per-entity 'observation' summary fact from that entity's
+++++-        currently-valid facts — the Hindsight-style observation paradigm.
+++++-
+++++-        Observations sit on top of raw facts and pre-compute the aggregates
+++++-        ("attended 3 charity events: X, Y, Z") that the answering model is bad
+++++-        at tallying from scattered fragments — directly targeting the
+++++-        multi-session / aggregation weak spot. Stored as ordinary facts
+++++-        (kind='observation'), so they ride the existing retrieval channels;
+++++-        regenerating one supersedes the prior observation (full audit trail).
+++++-
+++++-        Opt-in and idempotent: call it after a batch of adds or on a schedule,
+++++-        keeping write latency and the zero-cost default intact. Requires an llm.
++++++                             entities: Optional[List[str]] = None,
++++++                             granularity=("entity", "predicate")) -> dict:
++++++        """Synthesize 'observation' summary facts at multiple granularities — the
++++++        Hindsight observation paradigm plus MemGAS-style multi-granularity.
++++++
++++++        Two granularities, because aggregation questions span two units:
++++++          * entity    — "tell me about Acme" → one summary per entity.
++++++          * predicate — "how many events did I attend / doctors did I see" →
++++++                        one digest per (subject, predicate) that ENUMERATES every
++++++                        object across all entities/sessions. This is the cross-
++++++                        entity aggregation per-entity summaries structurally miss.
++++++
++++++        Summaries sit on top of raw facts (kind='observation'), ride the existing
++++++        channels, and supersede their prior version (full audit trail). Opt-in
++++++        and idempotent; keeps write latency and the zero-cost default intact.
++++++        Requires an llm.
+++++         """
+++++         if self.llm is None:
+++++             raise ValueError("refresh_observations requires an llm (full mode)")
+++++-        targets = ([e.lower().strip() for e in entities]
+++++-                   if entities is not None else self.store.all_entities())
+++++-        made = 0
+++++-        for ent in targets:
+++++-            facts = self.store.facts_for_entity(ent, valid_only=True)
+++++-            if len(facts) < min_facts:
+++++-                continue
+++++-            summary = self.llm.complete(
+++++-                build_observation_prompt(ent, facts), max_tokens=256
+++++-            ).strip()
+++++-            if not summary:
+++++-                continue
+++++-            obs = Fact(id=None, statement=summary, subject=ent, predicate="observation",
+++++-                       object="", kind="observation", entities=[ent], valid_from=utcnow())
+++++-            emb = self.embedder.embed([summary])[0]
+++++-            prior = self.store.similar_valid_facts(ent, "observation")
+++++-            new_id = self.store.add_fact(obs, emb)
+++++-            for p in prior:
+++++-                self.store.invalidate_fact(p.id, new_id)
+++++-            made += 1
+++++-        return {"observations": made}
++++++        made = {"entity": 0, "predicate": 0}
++++++
++++++        if "entity" in granularity:
++++++            targets = ([e.lower().strip() for e in entities]
++++++                       if entities is not None else self.store.all_entities())
++++++            for ent in targets:
++++++                facts = self.store.facts_for_entity(ent, valid_only=True)
++++++                if len(facts) >= min_facts and self._write_observation(ent, "observation", ent, facts):
++++++                    made["entity"] += 1
++++++
++++++        # predicate digests are global; skip when caller targets specific entities
++++++        if "predicate" in granularity and entities is None:
++++++            for subj, pred, _c in self.store.predicate_groups(min_facts=min_facts):
++++++                facts = [f for f in self.store.similar_valid_facts(subj, pred)
++++++                         if f.kind != "observation"]
++++++                if len(facts) < min_facts:
++++++                    continue
++++++                label = f"{subj} — {pred.replace('_', ' ')}"
++++++                if self._write_observation(subj, f"digest:{pred}", label, facts):
++++++                    made["predicate"] += 1
++++++
++++++        made["observations"] = made["entity"] + made["predicate"]
++++++        return made
+++++ 
+++++     # ---------------------------------------------------------------- misc
+++++     def stats(self) -> dict:
+++++diff --git a/smriti/store.py b/smriti/store.py
+++++index 3f8f78d..a64cb88 100644
+++++--- a/smriti/store.py
++++++++ b/smriti/store.py
+++++@@ -184,6 +184,19 @@ class Store:
+++++             out.append(f)
+++++         return out
+++++ 
++++++    def predicate_groups(self, min_facts: int = 2, valid_only: bool = True) -> List[Tuple[str, str, int]]:
++++++        """(subject, predicate) groups with >= min_facts valid facts — the unit
++++++        for cross-entity aggregation ("user/attended" spans many event entities).
++++++        Excludes observation/digest rows so digests aren't summarized again."""
++++++        cond = "AND invalid_at IS NULL" if valid_only else ""
++++++        rows = self.db.execute(
++++++            f"SELECT subject, predicate, COUNT(*) c FROM facts "
++++++            f"WHERE kind != 'observation' AND subject != '' AND predicate != '' {cond} "
++++++            f"GROUP BY subject, predicate HAVING COUNT(*) >= ?",
++++++            (min_facts,),
++++++        ).fetchall()
++++++        return [(r[0], r[1], r[2]) for r in rows]
++++++
+++++     def entities_of_facts(self, fact_ids: Sequence[int]) -> List[str]:
+++++         """Entities mentioned by the given facts (for graph-lite multi-hop)."""
+++++         if not fact_ids:
+++++diff --git a/tests/test_smriti.py b/tests/test_smriti.py
+++++index 0373d13..e579a7b 100644
+++++--- a/tests/test_smriti.py
++++++++ b/tests/test_smriti.py
+++++@@ -125,7 +125,7 @@ def test_observation_synthesis_and_supersession():
+++++     mem.add_fact(_charity_fact("The user attended the 5K Gala event.", "5K Gala"),
+++++                  resolve_conflicts=False)
+++++ 
+++++-    out = mem.refresh_observations(min_facts=2)
++++++    out = mem.refresh_observations(min_facts=2, granularity=("entity",))
+++++     assert out["observations"] == 1
+++++     obs = mem.store.similar_valid_facts("charity", "observation")
+++++     assert len(obs) == 1 and obs[0].kind == "observation"
+++++@@ -138,7 +138,7 @@ def test_observation_synthesis_and_supersession():
+++++     # new fact + refresh -> supersede prior observation, don't duplicate
+++++     mem.add_fact(_charity_fact("The user attended the Run for Hope event.", "Run for Hope"),
+++++                  resolve_conflicts=False)
+++++-    mem.refresh_observations(min_facts=2)
++++++    mem.refresh_observations(min_facts=2, granularity=("entity",))
+++++     valid = mem.store.similar_valid_facts("charity", "observation")
+++++     assert len(valid) == 1 and "3 charity events" in valid[0].statement
+++++     all_obs = [f for f in mem.store.facts_for_entity("charity", valid_only=False,
+++++@@ -166,6 +166,25 @@ def test_two_hop_entity_traversal():
+++++     assert not any("entity_hop2" in r.channels for r in one_hop)
+++++ 
+++++ 
++++++def test_predicate_digest_for_cross_entity_aggregation():
++++++    """Build 7: when N events each have their own entity (so no per-entity summary
++++++    fires), the (subject, predicate) digest still enumerates them all — the cross-
++++++    entity aggregation per-entity observations structurally miss."""
++++++    llm = MockLLM(["user attended events: Walk for Hunger, 5K Gala, Run for Hope (3)."])
++++++    mem = Smriti(path=":memory:", embedder=HashEmbedder(), llm=llm, mode="full")
++++++    for obj in ["Walk for Hunger", "5K Gala", "Run for Hope"]:
++++++        mem.add_fact(Fact(id=None, statement=f"The user attended {obj}.", subject="user",
++++++                          predicate="attended", object=obj, entities=[obj]),
++++++                     resolve_conflicts=False)
++++++    out = mem.refresh_observations(min_facts=2)
++++++    # no single entity has >=2 facts, so the value comes from the predicate digest
++++++    assert out["entity"] == 0 and out["predicate"] == 1
++++++    dig = mem.store.similar_valid_facts("user", "digest:attended")
++++++    assert len(dig) == 1 and dig[0].kind == "observation"
++++++    res = mem.search("how many events did I attend?", k=8)
++++++    assert any(r.kind == "observation" and "Run for Hope" in r.text for r in res)
++++++
++++++
+++++ def test_observations_are_additive_not_competing():
+++++     """Build 6: observations occupy their own slots and must NOT displace raw
+++++     facts from the k budget; context renders them in a dedicated section."""
+++++-- 
+++++2.34.1
+++++
++++-- 
++++2.34.1
++++
+++diff --git a/smriti/embedder.py b/smriti/embedder.py
+++index da0e519..8ac152d 100644
+++--- a/smriti/embedder.py
++++++ b/smriti/embedder.py
+++@@ -9,21 +9,41 @@ from __future__ import annotations
+++ import hashlib
+++ import json
+++ import math
++++import time
+++ import urllib.request
+++ from typing import List, Optional, Sequence
+++ 
+++ 
+++-def _post_json(url: str, payload: dict, headers: Optional[dict] = None, timeout: int = 120) -> dict:
++++def _post_json(url: str, payload: dict, headers: Optional[dict] = None,
++++               timeout: int = 120, retries: int = 2) -> dict:
++++    """POST JSON with bounded retry on transient network errors.
++++
++++    Hosted endpoints occasionally drop a connection or stall (socket.timeout);
++++    a single such blip should not abandon a long benchmark or ingest run, so we
++++    retry with linear backoff before giving up. Retried POSTs may re-execute a
++++    completed request server-side, but SMRITI's consolidation dedups facts, so
++++    at-least-once delivery is safe here.
++++    """
+++     data = json.dumps(payload).encode()
+++-    req = urllib.request.Request(url, data=data, method="POST")
+++-    req.add_header("Content-Type", "application/json")
+++-    # Some providers (e.g. Groq behind Cloudflare) reject the default
+++-    # "Python-urllib/x.y" User-Agent with HTTP 403. Send an explicit one.
+++-    req.add_header("User-Agent", "smriti/0.1")
+++-    for k, v in (headers or {}).items():
+++-        req.add_header(k, v)
+++-    with urllib.request.urlopen(req, timeout=timeout) as resp:
+++-        return json.loads(resp.read().decode())
++++    last_err = None
++++    for attempt in range(retries + 1):
++++        req = urllib.request.Request(url, data=data, method="POST")
++++        req.add_header("Content-Type", "application/json")
++++        # Some providers (e.g. Groq behind Cloudflare) reject the default
++++        # "Python-urllib/x.y" User-Agent with HTTP 403. Send an explicit one.
++++        req.add_header("User-Agent", "smriti/0.1")
++++        for k, v in (headers or {}).items():
++++            req.add_header(k, v)
++++        try:
++++            with urllib.request.urlopen(req, timeout=timeout) as resp:
++++                return json.loads(resp.read().decode())
++++        except Exception as e:  # noqa: BLE001 - retry any transient transport error
++++            last_err = e
++++            if attempt < retries:
++++                time.sleep(1.5 * (attempt + 1))
++++            else:
++++                raise
++++    raise last_err  # pragma: no cover
+++ 
+++ 
+++ class HashEmbedder:
+++diff --git a/tests/test_smriti.py b/tests/test_smriti.py
+++index e579a7b..5d9822c 100644
+++--- a/tests/test_smriti.py
++++++ b/tests/test_smriti.py
+++@@ -316,6 +316,28 @@ def test_bench_wiring_observations_and_iterative():
+++     assert summary["n"] == 1 and "accuracy" in summary and "multi-session" in summary["per_type"]
+++ 
+++ 
++++def test_post_json_retries_transient_errors(monkeypatch):
++++    """A transient network blip is retried, not fatal (harness resilience)."""
++++    import smriti.embedder as emb
++++    calls = {"n": 0}
++++
++++    class _Resp:
++++        def __enter__(self): return self
++++        def __exit__(self, *a): return False
++++        def read(self): return b'{"ok": true}'
++++
++++    def flaky_urlopen(req, timeout=0):
++++        calls["n"] += 1
++++        if calls["n"] == 1:
++++            raise TimeoutError("read timed out")
++++        return _Resp()
++++
++++    monkeypatch.setattr(emb.time, "sleep", lambda *_: None)
++++    monkeypatch.setattr(emb.urllib.request, "urlopen", flaky_urlopen)
++++    out = emb._post_json("http://x/y", {"a": 1})
++++    assert out == {"ok": True} and calls["n"] == 2  # failed once, succeeded on retry
++++
++++
+++ def test_abstention_detection():
+++     assert is_abstention("I don't have enough information to answer that.")
+++     assert not is_abstention("Your sister lives in Pune.")
+++-- 
+++2.34.1
+++
++diff --git a/smriti/extraction.py b/smriti/extraction.py
++index ab622e5..f0ddbe9 100644
++--- a/smriti/extraction.py
+++++ b/smriti/extraction.py
++@@ -10,11 +10,60 @@ bi-temporal store and the temporal retrieval channel work.
++ """
++ from __future__ import annotations
++ 
+++import re
+++from collections import defaultdict
++ from typing import List, Optional
++ 
++ from .llm import extract_json
++ from .types import Fact
++ 
+++# --- numeric/sum aggregation (Build 8) -------------------------------------
+++# Enumeration digests fix COUNT questions; SUM questions ("how much total money /
+++# how many total hours") need actual arithmetic, which LLMs do unreliably. So we
+++# extract quantities deterministically and let Python add them up, then hand the
+++# model a trustworthy pre-computed total alongside the components.
+++_CURRENCY_RE = re.compile(r"\$\s*([\d,]+(?:\.\d+)?)")
+++_UNIT_RE = re.compile(
+++    r"([\d,]+(?:\.\d+)?)\s*"
+++    r"(hours?|hrs?|days?|minutes?|mins?|miles?|kilometers?|km|weeks?|months?|years?|dollars?|usd)\b",
+++    re.IGNORECASE,
+++)
+++_UNIT_CANON = {
+++    "hour": "hours", "hr": "hours", "hrs": "hours", "hours": "hours",
+++    "day": "days", "days": "days",
+++    "minute": "minutes", "min": "minutes", "mins": "minutes", "minutes": "minutes",
+++    "mile": "miles", "miles": "miles", "kilometer": "km", "kilometers": "km", "km": "km",
+++    "week": "weeks", "weeks": "weeks", "month": "months", "months": "months",
+++    "year": "years", "years": "years", "dollar": "$", "dollars": "$", "usd": "$",
+++}
+++
+++
+++def compute_numeric_totals(facts: List[Fact]) -> str:
+++    """Sum same-unit quantities across facts; return a verifiable totals string.
+++
+++    Groups by unit (currency, hours, days, …) so mixed units are never added
+++    together, and only reports a unit with >= 2 values. Empty string if nothing
+++    to total."""
+++    buckets = defaultdict(list)
+++    for f in facts:
+++        text = f.statement or ""
+++        for m in _CURRENCY_RE.finditer(text):
+++            buckets["$"].append(float(m.group(1).replace(",", "")))
+++        for m in _UNIT_RE.finditer(text):
+++            tok = m.group(2).lower()
+++            unit = _UNIT_CANON.get(tok.rstrip("s")) or _UNIT_CANON.get(tok)
+++            if unit:
+++                buckets[unit].append(float(m.group(1).replace(",", "")))
+++    parts = []
+++    for unit, vals in buckets.items():
+++        if len(vals) < 2:
+++            continue
+++        total = sum(vals)
+++        comp = " + ".join(f"{v:g}" for v in vals)
+++        disp = f"${total:g}" if unit == "$" else f"{total:g} {unit}"
+++        parts.append(f"{disp} ({comp})")
+++    return ("Computed totals (verify against facts) — " + "; ".join(parts) + ".") if parts else ""
+++
++ EXTRACT_SYSTEM = """You are a memory extraction engine for an AI assistant.
++ Given a conversation session (with its timestamp), extract durable, atomic facts worth remembering long-term about the user, their world, and important things the assistant said or produced.
++ 
++diff --git a/smriti/memory.py b/smriti/memory.py
++index 5c67a1c..e8c3f87 100644
++--- a/smriti/memory.py
+++++ b/smriti/memory.py
++@@ -21,7 +21,7 @@ from typing import List, Optional
++ from .consolidation import consolidate, heuristic_conflicts
++ from .embedder import HashEmbedder
++ from .extraction import (build_extraction_prompt, build_followup_prompt,
++-                         build_observation_prompt, parse_facts)
+++                         build_observation_prompt, compute_numeric_totals, parse_facts)
++ from .llm import LLM
++ from .retrieval import pack_context, retrieve
++ from .store import Store, utcnow
++@@ -141,6 +141,11 @@ class Smriti:
++         summary = self.llm.complete(
++             build_observation_prompt(label, facts), max_tokens=256
++         ).strip()
+++        # Build 8: append Python-computed totals for sum-type aggregation, so the
+++        # answering model gets a trustworthy total instead of doing the arithmetic.
+++        totals = compute_numeric_totals(facts)
+++        if totals:
+++            summary = (summary + " " + totals).strip()
++         if not summary:
++             return False
++         ents = self.store.entities_of_facts([f.id for f in facts if f.id])[:10]
++diff --git a/tests/test_smriti.py b/tests/test_smriti.py
++index 5d9822c..c71bb11 100644
++--- a/tests/test_smriti.py
+++++ b/tests/test_smriti.py
++@@ -166,6 +166,34 @@ def test_two_hop_entity_traversal():
++     assert not any("entity_hop2" in r.channels for r in one_hop)
++ 
++ 
+++def test_numeric_sum_digest():
+++    """Build 8: same-unit quantities are summed deterministically (Python, not
+++    the LLM) and carried in the digest — for SUM-type aggregation questions."""
+++    from smriti.extraction import compute_numeric_totals
+++    facts = [Fact(id=1, statement="The user spent $40 on a bike tube."),
+++             Fact(id=2, statement="The user spent $120 on a bike tune-up."),
+++             Fact(id=3, statement="The user spent $25 on a bike light.")]
+++    s = compute_numeric_totals(facts)
+++    assert "$185" in s
+++    # mixed units never cross-add
+++    mixed = compute_numeric_totals([Fact(id=1, statement="drove 3 hours"),
+++                                    Fact(id=2, statement="drove 5 hours"),
+++                                    Fact(id=3, statement="paid $10")])
+++    assert "8 hours" in mixed and "$10" not in mixed  # only the >=2 unit is reported
+++
+++    # end-to-end: the digest fact carries the computed total
+++    llm = MockLLM(["bike entity overview", "bike expenses: tube, tune-up, light."])
+++    mem = Smriti(path=":memory:", embedder=HashEmbedder(), llm=llm, mode="full")
+++    for stmt, o in [("The user spent $40 on a bike tube.", "tube"),
+++                    ("The user spent $120 on a bike tune-up.", "tune-up"),
+++                    ("The user spent $25 on a bike light.", "light")]:
+++        mem.add_fact(Fact(id=None, statement=stmt, subject="user", predicate="spent_on",
+++                          object=o, entities=["bike"]), resolve_conflicts=False)
+++    mem.refresh_observations(min_facts=2)
+++    dig = mem.store.similar_valid_facts("user", "digest:spent_on")
+++    assert dig and "$185" in dig[0].statement
+++
+++
++ def test_predicate_digest_for_cross_entity_aggregation():
++     """Build 7: when N events each have their own entity (so no per-entity summary
++     fires), the (subject, predicate) digest still enumerates them all — the cross-
++-- 
++2.34.1
++
+-- 
+2.34.1
+
