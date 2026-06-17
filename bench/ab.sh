@@ -24,7 +24,7 @@ EMBED_MODEL="${EMBED_MODEL:-nomic-embed-text}"
 
 BENCH="${BENCH:-longmemeval}"
 DATA="${DATA:-data/longmemeval_oracle.json}"
-QTYPE="${QTYPE:-multi-session}"          # LongMemEval question type to focus ("" = all types)
+QTYPE="${QTYPE-multi-session}"           # LongMemEval question type to focus (QTYPE= clears it -> all types)
 LIMIT="${LIMIT:-40}"                      # first-N (used when SAMPLE unset)
 SAMPLE="${SAMPLE:-}"                      # ~N spread across types (preferred for larger n)
 MODE="${MODE:-full}"                      # observations need full mode
