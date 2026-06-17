@@ -166,6 +166,34 @@ def test_two_hop_entity_traversal():
     assert not any("entity_hop2" in r.channels for r in one_hop)
 
 
+def test_numeric_sum_digest():
+    """Build 8: same-unit quantities are summed deterministically (Python, not
+    the LLM) and carried in the digest — for SUM-type aggregation questions."""
+    from smriti.extraction import compute_numeric_totals
+    facts = [Fact(id=1, statement="The user spent $40 on a bike tube."),
+             Fact(id=2, statement="The user spent $120 on a bike tune-up."),
+             Fact(id=3, statement="The user spent $25 on a bike light.")]
+    s = compute_numeric_totals(facts)
+    assert "$185" in s
+    # mixed units never cross-add
+    mixed = compute_numeric_totals([Fact(id=1, statement="drove 3 hours"),
+                                    Fact(id=2, statement="drove 5 hours"),
+                                    Fact(id=3, statement="paid $10")])
+    assert "8 hours" in mixed and "$10" not in mixed  # only the >=2 unit is reported
+
+    # end-to-end: the digest fact carries the computed total
+    llm = MockLLM(["bike entity overview", "bike expenses: tube, tune-up, light."])
+    mem = Smriti(path=":memory:", embedder=HashEmbedder(), llm=llm, mode="full")
+    for stmt, o in [("The user spent $40 on a bike tube.", "tube"),
+                    ("The user spent $120 on a bike tune-up.", "tune-up"),
+                    ("The user spent $25 on a bike light.", "light")]:
+        mem.add_fact(Fact(id=None, statement=stmt, subject="user", predicate="spent_on",
+                          object=o, entities=["bike"]), resolve_conflicts=False)
+    mem.refresh_observations(min_facts=2)
+    dig = mem.store.similar_valid_facts("user", "digest:spent_on")
+    assert dig and "$185" in dig[0].statement
+
+
 def test_predicate_digest_for_cross_entity_aggregation():
     """Build 7: when N events each have their own entity (so no per-entity summary
     fires), the (subject, predicate) digest still enumerates them all — the cross-

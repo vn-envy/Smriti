@@ -24,15 +24,23 @@ EMBED_MODEL="${EMBED_MODEL:-nomic-embed-text}"
 
 BENCH="${BENCH:-longmemeval}"
 DATA="${DATA:-data/longmemeval_oracle.json}"
-QTYPE="${QTYPE:-multi-session}"          # LongMemEval question type to focus (gap under test)
-LIMIT="${LIMIT:-40}"
+QTYPE="${QTYPE:-multi-session}"          # LongMemEval question type to focus ("" = all types)
+LIMIT="${LIMIT:-40}"                      # first-N (used when SAMPLE unset)
+SAMPLE="${SAMPLE:-}"                      # ~N spread across types (preferred for larger n)
 MODE="${MODE:-full}"                      # observations need full mode
 TREATMENT="${TREATMENT:---observations}" # the feature flag being measured
 
 OUT_DIR="${OUT_DIR:-bench_results/ab_$(date +%Y%m%d_%H%M%S)}"
 mkdir -p "$OUT_DIR"
 
-COMMON=(--bench "$BENCH" --data "$DATA" --mode "$MODE" --limit "$LIMIT"
+# SAMPLE (stratified) takes precedence over LIMIT (first-N) when set
+if [ -n "$SAMPLE" ]; then
+    SEL=(--sample "$SAMPLE")
+else
+    SEL=(--limit "$LIMIT")
+fi
+
+COMMON=(--bench "$BENCH" --data "$DATA" --mode "$MODE" "${SEL[@]}"
         --provider "$PROVIDER" --api-key "$API_KEY"
         --answer-model "$ANSWER_MODEL" --judge-model "$JUDGE_MODEL"
         --memory-model "$MEMORY_MODEL"

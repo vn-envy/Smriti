@@ -21,7 +21,7 @@ from typing import List, Optional
 from .consolidation import consolidate, heuristic_conflicts
 from .embedder import HashEmbedder
 from .extraction import (build_extraction_prompt, build_followup_prompt,
-                         build_observation_prompt, parse_facts)
+                         build_observation_prompt, compute_numeric_totals, parse_facts)
 from .llm import LLM
 from .retrieval import pack_context, retrieve
 from .store import Store, utcnow
@@ -141,6 +141,11 @@ class Smriti:
         summary = self.llm.complete(
             build_observation_prompt(label, facts), max_tokens=256
         ).strip()
+        # Build 8: append Python-computed totals for sum-type aggregation, so the
+        # answering model gets a trustworthy total instead of doing the arithmetic.
+        totals = compute_numeric_totals(facts)
+        if totals:
+            summary = (summary + " " + totals).strip()
         if not summary:
             return False
         ents = self.store.entities_of_facts([f.id for f in facts if f.id])[:10]

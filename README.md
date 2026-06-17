@@ -151,6 +151,7 @@ Informed by Hindsight (observation paradigm), StructMem / MemGAS (multi-granular
 - [x] Observation/summary layer — per-entity synthesized summaries (`refresh_observations`)
 - [x] Observations additive + enumerate — own context section, list instances instead of asserting totals
 - [x] Multi-granularity digests — per-`(subject, predicate)` enumerations for cross-entity aggregation
+- [x] Numeric/sum digests — Python-computed same-unit totals carried into digests (SUM-type aggregation)
 - [x] 2-hop entity traversal — graph-lite multi-hop over the entity table
 - [x] Optional cross-encoder reranking channel — RRF + rerank (`reranker=`)
 - [x] Iterative retrieval — LLM-seeded second pass for multi-hop (`search_iterative`)

@@ -10,10 +10,59 @@ bi-temporal store and the temporal retrieval channel work.
 """
 from __future__ import annotations
 
+import re
+from collections import defaultdict
 from typing import List, Optional
 
 from .llm import extract_json
 from .types import Fact
+
+# --- numeric/sum aggregation (Build 8) -------------------------------------
+# Enumeration digests fix COUNT questions; SUM questions ("how much total money /
+# how many total hours") need actual arithmetic, which LLMs do unreliably. So we
+# extract quantities deterministically and let Python add them up, then hand the
+# model a trustworthy pre-computed total alongside the components.
+_CURRENCY_RE = re.compile(r"\$\s*([\d,]+(?:\.\d+)?)")
+_UNIT_RE = re.compile(
+    r"([\d,]+(?:\.\d+)?)\s*"
+    r"(hours?|hrs?|days?|minutes?|mins?|miles?|kilometers?|km|weeks?|months?|years?|dollars?|usd)\b",
+    re.IGNORECASE,
+)
+_UNIT_CANON = {
+    "hour": "hours", "hr": "hours", "hrs": "hours", "hours": "hours",
+    "day": "days", "days": "days",
+    "minute": "minutes", "min": "minutes", "mins": "minutes", "minutes": "minutes",
+    "mile": "miles", "miles": "miles", "kilometer": "km", "kilometers": "km", "km": "km",
+    "week": "weeks", "weeks": "weeks", "month": "months", "months": "months",
+    "year": "years", "years": "years", "dollar": "$", "dollars": "$", "usd": "$",
+}
+
+
+def compute_numeric_totals(facts: List[Fact]) -> str:
+    """Sum same-unit quantities across facts; return a verifiable totals string.
+
+    Groups by unit (currency, hours, days, …) so mixed units are never added
+    together, and only reports a unit with >= 2 values. Empty string if nothing
+    to total."""
+    buckets = defaultdict(list)
+    for f in facts:
+        text = f.statement or ""
+        for m in _CURRENCY_RE.finditer(text):
+            buckets["$"].append(float(m.group(1).replace(",", "")))
+        for m in _UNIT_RE.finditer(text):
+            tok = m.group(2).lower()
+            unit = _UNIT_CANON.get(tok.rstrip("s")) or _UNIT_CANON.get(tok)
+            if unit:
+                buckets[unit].append(float(m.group(1).replace(",", "")))
+    parts = []
+    for unit, vals in buckets.items():
+        if len(vals) < 2:
+            continue
+        total = sum(vals)
+        comp = " + ".join(f"{v:g}" for v in vals)
+        disp = f"${total:g}" if unit == "$" else f"{total:g} {unit}"
+        parts.append(f"{disp} ({comp})")
+    return ("Computed totals (verify against facts) — " + "; ".join(parts) + ".") if parts else ""
 
 EXTRACT_SYSTEM = """You are a memory extraction engine for an AI assistant.
 Given a conversation session (with its timestamp), extract durable, atomic facts worth remembering long-term about the user, their world, and important things the assistant said or produced.
