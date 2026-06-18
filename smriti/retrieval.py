@@ -115,7 +115,8 @@ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
              reranker=None, rerank_top: int = 48, obs_k: int = 4,
              semantic_entities: bool = False,
              semantic_threshold: float = 0.3,
-             use_key_channel: bool = False) -> List[RetrievalResult]:
+             use_key_channel: bool = False,
+             include_observations: bool = True) -> List[RetrievalResult]:
     weights = weights or DEFAULT_WEIGHTS
     qvec = embedder.embed([query])[0] if embedder else None
 
@@ -176,10 +177,11 @@ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
             if not f:
                 continue
             if f.kind == "observation":
-                # additive: observation summaries get their OWN slots and never
-                # displace raw facts/episodes from the k budget — they supplement
-                # the evidence rather than competing with it (fixes crowding-out).
-                if len(observations) >= obs_k:
+                # observation summaries are a RECALL-profile feature (Build 12):
+                # they help aggregation but launder stale/superseded values on
+                # current-state queries, so the precision path excludes them and
+                # relies on raw, CURRENT/SUPERSEDED-annotated facts instead.
+                if not include_observations or len(observations) >= obs_k:
                     continue
                 observations.append(RetrievalResult(
                     kind="observation", id=rid, text=f.statement, score=score,

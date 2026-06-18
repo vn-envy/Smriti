@@ -146,9 +146,14 @@ class Smriti:
                                reranker=self.reranker, per_channel=max(24, self.k_agg),
                                use_key_channel=self.expand_keys,
                                semantic_entities=True,
-                               semantic_threshold=self.semantic_threshold)
+                               semantic_threshold=self.semantic_threshold,
+                               include_observations=True)
             return pack_context(results, now=now, char_budget=char_budget, aggregate=True)
-        return pack_context(self.search(query, k=k, now=now), now=now, char_budget=char_budget)
+        # precision path: exclude observation summaries — they launder stale
+        # values on current-state questions (knowledge-update diagnostic, -5.1pts).
+        results = retrieve(self.store, self.embedder, query, now=now, k=k,
+                           reranker=self.reranker, include_observations=False)
+        return pack_context(results, now=now, char_budget=char_budget)
 
     def search_iterative(self, query: str, k: int = 12, now: Optional[str] = None,
                          rounds: int = 2) -> List[RetrievalResult]:

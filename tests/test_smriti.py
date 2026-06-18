@@ -231,7 +231,10 @@ def test_observations_are_additive_not_competing():
     facts = [r for r in res if r.kind == "fact"]
     assert obs, "observation should be surfaced in its own slot"
     assert len(facts) >= 3, "raw facts must not be displaced by the observation (additive)"
-    assert "ENTITY SUMMARIES" in mem.context("tell me about my pets", k=3)
+    # Build 12: observations appear on the aggregation (recall) path...
+    assert "ENTITY SUMMARIES" in mem.context("how many pets do I have?", k=3)
+    # ...but NOT on the precision path (they launder stale values there)
+    assert "ENTITY SUMMARIES" not in mem.context("what is my cat's name?", k=3)
 
 
 def test_observation_skips_sparse_entities():
