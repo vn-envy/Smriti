@@ -42,10 +42,14 @@ _DATE_PATTERNS = [
 
 
 _AGG_RE = re.compile(
-    r"\b(how many|how much|how often|how long|number of|count of|total|in total|"
-    r"combined|altogether|sum of|on average|average)\b|\bdifferent\b",
+    r"\b(how many|how much|number of|count of|total|in total|"
+    r"combined|altogether|sum of|on average)\b|\bhow many different\b",
     re.IGNORECASE,
 )
+# NOTE: "how often" and bare "different" were dropped — they fired on
+# knowledge-update / current-state questions ("how often do I attend yoga"),
+# routing them to the high-recall path and surfacing superseded facts
+# (the knowledge-update regression in the n=300 run).
 
 
 def is_aggregation_query(query: str) -> bool:
@@ -101,6 +105,7 @@ DEFAULT_WEIGHTS = {
     "vec_fact": 1.0, "vec_episode": 1.0,
     "bm25_fact": 0.9, "bm25_episode": 0.9,
     "entity": 0.6, "entity_hop2": 0.4, "temporal": 0.6,
+    "key_expansion": 0.7,
 }
 
 
@@ -109,13 +114,18 @@ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
              per_channel: int = 24, entity_hops: int = 2,
              reranker=None, rerank_top: int = 48, obs_k: int = 4,
              semantic_entities: bool = False,
-             semantic_threshold: float = 0.3) -> List[RetrievalResult]:
+             semantic_threshold: float = 0.3,
+             use_key_channel: bool = False) -> List[RetrievalResult]:
     weights = weights or DEFAULT_WEIGHTS
     qvec = embedder.embed([query])[0] if embedder else None
 
     rankings: Dict[str, List[Tuple[str, int]]] = {}
     rankings["bm25_fact"] = [("fact", i) for i, _ in store.fts_search(query, "fact", per_channel)]
     rankings["bm25_episode"] = [("episode", i) for i, _ in store.fts_search(query, "episode", per_channel)]
+    # key-expansion channel — only on the recall profile (aggregation queries),
+    # so category/synonym keys widen recall without touching precision queries.
+    if use_key_channel:
+        rankings["key_expansion"] = [("fact", i) for i, _ in store.key_fts_search(query, per_channel)]
     if qvec is not None:
         rankings["vec_fact"] = [("fact", i) for i, _ in store.vector_search(qvec, "fact", per_channel)]
         rankings["vec_episode"] = [("episode", i) for i, _ in store.vector_search(qvec, "episode", per_channel)]

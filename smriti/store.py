@@ -64,6 +64,7 @@ def _fts_ddl(stem: bool) -> str:
         f"content, content='episodes', content_rowid='id'{tok});\n"
         f"CREATE VIRTUAL TABLE IF NOT EXISTS facts_fts USING fts5("
         f"statement, content='facts', content_rowid='id'{tok});\n"
+        f"CREATE VIRTUAL TABLE IF NOT EXISTS fact_keys_fts USING fts5(keys{tok});\n"
     )
 
 
@@ -137,14 +138,18 @@ class Store:
             ),
         )
         rowid = cur.lastrowid
-        # index statement + expansion keys (Build 9 Part A) for lexical recall;
-        # the stored statement (display/provenance) stays clean.
-        fts_text = f.statement
-        if getattr(f, "search_keys", None):
-            fts_text = f.statement + " " + " ".join(f.search_keys)
+        # Statement FTS stays CLEAN (precision path for all queries). Expansion
+        # keys go to a SEPARATE index consulted only on the aggregation/recall
+        # profile (Build 10 router) — so key expansion can't pollute precision-
+        # sensitive queries (the knowledge-update regression in the n=300 run).
         self.db.execute(
-            "INSERT INTO facts_fts(rowid, statement) VALUES(?,?)", (rowid, fts_text)
+            "INSERT INTO facts_fts(rowid, statement) VALUES(?,?)", (rowid, f.statement)
         )
+        if getattr(f, "search_keys", None):
+            self.db.execute(
+                "INSERT INTO fact_keys_fts(rowid, keys) VALUES(?,?)",
+                (rowid, " ".join(f.search_keys)),
+            )
         if emb is not None:
             self.db.execute("UPDATE facts SET emb=? WHERE id=?", (_to_blob(emb), rowid))
         for ent in {e.lower().strip() for e in f.entities if e and e.strip()}:
@@ -243,6 +248,21 @@ class Store:
         except sqlite3.OperationalError:
             return []
         # bm25(): lower is better -> negate so higher is better
+        return [(r[0], -r[1]) for r in rows]
+
+    def key_fts_search(self, query: str, limit: int = 20) -> List[Tuple[int, float]]:
+        """Lexical search over fact expansion keys (separate index). Consulted
+        only on the aggregation/recall profile so it never affects precision
+        queries. Returns [(fact_id, score)]."""
+        q = _fts_query(query)
+        if not q:
+            return []
+        try:
+            rows = self.db.execute(
+                "SELECT rowid, bm25(fact_keys_fts) FROM fact_keys_fts WHERE fact_keys_fts MATCH ? "
+                "ORDER BY bm25(fact_keys_fts) LIMIT ?", (q, limit)).fetchall()
+        except sqlite3.OperationalError:
+            return []
         return [(r[0], -r[1]) for r in rows]
 
     def _note_vec(self, kind: str, rowid: int, emb):

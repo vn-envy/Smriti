@@ -295,9 +295,29 @@ def test_fact_key_expansion_recall():
     on.add_fact(f())
     off = Smriti(path=":memory:", embedder=HashEmbedder(), mode="lite", expand_keys=False)
     off.add_fact(f())
-    # "citrus" appears only in the expansion keys, not the statement
-    assert on.store.fts_search("citrus", "fact")        # found via expanded key
-    assert not off.store.fts_search("citrus", "fact")   # not found without expansion
+    # Build 10: statement FTS stays CLEAN (precision); keys live in a separate
+    # index consulted only on the recall profile.
+    assert not on.store.fts_search("citrus", "fact")   # not polluting the statement index
+    assert on.store.key_fts_search("citrus")           # present in the separate key index
+    assert not off.store.key_fts_search("citrus")      # no keys indexed when expansion off
+
+
+def test_aggregation_router_key_channel():
+    """The key-expansion channel fires only with use_key_channel (recall profile):
+    'citrus' reaches a 'lime' fact via its keys, tagged key_expansion."""
+    from smriti.retrieval import retrieve
+    mem = Smriti(path=":memory:", embedder=HashEmbedder(), mode="lite", expand_keys=True)
+    for s in ["The user drives a Honda.", "The user plays tennis.", "The user codes in Rust."]:
+        mem.add_fact(Fact(id=None, statement=s, subject="user", predicate="x",
+                          object="", entities=[]))
+    mem.add_fact(Fact(id=None, statement="The user added lime to the mojito.", subject="user",
+                      predicate="used", object="lime", entities=["lime"],
+                      search_keys=["citrus", "fruit"]))
+    q = "how many citrus fruits have I used?"
+    on = retrieve(mem.store, mem.embedder, q, k=8, use_key_channel=True)
+    assert any("lime" in r.text and "key_expansion" in r.channels for r in on)
+    off = retrieve(mem.store, mem.embedder, q, k=8, use_key_channel=False)
+    assert not any("key_expansion" in r.channels for r in off)  # precise path untouched
 
 
 def test_aggregation_intent_detection():
@@ -305,7 +325,8 @@ def test_aggregation_intent_detection():
     for q in ["How many doctors did I visit?", "What is the total I spent?",
               "how much time on average", "how many different cuisines"]:
         assert is_aggregation_query(q)
-    for q in ["Where do I live?", "What is my dog's name?", "When did I move?"]:
+    for q in ["Where do I live?", "What is my dog's name?", "When did I move?",
+              "How often do I attend yoga?"]:  # frequency/current-state, NOT aggregation
         assert not is_aggregation_query(q)
 
 

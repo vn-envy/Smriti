@@ -99,7 +99,9 @@ class Smriti:
                 if not self.expand_keys:
                     for f in facts:
                         f.search_keys = []
-                fembs = self.embedder.embed([self._index_text(f) for f in facts])
+                # embed the clean statement only; expansion keys live in the
+                # separate key index (Build 10) so they can't dilute precision.
+                fembs = self.embedder.embed([f.statement for f in facts])
                 for f, femb in zip(facts, fembs):
                     f.episode_id = episode_ids[0] if episode_ids else None
                     if consolidate(self.store, f, femb, self.embedder, self.llm) is not None:
@@ -118,7 +120,7 @@ class Smriti:
         """Directly insert a fact (e.g. from an agent's own observations)."""
         if not self.expand_keys:
             fact.search_keys = []
-        emb = self.embedder.embed([self._index_text(fact)])[0]
+        emb = self.embedder.embed([fact.statement])[0]
         if resolve_conflicts:
             return consolidate(self.store, fact, emb, self.embedder,
                                self.llm if self.mode == "full" else None)
@@ -132,13 +134,18 @@ class Smriti:
 
     def context(self, query: str, k: int = 12, now: Optional[str] = None,
                 char_budget: int = 9000) -> str:
-        # Build 9 Part B: aggregation queries get a high-recall, enumerate-and-count
-        # path. Strictly gated by intent — every other query takes the exact path
-        # as before, so nothing that already works can regress here.
+        # Build 10 — per-type router. Each query class uses the config that
+        # tested best for it (agile: adjust a profile as new A/B evidence lands):
+        #   * aggregation  -> RECALL profile: high-k + key-expansion channel +
+        #                     semantic-entity linking (won +18.5 on multi-session)
+        #   * everything else -> PRECISION profile: the clean, unchanged path
+        #                     (protects knowledge-update / single-session, which
+        #                      regressed under global recall expansion in n=300)
         if self.aggregate and is_aggregation_query(query):
             results = retrieve(self.store, self.embedder, query, now=now, k=self.k_agg,
                                reranker=self.reranker, per_channel=max(24, self.k_agg),
-                               semantic_entities=self.semantic_entities,
+                               use_key_channel=self.expand_keys,
+                               semantic_entities=True,
                                semantic_threshold=self.semantic_threshold)
             return pack_context(results, now=now, char_budget=char_budget, aggregate=True)
         return pack_context(self.search(query, k=k, now=now), now=now, char_budget=char_budget)
