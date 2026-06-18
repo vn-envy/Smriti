@@ -1,5 +1,9 @@
 # SMRITI
 
+<p align="center">
+  <img src="assets/smriti-hero.svg" alt="SMRITI — memory that knows when" width="920">
+</p>
+
 **Structured Memory with Reflective Indexing and Temporal Inference**
 
 *smriti* (स्मृति): Sanskrit for "that which is remembered."
@@ -90,15 +94,39 @@ Two design decisions worth defending:
 - **`lite`** (alias `laghu`, लघु — "light") — no LLM at write time at all. Episodic ingest + 4-channel hybrid retrieval. Near-zero cost, fully offline-capable, and retrieval-only hybrids are known to recover most of the benchmark value. Ideal default for high-volume agents.
 - **`full`** (alias `purna`, पूर्ण — "complete") — adds fact extraction + write-time consolidation. One extraction call per session, arbitration calls only on semantic collisions. This is where knowledge-update and temporal-reasoning accuracy comes from.
 
-## Install
+## Install & try it in 60 seconds
 
 ```bash
-pip install -e .          # from this repo
-python -m pytest tests/   # 12 offline tests, no network or keys needed
-python examples/quickstart.py
+pip install -e .              # from this repo
+python -m pytest tests/       # 33 offline tests — no network, no API keys
+python examples/quickstart.py # see supersession live
 ```
 
-Works with any OpenAI-compatible endpoint (Ollama, vLLM, LM Studio, Groq, OpenRouter, hosted APIs) and any embedding endpoint (Ollama `/api/embed` or OpenAI-style `/embeddings`).
+The quickstart runs fully **offline** (lite mode). For LLM-backed extraction + supersession, point SMRITI at any OpenAI-compatible endpoint (Ollama, vLLM, LM Studio, Groq, DeepSeek, OpenRouter, hosted) and any embedder — nothing else to install.
+
+### Drop it into your agent (MCP)
+
+SMRITI ships a one-command MCP server, so any MCP-compatible agent (Claude Code, Cursor, …) gets persistent, auditable memory:
+
+```bash
+smriti-mcp --db memory.db        # or: python -m smriti.mcp_server --db memory.db
+```
+
+Add it to your agent's MCP config:
+
+```json
+{ "mcpServers": { "smriti": { "command": "smriti-mcp", "args": ["--db", "memory.db"] } } }
+```
+
+It exposes six typed tools returning structured JSON — `remember`, `recall`, `search`, `facts_about`, `add_fact`, `stats`. Offline by default (no key); set `SMRITI_LLM_MODEL` / `SMRITI_LLM_PROVIDER` / `SMRITI_API_KEY` for full extraction mode.
+
+### Benchmark it on *your* data
+
+Don't take our word for it — run the included harness on your own conversations, with your own judge:
+
+```bash
+bash bench/ab.sh   # fixed-judge A/B, prints the accuracy delta
+```
 
 ## Benchmarks
 
@@ -138,8 +166,9 @@ smriti/             core library
   memory.py         public Smriti API (modes: lite/laghu, full/purna)
   embedder.py       Ollama / OpenAI-compatible / offline hash
   llm.py            OpenAI-compatible client + mock
-bench/              pariksha: LongMemEval + LoCoMo runners, nyaya judge, CLI
-tests/              offline test suite (mock LLM, hash embedder) — 12 tests
+  mcp_server.py     stdlib-only MCP server (6 typed tools, stdio JSON-RPC)
+bench/              pariksha: LongMemEval + LoCoMo runners, nyaya judge, CLI, A/B
+tests/              offline test suite (mock LLM, hash embedder) — 33 tests
 examples/           runnable quickstart
 NOMENCLATURE.md     the full lexicon and why each term is load-bearing
 smriti-dashboard.html  feature-level comparison dashboard (open in any browser)
@@ -149,29 +178,29 @@ smriti-teaser.html     36-second self-contained launch teaser — open, it plays
 
 ## Roadmap
 
-### Shipped (research-driven builds)
+### Shipped
 
-Informed by Hindsight (observation paradigm), StructMem / MemGAS (multi-granularity, cross-event consolidation), and the multi-hop RAG literature:
+Research-driven (Hindsight observation paradigm; StructMem / MemGAS multi-granularity; mem0 entity linking; multi-hop RAG literature), each validated by a fixed-judge A/B:
 
-- [x] Observation/summary layer — per-entity synthesized summaries (`refresh_observations`)
-- [x] Observations additive + enumerate — own context section, list instances instead of asserting totals
-- [x] Multi-granularity digests — per-`(subject, predicate)` enumerations for cross-entity aggregation
-- [x] Numeric/sum digests — Python-computed same-unit totals carried into digests (SUM-type aggregation)
-- [x] 2-hop entity traversal — graph-lite multi-hop over the entity table
-- [x] Optional cross-encoder reranking channel — RRF + rerank (`reranker=`)
-- [x] Iterative retrieval — LLM-seeded second pass for multi-hop (`search_iterative`)
-- [x] Benchmark harness hardening — stratified `--sample`, `--question-type`, A/B (`bench/ab.sh`), DeepSeek preset
+- [x] Observation/summary layer + additive injection + enumerate-don't-assert
+- [x] Multi-granularity digests (per-entity and per-`(subject, predicate)`) + numeric/sum totals
+- [x] Recall track — fact-augmented key expansion + aggregation tally path
+- [x] **Per-type router** — recall profile for aggregation, precision profile for current-state. Lifts multi-session **+10 pts (p<0.05)** with **no** knowledge-update regression
+- [x] mem0-inspired levers — FTS Porter stemmer, semantic entity linking (both opt-in)
+- [x] 2-hop entity traversal · cross-encoder reranking · iterative retrieval
+- [x] **MCP server** — `smriti-mcp`: stdlib-only stdio JSON-RPC, 6 typed tools, lite-by-default, security-hardened (ATTACH/DETACH authorizer, fixed db path, input caps, crash-proof loop)
+- [x] Benchmark harness — stratified `--sample`, `--question-type`, one-command A/B (`bench/ab.sh`)
 
-### Next (post-benchmark)
+### Next priorities (post-ship)
 
-- [ ] Publish LongMemEval-S and LoCoMo numbers (lite + full, local + hosted; observations on/off)
-- [ ] **Entity canonicalization** — confidence-scored alias merge at write time ("Rachel" / "my cousin Rachel" / "Rachel Smith" → one entity). Attacks the fragmentation that limits cross-entity aggregation. *(adapted from Codebase-Memory's resolution cascade)*
-- [ ] **Recursive-CTE N-hop traversal** — replace Python 2-hop with arbitrary-depth traversal in pure SQL. *(Codebase-Memory technique)*
-- [ ] **`sqlite-vec` ANN backend** — optional, fixes the O(N) vector scan past ~100k rows; falls back to numpy. Keeps single-file zero-infra.
-- [ ] **Incremental observation refresh** — content-hash so only changed entities/predicates are re-summarized. *(XXH3 pattern from Codebase-Memory)*
-- [x] **MCP server** — `smriti-mcp` / `python -m smriti.mcp_server`: stdlib-only stdio JSON-RPC, 6 typed tools (remember, recall, search, facts_about, add_fact, stats) returning structured JSON, lite-by-default (offline), SQLite ATTACH/DETACH authorizer + fixed db path + input caps + crash-proof loop. *(design + security blueprint from Codebase-Memory)*
-- [ ] Embedding-dimension guard (reject silent model swaps) + async ingest queue and batched embeddings
-- [ ] Multi-user namespacing (`user_id` scoping) and concurrency-safe store
+Deferred until after release; ordered by impact:
+
+1. **Entity canonicalization** — confidence-scored alias merge at write time ("Rachel" / "my cousin Rachel" / "Rachel Smith" → one entity). Closes the fragmentation behind cross-entity aggregation. *(Codebase-Memory resolution cascade + mem0 entity linking)*
+2. **`sqlite-vec` ANN backend** — optional vector index to lift the O(N) scan past ~100k rows; falls back to numpy, keeps the single-file zero-infra default. *(the measured scaling ceiling)*
+3. **Full `longmemeval_s` + LoCoMo numbers** — publish on the hard (full-haystack) split with a fixed judge; optionally a frontier reader for leaderboard comparability (~$2.50/run, see BENCHMARKS.md).
+4. **Recursive-CTE N-hop traversal** — arbitrary-depth entity traversal in pure SQL. *(Codebase-Memory technique)*
+5. **Incremental observation refresh** — content-hash so only changed entities/predicates re-summarize. *(XXH3 pattern)*
+6. **Production hardening** — embedding-dimension guard, async ingest queue + batched embeddings, multi-user (`user_id`) namespacing, concurrency-safe store.
 
 ## License
 

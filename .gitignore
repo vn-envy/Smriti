@@ -14,3 +14,12 @@ bench_results.json
 # editor / backups
 *.bak
 .DS_Store
+
+# stray SQLite scratch files (e.g. a literal ":memory:" path)
+:memory:*
+*.db
+*.db-journal
+
+# per-build patch exports (git history is the real audit trail)
+patches/
+_probe.txt
