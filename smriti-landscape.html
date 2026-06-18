@@ -85,7 +85,21 @@
   footer b{color:var(--mute);font-weight:500}
   footer a{color:var(--mute)}
 
+  /* production standout cards */
+  .standout{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:6px}
+  .so-card{background:var(--ink2);border:1px solid var(--line);border-radius:var(--r);padding:22px 22px 18px;position:relative}
+  .so-card.hero{grid-column:1/-1;background:linear-gradient(180deg,rgba(244,164,60,.06),transparent 70%),var(--ink2);border-color:var(--amber-dim)}
+  .so-n{font-family:'JetBrains Mono';font-size:11px;color:var(--amber);font-weight:700;letter-spacing:.14em}
+  .so-card h3{font-size:19px;margin:8px 0 9px}
+  .so-what{font-size:14px;color:var(--paper)}
+  .so-vs{font-size:12px;color:var(--mute);margin-top:11px;font-family:'JetBrains Mono';line-height:1.7}
+  .so-vs b{color:var(--bad);font-weight:600}
+  .so-why{font-size:13.5px;color:var(--mute);margin-top:11px;border-top:1px solid var(--line);padding-top:11px}
+  .so-why b{color:var(--paper);font-weight:600}
+  .ms-num{color:var(--amber);font-weight:700}
+
   @media(max-width:900px){.two-col{grid-template-columns:1fr}}
+  @media(max-width:760px){.standout{grid-template-columns:1fr}}
   @media(max-width:480px){.wrap{padding:0 18px}.brand .tag{display:none}}
   @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -116,6 +130,57 @@
 </header>
 
 <main>
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">why smriti · production fit</span>
+        <h2>What makes SMRITI stand out where it actually matters</h2>
+        <p>The leaderboard further down is one lens — and the hosted leaders are ahead on it. But shipping a real product asks different questions: what does it cost to run, what must you trust, and what happens at scale? On those, SMRITI is built to win. Five reasons, in plain terms.</p>
+      </div>
+      <div class="standout">
+        <div class="so-card hero">
+          <div class="so-n">01 · ZERO SETUP</div>
+          <h3>One file. No servers, no database to run.</h3>
+          <div class="so-what">SMRITI's entire memory lives in a single local file. There is nothing to deploy, cluster, or keep alive — it's the library plus standard tooling, and that's it.</div>
+          <div class="so-vs">vs <b>mem0</b> (Postgres + a vector database) · <b>Zep</b> (Neo4j graph DB) · <b>Supermemory</b> (closed cloud service) · <b>GBrain</b> (Postgres + pgvector)</div>
+          <div class="so-why"><b>Why it matters:</b> you add memory to your agent today — on a laptop, an edge device, or one small container — with no infrastructure bill, no DevOps, and no third-party cloud you're forced to depend on.</div>
+        </div>
+        <div class="so-card">
+          <div class="so-n">02 · NOTHING IS SILENTLY LOST</div>
+          <h3>Memories are updated, never deleted.</h3>
+          <div class="so-what">When a fact changes, SMRITI marks the old version as past and keeps it — the full history stays queryable.</div>
+          <div class="so-vs">vs delete-on-write systems whose own reported production testing shows accuracy <b>decaying to ~49% at 50k sessions</b> as wrong deletions and contradictions accumulate.</div>
+          <div class="so-why"><b>Why it matters:</b> you can always answer both "what's true now" and "what was true then," audit every change, and the memory doesn't quietly rot as it scales.</div>
+        </div>
+        <div class="so-card">
+          <div class="so-n">03 · NUMBERS YOU CAN REPRODUCE</div>
+          <h3>Verifiable, not self-graded.</h3>
+          <div class="so-what">SMRITI ships its benchmark harness and reports results on a small, cheap model with a fixed judge — regressions included, nothing hidden.</div>
+          <div class="so-vs">vs headline scores typically produced by a <b>frontier model grading its own system</b> on a managed platform with private optimizations.</div>
+          <div class="so-why"><b>Why it matters:</b> you can confirm exactly how it behaves on your own data and hardware before you trust it — you're buying evidence, not a marketing chart.</div>
+        </div>
+        <div class="so-card">
+          <div class="so-n">04 · CHEAP TO RUN, NOTHING GATED</div>
+          <h3>Small models welcome. Everything's free.</h3>
+          <div class="so-what">Works with any model and embedder, runs well on inexpensive small models, and is fully open (Apache-2.0) — no paid tiers.</div>
+          <div class="so-vs">vs graph memory, advanced temporal features, or scale locked behind <b>paid or cloud-only plans</b>.</div>
+          <div class="so-why"><b>Why it matters:</b> predictable, low cost — pennies per operation — with no surprise pricing and no lock-in as you grow.</div>
+        </div>
+        <div class="so-card">
+          <div class="so-n">05 · ADAPTS TO THE QUESTION</div>
+          <h3>Recall for "how many," precision for "what's true now."</h3>
+          <div class="so-what">SMRITI sends counting/aggregation questions down a high-recall path and current-state questions down a precise one — a measured <span class="ms-num"><!-- FILL: multi-session delta --> +__ pts</span> lift on multi-session, with <b style="color:var(--teal)">no</b> loss on "what changed" questions.</div>
+          <div class="so-vs">vs one-size-fits-all retrieval, where pushing recall for aggregation quietly drags <b>stale answers</b> into everything else.</div>
+          <div class="so-why"><b>Why it matters:</b> correct answers across the full range of real user questions — not just the ones a single retrieval strategy happens to favor.</div>
+        </div>
+      </div>
+      <div class="strip" style="margin-top:22px">
+        <span class="mk">⌖</span>
+        <p><b>Honest framing.</b> On raw leaderboard accuracy (below), the hosted leaders are still ahead. SMRITI's bet is the <b>production reality around the number</b>: run it anywhere, trust what it does, keep your full history, and pay almost nothing. The multi-session figure in card 05 lands once the final A/B completes.</p>
+      </div>
+    </div>
+  </section>
+
   <section>
     <div class="wrap">
       <div class="sec-head">
