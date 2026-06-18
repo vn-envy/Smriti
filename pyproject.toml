@@ -30,6 +30,9 @@ Homepage = "https://github.com/vn-envy/Smriti"
 Repository = "https://github.com/vn-envy/Smriti"
 Issues = "https://github.com/vn-envy/Smriti/issues"
 
+[project.scripts]
+smriti-mcp = "smriti.mcp_server:main"
+
 [project.optional-dependencies]
 dev = ["pytest>=7"]
 

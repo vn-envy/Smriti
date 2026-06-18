@@ -433,6 +433,57 @@ def test_post_json_retries_transient_errors(monkeypatch):
     assert out == {"ok": True} and calls["n"] == 2  # failed once, succeeded on retry
 
 
+# ---------------------------------------------------------------- MCP server
+def _mcp():
+    from smriti.mcp_server import SmritiMCP
+    return SmritiMCP(Smriti(path=":memory:", embedder=HashEmbedder(), mode="lite"))
+
+
+def test_mcp_initialize_and_tools_list():
+    s = _mcp()
+    init = s.handle({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}})
+    assert init["result"]["serverInfo"]["name"] == "smriti"
+    tools = s.handle({"jsonrpc": "2.0", "id": 2, "method": "tools/list"})["result"]["tools"]
+    names = {t["name"] for t in tools}
+    assert {"remember", "recall", "search", "facts_about", "add_fact", "stats"} <= names
+
+
+def test_mcp_remember_recall_roundtrip():
+    s = _mcp()
+    import json as _j
+    s.handle({"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {
+        "name": "remember", "arguments": {"messages": [
+            {"role": "user", "content": "My Helsinki apartment keypad code is 4417."}]}}})
+    r = s.handle({"jsonrpc": "2.0", "id": 2, "method": "tools/call", "params": {
+        "name": "recall", "arguments": {"query": "what is my keypad code?"}}})
+    payload = _j.loads(r["result"]["content"][0]["text"])
+    assert "4417" in payload["context"]
+
+
+def test_mcp_robustness_and_errors():
+    s = _mcp()
+    # unknown method -> JSON-RPC method-not-found
+    assert s.handle({"jsonrpc": "2.0", "id": 1, "method": "no.such"})["error"]["code"] == -32601
+    # unknown tool -> error, not crash
+    assert "error" in s.handle({"jsonrpc": "2.0", "id": 2, "method": "tools/call",
+                                "params": {"name": "bogus", "arguments": {}}})
+    # notification (no id) -> no response
+    assert s.handle({"jsonrpc": "2.0", "method": "notifications/initialized"}) is None
+    # non-dict message -> error response, no crash
+    assert s.handle("garbage")["error"]["code"] == -32600
+
+
+def test_mcp_security_denies_attach():
+    import sqlite3 as _sq
+    s = _mcp()  # authorizer installed in SmritiMCP.__init__
+    raised = False
+    try:
+        s.mem.store.db.execute("ATTACH DATABASE ':memory:' AS evil")
+    except _sq.DatabaseError:
+        raised = True
+    assert raised, "ATTACH must be denied by the authorizer"
+
+
 def test_abstention_detection():
     assert is_abstention("I don't have enough information to answer that.")
     assert not is_abstention("Your sister lives in Pune.")

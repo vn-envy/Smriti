@@ -169,7 +169,7 @@ Informed by Hindsight (observation paradigm), StructMem / MemGAS (multi-granular
 - [ ] **Recursive-CTE N-hop traversal** — replace Python 2-hop with arbitrary-depth traversal in pure SQL. *(Codebase-Memory technique)*
 - [ ] **`sqlite-vec` ANN backend** — optional, fixes the O(N) vector scan past ~100k rows; falls back to numpy. Keeps single-file zero-infra.
 - [ ] **Incremental observation refresh** — content-hash so only changed entities/predicates are re-summarized. *(XXH3 pattern from Codebase-Memory)*
-- [ ] **MCP server** — typed memory tools (`recall`, `context`, `facts_about`, `timeline`, `why_superseded`) returning structured JSON, with a least-privilege/verification security posture for a tool that runs with the agent's permissions. *(design + security blueprint from Codebase-Memory)*
+- [x] **MCP server** — `smriti-mcp` / `python -m smriti.mcp_server`: stdlib-only stdio JSON-RPC, 6 typed tools (remember, recall, search, facts_about, add_fact, stats) returning structured JSON, lite-by-default (offline), SQLite ATTACH/DETACH authorizer + fixed db path + input caps + crash-proof loop. *(design + security blueprint from Codebase-Memory)*
 - [ ] Embedding-dimension guard (reject silent model swaps) + async ingest queue and batched embeddings
 - [ ] Multi-user namespacing (`user_id` scoping) and concurrency-safe store
 
