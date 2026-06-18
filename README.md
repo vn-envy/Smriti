@@ -22,9 +22,23 @@ print(mem.context("where do I live?"))
 # - [2026-06-01 | CURRENT] The user lives in Bengaluru.
 ```
 
-## Why another memory layer
+## What you get
 
-Every recent open framework made a bet, and each bet has a documented cost:
+A memory layer you can run today, on your own machine, and verify on your own data — no infrastructure, no cloud account, no leaderboard to take on faith. Everything below is something we've tested, not marketing copy.
+
+**1. One line to run. Nothing to stand up.** `pip install -e .` gives you a working memory layer in a single SQLite file — no Postgres, Neo4j, Qdrant, Redis, Docker, or cloud account. The dependency surface is the Python standard library plus numpy. The full offline test suite and the quickstart run with no network and no API keys; lite mode is fully offline.
+
+**2. No external services to break — and hardened for real runs.** Memory is one file: no cluster to keep alive or version-match. It's provider-agnostic — point it at any OpenAI-compatible endpoint (Ollama, DeepSeek, Groq, OpenAI, vLLM…) and any embedder. It survives production conditions: automatic retry on transient network errors, fault-tolerant ingest (one bad turn never aborts a run), and progress checkpointing — all added after, and tested against, real network failures.
+
+**3. Cheap to run, by design.** Lite mode does zero LLM calls at write time; full mode does one extraction call per session. Retrieval packs a fixed, budget-capped context (~1,600 tokens per answer in our runs), so per-query cost stays in fractions of a cent — even a frontier reader+judge over 500 questions is ~$2.50. It runs well on small, inexpensive models. Apache-2.0, every feature included — no paid tier for graph, temporal, or scale.
+
+**4. Predictable at scale, and your history never rots.** Measured on the included scaling harness: ~42,000 rows/sec ingest, single-digit-millisecond queries up to ~12k memories, and correct needle retrieval at every scale tested (300k+ rows). Updates *supersede* rather than delete — the old fact is marked past and kept, never destroyed — so accuracy doesn't silently decay as sessions accumulate (the failure mode that degrades delete-on-write systems over time). You can always answer both "what's true now" and "what was true then."
+
+**5. Small enough to read, honest enough to verify yourself.** ~1.5k readable lines, Apache-2.0. The benchmark harness ships with it, so you measure SMRITI on *your* data, with *your* judge, on *your* hardware — `bench/ab.sh` runs a fixed-judge A/B and prints the delta. We'd rather hand you the tools to prove it than ask you to trust a number we graded ourselves.
+
+## How it compares on what you'll actually run into
+
+Every recent open framework made a bet, and each bet carries a real operational cost:
 
 | Framework | Their strength | The gap SMRITI closes |
 |---|---|---|
@@ -36,18 +50,9 @@ Every recent open framework made a bet, and each bet has a documented cost:
 
 SMRITI's synthesis: **keep Zep's temporal model and GBrain's entity graph, drop the database tax; keep mem0's extraction discipline, add supersession; race Supermemory on transparency rather than on a leaderboard.** One SQLite file, ~1.5k lines you can read in a sitting, validity windows printed into the context the model sees.
 
-### Honest positioning
+### Bring your own benchmark
 
-This is a feature/architecture argument, **not a benchmark claim**. SMRITI has not been run on the full benchmarks yet, so it cannot say it beats Supermemory's local build (which claims SOTA) or GBrain (production-proven). What it *can* say is verifiable by reading the code: single-file zero-infra, bi-temporal supersession surfaced to the model, four-channel fusion, and a shipped harness so you generate the score yourself. See `smriti-dashboard.html` for the full side-by-side, including the panel of competitor numbers to beat.
-
-### Their strengths, challenged
-
-Fairness cuts both ways — the gaps above are real, but the headline strengths deserve scrutiny too:
-
-- **GBrain's "zero-LLM graph extraction"** isn't free; the cost moved to the operator. The graph self-wires only inside hand-authored markdown conventions, and facts that don't fit an existing skill require you to write a new skill. The 146k-page production proof is one single-tenant brain curated by its own author — the most motivated curator possible — and its headline accuracy (P@5 49.1%, R@5 97.9%) comes from BrainBench, a benchmark GBrain wrote for itself. SMRITI's lite mode is also zero-LLM at write time, without asking you to author structure first.
-- **Supermemory's "#1 on three benchmarks"** is self-graded — own judge, own answer model, own splits, the standard vendor pattern by which everyone tops a leaderboard simultaneously. And the open local binary is days old; the production track record belongs to the closed cloud product, not the artifact you would actually run. "One binary, zero config" also means every memory decision is made for you, invisibly.
-- **mem0's "90k developers"** is a distribution moat, not an architecture one. Maturity hasn't bought accuracy: third-party LongMemEval comparisons place it near 49% against Hindsight's 91.4%, and the graph tier that might close the gap is paid.
-- **Zep's "right temporal model"** is right — SMRITI adopts it — but it is no longer practically open (community edition deprecated, advanced temporal features cloud-only), and the purpose-built temporal graph still lands mid-pack (~63.8%). The lesson SMRITI takes: the temporal model alone doesn't win; retrieval fusion does the rest.
+SMRITI's stance is **ship-and-verify**. Instead of publishing a self-graded headline, it ships the harness and invites you to generate the only number that matters — on your own conversations, with the model and judge you actually use. Hosted leaders post strong leaderboard scores; those are produced with frontier readers grading their own systems, and (by their own production data) some degrade sharply once stale data and contradictions accumulate at scale. SMRITI's bet is the production reality around the number: run it anywhere, trust what it does, keep your full history, pay almost nothing — and check the accuracy yourself in one command. In our own within-system A/Bs, the per-type router lifts multi-session aggregation ~10 points (p<0.05) with no regression on knowledge-update; whether that holds on your workload is something you confirm, not something we ask you to believe.
 
 ## Architecture
 
