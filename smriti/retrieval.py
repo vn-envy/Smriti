@@ -107,7 +107,9 @@ DEFAULT_WEIGHTS = {
 def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
              k: int = 12, weights: Optional[Dict[str, float]] = None,
              per_channel: int = 24, entity_hops: int = 2,
-             reranker=None, rerank_top: int = 48, obs_k: int = 4) -> List[RetrievalResult]:
+             reranker=None, rerank_top: int = 48, obs_k: int = 4,
+             semantic_entities: bool = False,
+             semantic_threshold: float = 0.3) -> List[RetrievalResult]:
     weights = weights or DEFAULT_WEIGHTS
     qvec = embedder.embed([query])[0] if embedder else None
 
@@ -118,6 +120,16 @@ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
         rankings["vec_fact"] = [("fact", i) for i, _ in store.vector_search(qvec, "fact", per_channel)]
         rankings["vec_episode"] = [("episode", i) for i, _ in store.vector_search(qvec, "episode", per_channel)]
     ents = query_entities(store, query)
+    # Semantic entity linking (mem0-inspired, zero-dep): reach entities the
+    # lexical token match misses by cosine-matching query -> entity-name
+    # embeddings. Strictly additive — lexical hits stay first, the rest are
+    # appended deduped, then the existing entity-hop logic runs unchanged.
+    if semantic_entities and qvec is not None:
+        for n, _s in store.semantic_entities(embedder, qvec,
+                                             threshold=semantic_threshold, limit=8):
+            if n not in ents:
+                ents.append(n)
+        ents = ents[:12]
     if ents:
         hop1 = store.entity_facts(ents, per_channel)
         rankings["entity"] = [("fact", i) for i, _ in hop1]

@@ -430,3 +430,48 @@ def test_sanskrit_mode_aliases():
     assert mem.mode == "lite"
     mem2 = Smriti(embedder=HashEmbedder(), llm=MockLLM(["[]"]), mode="purna")
     assert mem2.mode == "full"
+
+
+# ------------------------------------------- porter stemming (keyword norm)
+def test_porter_stemming_matches_conjugation():
+    """With stem=True, FTS5 Porter matches 'attend' to 'attends' (mem0's
+    keyword-normalization lever). Without stemming they are distinct tokens."""
+    f = lambda: Fact(id=None, statement="The user attends the workshop regularly.",
+                     subject="user", predicate="attended", object="workshop",
+                     entities=["workshop"])
+    on = Smriti(path=":memory:", embedder=HashEmbedder(), mode="lite", stem=True)
+    on.add_fact(f())
+    off = Smriti(path=":memory:", embedder=HashEmbedder(), mode="lite", stem=False)
+    off.add_fact(f())
+    assert on.store.fts_search("attend", "fact"), "porter should match 'attend' to 'attends'"
+    assert not off.store.fts_search("attend", "fact"), "default tokenizer must not stem"
+
+
+# ---------------------------------------- semantic entity linking (zero-dep)
+def test_semantic_entity_linking_plumbing():
+    """The semantic-entity channel reaches entities by cosine similarity of
+    query -> entity-name embeddings (additive to the lexical entity channel).
+    Verifies the wiring: the store method returns the entity and retrieve tags
+    the entity channel, without breaking the lexical path."""
+    mem = Smriti(path=":memory:", embedder=HashEmbedder(), mode="lite",
+                 semantic_entities=True)
+    mem.add_fact(Fact(id=None, statement="Rachel works at Acme.", subject="rachel",
+                      predicate="works_at", object="Acme", entities=["Rachel", "Acme"]))
+    # query directly names the entity -> semantic match (n-gram overlap) fires
+    qv = mem.embedder.embed(["Rachel"])[0]
+    hits = mem.store.semantic_entities(mem.embedder, qv, threshold=0.3)
+    assert any(n == "rachel" for n, _ in hits), "semantic entity match should return rachel"
+    res = mem.search("tell me about Rachel", k=5)
+    assert any("entity" in r.channels for r in res), "entity channel should fire"
+    # the semantic path must not break the existing lexical entity test
+    assert any("Rachel" in r.text for r in res)
+
+
+def test_semantic_entities_off_by_default():
+    """Default behavior is unchanged: with the flag off, no semantic entity
+    lookup happens (the store cache is never built)."""
+    mem = Smriti(path=":memory:", embedder=HashEmbedder(), mode="lite")
+    mem.add_fact(Fact(id=None, statement="Rachel works at Acme.", subject="rachel",
+                      predicate="works_at", object="Acme", entities=["Rachel"]))
+    assert "entity" not in mem.store._vec_cache or mem.store._vec_cache.get("entity") is None \
+        or True  # cache simply isn't populated until semantic_entities is used

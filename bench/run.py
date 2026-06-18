@@ -66,6 +66,12 @@ def main():
                    help="Build 9A: index fact-augmented search keys for recall (full mode)")
     p.add_argument("--aggregate", action="store_true",
                    help="Build 9B: high-recall enumerate-and-count path on aggregation queries")
+    p.add_argument("--stem", action="store_true",
+                   help="FTS5 Porter stemmer so conjugation variants match (keyword normalization)")
+    p.add_argument("--semantic-entities", action="store_true",
+                   help="Semantic entity linking: cosine-match query->entity-name embeddings (zero-dep)")
+    p.add_argument("--semantic-threshold", type=float, default=0.3,
+                   help="Cosine cutoff for the semantic-entity channel (default 0.3)")
     p.add_argument("--reranker-model", default="", help="Build 4: rerank model id")
     p.add_argument("--reranker-url", default="", help="Build 4: rerank endpoint base url (enables reranking)")
     p.add_argument("--reranker-key", default="")
@@ -88,7 +94,9 @@ def main():
     def memory_factory():
         return Smriti(path=":memory:", embedder=embedder, llm=memory_llm,
                       mode=args.mode, reranker=reranker,
-                      expand_keys=args.key_expansion, aggregate=args.aggregate)
+                      expand_keys=args.key_expansion, aggregate=args.aggregate,
+                      stem=args.stem, semantic_entities=args.semantic_entities,
+                      semantic_threshold=args.semantic_threshold)
 
     if args.bench == "longmemeval":
         data = load_longmemeval(args.data)

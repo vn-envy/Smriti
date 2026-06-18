@@ -34,7 +34,9 @@ MODE_ALIASES = {"laghu": "lite", "purna": "full"}
 class Smriti:
     def __init__(self, path: str = ":memory:", embedder=None, llm: Optional[LLM] = None,
                  mode: str = "auto", embed_episodes: bool = True, reranker=None,
-                 expand_keys: bool = True, aggregate: bool = True, k_agg: int = 40):
+                 expand_keys: bool = True, aggregate: bool = True, k_agg: int = 40,
+                 stem: bool = False, semantic_entities: bool = False,
+                 semantic_threshold: float = 0.3):
         """mode: "full"/"purna" (LLM extraction+consolidation), "lite"/"laghu"
         (episodic only), or "auto" (full if an llm is provided, else lite).
         reranker: optional cross-encoder (any .rerank(query, docs)->scores) applied
@@ -42,14 +44,24 @@ class Smriti:
         expand_keys: index fact-augmented search keys for recall (Build 9 Part A).
         aggregate: use a high-recall, enumerate-and-count read path on aggregation
         queries (Build 9 Part B); non-aggregation queries are unaffected.
-        k_agg: retrieval depth for the aggregation path."""
-        self.store = Store(path)
+        k_agg: retrieval depth for the aggregation path.
+        stem: FTS5 Porter stemmer so conjugation variants match
+        ('attend' <-> 'attending') — the keyword-normalization lever mem0
+        credits. Zero-dependency (built into SQLite). Default off (A/B-able).
+        semantic_entities: cosine-match query embeddings against entity-NAME
+        embeddings to reach entities lexical token matching misses (mem0's
+        'entity linking' lever). Zero-dependency; uses the existing embedder.
+        semantic_threshold: cosine cutoff for the semantic-entity channel."""
+        self.store = Store(path, stem=stem)
         self.embedder = embedder or HashEmbedder()
         self.llm = llm
         self.reranker = reranker
         self.expand_keys = expand_keys
         self.aggregate = aggregate
         self.k_agg = k_agg
+        self.stem = stem
+        self.semantic_entities = semantic_entities
+        self.semantic_threshold = semantic_threshold
         mode = MODE_ALIASES.get(mode, mode)
         if mode == "auto":
             mode = "full" if llm is not None else "lite"
@@ -114,7 +126,9 @@ class Smriti:
 
     # --------------------------------------------------------------- search
     def search(self, query: str, k: int = 12, now: Optional[str] = None) -> List[RetrievalResult]:
-        return retrieve(self.store, self.embedder, query, now=now, k=k, reranker=self.reranker)
+        return retrieve(self.store, self.embedder, query, now=now, k=k, reranker=self.reranker,
+                        semantic_entities=self.semantic_entities,
+                        semantic_threshold=self.semantic_threshold)
 
     def context(self, query: str, k: int = 12, now: Optional[str] = None,
                 char_budget: int = 9000) -> str:
@@ -123,7 +137,9 @@ class Smriti:
         # as before, so nothing that already works can regress here.
         if self.aggregate and is_aggregation_query(query):
             results = retrieve(self.store, self.embedder, query, now=now, k=self.k_agg,
-                               reranker=self.reranker, per_channel=max(24, self.k_agg))
+                               reranker=self.reranker, per_channel=max(24, self.k_agg),
+                               semantic_entities=self.semantic_entities,
+                               semantic_threshold=self.semantic_threshold)
             return pack_context(results, now=now, char_budget=char_budget, aggregate=True)
         return pack_context(self.search(query, k=k, now=now), now=now, char_budget=char_budget)
 
@@ -149,7 +165,9 @@ class Smriti:
             if not follow or follow.upper().startswith("NONE"):
                 break
             for r in retrieve(self.store, self.embedder, follow, now=now, k=k,
-                              reranker=self.reranker):
+                              reranker=self.reranker,
+                              semantic_entities=self.semantic_entities,
+                              semantic_threshold=self.semantic_threshold):
                 if (r.kind, r.id) not in seen:
                     seen.add((r.kind, r.id))
                     results.append(r)

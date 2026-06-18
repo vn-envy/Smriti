@@ -31,22 +31,18 @@ except ImportError:  # pragma: no cover
 
 from .types import Episode, Fact
 
-_SCHEMA = """
+# Base schema (FTS5 tables are created per-instance so the tokenizer can be
+# chosen at open time — see Store.__init__'s `stem` flag).
+_SCHEMA_BASE = """
 CREATE TABLE IF NOT EXISTS episodes(
     id INTEGER PRIMARY KEY,
     session_id TEXT, role TEXT, content TEXT, ts TEXT, emb BLOB
-);
-CREATE VIRTUAL TABLE IF NOT EXISTS episodes_fts USING fts5(
-    content, content='episodes', content_rowid='id'
 );
 CREATE TABLE IF NOT EXISTS facts(
     id INTEGER PRIMARY KEY,
     statement TEXT, subject TEXT, predicate TEXT, object TEXT, kind TEXT,
     event_date TEXT, ingested_at TEXT, valid_from TEXT, invalid_at TEXT,
     superseded_by INTEGER, episode_id INTEGER, session_id TEXT, emb BLOB
-);
-CREATE VIRTUAL TABLE IF NOT EXISTS facts_fts USING fts5(
-    statement, content='facts', content_rowid='id'
 );
 CREATE TABLE IF NOT EXISTS entities(
     name TEXT, fact_id INTEGER
@@ -55,6 +51,20 @@ CREATE INDEX IF NOT EXISTS idx_entities_name ON entities(name);
 CREATE INDEX IF NOT EXISTS idx_facts_subj_pred ON facts(subject, predicate);
 CREATE INDEX IF NOT EXISTS idx_episodes_ts ON episodes(ts);
 """
+
+
+def _fts_ddl(stem: bool) -> str:
+    """FTS5 tables over episodes/facts. With `stem`, the built-in Porter
+    stemmer is applied so conjugation variants match ('attend' <-> 'attending')
+    — the keyword-normalization lever mem0 credits with measurable gains.
+    Pure SQLite; no new dependency."""
+    tok = ", tokenize='porter'" if stem else ""
+    return (
+        f"CREATE VIRTUAL TABLE IF NOT EXISTS episodes_fts USING fts5("
+        f"content, content='episodes', content_rowid='id'{tok});\n"
+        f"CREATE VIRTUAL TABLE IF NOT EXISTS facts_fts USING fts5("
+        f"statement, content='facts', content_rowid='id'{tok});\n"
+    )
 
 
 def utcnow() -> str:
@@ -80,11 +90,15 @@ def _to_blob(vec) -> Optional[bytes]:
 
 
 class Store:
-    def __init__(self, path: str = ":memory:"):
+    def __init__(self, path: str = ":memory:", stem: bool = False):
         self.db = sqlite3.connect(path, isolation_level=None)
-        self.db.executescript(_SCHEMA)
+        self.db.executescript(_SCHEMA_BASE)
+        self.db.executescript(_fts_ddl(stem))
+        self.stem = stem
         self._vec_cache: Dict[str, Tuple[list, object]] = {}
-        self._dirty = {"episode": True, "fact": True}
+        # 'entity' holds entity-NAME embeddings (semantic entity linking),
+        # cached the same way as episode/fact vectors and invalidated on write.
+        self._dirty = {"episode": True, "fact": True, "entity": True}
         self._pending: Dict[str, list] = {"episode": [], "fact": []}
 
     # ------------------------------------------------------------- episodes
@@ -135,6 +149,8 @@ class Store:
             self.db.execute("UPDATE facts SET emb=? WHERE id=?", (_to_blob(emb), rowid))
         for ent in {e.lower().strip() for e in f.entities if e and e.strip()}:
             self.db.execute("INSERT INTO entities(name, fact_id) VALUES(?,?)", (ent, rowid))
+        if f.entities:
+            self._dirty["entity"] = True  # invalidate semantic-entity cache
         if emb is not None:
             self._note_vec("fact", rowid, emb)
         return rowid
@@ -292,6 +308,59 @@ class Store:
 
     def all_entities(self) -> List[str]:
         return [r[0] for r in self.db.execute("SELECT DISTINCT name FROM entities")]
+
+    # ------------------------------------------------- semantic entity link
+    def _entity_vecs(self, embedder):
+        """Cached (names, L2-normalized matrix) of entity-NAME embeddings.
+
+        Mirrors the episode/fact vector cache: built lazily on first query,
+        invalidated whenever add_fact writes new entities. One batched embed
+        call covers every known entity, so the cost is amortized across a
+        run. This is the mem0 'entity linking' lever done with the embedder
+        SMRITI already has — no Qdrant, no separate index service."""
+        if not self._dirty.get("entity") and "entity" in self._vec_cache:
+            return self._vec_cache["entity"]
+        names = self.all_entities()
+        if not names or np is None or embedder is None:
+            self._vec_cache["entity"] = (names, None)
+            self._dirty["entity"] = False
+            return self._vec_cache["entity"]
+        embs = embedder.embed(names)
+        mat = np.stack([np.asarray(v, dtype="float32") for v in embs])
+        norm = np.linalg.norm(mat, axis=1, keepdims=True)
+        norm[norm == 0] = 1.0
+        self._vec_cache["entity"] = (names, mat / norm)
+        self._dirty["entity"] = False
+        return self._vec_cache["entity"]
+
+    def semantic_entities(self, embedder, query_vec, threshold: float = 0.3,
+                          limit: int = 8) -> List[Tuple[str, float]]:
+        """Entity names whose name-embedding is close to the query vector.
+
+        Bridges vocabulary the lexical entity channel misses: 'my cousin
+        Rachel' matches the 'Rachel' entity, 'the company she works for'
+        reaches 'Acme'. Returns [(name, sim)] descending; lexical hits from
+        query_entities() stay first when merged in retrieve()."""
+        if query_vec is None or np is None:
+            return []
+        names, mat = self._entity_vecs(embedder)
+        if mat is None or not names:
+            return []
+        q = np.asarray(query_vec, dtype="float32")
+        n = float(np.linalg.norm(q))
+        if n == 0:
+            return []
+        sims = mat @ (q / n)
+        order = np.argsort(-sims)
+        out = []
+        for i in order:
+            s = float(sims[i])
+            if s < threshold:
+                break
+            out.append((names[i], s))
+            if len(out) >= limit:
+                break
+        return out
 
     def episodes_near(self, iso_date: str, limit: int = 20) -> List[Tuple[int, float]]:
         """Temporal channel: episodes closest in time to a referenced date.
