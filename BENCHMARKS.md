@@ -46,6 +46,31 @@ Per-question flips: **19 helped, 10 hurt (net +9)**, 29 discordant.
 - **Sample size per category** is 30–34, so per-type deltas are indicative, not
   precise. The overall n=200 figure is the more reliable number.
 
+## Per-type router (Builds 11/12) — the precision/recall fix
+
+The n=300 full-stack run exposed a tradeoff: multi-session jumped but knowledge-update
+regressed (−13, then −9 after first gating). Root cause (diagnosed on a focused
+knowledge-update slice): the recall stack — key expansion and especially observation/
+digest summaries — laundered **stale, superseded values** onto current-state questions
+(served $350k not the current $400k mortgage; "every two weeks" not the current weekly).
+
+Fix: route by question type. Aggregation queries get the recall profile (high-k +
+key-expansion channel + semantic-entity linking + observations); every other query takes
+the precision path (clean statement index, raw CURRENT/SUPERSEDED-annotated facts, **no
+observation summaries**). Key expansion was also moved to a separate index so it never
+pollutes precision queries.
+
+Focused A/B (DeepSeek `deepseek-v4-flash`, fixed judge, oracle, full mode):
+
+| Slice | base → treat | result |
+|---|---|---|
+| knowledge-update (n=78) | 0.833 → 0.846 | **+1.3** — regression gone (was −5.1) |
+| multi-session (n=78) | 0.359 → 0.462 | **+10.3**, McNemar p=0.046 (significant); abstentions 37→20 |
+
+Net: the multi-session breakthrough **without** the knowledge-update tax. This is the
+configuration shipped on by default; the recall levers (key expansion, semantic entities,
+aggregation path) are intent-gated so precision-sensitive queries are unaffected.
+
 ## Reproduce
 
 ```bash
