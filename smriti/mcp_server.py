@@ -31,6 +31,7 @@ from . import __version__
 from .embedder import HashEmbedder, OllamaEmbedder, OpenAICompatEmbedder
 from .llm import LLM
 from .memory import Smriti
+from .retrieval import expand_channels
 from .types import Fact
 
 PROTOCOL_VERSION = "2025-06-18"
@@ -58,15 +59,33 @@ TOOL_DEFS = [
          "required": ["messages"]}},
     {"name": "recall",
      "description": "Retrieve answer-ready memory context for a query, with validity "
-                    "windows (CURRENT / SUPERSEDED-on-date) annotated.",
+                    "windows (CURRENT / SUPERSEDED-on-date) annotated. Pick a profile "
+                    "for the search type: 'facts' for current-state lookups, "
+                    "'relations' for who/how-connected questions, 'timeline' for "
+                    "when/before/after questions, 'deep' for counts, totals and "
+                    "summarize-everything questions, 'auto' to let the router choose.",
      "inputSchema": {"type": "object", "properties": {
          "query": {"type": "string"}, "k": {"type": "integer"},
-         "char_budget": {"type": "integer"}}, "required": ["query"]}},
+         "char_budget": {"type": "integer"},
+         "profile": {"type": "string",
+                     "enum": ["auto", "facts", "relations", "timeline", "deep", "precision"]},
+         "channels": {"type": "array", "description":
+                      "Optional channel mask (overrides the profile's channels): "
+                      "lexical, semantic, entity, temporal — Sanskrit aliases "
+                      "shabda, artha, sambandha, kala also accepted.",
+                      "items": {"type": "string"}}},
+         "required": ["query"]}},
     {"name": "search",
      "description": "Structured retrieval: ranked memory hits as JSON "
-                    "(kind, text, score, validity window, channels).",
+                    "(kind, text, score, validity window, channels). Same profile/"
+                    "channels selection as recall: 'facts' current-state, 'relations' "
+                    "connections, 'timeline' when-questions, 'deep' counts/summaries.",
      "inputSchema": {"type": "object", "properties": {
-         "query": {"type": "string"}, "k": {"type": "integer"}}, "required": ["query"]}},
+         "query": {"type": "string"}, "k": {"type": "integer"},
+         "profile": {"type": "string",
+                     "enum": ["auto", "facts", "relations", "timeline", "deep", "precision"]},
+         "channels": {"type": "array", "items": {"type": "string"}}},
+         "required": ["query"]}},
     {"name": "facts_about",
      "description": "All facts linked to an entity, each flagged current or superseded "
                     "(full history, never deleted).",
@@ -125,22 +144,51 @@ class SmritiMCP:
                           "content": _check_str(m.get("content", ""), "content", MAX_CONTENT)})
         return self.mem.add(clean, session_id=a.get("session_id"), timestamp=a.get("timestamp"))
 
+    @staticmethod
+    def _profile_args(a):
+        """Validate optional profile/channels tool args (drishti selection)."""
+        profile = a.get("profile")
+        if profile is not None:
+            profile = _check_str(profile, "profile", 40)
+        channels = a.get("channels")
+        if channels is not None:
+            if not isinstance(channels, list) or not channels:
+                raise McpError(-32602, "channels must be a non-empty array")
+            channels = {_check_str(c, "channel", 40) for c in channels}
+            try:
+                expand_channels(channels)
+            except ValueError as e:
+                raise McpError(-32602, str(e))
+            # a bare channel mask still needs a policy to ride on
+            profile = profile or "precision"
+        return profile, channels
+
     def t_recall(self, a):
         q = _check_str(a.get("query", ""), "query", MAX_QUERY)
         k = _clamp_k(a.get("k", 12))
         cb = a.get("char_budget", 9000)
         cb = cb if isinstance(cb, int) and 200 <= cb <= 64000 else 9000
-        return {"context": self.mem.context(q, k=k, char_budget=cb)}
+        profile, channels = self._profile_args(a)
+        try:
+            return {"context": self.mem.context(q, k=k, char_budget=cb,
+                                                profile=profile, channels=channels)}
+        except ValueError as e:
+            raise McpError(-32602, str(e))
 
     def t_search(self, a):
         q = _check_str(a.get("query", ""), "query", MAX_QUERY)
         k = _clamp_k(a.get("k", 12))
+        profile, channels = self._profile_args(a)
+        try:
+            hits = self.mem.search(q, k=k, profile=profile, channels=channels)
+        except ValueError as e:
+            raise McpError(-32602, str(e))
         return {"results": [
             {"kind": r.kind, "text": r.text, "score": round(r.score, 4),
              "valid_from": r.valid_from, "invalid_at": r.invalid_at,
              "current": (r.kind != "fact") or (r.invalid_at is None),
              "ts": r.ts, "role": r.role, "channels": r.channels}
-            for r in self.mem.search(q, k=k)]}
+            for r in hits]}
 
     def t_facts_about(self, a):
         ent = _check_str(a.get("entity", ""), "entity", 200)

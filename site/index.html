@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SMRITI स्मृति — memory that knows when</title>
+<meta name="description" content="Open-source memory layer for AI agents. One SQLite file, zero infrastructure. Facts are superseded, never deleted — your agent knows what's true now and what was true then. Apache-2.0.">
+<link rel="icon" type="image/png" href="icon.png">
+<meta property="og:title" content="SMRITI स्मृति — memory that knows when">
+<meta property="og:description" content="Memory for AI agents in one SQLite file. Local-first, temporal, Apache-2.0 — supersede, never delete.">
+<meta property="og:image" content="og.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="og.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B0F1C; --ink2:#121829; --ink3:#1A2238;
+    --line:#26304A; --line2:#33405F;
+    --paper:#E9EDF6; --mute:#8B94AC; --faint:#5D6780;
+    --amber:#F4A43C; --teal:#52C7BE; --violet:#B794E0; --rose:#E08AA0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--ink);color:var(--paper);font-family:'Inter',system-ui,sans-serif;
+    line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  ::selection{background:var(--amber);color:var(--ink)}
+  a{color:var(--amber);text-decoration:none}
+  h1,h2{font-family:'Space Grotesk',sans-serif;font-weight:600;letter-spacing:-.02em;line-height:1.06}
+  .mono{font-family:'JetBrains Mono',monospace}
+  .eyebrow{font-family:'JetBrains Mono';font-size:11px;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--mute)}
+
+  /* canvas */
+  #c{position:fixed;inset:0;z-index:0;display:block}
+
+  /* hero overlay */
+  .hero{position:relative;z-index:2;min-height:100vh;display:flex;flex-direction:column;
+    pointer-events:none}
+  .hero > *{pointer-events:auto}
+  .nav{display:flex;align-items:center;gap:14px;padding:26px 34px}
+  .nav .logo{font-family:'Space Grotesk';font-weight:700;font-size:21px}
+  .nav .deva{color:var(--amber);font-size:19px}
+  .nav .right{margin-left:auto;display:flex;gap:10px}
+  .nav a.pill{font-family:'JetBrains Mono';font-size:11.5px;color:var(--mute);
+    border:1px solid var(--line);border-radius:999px;padding:7px 14px;letter-spacing:.06em;
+    background:rgba(11,15,28,.55);backdrop-filter:blur(6px);transition:.2s}
+  .nav a.pill:hover{color:var(--paper);border-color:var(--line2)}
+
+  .hero-copy{margin:auto 0;padding:0 34px;max-width:680px;position:relative;z-index:2}
+  .hero-copy::before{content:"";position:absolute;inset:-70px -90px -70px -120px;z-index:-1;
+    background:radial-gradient(75% 80% at 32% 50%, rgba(11,15,28,.82), rgba(11,15,28,.35) 60%, transparent 78%)}
+  .hero-copy h1{font-size:clamp(44px,7vw,84px);
+    text-shadow:0 2px 30px rgba(11,15,28,.9)}
+  .hero-copy h1 .when{color:var(--amber)}
+  .hero-copy .sub{margin-top:20px;font-size:17.5px;color:var(--mute);max-width:46ch;
+    text-shadow:0 1px 16px rgba(11,15,28,.95)}
+  .hero-copy .sub b{color:var(--paper);font-weight:600}
+  .cta{display:flex;gap:12px;margin-top:32px;flex-wrap:wrap}
+  .btn{font-family:'JetBrains Mono';font-size:13px;padding:13px 22px;border-radius:10px;
+    cursor:pointer;border:1px solid transparent;transition:.2s;letter-spacing:.02em}
+  .btn.primary{background:var(--amber);color:var(--ink);font-weight:700}
+  .btn.primary:hover{transform:translateY(-2px);box-shadow:0 10px 34px -10px rgba(244,164,60,.65)}
+  .btn.ghost{background:rgba(11,15,28,.5);border-color:var(--line2);color:var(--paper);
+    backdrop-filter:blur(6px)}
+  .btn.ghost:hover{border-color:var(--amber)}
+
+  .hero-foot{display:flex;align-items:flex-end;justify-content:space-between;
+    padding:0 34px 30px;gap:20px}
+  .legend{font-family:'JetBrains Mono';font-size:11.5px;color:var(--mute);line-height:2}
+  .legend .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px;
+    vertical-align:1px}
+  .legend .conf{color:var(--paper);margin-top:2px}
+  .legend .conf b{color:var(--amber);font-weight:500}
+  .scrollhint{font-family:'JetBrains Mono';font-size:10.5px;letter-spacing:.2em;color:var(--faint);
+    text-transform:uppercase;animation:bob 2.6s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+
+  /* content sections over canvas */
+  main{position:relative;z-index:2;background:linear-gradient(180deg,transparent,var(--ink) 120px)}
+  section{max-width:1020px;margin:0 auto;padding:84px 28px;border-bottom:1px solid var(--line)}
+  section:first-child{padding-top:120px}
+  .sec-head h2{font-size:clamp(26px,3.4vw,38px)}
+  .sec-head .eyebrow{display:block;margin-bottom:12px}
+  .sec-head p{color:var(--mute);margin-top:14px;max-width:62ch}
+  .sec-head p b{color:var(--paper);font-weight:600}
+
+  .statline{display:flex;gap:10px;flex-wrap:wrap;margin-top:30px}
+  .chip{font-family:'JetBrains Mono';font-size:12px;border:1px solid var(--line2);
+    border-radius:999px;padding:7px 14px;color:var(--paper);background:rgba(255,255,255,.015)}
+  .chip b{color:var(--amber);font-weight:500}
+
+  .duo{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:36px}
+  .panel{background:var(--ink2);border:1px solid var(--line);border-radius:14px;padding:24px}
+  .panel h3{font-family:'Space Grotesk';font-size:18px;margin-bottom:10px}
+  .panel h3 .dv{color:var(--amber);font-weight:500;margin-left:8px;font-size:16px}
+  .panel p{font-size:14px;color:var(--mute)}
+  .panel p b{color:var(--paper);font-weight:600}
+
+  .term{background:#0a0e1a;border:1px solid var(--line);border-radius:14px;overflow:hidden;
+    margin-top:36px;font-family:'JetBrains Mono';font-size:13px}
+  .term-bar{display:flex;gap:7px;padding:13px 16px;border-bottom:1px solid var(--line)}
+  .term-bar i{width:11px;height:11px;border-radius:50%;background:var(--line2)}
+  .term pre{padding:20px 22px;line-height:2;color:var(--paper);overflow-x:auto;white-space:pre}
+  .term .c{color:var(--faint)}
+  .term .p{color:var(--teal)}
+  .term .o{color:var(--amber)}
+
+  .pipe{margin-top:36px;font-family:'JetBrains Mono';font-size:12.5px;color:var(--mute);
+    background:var(--ink2);border:1px solid var(--line);border-radius:14px;padding:22px 24px;
+    line-height:2.3;overflow-x:auto;white-space:nowrap}
+  .pipe .dv{color:var(--amber)}
+  .pipe .ar{color:var(--faint);margin:0 9px}
+  .pipe small{display:block;white-space:normal;color:var(--faint);font-size:11px;
+    line-height:1.7;margin-top:10px;border-top:1px solid var(--line);padding-top:12px}
+
+  footer{position:relative;z-index:2;background:var(--ink);padding:46px 28px 64px;
+    text-align:center;font-family:'JetBrains Mono';font-size:12px;color:var(--faint)}
+  footer b{color:var(--mute);font-weight:500}
+
+  @media(max-width:760px){
+    .nav{padding:20px 20px}
+    .hero-copy{padding:0 22px}
+    .hero-foot{padding:0 22px 24px;flex-direction:column;align-items:flex-start}
+    .scrollhint{display:none}
+    .duo{grid-template-columns:1fr}
+    section{padding:64px 20px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .scrollhint{animation:none}
+  }
+</style>
+</head>
+<body>
+
+<canvas id="c"></canvas>
+
+<!-- ───────── HERO OVERLAY ───────── -->
+<div class="hero">
+  <nav class="nav">
+    <span class="logo">smriti</span><span class="deva">स्मृति</span>
+    <div class="right">
+      <a class="pill" href="smriti-dashboard.html">comparison →</a>
+      <a class="pill" href="https://github.com/vn-envy/Smriti" id="gh">github →</a>
+    </div>
+  </nav>
+
+  <div class="hero-copy">
+    <p class="eyebrow" style="margin-bottom:16px">open-source memory layer for ai agents · apache-2.0</p>
+    <h1>Memory that<br>knows <span class="when">when</span>.</h1>
+    <p class="sub">Four retrieval rivers — word, meaning, relation, time — meet in one confluence. Facts are <b>superseded, never deleted</b>. One SQLite file. Zero infrastructure.</p>
+    <div class="cta">
+      <button class="btn primary" id="copyBtn">$ get smriti</button>
+      <a class="btn ghost" href="#how">how it works ↓</a>
+    </div>
+  </div>
+
+  <div class="hero-foot">
+    <div class="legend">
+      <span><i class="dot" style="background:var(--amber)"></i>shabda शब्द · word</span><br>
+      <span><i class="dot" style="background:var(--teal)"></i>artha अर्थ · meaning</span><br>
+      <span><i class="dot" style="background:var(--violet)"></i>sambandha सम्बन्ध · relation</span><br>
+      <span><i class="dot" style="background:var(--rose)"></i>kala काल · time</span><br>
+      <span class="conf">→ <b>sangama संगम</b> · the confluence</span>
+    </div>
+    <span class="scrollhint">scroll ▾</span>
+  </div>
+</div>
+
+<!-- ───────── CONTENT ───────── -->
+<main>
+  <section id="how">
+    <div class="sec-head">
+      <span class="eyebrow">what you're looking at</span>
+      <h2>Four rivers, one answer</h2>
+      <p>Every query runs four cheap retrieval channels in parallel — BM25 over words, vectors over meaning, an entity-graph hop over relations, date proximity over time — and fuses them with reciprocal rank fusion. The bright stream after the confluence is the fused ranking; the periodic pulse is a recall event. The pairs flickering in the depth are <b>badha</b> — supersession: when a fact changes, the old one is invalidated with a timestamp and a pointer to its successor, never erased. <b>"Where do I live?" and "where did I live before June?" are both answerable from one store.</b></p>
+    </div>
+    <div class="statline">
+      <span class="chip"><b>1</b> sqlite file · no postgres, no docker, no binary</span>
+      <span class="chip">~<b>2k</b> lines, readable in a sitting</span>
+      <span class="chip"><b>52</b> offline tests · no keys needed</span>
+      <span class="chip">benchmark harness <b>included</b></span>
+    </div>
+
+    <div class="duo">
+      <div class="panel">
+        <h3>laghu<span class="dv">लघु · lite</span></h3>
+        <p><b>Zero LLM calls at write time.</b> Episodic ingest plus four-channel fusion retrieval. Fully offline, near-zero cost — the default for high-volume agents.</p>
+      </div>
+      <div class="panel">
+        <h3>purna<span class="dv">पूर्ण · full</span></h3>
+        <p><b>One extraction call per session</b> turns experience into atomic facts; write-time conflict resolution supersedes what changed. Where temporal accuracy comes from.</p>
+      </div>
+    </div>
+
+    <div class="duo" style="margin-top:18px">
+      <div class="panel">
+        <h3>drishti<span class="dv">दृष्टि · profiles · new in 0.2.0</span></h3>
+        <p><b>One store, many ways of looking at it.</b> The four rivers are individually switchable, and named profiles — <b>facts · relations · timeline · deep</b> — shape retrieval per query. Each ships with the A/B evidence that justified it: others ship knobs, SMRITI ships tuned policies with receipts.</p>
+      </div>
+      <div class="panel">
+        <h3>mcp<span class="dv">plug into any agent</span></h3>
+        <p><b>One command:</b> <code>smriti-mcp --db memory.db</code>. Six typed tools give Claude Code, Cursor, or any MCP agent persistent, auditable memory — and the read tools take <b>profile</b> and <b>channels</b>, so agents shape recall per call.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">run it in two minutes</span>
+      <h2>No account. No cloud. No config.</h2>
+    </div>
+    <div class="term">
+      <div class="term-bar"><i></i><i></i><i></i></div>
+      <pre><span class="c"># clone & install</span>
+git clone https://github.com/vn-envy/Smriti && cd Smriti && pip install -e .
+
+<span class="c"># 52 offline tests — no network, no keys</span>
+python -m pytest tests/
+
+<span class="c"># watch supersession (badha) live</span>
+python examples/quickstart.py
+
+<span class="c"># your own benchmark number, fully local</span>
+python -m bench.run <span class="p">--bench</span> longmemeval <span class="p">--data</span> data/longmemeval_oracle.json \
+  <span class="p">--mode</span> <span class="o">laghu</span> <span class="p">--limit</span> 50</pre>
+    </div>
+  </section>
+
+  <section style="border-bottom:none">
+    <div class="sec-head">
+      <span class="eyebrow">named by the tradition that invented the theory of memory</span>
+      <h2>anubhava → samskara → smriti</h2>
+      <p>Nyaya's account of memory — experience leaves impressions; recollection arises from them — <b>is this pipeline</b>. And Vedanta's <b>badha</b> (sublation: a later cognition invalidates an earlier one without erasing that it occurred) is the precise, 2,000-year-old name for supersession.</p>
+    </div>
+    <div class="pipe">
+      <span class="dv">अनुभव</span> anubhava<span class="ar">─▸</span><span class="dv">ग्रहण</span> grahana<span class="ar">─▸</span><span class="dv">संस्कार</span> samskara<span class="ar">─▸</span><span class="dv">बाध</span> badha<span class="ar">─▸</span><span class="dv">स्मरण</span> smarana<span class="ar">─▸</span><span class="dv">संगम</span> sangama<span class="ar">─▸</span><span class="dv">प्रसंग</span> prasanga
+      <small>experience → extraction → fact store → supersession → recollection → confluence → packed context. Full lexicon and the reasoning behind every term: NOMENCLATURE.md.</small>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <b>SMRITI 0.2.0</b> · स्मृति, "that which is remembered" · apache-2.0 · single sqlite file<br>
+  <a href="https://github.com/vn-envy/Smriti">github.com/vn-envy/Smriti</a> · feature comparison &amp; honest benchmark targets: <a href="smriti-dashboard.html">smriti-dashboard.html</a>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>if(!window.THREE){document.write('<script src="vendor/three.min.js"><\/script>');}</script>
+<script>
+(() => {
+  const canvas = document.getElementById('c');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const mobile = innerWidth < 760;
+
+  const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setSize(innerWidth, innerHeight);
+
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x0B0F1C, 0.028);
+  const camera = new THREE.PerspectiveCamera(55, innerWidth/innerHeight, 0.1, 100);
+  camera.position.set(0, 0, 17);
+
+  const COL = {
+    shabda:   new THREE.Color(0xF4A43C),
+    artha:    new THREE.Color(0x52C7BE),
+    sambandha:new THREE.Color(0xB794E0),
+    kala:     new THREE.Color(0xE08AA0),
+    merged:   new THREE.Color(0xFFD9A0),
+    slate:    new THREE.Color(0x3A4358),
+  };
+  const CH_COLORS = [COL.shabda, COL.artha, COL.sambandha, COL.kala];
+
+  // ─── the four rivers: bezier paths braiding into one confluence ───
+  const CONF = new THREE.Vector3(2.6, 0.25, 0);
+  const exitCurve = new THREE.CubicBezierCurve3(
+    CONF, new THREE.Vector3(6.5, 0.9, 0.7),
+    new THREE.Vector3(10.5, -0.4, -0.5), new THREE.Vector3(16, 0.2, 0));
+  const channelCurves = [
+    new THREE.CubicBezierCurve3(new THREE.Vector3(-15, 4.7,-2.0), new THREE.Vector3(-7, 4.0, 2.5), new THREE.Vector3(-2, 1.6,-1.5), CONF),
+    new THREE.CubicBezierCurve3(new THREE.Vector3(-15, 1.9, 2.6), new THREE.Vector3(-8,-0.6,-2.5), new THREE.Vector3(-2.5, 1.2, 2.0), CONF),
+    new THREE.CubicBezierCurve3(new THREE.Vector3(-15,-2.3,-2.6), new THREE.Vector3(-7,-1.4, 2.0), new THREE.Vector3(-2,-1.4,-2.0), CONF),
+    new THREE.CubicBezierCurve3(new THREE.Vector3(-15,-4.9, 1.6), new THREE.Vector3(-8,-4.0,-2.0), new THREE.Vector3(-2.5,-0.8, 1.6), CONF),
+  ];
+  // sampled lookup: 0..MERGE_T along channel curve, MERGE_T..1 along exit
+  const MERGE_T = 0.62, S = 720, SPLIT = Math.floor(S * MERGE_T);
+  const paths = channelCurves.map(cc => {
+    const pts = [];
+    for (let i = 0; i < SPLIT; i++) pts.push(cc.getPoint(i/(SPLIT-1)));
+    for (let i = 0; i < S-SPLIT; i++) pts.push(exitCurve.getPoint(i/(S-SPLIT-1)));
+    return pts;
+  });
+
+  const N = reduce ? 1800 : (mobile ? 2600 : 5200);
+  const pos = new Float32Array(N*3);
+  const col = new Float32Array(N*3);
+  const aT  = new Float32Array(N);
+  const aSize = new Float32Array(N);
+  const aSeed = new Float32Array(N);
+  const meta = []; // {ch, t, speed, off:Vector3, seed}
+
+  for (let i = 0; i < N; i++) {
+    const ch = i % 4;
+    const off = new THREE.Vector3().randomDirection ?
+      new THREE.Vector3().randomDirection() :
+      new THREE.Vector3(Math.random()*2-1, Math.random()*2-1, Math.random()*2-1).normalize();
+    meta.push({
+      ch, t: Math.random(),
+      speed: 0.018 + Math.random()*0.034,
+      off, offR: Math.pow(Math.random(), 1.6),
+      seed: Math.random()*1000,
+    });
+    const c = CH_COLORS[ch];
+    col[i*3]=c.r; col[i*3+1]=c.g; col[i*3+2]=c.b;
+    aSize[i] = 1.1 + Math.random()*1.9;
+    aSeed[i] = Math.random()*1000;
+  }
+
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute('aColor',   new THREE.BufferAttribute(col, 3));
+  geo.setAttribute('aT',       new THREE.BufferAttribute(aT, 1));
+  geo.setAttribute('aSize',    new THREE.BufferAttribute(aSize, 1));
+  geo.setAttribute('aSeed',    new THREE.BufferAttribute(aSeed, 1));
+
+  const riverMat = new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    uniforms: {
+      uPR: {value: Math.min(devicePixelRatio,2)},
+      uMerge: {value: MERGE_T},
+      uPulse: {value: 2.0},
+      uMergedCol: {value: new THREE.Vector3(COL.merged.r, COL.merged.g, COL.merged.b)},
+    },
+    vertexShader: `
+      attribute vec3 aColor; attribute float aT, aSize, aSeed;
+      uniform float uPR, uMerge, uPulse; uniform vec3 uMergedCol;
+      varying vec3 vCol; varying float vA;
+      void main(){
+        vec4 mv = modelViewMatrix * vec4(position, 1.0);
+        float merged = smoothstep(uMerge, uMerge + 0.05, aT);
+        float pulse = 1.0 - smoothstep(0.0, 0.035, abs(aT - uPulse));
+        vCol = mix(aColor, uMergedCol, merged * 0.6) * (1.0 + pulse * 1.4);
+        vA = 0.42 + merged * 0.08 + pulse * 0.4;
+        float size = aSize * (1.0 + merged * 0.12 + pulse * 1.1);
+        gl_PointSize = size * uPR * (140.0 / -mv.z);
+        gl_Position = projectionMatrix * mv;
+      }`,
+    fragmentShader: `
+      varying vec3 vCol; varying float vA;
+      void main(){
+        float d = length(gl_PointCoord - 0.5);
+        float a = smoothstep(0.5, 0.05, d) * vA;
+        if (a < 0.01) discard;
+        gl_FragColor = vec4(vCol, a);
+      }`
+  });
+  const riverGroup = new THREE.Group();
+  riverGroup.add(new THREE.Points(geo, riverMat));
+  riverGroup.position.set(2.4, -0.7, 0);
+  scene.add(riverGroup);
+
+  // spread envelope: wide upstream, pinched at confluence, medium after
+  function spreadAt(t){
+    const pre = 1.05 - 0.8 * smooth(0.40, MERGE_T, t);
+    const post = 0.32 + 0.4 * smooth(MERGE_T, 1.0, t);
+    return t < MERGE_T ? pre : post;
+  }
+  function smooth(a,b,x){ x=Math.min(1,Math.max(0,(x-a)/(b-a))); return x*x*(3-2*x); }
+
+  // ─── ambient memory motes ───
+  const MN = mobile ? 700 : 1400;
+  const mpos = new Float32Array(MN*3), mseed = new Float32Array(MN);
+  for (let i=0;i<MN;i++){
+    mpos[i*3]   = (Math.random()*2-1)*26;
+    mpos[i*3+1] = (Math.random()*2-1)*14;
+    mpos[i*3+2] = -3 - Math.random()*14;
+    mseed[i] = Math.random()*100;
+  }
+  const mgeo = new THREE.BufferGeometry();
+  mgeo.setAttribute('position', new THREE.BufferAttribute(mpos,3));
+  mgeo.setAttribute('aSeed', new THREE.BufferAttribute(mseed,1));
+  const moteMat = new THREE.ShaderMaterial({
+    transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
+    uniforms:{uTime:{value:0}, uPR:{value:Math.min(devicePixelRatio,2)}},
+    vertexShader:`
+      attribute float aSeed; uniform float uTime, uPR; varying float vA;
+      void main(){
+        vec4 mv = modelViewMatrix * vec4(position,1.0);
+        vA = 0.10 + 0.10 * sin(uTime*0.6 + aSeed*7.0);
+        gl_PointSize = (0.9 + fract(aSeed)*1.3) * uPR * (140.0 / -mv.z);
+        gl_Position = projectionMatrix * mv;
+      }`,
+    fragmentShader:`
+      varying float vA;
+      void main(){
+        float d = length(gl_PointCoord - 0.5);
+        float a = smoothstep(0.5, 0.1, d) * vA;
+        if(a<0.005) discard;
+        gl_FragColor = vec4(0.55, 0.62, 0.80, a);
+      }`
+  });
+  scene.add(new THREE.Points(mgeo, moteMat));
+
+  // ─── badha pairs: a fact dims, its successor ignites ───
+  const PAIRS = 7;
+  const bpos = new Float32Array(PAIRS*2*3);
+  const bcol = new Float32Array(PAIRS*2*3);
+  const bsize = new Float32Array(PAIRS*2);
+  const lpos = new Float32Array(PAIRS*2*3);
+  const lcol = new Float32Array(PAIRS*2*3);
+  const pairs = [];
+  for (let p=0;p<PAIRS;p++){
+    const cx=(Math.random()*2-1)*16, cy=(Math.random()*2-1)*8, cz=-7-Math.random()*9;
+    const dx=0.5+Math.random()*0.9, dy=(Math.random()*2-1)*0.5;
+    const A=new THREE.Vector3(cx-dx/2,cy-dy/2,cz), B=new THREE.Vector3(cx+dx/2,cy+dy/2,cz);
+    pairs.push({A,B,phase:Math.random()*10,period:6+Math.random()*5});
+    bpos.set([A.x,A.y,A.z],p*6); bpos.set([B.x,B.y,B.z],p*6+3);
+    lpos.set([A.x,A.y,A.z],p*6); lpos.set([B.x,B.y,B.z],p*6+3);
+  }
+  const bgeo=new THREE.BufferGeometry();
+  bgeo.setAttribute('position',new THREE.BufferAttribute(bpos,3));
+  bgeo.setAttribute('aColor',new THREE.BufferAttribute(bcol,3));
+  bgeo.setAttribute('aT',new THREE.BufferAttribute(new Float32Array(PAIRS*2),1)); // unused, keeps shader happy
+  bgeo.setAttribute('aSize',new THREE.BufferAttribute(bsize,1));
+  bgeo.setAttribute('aSeed',new THREE.BufferAttribute(new Float32Array(PAIRS*2),1));
+  scene.add(new THREE.Points(bgeo, riverMat));
+  const lgeo=new THREE.BufferGeometry();
+  lgeo.setAttribute('position',new THREE.BufferAttribute(lpos,3));
+  lgeo.setAttribute('color',new THREE.BufferAttribute(lcol,3));
+  scene.add(new THREE.LineSegments(lgeo,
+    new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:0.8,
+      blending:THREE.AdditiveBlending,depthWrite:false})));
+
+  // ─── animation ───
+  const clock = new THREE.Clock();
+  let pulseT = -0.5, nextPulse = 3;
+  const px = {x:0, y:0};
+  addEventListener('pointermove', e => {
+    px.x = (e.clientX/innerWidth - 0.5);
+    px.y = (e.clientY/innerHeight - 0.5);
+  }, {passive:true});
+
+  let scrollFade = 1;
+  addEventListener('scroll', () => {
+    scrollFade = Math.max(0.12, 1 - scrollY/(innerHeight*1.15));
+  }, {passive:true});
+
+  const tmp = new THREE.Vector3();
+  function step(dt, time){
+    // rivers
+    for (let i=0;i<N;i++){
+      const m = meta[i];
+      m.t += dt * m.speed;
+      if (m.t >= 1){ m.t -= 1; }
+      const path = paths[m.ch];
+      const f = m.t*(S-1), i0=Math.floor(f), i1=Math.min(S-1,i0+1), fr=f-i0;
+      tmp.copy(path[i0]).lerp(path[i1], fr);
+      const sp = spreadAt(m.t) * m.offR;
+      const wob = 0.16*Math.sin(time*0.9 + m.seed);
+      pos[i*3]   = tmp.x + m.off.x*sp + wob*m.off.y;
+      pos[i*3+1] = tmp.y + m.off.y*sp + wob*m.off.z;
+      pos[i*3+2] = tmp.z + m.off.z*sp;
+      aT[i] = m.t;
+    }
+    geo.attributes.position.needsUpdate = true;
+    geo.attributes.aT.needsUpdate = true;
+
+    // recall pulse sweeping the rivers
+    if (time > nextPulse){ pulseT = 0; nextPulse = time + 6 + Math.random()*4; }
+    if (pulseT >= 0){ pulseT += dt*0.36; if (pulseT > 1.3) pulseT = -0.5; }
+    riverMat.uniforms.uPulse.value = pulseT < 0 ? 2.0 : pulseT;
+
+    // badha pairs
+    for (let p=0;p<PAIRS;p++){
+      const pr = pairs[p];
+      const ph = ((time + pr.phase) % pr.period) / pr.period; // 0..1
+      const sw = smooth(0.45, 0.58, ph);                       // the sublation moment
+      const aGlow = (1-sw), bGlow = sw;
+      const ca = new THREE.Color().copy(COL.slate).lerp(COL.shabda, aGlow);
+      const cb = new THREE.Color().copy(COL.slate).lerp(COL.shabda, bGlow);
+      bcol.set([ca.r,ca.g,ca.b], p*6); bcol.set([cb.r,cb.g,cb.b], p*6+3);
+      bsize[p*2] = 0.8 + aGlow*1.1; bsize[p*2+1] = 0.8 + bGlow*1.1;
+      const flash = Math.max(0, 1 - Math.abs(ph-0.515)/0.05) * 0.8;
+      lcol.set([COL.merged.r*flash, COL.merged.g*flash, COL.merged.b*flash], p*6);
+      lcol.set([COL.merged.r*flash, COL.merged.g*flash, COL.merged.b*flash], p*6+3);
+    }
+    bgeo.attributes.aColor.needsUpdate = true;
+    bgeo.attributes.aSize.needsUpdate = true;
+    lgeo.attributes.color.needsUpdate = true;
+
+    moteMat.uniforms.uTime.value = time;
+
+    // camera drift + parallax
+    camera.position.x += ((px.x*2.2 + Math.sin(time*0.07)*0.5) - camera.position.x) * 0.04;
+    camera.position.y += ((-px.y*1.4 + Math.cos(time*0.09)*0.3) - camera.position.y) * 0.04;
+    camera.lookAt(0.8, 0, 0);
+    renderer.domElement.style.opacity = scrollFade;
+  }
+
+  if (reduce){
+    // one composed static frame
+    step(0.016, 4.2);
+    renderer.render(scene, camera);
+  } else {
+    (function loop(){
+      requestAnimationFrame(loop);
+      const dt = Math.min(clock.getDelta(), 0.05);
+      step(dt, clock.elapsedTime);
+      renderer.render(scene, camera);
+    })();
+  }
+
+  addEventListener('resize', () => {
+    camera.aspect = innerWidth/innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+  });
+
+  // copy install command
+  const btn = document.getElementById('copyBtn');
+  btn.addEventListener('click', () => {
+    navigator.clipboard.writeText('git clone https://github.com/vn-envy/Smriti && cd Smriti && pip install -e .')
+      .then(()=>{ btn.textContent='copied ✓'; setTimeout(()=>btn.textContent='$ get smriti', 1800); })
+      .catch(()=>{ location.hash = '#how'; });
+  });
+})();
+</script>
+</body>
+</html>

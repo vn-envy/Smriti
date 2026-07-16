@@ -1,0 +1,33 @@
+{
+  "name": "smriti-launch",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SMRITI launch film — Remotion + three.js + Paper Shaders",
+  "scripts": {
+    "postinstall": "node scripts/copy-fonts.mjs",
+    "dev": "remotion studio",
+    "render": "remotion render SmritiLaunch out/smriti-launch.mp4",
+    "still": "remotion still SmritiLaunch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fontsource/inter": "^5.0.20",
+    "@fontsource/jetbrains-mono": "^5.0.20",
+    "@fontsource/noto-sans-devanagari": "^5.0.20",
+    "@fontsource/space-grotesk": "^5.0.20",
+    "@paper-design/shaders-react": "0.0.53",
+    "@react-three/fiber": "^8.17.10",
+    "@remotion/cli": "4.0.481",
+    "@remotion/fonts": "4.0.481",
+    "@remotion/three": "4.0.481",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.481",
+    "three": "^0.166.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/three": "^0.166.0",
+    "typescript": "^5.5.4"
+  }
+}

@@ -79,7 +79,9 @@ def extract_dates(text: str) -> List[str]:
 
 
 def query_entities(store: Store, query: str) -> List[str]:
-    """Match query tokens against the known entity vocabulary."""
+    """Match query tokens against the known entity vocabulary, then against
+    registered aliases ("rachel smith" in the query reaches the canonical
+    "rachel" entity — the read-time half of alias handling, 0.3.0)."""
     tokens = set(re.findall(r"[A-Za-z][A-Za-z0-9'-]+", query.lower()))
     known = store.all_entities()
     hits = []
@@ -87,6 +89,9 @@ def query_entities(store: Store, query: str) -> List[str]:
         ent_tokens = set(ent.split())
         if ent in tokens or (ent_tokens and ent_tokens <= tokens):
             hits.append(ent)
+    for canonical in store.match_aliases(tokens):
+        if canonical not in hits:
+            hits.append(canonical)
     return hits[:10]
 
 
@@ -108,6 +113,40 @@ DEFAULT_WEIGHTS = {
     "key_expansion": 0.7,
 }
 
+# Conceptual channels -> internal ranking keys. User-facing names are the
+# four channels of the read path; Sanskrit aliases accepted (NOMENCLATURE.md).
+CHANNEL_GROUPS = {
+    "lexical": ("bm25_fact", "bm25_episode", "key_expansion"),   # shabda शब्द
+    "semantic": ("vec_fact", "vec_episode"),                     # artha अर्थ
+    "entity": ("entity", "entity_hop2"),                         # sambandha सम्बन्ध
+    "temporal": ("temporal",),                                   # kala काल
+}
+CHANNEL_ALIASES = {"shabda": "lexical", "artha": "semantic",
+                   "sambandha": "entity", "kala": "temporal"}
+
+
+def expand_channels(channels) -> Optional[set]:
+    """Normalize a user-facing channel selection into internal ranking keys.
+
+    Accepts conceptual names ("lexical"), Sanskrit aliases ("shabda"), or raw
+    internal keys ("bm25_fact"). None means all channels (default)."""
+    if channels is None:
+        return None
+    internal: set = set()
+    valid_internal = {k for grp in CHANNEL_GROUPS.values() for k in grp}
+    for c in channels:
+        c = str(c).lower().strip()
+        c = CHANNEL_ALIASES.get(c, c)
+        if c in CHANNEL_GROUPS:
+            internal.update(CHANNEL_GROUPS[c])
+        elif c in valid_internal:
+            internal.add(c)
+        else:
+            raise ValueError(
+                f"unknown channel {c!r}; known: {sorted(CHANNEL_GROUPS)} "
+                f"(aliases: {sorted(CHANNEL_ALIASES)})")
+    return internal
+
 
 def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
              k: int = 12, weights: Optional[Dict[str, float]] = None,
@@ -116,21 +155,34 @@ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
              semantic_entities: bool = False,
              semantic_threshold: float = 0.3,
              use_key_channel: bool = False,
-             include_observations: bool = True) -> List[RetrievalResult]:
+             include_observations: bool = True,
+             channels=None) -> List[RetrievalResult]:
     weights = weights or DEFAULT_WEIGHTS
-    qvec = embedder.embed([query])[0] if embedder else None
+    # channel gating (drishti): each ranking block below is independent, so a
+    # disabled channel is simply never built — and never billed (a lexical-only
+    # call skips the query embedding entirely).
+    chset = expand_channels(channels)
+
+    def _on(name: str) -> bool:
+        return chset is None or name in chset
+
+    need_vec = _on("vec_fact") or _on("vec_episode") or (semantic_entities and _on("entity"))
+    qvec = embedder.embed([query])[0] if (embedder and need_vec) else None
 
     rankings: Dict[str, List[Tuple[str, int]]] = {}
-    rankings["bm25_fact"] = [("fact", i) for i, _ in store.fts_search(query, "fact", per_channel)]
-    rankings["bm25_episode"] = [("episode", i) for i, _ in store.fts_search(query, "episode", per_channel)]
+    if _on("bm25_fact"):
+        rankings["bm25_fact"] = [("fact", i) for i, _ in store.fts_search(query, "fact", per_channel)]
+    if _on("bm25_episode"):
+        rankings["bm25_episode"] = [("episode", i) for i, _ in store.fts_search(query, "episode", per_channel)]
     # key-expansion channel — only on the recall profile (aggregation queries),
     # so category/synonym keys widen recall without touching precision queries.
-    if use_key_channel:
+    if use_key_channel and _on("key_expansion"):
         rankings["key_expansion"] = [("fact", i) for i, _ in store.key_fts_search(query, per_channel)]
-    if qvec is not None:
+    if qvec is not None and _on("vec_fact"):
         rankings["vec_fact"] = [("fact", i) for i, _ in store.vector_search(qvec, "fact", per_channel)]
+    if qvec is not None and _on("vec_episode"):
         rankings["vec_episode"] = [("episode", i) for i, _ in store.vector_search(qvec, "episode", per_channel)]
-    ents = query_entities(store, query)
+    ents = query_entities(store, query) if _on("entity") else []
     # Semantic entity linking (mem0-inspired, zero-dep): reach entities the
     # lexical token match misses by cosine-matching query -> entity-name
     # embeddings. Strictly additive — lexical hits stay first, the rest are
@@ -147,7 +199,7 @@ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
         # graph-lite multi-hop: facts one entity-link away from the hop-1 facts.
         # "Rachel works at Acme" + "Acme is in Berlin" -> reach Berlin from Rachel.
         # Bounded (one extra hop, deduped, down-weighted) — no graph DB.
-        if entity_hops >= 2 and hop1:
+        if entity_hops >= 2 and hop1 and _on("entity_hop2"):
             hop1_ids = [i for i, _ in hop1]
             seen = set(hop1_ids)
             hop2_ents = [e for e in store.entities_of_facts(hop1_ids)
@@ -157,9 +209,10 @@ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
                     ("fact", i) for i, _ in store.entity_facts(hop2_ents, per_channel)
                     if i not in seen
                 ]
-    for d in extract_dates(query)[:2]:
-        rankings.setdefault("temporal", [])
-        rankings["temporal"] += [("episode", i) for i, _ in store.episodes_near(d, per_channel // 2)]
+    if _on("temporal"):
+        for d in extract_dates(query)[:2]:
+            rankings.setdefault("temporal", [])
+            rankings["temporal"] += [("episode", i) for i, _ in store.episodes_near(d, per_channel // 2)]
 
     fused = _rrf(rankings, weights)
     ordered = sorted(fused.items(), key=lambda kv: -kv[1][0])

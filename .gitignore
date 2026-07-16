@@ -23,3 +23,18 @@ bench_results.json
 # per-build patch exports (git history is the real audit trail)
 patches/
 _probe.txt
+
+# video project deps & renders (562MB; rebuilt on demand)
+launch-video/node_modules/
+launch-video/out/
+
+# deploy bundle (generated from site/)
+site.zip
+
+# launch strategy docs — internal, keep out of the public repo
+launch-x-post.md
+launch-x-article.md
+launch-hn.md
+launch-producthunt.md
+design-retrieval-agility.md
+hardening-analysis.md

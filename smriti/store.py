@@ -47,9 +47,17 @@ CREATE TABLE IF NOT EXISTS facts(
 CREATE TABLE IF NOT EXISTS entities(
     name TEXT, fact_id INTEGER
 );
+CREATE TABLE IF NOT EXISTS entity_aliases(
+    alias TEXT PRIMARY KEY, canonical TEXT
+);
+CREATE TABLE IF NOT EXISTS ingest_log(
+    hash TEXT PRIMARY KEY, session_id TEXT, ingested_at TEXT
+);
 CREATE INDEX IF NOT EXISTS idx_entities_name ON entities(name);
 CREATE INDEX IF NOT EXISTS idx_facts_subj_pred ON facts(subject, predicate);
 CREATE INDEX IF NOT EXISTS idx_episodes_ts ON episodes(ts);
+CREATE INDEX IF NOT EXISTS idx_episodes_session ON episodes(session_id);
+CREATE INDEX IF NOT EXISTS idx_facts_session ON facts(session_id);
 """
 
 
@@ -73,8 +81,12 @@ def utcnow() -> str:
 
 
 def _fts_query(text: str) -> str:
-    """Sanitize free text into an OR-joined FTS5 query (recall-oriented)."""
-    tokens = re.findall(r"[A-Za-z0-9]+", text)
+    """Sanitize free text into an OR-joined FTS5 query (recall-oriented).
+
+    \\w+ (unicode) instead of [A-Za-z0-9]+ so non-Latin scripts — Devanagari,
+    CJK, Cyrillic — reach FTS5's unicode61 tokenizer instead of being stripped
+    before the search even runs (hardening pass, 0.3.0)."""
+    tokens = re.findall(r"\w+", text, re.UNICODE)
     tokens = [t for t in tokens if len(t) > 1][:32]
     if not tokens:
         return ""
@@ -93,6 +105,13 @@ def _to_blob(vec) -> Optional[bytes]:
 class Store:
     def __init__(self, path: str = ":memory:", stem: bool = False):
         self.db = sqlite3.connect(path, isolation_level=None)
+        # Hardening (0.3.0): WAL lets readers proceed during a write and
+        # survives crashes cleanly; NORMAL sync is the standard WAL pairing;
+        # busy_timeout waits instead of throwing when another connection
+        # holds the write lock. No-ops harmlessly on :memory: databases.
+        self.db.execute("PRAGMA journal_mode=WAL")
+        self.db.execute("PRAGMA synchronous=NORMAL")
+        self.db.execute("PRAGMA busy_timeout=5000")
         self.db.executescript(_SCHEMA_BASE)
         self.db.executescript(_fts_ddl(stem))
         self.stem = stem
@@ -152,7 +171,9 @@ class Store:
             )
         if emb is not None:
             self.db.execute("UPDATE facts SET emb=? WHERE id=?", (_to_blob(emb), rowid))
-        for ent in {e.lower().strip() for e in f.entities if e and e.strip()}:
+        # write-time canonicalization: aliases collapse to their canonical
+        # entity so "Rachel Smith" and "Rachel" accumulate under one node.
+        for ent in {self.resolve_entity(e) for e in f.entities if e and e.strip()}:
             self.db.execute("INSERT INTO entities(name, fact_id) VALUES(?,?)", (ent, rowid))
         if f.entities:
             self._dirty["entity"] = True  # invalidate semantic-entity cache
@@ -418,3 +439,166 @@ class Store:
         v = self.db.execute("SELECT COUNT(*) FROM facts WHERE invalid_at IS NULL").fetchone()[0]
         n = self.db.execute("SELECT COUNT(DISTINCT name) FROM entities").fetchone()[0]
         return {"episodes": e, "facts": f, "valid_facts": v, "entities": n}
+
+    # ------------------------------------------------------ entity aliases
+    def add_alias(self, alias: str, canonical: str) -> str:
+        """Register alias -> canonical ("rachel smith" -> "rachel"). Chains are
+        flattened at write time so lookups are always a single hop."""
+        alias = alias.lower().strip()
+        canonical = self.resolve_entity(canonical)
+        if not alias or alias == canonical:
+            return canonical
+        self.db.execute(
+            "INSERT INTO entity_aliases(alias, canonical) VALUES(?,?) "
+            "ON CONFLICT(alias) DO UPDATE SET canonical=excluded.canonical",
+            (alias, canonical))
+        # re-point any aliases that resolved to the old name, and migrate
+        # existing entity links so history consolidates under the canonical
+        self.db.execute("UPDATE entity_aliases SET canonical=? WHERE canonical=?",
+                        (canonical, alias))
+        self.db.execute("UPDATE entities SET name=? WHERE name=?", (canonical, alias))
+        self._dirty["entity"] = True
+        return canonical
+
+    def resolve_entity(self, name: str) -> str:
+        name = (name or "").lower().strip()
+        row = self.db.execute(
+            "SELECT canonical FROM entity_aliases WHERE alias=?", (name,)).fetchone()
+        return row[0] if row else name
+
+    def match_aliases(self, tokens: set) -> List[str]:
+        """Canonical entities whose ALIAS tokens all appear in the query —
+        the read-time half of alias handling (write-time half: add_fact)."""
+        rows = self.db.execute("SELECT alias, canonical FROM entity_aliases").fetchall()
+        out = []
+        for alias, canonical in rows:
+            at = set(alias.split())
+            if alias in tokens or (at and at <= tokens):
+                if canonical not in out:
+                    out.append(canonical)
+        return out[:10]
+
+    # ------------------------------------------------------ idempotent ingest
+    def seen_ingest(self, h: str) -> Optional[str]:
+        row = self.db.execute(
+            "SELECT session_id FROM ingest_log WHERE hash=?", (h,)).fetchone()
+        return row[0] if row else None
+
+    def log_ingest(self, h: str, session_id: str):
+        self.db.execute(
+            "INSERT OR IGNORE INTO ingest_log(hash, session_id, ingested_at) VALUES(?,?,?)",
+            (h, session_id, utcnow()))
+
+    # ----------------------------------------------------- erasure (cascade)
+    def _erase_facts(self, fact_ids: List[int]) -> int:
+        """Cascade-delete facts: FTS rows, key index, entity links, and any
+        dangling superseded_by pointers. Distinct from supersession — this is
+        owner-initiated erasure (data ownership), not knowledge update."""
+        if not fact_ids:
+            return 0
+        marks = ",".join("?" for _ in fact_ids)
+        for (fid, stmt) in self.db.execute(
+                f"SELECT id, statement FROM facts WHERE id IN ({marks})", fact_ids):
+            self.db.execute(
+                "INSERT INTO facts_fts(facts_fts, rowid, statement) VALUES('delete',?,?)",
+                (fid, stmt))
+            self.db.execute("DELETE FROM fact_keys_fts WHERE rowid=?", (fid,))
+        self.db.execute(f"DELETE FROM entities WHERE fact_id IN ({marks})", fact_ids)
+        self.db.execute(
+            f"UPDATE facts SET superseded_by=NULL WHERE superseded_by IN ({marks})",
+            fact_ids)
+        cur = self.db.execute(f"DELETE FROM facts WHERE id IN ({marks})", fact_ids)
+        self._dirty = {"episode": True, "fact": True, "entity": True}
+        self._pending = {"episode": [], "fact": []}
+        return cur.rowcount
+
+    def erase_session(self, session_id: str) -> dict:
+        """Erase everything ingested under a session: episodes, their FTS rows,
+        facts extracted from them, entity links, embeddings. Observation
+        summaries derived from erased facts are NOT rewritten automatically —
+        run refresh_observations() afterwards to regenerate them cleanly."""
+        eps = self.db.execute(
+            "SELECT id, content FROM episodes WHERE session_id=?", (session_id,)).fetchall()
+        for eid, content in eps:
+            self.db.execute(
+                "INSERT INTO episodes_fts(episodes_fts, rowid, content) VALUES('delete',?,?)",
+                (eid, content))
+        self.db.execute("DELETE FROM episodes WHERE session_id=?", (session_id,))
+        fids = [r[0] for r in self.db.execute(
+            "SELECT id FROM facts WHERE session_id=?", (session_id,)).fetchall()]
+        facts_gone = self._erase_facts(fids)
+        self.db.execute("DELETE FROM ingest_log WHERE session_id=?", (session_id,))
+        return {"episodes": len(eps), "facts": facts_gone}
+
+    def erase_entity(self, name: str) -> dict:
+        """Erase all facts linked to an entity (raw episodes are untouched —
+        use erase_session for transcript-level erasure)."""
+        canonical = self.resolve_entity(name)
+        fids = [r[0] for r in self.db.execute(
+            "SELECT DISTINCT fact_id FROM entities WHERE name=?", (canonical,)).fetchall()]
+        facts_gone = self._erase_facts(fids)
+        self.db.execute("DELETE FROM entity_aliases WHERE canonical=?", (canonical,))
+        return {"entity": canonical, "facts": facts_gone}
+
+    # ----------------------------------------------------- export / import
+    def export_data(self) -> dict:
+        """Everything needed to reconstruct the store, embeddings included
+        (base64 float32), so restore needs no re-embedding and no network."""
+        import base64
+        b64 = lambda b: base64.b64encode(b).decode() if b else None
+        episodes = [dict(id=r[0], session_id=r[1], role=r[2], content=r[3],
+                         ts=r[4], emb=b64(r[5]))
+                    for r in self.db.execute(
+                        "SELECT id, session_id, role, content, ts, emb FROM episodes")]
+        facts = [dict(id=r[0], statement=r[1], subject=r[2], predicate=r[3],
+                      object=r[4], kind=r[5], event_date=r[6], ingested_at=r[7],
+                      valid_from=r[8], invalid_at=r[9], superseded_by=r[10],
+                      episode_id=r[11], session_id=r[12], emb=b64(r[13]))
+                 for r in self.db.execute(
+                     """SELECT id, statement, subject, predicate, object, kind,
+                        event_date, ingested_at, valid_from, invalid_at,
+                        superseded_by, episode_id, session_id, emb FROM facts""")]
+        entities = [dict(name=r[0], fact_id=r[1]) for r in
+                    self.db.execute("SELECT name, fact_id FROM entities")]
+        aliases = [dict(alias=r[0], canonical=r[1]) for r in
+                   self.db.execute("SELECT alias, canonical FROM entity_aliases")]
+        return {"format": "smriti-export", "version": 1, "exported_at": utcnow(),
+                "episodes": episodes, "facts": facts,
+                "entities": entities, "aliases": aliases}
+
+    def import_data(self, data: dict):
+        """Restore an export into an EMPTY store (strict, lossless restore —
+        ids are preserved so supersession chains and episode links survive)."""
+        import base64
+        if data.get("format") != "smriti-export":
+            raise ValueError("not a smriti export")
+        s = self.stats()
+        if s["episodes"] or s["facts"]:
+            raise ValueError("import requires an empty store (restore semantics)")
+        unb64 = lambda t: base64.b64decode(t) if t else None
+        for e in data.get("episodes", []):
+            self.db.execute(
+                "INSERT INTO episodes(id, session_id, role, content, ts, emb) VALUES(?,?,?,?,?,?)",
+                (e["id"], e["session_id"], e["role"], e["content"], e["ts"], unb64(e.get("emb"))))
+            self.db.execute("INSERT INTO episodes_fts(rowid, content) VALUES(?,?)",
+                            (e["id"], e["content"]))
+        for f in data.get("facts", []):
+            self.db.execute(
+                """INSERT INTO facts(id, statement, subject, predicate, object, kind,
+                   event_date, ingested_at, valid_from, invalid_at, superseded_by,
+                   episode_id, session_id, emb) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                (f["id"], f["statement"], f["subject"], f["predicate"], f["object"],
+                 f["kind"], f["event_date"], f["ingested_at"], f["valid_from"],
+                 f["invalid_at"], f["superseded_by"], f["episode_id"],
+                 f["session_id"], unb64(f.get("emb"))))
+            self.db.execute("INSERT INTO facts_fts(rowid, statement) VALUES(?,?)",
+                            (f["id"], f["statement"]))
+        for ent in data.get("entities", []):
+            self.db.execute("INSERT INTO entities(name, fact_id) VALUES(?,?)",
+                            (ent["name"], ent["fact_id"]))
+        for al in data.get("aliases", []):
+            self.db.execute(
+                "INSERT OR REPLACE INTO entity_aliases(alias, canonical) VALUES(?,?)",
+                (al["alias"], al["canonical"]))
+        self._dirty = {"episode": True, "fact": True, "entity": True}
+        self._pending = {"episode": [], "fact": []}

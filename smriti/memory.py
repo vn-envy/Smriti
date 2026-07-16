@@ -15,14 +15,36 @@ Modes:
 """
 from __future__ import annotations
 
+import hashlib
+import json as _json
+import re as _re
 import uuid
 from typing import List, Optional
+
+# Secret redaction (opt-in, hardening 0.3.0): scrub common credential shapes
+# BEFORE anything is persisted or sent to an extraction model. Conservative
+# patterns — high precision over recall; this is a seatbelt, not a DLP system.
+_REDACT_PATTERNS = [
+    _re.compile(r"\bsk-[A-Za-z0-9_-]{16,}\b"),                      # OpenAI-style
+    _re.compile(r"\bgh[pousr]_[A-Za-z0-9]{20,}\b"),                 # GitHub tokens
+    _re.compile(r"\bAKIA[0-9A-Z]{16}\b"),                           # AWS access key
+    _re.compile(r"\bxox[baprs]-[A-Za-z0-9-]{10,}\b"),               # Slack tokens
+    _re.compile(r"(?i)\bbearer\s+[A-Za-z0-9._~+/-]{16,}=*"),        # bearer headers
+    _re.compile(r"(?i)\b(password|passwd|api[_-]?key|secret|token)\s*[:=]\s*\S{6,}"),
+]
+
+
+def redact_secrets(text: str) -> str:
+    for pat in _REDACT_PATTERNS:
+        text = pat.sub("[REDACTED]", text)
+    return text
 
 from .consolidation import consolidate, heuristic_conflicts
 from .embedder import HashEmbedder
 from .extraction import (build_extraction_prompt, build_followup_prompt,
                          build_observation_prompt, compute_numeric_totals, parse_facts)
 from .llm import LLM
+from .profiles import RetrievalProfile, get_profile
 from .retrieval import is_aggregation_query, pack_context, retrieve
 from .store import Store, utcnow
 from .types import Episode, Fact, RetrievalResult
@@ -36,7 +58,8 @@ class Smriti:
                  mode: str = "auto", embed_episodes: bool = True, reranker=None,
                  expand_keys: bool = True, aggregate: bool = True, k_agg: int = 40,
                  stem: bool = False, semantic_entities: bool = False,
-                 semantic_threshold: float = 0.3):
+                 semantic_threshold: float = 0.3,
+                 redact: bool = False, dedupe: bool = True):
         """mode: "full"/"purna" (LLM extraction+consolidation), "lite"/"laghu"
         (episodic only), or "auto" (full if an llm is provided, else lite).
         reranker: optional cross-encoder (any .rerank(query, docs)->scores) applied
@@ -62,6 +85,11 @@ class Smriti:
         self.stem = stem
         self.semantic_entities = semantic_entities
         self.semantic_threshold = semantic_threshold
+        # hardening (0.3.0): redact scrubs credential-shaped strings before
+        # persistence/extraction (opt-in); dedupe makes ingestion idempotent —
+        # replaying an identical (messages, timestamp, session) is a no-op.
+        self.redact = redact
+        self.dedupe = dedupe
         mode = MODE_ALIASES.get(mode, mode)
         if mode == "auto":
             mode = "full" if llm is not None else "lite"
@@ -72,10 +100,28 @@ class Smriti:
 
     # ------------------------------------------------------------------ add
     def add(self, messages: List[dict], session_id: Optional[str] = None,
-            timestamp: Optional[str] = None) -> dict:
-        """Ingest one session (a list of {role, content} turns)."""
+            timestamp: Optional[str] = None, dedupe: Optional[bool] = None) -> dict:
+        """Ingest one session (a list of {role, content} turns).
+
+        Idempotent by default: the (messages, timestamp, session_id) triple is
+        hashed and a replay returns {"deduped": True} without writing — the
+        protection against double-ingested sessions. Pass dedupe=False to
+        force a re-ingest."""
         session_id = session_id or uuid.uuid4().hex[:12]
         timestamp = timestamp or utcnow()
+
+        if self.redact:
+            messages = [{**m, "content": redact_secrets(m.get("content", ""))}
+                        for m in messages]
+
+        dedupe = self.dedupe if dedupe is None else dedupe
+        ihash = hashlib.sha256(_json.dumps(
+            [[m.get("role", "user"), m.get("content", "")] for m in messages]
+            + [timestamp, session_id], ensure_ascii=False).encode()).hexdigest()
+        if dedupe:
+            prior = self.store.seen_ingest(ihash)
+            if prior is not None:
+                return {"session_id": prior, "episodes": 0, "facts": 0, "deduped": True}
 
         contents = [m.get("content", "")[:4000] for m in messages]
         embs = self.embedder.embed(contents) if (self.embed_episodes and contents) else [None] * len(contents)
@@ -107,6 +153,8 @@ class Smriti:
                     if consolidate(self.store, f, femb, self.embedder, self.llm) is not None:
                         facts_added += 1
 
+        if dedupe:
+            self.store.log_ingest(ihash, session_id)
         return {"session_id": session_id, "episodes": len(episode_ids), "facts": facts_added}
 
     @staticmethod
@@ -127,13 +175,47 @@ class Smriti:
         return self.store.add_fact(fact, emb)
 
     # --------------------------------------------------------------- search
-    def search(self, query: str, k: int = 12, now: Optional[str] = None) -> List[RetrievalResult]:
-        return retrieve(self.store, self.embedder, query, now=now, k=k, reranker=self.reranker,
-                        semantic_entities=self.semantic_entities,
-                        semantic_threshold=self.semantic_threshold)
+    def _profiled(self, query: str, profile, k: Optional[int], now: Optional[str],
+                  channels=None) -> tuple:
+        """Resolve a profile (name / 'auto' / RetrievalProfile) and run
+        retrieval with its policy. Returns (profile, results). Explicit k and
+        channels args override the profile — knobs beat presets."""
+        p = get_profile(profile, query=query, store=self.store)
+        results = retrieve(
+            self.store, self.embedder, query, now=now,
+            k=k or p.k, weights=p.weights,
+            per_channel=p.per_channel, entity_hops=p.entity_hops,
+            reranker=self.reranker, obs_k=p.obs_k,
+            semantic_entities=p.semantic_entities,
+            semantic_threshold=self.semantic_threshold,
+            use_key_channel=p.use_key_channel and self.expand_keys,
+            include_observations=p.include_observations,
+            channels=channels if channels is not None else p.channels)
+        return p, results
 
-    def context(self, query: str, k: int = 12, now: Optional[str] = None,
-                char_budget: int = 9000) -> str:
+    def search(self, query: str, k: Optional[int] = None, now: Optional[str] = None,
+               profile=None, channels=None) -> List[RetrievalResult]:
+        """profile: None (legacy default), a name ("facts" / "relations" /
+        "timeline" / "deep" / "precision"), "auto" (v2 router), or a custom
+        RetrievalProfile. channels: optional mask — {"lexical","semantic",
+        "entity","temporal"} or Sanskrit aliases — orthogonal to profiles."""
+        if profile is not None:
+            return self._profiled(query, profile, k, now, channels=channels)[1]
+        return retrieve(self.store, self.embedder, query, now=now, k=k or 12,
+                        reranker=self.reranker,
+                        semantic_entities=self.semantic_entities,
+                        semantic_threshold=self.semantic_threshold,
+                        channels=channels)
+
+    def context(self, query: str, k: Optional[int] = None, now: Optional[str] = None,
+                char_budget: int = 9000, profile=None, channels=None) -> str:
+        # Explicit profile (drishti): named policy, evidence attached. The
+        # legacy path below stays byte-identical when profile is None, so the
+        # Build 10 A/B evidence keeps describing the default behavior.
+        if profile is not None:
+            p, results = self._profiled(query, profile, k, now, channels=channels)
+            return pack_context(results, now=now, char_budget=char_budget,
+                                aggregate=p.aggregate_pack)
         # Build 10 — per-type router. Each query class uses the config that
         # tested best for it (agile: adjust a profile as new A/B evidence lands):
         #   * aggregation  -> RECALL profile: high-k + key-expansion channel +
@@ -147,12 +229,14 @@ class Smriti:
                                use_key_channel=self.expand_keys,
                                semantic_entities=True,
                                semantic_threshold=self.semantic_threshold,
-                               include_observations=True)
+                               include_observations=True,
+                               channels=channels)
             return pack_context(results, now=now, char_budget=char_budget, aggregate=True)
         # precision path: exclude observation summaries — they launder stale
         # values on current-state questions (knowledge-update diagnostic, -5.1pts).
-        results = retrieve(self.store, self.embedder, query, now=now, k=k,
-                           reranker=self.reranker, include_observations=False)
+        results = retrieve(self.store, self.embedder, query, now=now, k=k or 12,
+                           reranker=self.reranker, include_observations=False,
+                           channels=channels)
         return pack_context(results, now=now, char_budget=char_budget)
 
     def search_iterative(self, query: str, k: int = 12, now: Optional[str] = None,
@@ -258,6 +342,43 @@ class Smriti:
 
         made["observations"] = made["entity"] + made["predicate"]
         return made
+
+    # ------------------------------------------------- ownership & hygiene
+    # Deliberately NOT exposed via the MCP server: destructive and identity-
+    # shaping operations are owner-API-only, so untrusted conversation content
+    # can never talk an agent into erasing or rewiring its own memory.
+    def add_alias(self, alias: str, canonical: str) -> str:
+        """Register an entity alias ("Rachel Smith" -> "Rachel"): future facts
+        consolidate under the canonical entity, and queries mentioning the
+        alias reach it. Conservative by design — nothing merges automatically."""
+        return self.store.add_alias(alias, canonical)
+
+    def erase_session(self, session_id: str) -> dict:
+        """Owner-initiated erasure (data ownership) — distinct from supersession
+        (knowledge update). Cascades: episodes, extracted facts, FTS rows,
+        entity links, embeddings, ingest log."""
+        return self.store.erase_session(session_id)
+
+    def erase_entity(self, name: str) -> dict:
+        """Erase every fact linked to an entity. Raw episodes are untouched;
+        use erase_session for transcript-level erasure."""
+        return self.store.erase_entity(name)
+
+    def export_json(self, path: str) -> dict:
+        """Lossless backup: episodes, facts (with supersession chains),
+        entities, aliases, embeddings (base64). Restore with import_json."""
+        data = self.store.export_data()
+        with open(path, "w", encoding="utf-8") as fh:
+            _json.dump(data, fh, ensure_ascii=False)
+        return {"episodes": len(data["episodes"]), "facts": len(data["facts"]),
+                "path": path}
+
+    def import_json(self, path: str) -> dict:
+        """Restore an export into this (empty) store. IDs are preserved, so
+        supersession chains and episode links survive the round trip."""
+        with open(path, encoding="utf-8") as fh:
+            self.store.import_data(_json.load(fh))
+        return self.stats()
 
     # ---------------------------------------------------------------- misc
     def stats(self) -> dict:

@@ -30,6 +30,7 @@ stays queryable.
 | **kala** | काल | time | channel 4 — temporal proximity |
 | **sangama** | संगम | confluence (of rivers) | RRF fusion — four streams, one ranking |
 | **prasanga** | प्रसंग | context, occasion | the packed context block |
+| **drishti** | दृष्टि | way of seeing, viewpoint | retrieval profiles — named per-query policies (0.2.0) |
 | **laghu** | लघु | light | `mode="lite"` (alias accepted in code) |
 | **purna** | पूर्ण | complete | `mode="full"` (alias accepted in code) |
 | **pariksha** | परीक्षा | examination | the benchmark harness (`bench/`) |
@@ -40,9 +41,9 @@ stays queryable.
 
 1. **Code stays ergonomic.** Field names, function names, and CLI flags remain
    English (`valid_from`, `retrieve`, `--mode lite`) so the library is usable
-   by anyone. The two exceptions: `mode="laghu"` / `mode="purna"` are accepted
-   as first-class aliases, and module docstrings carry the lexicon where each
-   concept lives.
+   by anyone. The exceptions: `mode="laghu"` / `mode="purna"` and the channel
+   aliases `shabda`/`artha`/`sambandha`/`kala` are accepted as first-class
+   aliases, and module docstrings carry the lexicon where each concept lives.
 2. **Docs lead with the concept, gloss with the term.** "Supersession (*badha*,
    बाध)" — never the reverse. The vocabulary should teach, not gatekeep.
 3. **The terms are load-bearing.** Each was chosen because the classical
