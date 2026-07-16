@@ -120,22 +120,13 @@ class Smriti:
             + [timestamp, session_id], ensure_ascii=False).encode()).hexdigest()
         if dedupe:
             prior = self.store.seen_ingest(ihash)
-            if prior is not None:
+            if prior is not None:  # cheap fast path before any embedding cost
                 return {"session_id": prior, "episodes": 0, "facts": 0, "deduped": True}
 
+        # -- expensive, side-effect-free work happens BEFORE the transaction --
         contents = [m.get("content", "")[:4000] for m in messages]
         embs = self.embedder.embed(contents) if (self.embed_episodes and contents) else [None] * len(contents)
-
-        episode_ids = []
-        for m, emb in zip(messages, embs):
-            eid = self.store.add_episode(
-                Episode(id=None, session_id=session_id, role=m.get("role", "user"),
-                        content=m.get("content", ""), ts=m.get("timestamp", timestamp)),
-                emb=emb,
-            )
-            episode_ids.append(eid)
-
-        facts_added = 0
+        facts, fembs = [], []
         if self.mode == "full":
             raw = self.llm.complete(
                 build_extraction_prompt(messages, timestamp), json_mode=False
@@ -148,13 +139,37 @@ class Smriti:
                 # embed the clean statement only; expansion keys live in the
                 # separate key index (Build 10) so they can't dilute precision.
                 fembs = self.embedder.embed([f.statement for f in facts])
-                for f, femb in zip(facts, fembs):
-                    f.episode_id = episode_ids[0] if episode_ids else None
-                    if consolidate(self.store, f, femb, self.embedder, self.llm) is not None:
-                        facts_added += 1
 
-        if dedupe:
-            self.store.log_ingest(ihash, session_id)
+        # -- atomic ingest: hash claim + all writes commit or roll back as one.
+        # Two concurrent ingests serialize on BEGIN IMMEDIATE; the loser's
+        # claim fails and it exits as deduped. A crash before COMMIT leaves
+        # nothing — no partial session, and the retry re-ingests cleanly.
+        # (Tier-2 semantic arbitration can still call the LLM inside the
+        # transaction; it's rare and the single-writer lock makes it safe.)
+        self.store.begin()
+        try:
+            if dedupe and not self.store.log_ingest_claim(ihash, session_id):
+                self.store.rollback()
+                prior = self.store.seen_ingest(ihash)
+                return {"session_id": prior or session_id, "episodes": 0,
+                        "facts": 0, "deduped": True}
+            episode_ids = []
+            for m, emb in zip(messages, embs):
+                eid = self.store.add_episode(
+                    Episode(id=None, session_id=session_id, role=m.get("role", "user"),
+                            content=m.get("content", ""), ts=m.get("timestamp", timestamp)),
+                    emb=emb,
+                )
+                episode_ids.append(eid)
+            facts_added = 0
+            for f, femb in zip(facts, fembs):
+                f.episode_id = episode_ids[0] if episode_ids else None
+                if consolidate(self.store, f, femb, self.embedder, self.llm) is not None:
+                    facts_added += 1
+            self.store.commit()
+        except BaseException:
+            self.store.rollback()
+            raise
         return {"session_id": session_id, "episodes": len(episode_ids), "facts": facts_added}
 
     @staticmethod

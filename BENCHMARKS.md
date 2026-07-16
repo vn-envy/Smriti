@@ -81,3 +81,20 @@ SAMPLE=200 QTYPE= bash bench/ab.sh
 # full ladder with the stack on:
 SAMPLE=200 FEATURES="--observations --iterative" bash bench/run_all.sh
 ```
+
+## Scaling envelope (0.3.1 — from an external agent run, 256-dim vectors)
+
+| Stored rows | Warm query mean | Cold query | DB size |
+|---|---|---|---|
+| 12,501 | 3.2 ms | 27 ms | 18.3 MB |
+| 125,001 | 29.4 ms | 264 ms | 182.6 MB |
+| 312,501 | 78.4 ms | 639 ms | 457.2 MB |
+
+Needle retrieval correct at every size; sustained ingest ~50k rows/sec after
+startup. The vector channel is an exact numpy scan (O(N)) — larger embedding
+dims (768/1536), high concurrency, or multi-million stores will cost
+proportionally more. Honest tiers: **excellent** for personal/desktop/coding
+agents (tens of thousands of memories), **acceptable** to low hundreds of
+thousands with moderate query volume, **not yet** for multi-million-row
+multi-tenant serving. Numpy int8/binary quantization is roadmap item #2;
+reproduce with `python -m bench.scale`.

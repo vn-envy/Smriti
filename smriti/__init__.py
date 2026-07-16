@@ -10,7 +10,7 @@ from .profiles import PROFILES, RetrievalProfile, resolve as resolve_profile
 from .rerank import HTTPReranker, MockReranker
 from .types import Episode, Fact, RetrievalResult
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 __all__ = [
     "Smriti", "Fact", "Episode", "RetrievalResult",
     "LLM", "MockLLM", "HashEmbedder", "OllamaEmbedder", "OpenAICompatEmbedder",

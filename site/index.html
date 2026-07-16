@@ -145,6 +145,7 @@
     <span class="logo">smriti</span><span class="deva">स्मृति</span>
     <div class="right">
       <a class="pill" href="smriti-dashboard.html">comparison →</a>
+      <a class="pill" href="#releases">releases →</a>
       <a class="pill" href="https://github.com/vn-envy/Smriti" id="gh">github →</a>
     </div>
   </nav>
@@ -239,6 +240,28 @@ python examples/quickstart.py
 <span class="c"># your own benchmark number, fully local</span>
 python -m bench.run <span class="p">--bench</span> longmemeval <span class="p">--data</span> data/longmemeval_oracle.json \
   <span class="p">--mode</span> <span class="o">laghu</span> <span class="p">--limit</span> 50</pre>
+    </div>
+  </section>
+
+  <section id="releases">
+    <div class="sec-head">
+      <span class="eyebrow">ship log</span>
+      <h2>Three releases in two days</h2>
+      <p>Launch feedback goes in, code ships out — each release gated by the offline suite, every retrieval change by a fixed-judge A/B. Full details: <a href="https://github.com/vn-envy/Smriti/releases">GitHub releases</a> · <a href="https://github.com/vn-envy/Smriti/blob/main/CHANGELOG.md">CHANGELOG.md</a>.</p>
+    </div>
+    <div class="duo" style="grid-template-columns:1fr 1fr 1fr">
+      <div class="panel">
+        <h3>v0.1.0<span class="dv">the substrate</span></h3>
+        <p>Bi-temporal facts with supersession (<b>badha</b>) · four-channel hybrid retrieval fused with RRF · lite and full modes · MCP server · the LongMemEval/LoCoMo harness so you grade us on <i>your</i> data.</p>
+      </div>
+      <div class="panel">
+        <h3>v0.2.0<span class="dv">drishti · दृष्टि</span></h3>
+        <p><b>Agile retrieval.</b> The four rivers become switchable channels; named profiles — <b>facts · relations · timeline · deep</b> — shape recall per query, each shipping with the A/B evidence that justified it. Profile-aware MCP tools.</p>
+      </div>
+      <div class="panel">
+        <h3>v0.3.0<span class="dv">hardened</span></h3>
+        <p><b>Production seatbelts.</b> WAL durability · idempotent ingestion · owner-initiated erasure with full cascade · entity aliases · lossless export/import · opt-in secret redaction · unicode search · <b>74 offline tests</b>, zero new dependencies.</p>
+      </div>
     </div>
   </section>
 

@@ -30,8 +30,11 @@ def _post_json(url: str, payload: dict, headers: Optional[dict] = None,
         req = urllib.request.Request(url, data=data, method="POST")
         req.add_header("Content-Type", "application/json")
         # Some providers (e.g. Groq behind Cloudflare) reject the default
-        # "Python-urllib/x.y" User-Agent with HTTP 403. Send an explicit one.
-        req.add_header("User-Agent", "smriti/0.1")
+        # "Python-urllib/x.y" User-Agent with HTTP 403. Send an explicit one,
+        # versioned from the package so it can't drift (lazy import: avoids
+        # a circular import at package-init time).
+        from . import __version__ as _v
+        req.add_header("User-Agent", f"smriti/{_v}")
         for k, v in (headers or {}).items():
             req.add_header(k, v)
         try:

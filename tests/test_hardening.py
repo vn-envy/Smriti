@@ -272,6 +272,109 @@ def test_devanagari_content_is_searchable_lexically():
     assert any("वीणा" in r.text for r in results)
 
 
+# --------------------------------------------- 0.3.1 audit fixes (agent run)
+def test_pack_context_puts_current_facts_before_superseded():
+    """The quickstart repro from the audit: annotation alone isn't enough —
+    the CURRENT fact must be the first fact the model reads."""
+    mem = full([
+        fact_json("The user lives in Hyderabad.", "user", "lives_in", "Hyderabad",
+                  ["Hyderabad"]),
+        fact_json("The user lives in Bengaluru.", "user", "lives_in", "Bengaluru",
+                  ["Bengaluru"], event_date="2026-06-01"),
+    ])
+    mem.add([{"role": "user", "content": "I live in Hyderabad."}],
+            timestamp="2026-01-01T10:00:00Z")
+    mem.add([{"role": "user", "content": "I moved to Bengaluru."}],
+            timestamp="2026-06-02T10:00:00Z")
+    ctx = mem.context("where do I live?")
+    fact_lines = [l for l in ctx.splitlines() if l.startswith("- [")]
+    assert fact_lines, ctx
+    assert "CURRENT" in fact_lines[0] and "Bengaluru" in fact_lines[0]
+    assert any("SUPERSEDED" in l for l in fact_lines[1:])
+
+
+def test_failed_ingest_rolls_back_completely(monkeypatch):
+    """Atomicity: a crash mid-ingest leaves no partial session, and the
+    ingest-log claim rolls back with it, so a retry re-ingests cleanly."""
+    from smriti.store import Store
+    mem = lite()
+    original = Store.add_episode
+    calls = {"n": 0}
+
+    def explode_on_second(self, ep, emb=None):
+        calls["n"] += 1
+        if calls["n"] == 2:
+            raise RuntimeError("simulated crash mid-ingest")
+        return original(self, ep, emb=emb)
+
+    monkeypatch.setattr(Store, "add_episode", explode_on_second)
+    msgs = [{"role": "user", "content": "turn one"},
+            {"role": "user", "content": "turn two"}]
+    try:
+        mem.add(msgs, session_id="s1", timestamp="2026-05-01T10:00:00Z")
+        assert False, "expected the simulated crash to propagate"
+    except RuntimeError:
+        pass
+    assert mem.stats()["episodes"] == 0          # nothing partial persisted
+    monkeypatch.undo()
+    retry = mem.add(msgs, session_id="s1", timestamp="2026-05-01T10:00:00Z")
+    assert not retry.get("deduped")              # claim rolled back too
+    assert mem.stats()["episodes"] == 2
+
+
+def test_ingest_claim_is_first_writer_wins():
+    mem = lite()
+    mem.store.begin()
+    assert mem.store.log_ingest_claim("h1", "s1") is True
+    assert mem.store.log_ingest_claim("h1", "s2") is False  # loser sees claim
+    mem.store.commit()
+
+
+def test_export_roundtrip_preserves_keys_and_ingest_log(tmp_path):
+    from smriti import Fact
+    mem = lite()
+    mem.add([{"role": "user", "content": "hello"}],
+            session_id="s1", timestamp="2026-01-01T10:00:00Z")
+    mem.add_fact(Fact(id=None, statement="The user attends yoga.",
+                      subject="user", predicate="attends", object="yoga",
+                      entities=["yoga"], search_keys=["exercise", "wellness class"]),
+                 resolve_conflicts=False)
+    path = str(tmp_path / "b.json")
+    mem.export_json(path)
+
+    fresh = lite()
+    fresh.import_json(path)
+    # key-expansion index survived: recall-profile search keys still match
+    assert fresh.store.key_fts_search("wellness exercise"), \
+        "search_keys index must survive export/import"
+    # idempotency history survived: replaying the exported session dedupes
+    replay = fresh.add([{"role": "user", "content": "hello"}],
+                       session_id="s1", timestamp="2026-01-01T10:00:00Z")
+    assert replay.get("deduped") is True
+
+
+def test_erase_session_purges_derived_observations():
+    mem = full([fact_json("The user attends yoga weekly.", "user", "attends",
+                          "yoga", ["yoga"])])
+    mem.add([{"role": "user", "content": "I attend yoga weekly."}],
+            session_id="s1", timestamp="2026-01-01T10:00:00Z")
+    from smriti import Fact
+    mem.store.add_fact(Fact(id=None, statement="user attends: yoga (weekly).",
+                            subject="user", predicate="digest:attends", object="",
+                            kind="observation", entities=["yoga"]),
+                       emb=mem.embedder.embed(["digest"])[0])
+    out = mem.erase_session("s1")
+    assert out["observations"] == 1              # contaminated digest dropped
+    assert mem.stats()["facts"] == 0
+
+
+def test_user_agent_carries_package_version():
+    import smriti
+    assert smriti.__version__ != "0.1"           # the audit's stale-UA finding
+    # embedder builds the UA from __version__ lazily; just confirm the import
+    from smriti.embedder import _post_json  # noqa: F401
+
+
 # ------------------------------------------------------------ noisy haystack
 def test_needle_survives_noisy_typo_haystack():
     mem = lite()

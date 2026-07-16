@@ -289,6 +289,12 @@ def pack_context(results: List[RetrievalResult], now: Optional[str] = None,
         (observations if r.kind == "observation" else
          facts if r.kind == "fact" else episodes).append(r)
 
+    # Validity-first ordering (0.3.1): CURRENT facts precede SUPERSEDED ones in
+    # the packed block (stable — fused-score order preserved within each group).
+    # Annotation tells the model which is which; ordering stops a superseded
+    # value from being the first thing it reads on current-state questions.
+    facts.sort(key=lambda r: r.invalid_at is not None)
+
     lines: List[str] = []
     if aggregate:
         lines.append("COUNTING / AGGREGATION QUESTION — go through the FACTS, SUMMARIES and "

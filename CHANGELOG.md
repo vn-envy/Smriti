@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.3.1 — Audit fixes (2026-07-16)
+
+Response to an external agent-run audit that checked our claims against the implementation. Four claims were overstated; now they aren't.
+
+- **Atomic ingestion** — `add()` wraps the idempotency claim and every write in one `BEGIN IMMEDIATE` transaction. Concurrent ingests of the same session serialize and the loser exits as deduped; a crash mid-ingest rolls everything back (claim included), so retries re-ingest cleanly. The extraction LLM call runs *before* the transaction, so the write lock is never held during network I/O.
+- **Validity-first is now real** — `pack_context` orders CURRENT facts before SUPERSEDED ones (stable within groups). Previously we shipped validity *annotation* with score-order packing; the audit's quickstart repro showed a superseded fact ranked first. Fixed and regression-tested.
+- **Erasure purges derived observations** — `erase_session` now drops observation/digest facts whose subject, predicate digest, or entities overlap the erased facts (over-deletion in the safe direction; regenerate from surviving facts with `refresh_observations()`).
+- **Export/import truly lossless** — now includes the search-key expansion index and the ingest/idempotency log (format v2), so deep-profile retrieval and session-replay dedupe behave identically after a restore.
+- **Hygiene** — HTTP user-agent derives from `__version__` (was hardcoded `smriti/0.1`); stray zip artifact removed from the repo; version stamps aligned across `pyproject.toml`/`CITATION.cff`/`__init__.py`; README documents the measured scale envelope (3.2ms @ 12.5k → 78ms @ 312k rows, 256-dim) with honest suitability tiers, and warns that the `smriti-memory` PyPI name belongs to an unrelated project — install from source.
+- 6 new regression tests → **80 offline tests**.
+
 ## v0.3.0 — Hardening (2026-07-16)
 
 Production seatbelts, zero new dependencies. The dependency surface is still the Python stdlib + numpy; the core is still one SQLite file you can read in a sitting.

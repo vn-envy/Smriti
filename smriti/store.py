@@ -478,16 +478,42 @@ class Store:
                     out.append(canonical)
         return out[:10]
 
+    # -------------------------------------------------------- transactions
+    def begin(self):
+        """BEGIN IMMEDIATE — take the write lock up front so concurrent
+        ingests serialize here (waiting via busy_timeout) instead of
+        interleaving autocommit writes. Makes add() all-or-nothing."""
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN IMMEDIATE")
+
+    def commit(self):
+        if self.db.in_transaction:
+            self.db.execute("COMMIT")
+
+    def rollback(self):
+        if self.db.in_transaction:
+            self.db.execute("ROLLBACK")
+        # rolled-back rows may already sit in the incremental vector cache
+        # queue — drop everything and rebuild lazily from the db truth.
+        self._dirty = {"episode": True, "fact": True, "entity": True}
+        self._pending = {"episode": [], "fact": []}
+
     # ------------------------------------------------------ idempotent ingest
     def seen_ingest(self, h: str) -> Optional[str]:
         row = self.db.execute(
             "SELECT session_id FROM ingest_log WHERE hash=?", (h,)).fetchone()
         return row[0] if row else None
 
-    def log_ingest(self, h: str, session_id: str):
-        self.db.execute(
+    def log_ingest_claim(self, h: str, session_id: str) -> bool:
+        """Atomically claim an ingest hash (call inside the transaction, BEFORE
+        writing). Two concurrent ingests of the same session serialize on
+        BEGIN IMMEDIATE; the loser's INSERT OR IGNORE hits the PK and returns
+        False. A crash before COMMIT rolls the claim back with the data, so
+        a retry re-ingests cleanly — no partial sessions, no double sessions."""
+        cur = self.db.execute(
             "INSERT OR IGNORE INTO ingest_log(hash, session_id, ingested_at) VALUES(?,?,?)",
             (h, session_id, utcnow()))
+        return cur.rowcount == 1
 
     # ----------------------------------------------------- erasure (cascade)
     def _erase_facts(self, fact_ids: List[int]) -> int:
@@ -514,9 +540,11 @@ class Store:
 
     def erase_session(self, session_id: str) -> dict:
         """Erase everything ingested under a session: episodes, their FTS rows,
-        facts extracted from them, entity links, embeddings. Observation
-        summaries derived from erased facts are NOT rewritten automatically —
-        run refresh_observations() afterwards to regenerate them cleanly."""
+        facts extracted from them, entity links, embeddings — AND any derived
+        observation/digest summaries whose subject, predicate digest, or
+        entities overlap the erased facts. Digests aggregate across sessions,
+        so we over-delete in the safe direction: the dropped summaries are
+        regenerable from surviving facts via refresh_observations()."""
         eps = self.db.execute(
             "SELECT id, content FROM episodes WHERE session_id=?", (session_id,)).fetchall()
         for eid, content in eps:
@@ -526,9 +554,28 @@ class Store:
         self.db.execute("DELETE FROM episodes WHERE session_id=?", (session_id,))
         fids = [r[0] for r in self.db.execute(
             "SELECT id FROM facts WHERE session_id=?", (session_id,)).fetchall()]
+        # collect the contamination surface BEFORE the cascade removes it
+        obs_targets = set()
+        if fids:
+            marks = ",".join("?" for _ in fids)
+            for s, p in self.db.execute(
+                    f"SELECT DISTINCT subject, predicate FROM facts WHERE id IN ({marks})",
+                    fids):
+                obs_targets.add(s)
+                obs_targets.add(f"digest:{p}")
+            obs_targets.update(self.entities_of_facts(fids))
         facts_gone = self._erase_facts(fids)
+        obs_gone = 0
+        if obs_targets:
+            targets = list(obs_targets)
+            marks = ",".join("?" for _ in targets)
+            obs_ids = [r[0] for r in self.db.execute(
+                f"SELECT id FROM facts WHERE kind='observation' AND "
+                f"(subject IN ({marks}) OR predicate IN ({marks}))",
+                targets * 2)]
+            obs_gone = self._erase_facts(obs_ids)
         self.db.execute("DELETE FROM ingest_log WHERE session_id=?", (session_id,))
-        return {"episodes": len(eps), "facts": facts_gone}
+        return {"episodes": len(eps), "facts": facts_gone, "observations": obs_gone}
 
     def erase_entity(self, name: str) -> dict:
         """Erase all facts linked to an entity (raw episodes are untouched —
@@ -550,21 +597,28 @@ class Store:
                          ts=r[4], emb=b64(r[5]))
                     for r in self.db.execute(
                         "SELECT id, session_id, role, content, ts, emb FROM episodes")]
-        facts = [dict(id=r[0], statement=r[1], subject=r[2], predicate=r[3],
-                      object=r[4], kind=r[5], event_date=r[6], ingested_at=r[7],
-                      valid_from=r[8], invalid_at=r[9], superseded_by=r[10],
-                      episode_id=r[11], session_id=r[12], emb=b64(r[13]))
-                 for r in self.db.execute(
-                     """SELECT id, statement, subject, predicate, object, kind,
-                        event_date, ingested_at, valid_from, invalid_at,
-                        superseded_by, episode_id, session_id, emb FROM facts""")]
+        facts = []
+        for r in self.db.execute(
+                """SELECT id, statement, subject, predicate, object, kind,
+                   event_date, ingested_at, valid_from, invalid_at,
+                   superseded_by, episode_id, session_id, emb FROM facts"""):
+            krow = self.db.execute(
+                "SELECT keys FROM fact_keys_fts WHERE rowid=?", (r[0],)).fetchone()
+            facts.append(dict(
+                id=r[0], statement=r[1], subject=r[2], predicate=r[3],
+                object=r[4], kind=r[5], event_date=r[6], ingested_at=r[7],
+                valid_from=r[8], invalid_at=r[9], superseded_by=r[10],
+                episode_id=r[11], session_id=r[12], emb=b64(r[13]),
+                search_keys=krow[0] if krow else None))
         entities = [dict(name=r[0], fact_id=r[1]) for r in
                     self.db.execute("SELECT name, fact_id FROM entities")]
         aliases = [dict(alias=r[0], canonical=r[1]) for r in
                    self.db.execute("SELECT alias, canonical FROM entity_aliases")]
-        return {"format": "smriti-export", "version": 1, "exported_at": utcnow(),
-                "episodes": episodes, "facts": facts,
-                "entities": entities, "aliases": aliases}
+        ingest_log = [dict(hash=r[0], session_id=r[1], ingested_at=r[2]) for r in
+                      self.db.execute("SELECT hash, session_id, ingested_at FROM ingest_log")]
+        return {"format": "smriti-export", "version": 2, "exported_at": utcnow(),
+                "episodes": episodes, "facts": facts, "entities": entities,
+                "aliases": aliases, "ingest_log": ingest_log}
 
     def import_data(self, data: dict):
         """Restore an export into an EMPTY store (strict, lossless restore —
@@ -593,6 +647,9 @@ class Store:
                  f["session_id"], unb64(f.get("emb"))))
             self.db.execute("INSERT INTO facts_fts(rowid, statement) VALUES(?,?)",
                             (f["id"], f["statement"]))
+            if f.get("search_keys"):
+                self.db.execute("INSERT INTO fact_keys_fts(rowid, keys) VALUES(?,?)",
+                                (f["id"], f["search_keys"]))
         for ent in data.get("entities", []):
             self.db.execute("INSERT INTO entities(name, fact_id) VALUES(?,?)",
                             (ent["name"], ent["fact_id"]))
@@ -600,5 +657,9 @@ class Store:
             self.db.execute(
                 "INSERT OR REPLACE INTO entity_aliases(alias, canonical) VALUES(?,?)",
                 (al["alias"], al["canonical"]))
+        for il in data.get("ingest_log", []):
+            self.db.execute(
+                "INSERT OR IGNORE INTO ingest_log(hash, session_id, ingested_at) VALUES(?,?,?)",
+                (il["hash"], il["session_id"], il["ingested_at"]))
         self._dirty = {"episode": True, "fact": True, "entity": True}
         self._pending = {"episode": [], "fact": []}
