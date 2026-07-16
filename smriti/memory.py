@@ -205,7 +205,8 @@ class Smriti:
             semantic_threshold=self.semantic_threshold,
             use_key_channel=p.use_key_channel and self.expand_keys,
             include_observations=p.include_observations,
-            channels=channels if channels is not None else p.channels)
+            channels=channels if channels is not None else p.channels,
+            current_first=p.current_first)
         return p, results
 
     def search(self, query: str, k: Optional[int] = None, now: Optional[str] = None,
@@ -230,7 +231,8 @@ class Smriti:
         if profile is not None:
             p, results = self._profiled(query, profile, k, now, channels=channels)
             return pack_context(results, now=now, char_budget=char_budget,
-                                aggregate=p.aggregate_pack)
+                                aggregate=p.aggregate_pack,
+                                current_first=p.current_first)
         # Build 10 — per-type router. Each query class uses the config that
         # tested best for it (agile: adjust a profile as new A/B evidence lands):
         #   * aggregation  -> RECALL profile: high-k + key-expansion channel +

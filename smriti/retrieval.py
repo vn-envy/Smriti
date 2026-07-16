@@ -156,7 +156,7 @@ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
              semantic_threshold: float = 0.3,
              use_key_channel: bool = False,
              include_observations: bool = True,
-             channels=None) -> List[RetrievalResult]:
+             channels=None, current_first: bool = True) -> List[RetrievalResult]:
     weights = weights or DEFAULT_WEIGHTS
     # channel gating (drishti): each ranking block below is independent, so a
     # disabled channel is simply never built — and never billed (a lexical-only
@@ -268,6 +268,14 @@ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
                 r.channels = r.channels + ["rerank"]
         results.sort(key=lambda r: -r.score)
         results = results[:k]
+    # Validity-aware ranking (0.3.2 audit): a SUPERSEDED fact must never
+    # outrank the CURRENT one in structured results — search() and the MCP
+    # search tool return these directly, and not every caller inspects
+    # invalid_at. Stable sort: superseded facts sink below current facts AND
+    # episodes; everything else keeps fused order. The timeline profile opts
+    # out (current_first=False) — historical ranking is the point there.
+    if current_first:
+        results.sort(key=lambda r: r.kind == "fact" and r.invalid_at is not None)
     return observations + results
 
 
@@ -278,7 +286,8 @@ def _fmt_date(iso: Optional[str]) -> str:
 
 
 def pack_context(results: List[RetrievalResult], now: Optional[str] = None,
-                 char_budget: int = 9000, aggregate: bool = False) -> str:
+                 char_budget: int = 9000, aggregate: bool = False,
+                 current_first: bool = True) -> str:
     """Render retrieval into an answer-ready context block with provenance.
 
     When aggregate=True (counting/aggregation query), prepend an instruction to
@@ -289,11 +298,16 @@ def pack_context(results: List[RetrievalResult], now: Optional[str] = None,
         (observations if r.kind == "observation" else
          facts if r.kind == "fact" else episodes).append(r)
 
-    # Validity-first ordering (0.3.1): CURRENT facts precede SUPERSEDED ones in
-    # the packed block (stable — fused-score order preserved within each group).
-    # Annotation tells the model which is which; ordering stops a superseded
-    # value from being the first thing it reads on current-state questions.
-    facts.sort(key=lambda r: r.invalid_at is not None)
+    # Query-aware ordering (0.3.1, refined 0.3.2). Current-state questions:
+    # CURRENT facts precede SUPERSEDED ones (stable — fused order within each
+    # group), so a stale value is never the first thing the model reads.
+    # Timeline/as-of questions (current_first=False): chronological by
+    # valid_from instead — for "where did I live in January?" the history IS
+    # the answer, and reading it in time order is the natural presentation.
+    if current_first:
+        facts.sort(key=lambda r: r.invalid_at is not None)
+    else:
+        facts.sort(key=lambda r: r.valid_from or "")
 
     lines: List[str] = []
     if aggregate:

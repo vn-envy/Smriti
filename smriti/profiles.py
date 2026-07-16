@@ -60,6 +60,10 @@ class RetrievalProfile:
     include_observations: bool = False
     aggregate_pack: bool = False                 # enumerate-and-count packing
     obs_k: int = 4
+    # validity-aware ranking (0.3.2): superseded facts sink below current ones
+    # in results AND packed context. timeline sets False — historical order is
+    # the point there, and packing turns chronological instead.
+    current_first: bool = True
     # provenance: the evidence that justified this configuration
     evidence: str = ""
 
@@ -94,9 +98,10 @@ PROFILES: Dict[str, RetrievalProfile] = {
         weights={"vec_fact": 1.0, "vec_episode": 1.0, "bm25_fact": 0.9,
                  "bm25_episode": 0.9, "entity": 0.0, "entity_hop2": 0.0,
                  "temporal": 1.2, "key_expansion": 0.0},
-        k=14, include_observations=False,
-        evidence="kala channel boosted; pack_context orders episodes "
-                 "chronologically; validity windows carry as-of semantics.",
+        k=14, include_observations=False, current_first=False,
+        evidence="kala channel boosted; facts and episodes packed "
+                 "chronologically; validity windows carry as-of semantics — "
+                 "historical ranking preserved by design (0.3.2).",
     ),
     "deep": RetrievalProfile(
         name="deep",

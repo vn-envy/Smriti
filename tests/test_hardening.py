@@ -6,6 +6,7 @@ and noisy-haystack retrieval. All offline: HashEmbedder + MockLLM."""
 import json
 
 from smriti import Fact, HashEmbedder, MockLLM, Smriti
+from smriti.mcp_server import SmritiMCP
 from smriti.memory import redact_secrets
 from smriti.retrieval import extract_dates
 
@@ -373,6 +374,92 @@ def test_user_agent_carries_package_version():
     assert smriti.__version__ != "0.1"           # the audit's stale-UA finding
     # embedder builds the UA from __version__ lazily; just confirm the import
     from smriti.embedder import _post_json  # noqa: F401
+
+
+# ----------------------------------------------- 0.3.2 audit fixes (round 2)
+def _hyd_blr():
+    mem = full([
+        fact_json("The user lives in Hyderabad.", "user", "lives_in", "Hyderabad",
+                  ["Hyderabad"]),
+        fact_json("The user lives in Bengaluru.", "user", "lives_in", "Bengaluru",
+                  ["Bengaluru"], event_date="2026-06-01"),
+    ])
+    mem.add([{"role": "user", "content": "I live in Hyderabad."}],
+            timestamp="2026-01-01T10:00:00Z")
+    mem.add([{"role": "user", "content": "I moved to Bengaluru."}],
+            timestamp="2026-06-02T10:00:00Z")
+    return mem
+
+
+def test_search_ranks_current_fact_above_superseded():
+    """Round-2 audit repro: structured search() (and thus the MCP search tool)
+    must not lead with a stale fact."""
+    mem = _hyd_blr()
+    hits = mem.search("where do I live?", k=6)
+    facts = [r for r in hits if r.kind == "fact"]
+    assert facts and facts[0].invalid_at is None, \
+        [f"{r.text} invalid_at={r.invalid_at}" for r in facts]
+    # superseded fact must also rank below episodes (never first anything)
+    first_fact_idx = next(i for i, r in enumerate(hits) if r.kind == "fact")
+    assert hits[first_fact_idx].invalid_at is None
+
+
+def test_timeline_profile_preserves_historical_ranking_and_chronology():
+    mem = _hyd_blr()
+    hits = mem.search("where did I live before June 2026?", profile="timeline", k=6)
+    assert hits  # historical results not suppressed
+    ctx = mem.context("where did I live before June 2026?", profile="timeline")
+    fact_lines = [l for l in ctx.splitlines() if l.startswith("- [")]
+    if len(fact_lines) >= 2:  # chronological: Hyderabad (Jan) before Bengaluru (Jun)
+        assert "Hyderabad" in fact_lines[0]
+
+
+def test_mcp_search_orders_current_first():
+    srv = SmritiMCP(_hyd_blr())
+    resp = srv.handle({"jsonrpc": "2.0", "id": 9, "method": "tools/call",
+                       "params": {"name": "search",
+                                  "arguments": {"query": "where do I live?"}}})
+    out = json.loads(resp["result"]["content"][0]["text"])
+    facts = [r for r in out["results"] if r["kind"] == "fact"]
+    assert facts and facts[0]["current"] is True
+
+
+def test_concurrent_first_time_db_creation(tmp_path):
+    """Round-2 audit: two workers opening a brand-new database raced on the
+    WAL pragma. busy_timeout-first + retry must make cold-start contention
+    safe across REAL separate connections in parallel threads."""
+    import threading
+    p = str(tmp_path / "race.db")
+    errors = []
+
+    def worker(i):
+        try:
+            m = Smriti(path=p, embedder=HashEmbedder(), mode="lite")
+            m.add([{"role": "user", "content": f"worker {i} note"}],
+                  session_id=f"w{i}", timestamp="2026-07-01T10:00:00Z")
+            m.store.db.close()
+        except Exception as e:  # noqa: BLE001
+            errors.append(repr(e))
+
+    threads = [threading.Thread(target=worker, args=(i,)) for i in range(6)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    assert not errors, errors
+    check = Smriti(path=p, embedder=HashEmbedder(), mode="lite")
+    assert check.stats()["episodes"] == 6
+
+
+def test_cross_connection_dedupe(tmp_path):
+    p = str(tmp_path / "dd.db")
+    a = Smriti(path=p, embedder=HashEmbedder(), mode="lite")
+    b = Smriti(path=p, embedder=HashEmbedder(), mode="lite")
+    msgs = [{"role": "user", "content": "once only"}]
+    a.add(msgs, session_id="s1", timestamp="2026-07-01T10:00:00Z")
+    replay = b.add(msgs, session_id="s1", timestamp="2026-07-01T10:00:00Z")
+    assert replay.get("deduped") is True
+    assert b.stats()["episodes"] == 1
 
 
 # ------------------------------------------------------------ noisy haystack

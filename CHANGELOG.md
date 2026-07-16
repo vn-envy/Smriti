@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.3.2 — Audit fixes, round 2 (2026-07-17)
+
+Second external audit pass; three findings, three fixes.
+
+- **Validity-aware ranking in `search()`** — superseded facts now sink below current facts and episodes in structured results (stable sort; fused order preserved within groups). `context()` consumers were already protected by 0.3.1's packing fix; now `search()` and the MCP `search` tool are too — a stale fact can no longer be the first result a caller reads. The **timeline profile opts out** (`current_first=False`): historical ranking is the point of as-of queries, and its packed context now orders facts *chronologically* by `valid_from` instead.
+- **Cold-start concurrency fix** — two workers creating a brand-new database simultaneously could race on `PRAGMA journal_mode=WAL` ("database is locked"). `busy_timeout` is now set *before* the WAL switch, with a bounded exponential-backoff retry around initialization. New regression tests exercise six real parallel connections on a cold file, plus cross-connection replay dedupe.
+- **Query-aware packing** — `pack_context(current_first=)` makes ordering profile-driven: current-state profiles lead with CURRENT facts; timeline packs history in time order. Validity annotations unchanged.
+- **Distribution name: `smriti-agents`** — `pyproject.toml` renamed (the PyPI `smriti-memory` name belongs to an unrelated project). Import name stays `smriti`.
+- 5 new regression tests → **85 offline tests**.
+
 ## v0.3.1 — Audit fixes (2026-07-16)
 
 Response to an external agent-run audit that checked our claims against the implementation. Four claims were overstated; now they aren't.

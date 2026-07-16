@@ -3,8 +3,8 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "smriti-memory"
-version = "0.3.1"
+name = "smriti-agents"
+version = "0.3.2"
 description = "Zero-infrastructure, local-first, bi-temporal memory layer for AI agents"
 readme = "README.md"
 license = { text = "Apache-2.0" }

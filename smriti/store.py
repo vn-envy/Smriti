@@ -109,11 +109,30 @@ class Store:
         # survives crashes cleanly; NORMAL sync is the standard WAL pairing;
         # busy_timeout waits instead of throwing when another connection
         # holds the write lock. No-ops harmlessly on :memory: databases.
-        self.db.execute("PRAGMA journal_mode=WAL")
-        self.db.execute("PRAGMA synchronous=NORMAL")
+        #
+        # 0.3.2 (audit): busy_timeout is set FIRST — the WAL switch itself
+        # needs the write lock, and two workers creating a brand-new db
+        # simultaneously raced here ("database is locked"). The timeout makes
+        # the loser wait; the retry loop covers the residual race on older
+        # SQLite builds where the pragma can still throw under contention.
         self.db.execute("PRAGMA busy_timeout=5000")
-        self.db.executescript(_SCHEMA_BASE)
-        self.db.executescript(_fts_ddl(stem))
+        last_err = None
+        for attempt in range(5):
+            try:
+                self.db.execute("PRAGMA journal_mode=WAL")
+                self.db.execute("PRAGMA synchronous=NORMAL")
+                self.db.executescript(_SCHEMA_BASE)
+                self.db.executescript(_fts_ddl(stem))
+                last_err = None
+                break
+            except sqlite3.OperationalError as e:
+                if "locked" not in str(e).lower():
+                    raise
+                last_err = e
+                import time as _time
+                _time.sleep(0.05 * (2 ** attempt))
+        if last_err is not None:
+            raise last_err
         self.stem = stem
         self._vec_cache: Dict[str, Tuple[list, object]] = {}
         # 'entity' holds entity-NAME embeddings (semantic entity linking),

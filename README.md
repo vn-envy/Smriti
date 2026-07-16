@@ -11,7 +11,7 @@
   <a href="LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-4c9?style=flat-square"></a>
   <img alt="Python 3.9+" src="https://img.shields.io/badge/python-3.9%2B-3776AB?style=flat-square&logo=python&logoColor=white">
   <img alt="Dependencies: stdlib + numpy" src="https://img.shields.io/badge/deps-stdlib%20%2B%20numpy-F4A43C?style=flat-square">
-  <img alt="Tests: 80 offline, no keys" src="https://img.shields.io/badge/tests-80%20offline%2C%20no%20keys-success?style=flat-square">
+  <img alt="Tests: 85 offline, no keys" src="https://img.shields.io/badge/tests-85%20offline%2C%20no%20keys-success?style=flat-square">
   <img alt="Storage: one SQLite file" src="https://img.shields.io/badge/storage-one%20SQLite%20file-blue?style=flat-square">
   <img alt="MCP: ready" src="https://img.shields.io/badge/MCP-ready-B794E0?style=flat-square">
   <a href="https://github.com/vn-envy/Smriti/pulls"><img alt="PRs welcome" src="https://img.shields.io/badge/PRs-welcome-E08AA0?style=flat-square"></a>
@@ -184,12 +184,12 @@ SMRITI's stance is **ship-and-verify**. Instead of publishing a self-graded head
 ```bash
 git clone https://github.com/vn-envy/Smriti && cd Smriti
 pip install -e .              # install from source
-python -m pytest tests/       # 80 offline tests — no network, no API keys
+python -m pytest tests/       # 85 offline tests — no network, no API keys
 python examples/quickstart.py # see supersession live
 ```
 
 > [!WARNING]
-> SMRITI is not on PyPI yet, and the `smriti-memory` name there belongs to an **unrelated project** — `pip install smriti-memory` installs something else. Install from source as above; a uniquely-named PyPI release is on the roadmap.
+> SMRITI publishes to PyPI as **`smriti-agents`** (the `smriti-memory` name there belongs to an unrelated project — `pip install smriti-memory` installs something else). Until the first PyPI release lands, install from source as above. The import name is `smriti` either way.
 
 The quickstart runs fully **offline** (lite mode). For LLM-backed extraction + supersession, point SMRITI at any OpenAI-compatible endpoint (Ollama, vLLM, LM Studio, Groq, DeepSeek, OpenRouter, hosted) and any embedder — nothing else to install.
 
@@ -259,7 +259,7 @@ smriti/             core library
   llm.py            OpenAI-compatible client + mock
   mcp_server.py     stdlib-only MCP server (6 typed tools, stdio JSON-RPC)
 bench/              pariksha: LongMemEval + LoCoMo runners, nyaya judge, CLI, A/B
-tests/              offline test suite (mock LLM, hash embedder) — 80 tests
+tests/              offline test suite (mock LLM, hash embedder) — 85 tests
 examples/           runnable quickstart
 NOMENCLATURE.md     the full lexicon and why each term is load-bearing
 site/               the landing page — live at smriti-memory.netlify.app
