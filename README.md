@@ -17,6 +17,10 @@
   <a href="https://github.com/vn-envy/Smriti/pulls"><img alt="PRs welcome" src="https://img.shields.io/badge/PRs-welcome-E08AA0?style=flat-square"></a>
 </p>
 
+<p align="center">
+  <a href="https://smriti-memory.netlify.app"><b>smriti-memory.netlify.app</b></a> — the four rivers, live
+</p>
+
 A zero-infrastructure, local-first, Apache-2.0 memory layer for AI agents. One SQLite file. No Neo4j, no Postgres, no Docker, no cloud account, no paywalled tiers. Stdlib HTTP + numpy is the entire dependency surface.
 
 ```python
@@ -254,7 +258,7 @@ bench/              pariksha: LongMemEval + LoCoMo runners, nyaya judge, CLI, A/
 tests/              offline test suite (mock LLM, hash embedder) — 74 tests
 examples/           runnable quickstart
 NOMENCLATURE.md     the full lexicon and why each term is load-bearing
-site/               the landing page (deployed via Netlify)
+site/               the landing page — live at smriti-memory.netlify.app
 ```
 
 ## Roadmap

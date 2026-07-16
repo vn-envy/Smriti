@@ -8,10 +8,12 @@
 <link rel="icon" type="image/png" href="icon.png">
 <meta property="og:title" content="SMRITI स्मृति — memory that knows when">
 <meta property="og:description" content="Memory for AI agents in one SQLite file. Local-first, temporal, Apache-2.0 — supersede, never delete.">
-<meta property="og:image" content="og.png">
+<meta property="og:image" content="https://smriti-memory.netlify.app/og.png">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://smriti-memory.netlify.app/">
+<link rel="canonical" href="https://smriti-memory.netlify.app/">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="og.png">
+<meta name="twitter:image" content="https://smriti-memory.netlify.app/og.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -180,7 +182,7 @@
     <div class="statline">
       <span class="chip"><b>1</b> sqlite file · no postgres, no docker, no binary</span>
       <span class="chip">~<b>2k</b> lines, readable in a sitting</span>
-      <span class="chip"><b>52</b> offline tests · no keys needed</span>
+      <span class="chip"><b>74</b> offline tests · no keys needed</span>
       <span class="chip">benchmark harness <b>included</b></span>
     </div>
 
@@ -203,6 +205,17 @@
       <div class="panel">
         <h3>mcp<span class="dv">plug into any agent</span></h3>
         <p><b>One command:</b> <code>smriti-mcp --db memory.db</code>. Six typed tools give Claude Code, Cursor, or any MCP agent persistent, auditable memory — and the read tools take <b>profile</b> and <b>channels</b>, so agents shape recall per call.</p>
+      </div>
+    </div>
+
+    <div class="duo" style="margin-top:18px">
+      <div class="panel">
+        <h3>hardened<span class="dv">new in 0.3.0</span></h3>
+        <p><b>Production seatbelts, zero new deps.</b> WAL durability · idempotent ingestion (replaying a session is a no-op) · opt-in secret redaction before anything persists · unicode lexical search — Devanagari and CJK reach the index too.</p>
+      </div>
+      <div class="panel">
+        <h3>yours<span class="dv">data ownership · 0.3.0</span></h3>
+        <p><b>Owner-initiated erasure</b> — <code>erase_session</code> / <code>erase_entity</code> cascade everywhere, distinct from supersession, and deliberately unreachable from agent conversations. Plus entity aliases and lossless export/import: backup, restore, and leave — it's your file.</p>
       </div>
     </div>
   </section>
@@ -243,7 +256,7 @@ python -m bench.run <span class="p">--bench</span> longmemeval <span class="p">-
 </main>
 
 <footer>
-  <b>SMRITI 0.2.0</b> · स्मृति, "that which is remembered" · apache-2.0 · single sqlite file<br>
+  <b>SMRITI 0.3.0</b> · स्मृति, "that which is remembered" · apache-2.0 · single sqlite file<br>
   <a href="https://github.com/vn-envy/Smriti">github.com/vn-envy/Smriti</a> · feature comparison &amp; honest benchmark targets: <a href="smriti-dashboard.html">smriti-dashboard.html</a>
 </footer>
 
