@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <a href="https://smriti-memory.netlify.app"><b>smriti-memory.netlify.app</b></a> — the four rivers, live
+  <a href="[https://vn-envy.github.io/Smriti/]"><b>smriti.agents.io</b></a> — the four rivers, live
 </p>
 
 A zero-infrastructure, local-first, Apache-2.0 memory layer for AI agents. One SQLite file. No Neo4j, no Postgres, no Docker, no cloud account, no paywalled tiers. Stdlib HTTP + numpy is the entire dependency surface.
