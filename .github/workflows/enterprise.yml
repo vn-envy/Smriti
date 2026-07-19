@@ -1,0 +1,31 @@
+name: enterprise-tests
+
+on:
+  push:
+    branches: [main]
+    paths: ["enterprise/**", "smriti/**", ".github/workflows/enterprise.yml"]
+  pull_request:
+
+jobs:
+  enterprise:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install core + enterprise
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install -e ./enterprise
+          pip install pytest
+      - name: Core suite (must stay green — enterprise makes no core edits)
+        run: python -m pytest tests/ -q
+      - name: Enterprise suite (offline, no keys)
+        run: python -m pytest enterprise/tests/ -q
+      - name: Demo smoke test
+        run: python enterprise/demo.py > /dev/null

@@ -262,6 +262,10 @@ bench/              pariksha: LongMemEval + LoCoMo runners, nyaya judge, CLI, A/
 tests/              offline test suite (mock LLM, hash embedder) — 85 tests
 examples/           runnable quickstart
 NOMENCLATURE.md     the full lexicon and why each term is load-bearing
+enterprise/         optional enterprise modules (separate package, zero core edits):
+                    tri-temporal as-of queries · exact lineage · evidence receipts
+                    · retention/legal holds · deployment profiles · verified
+                    knowledge packs · multi-store federation. See enterprise/README.md
 site/               the landing page — live at smriti-memory.netlify.app
 ```
 
