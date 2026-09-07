@@ -1,0 +1,8 @@
+{
+  "baseline": "d5062a6",
+  "candidate": "uncommitted opt-in session-diversity",
+  "pairs": 12,
+  "byte_identical": true,
+  "sha256": "7854a7ac88fc480a77cdf8617a137f2364a3757729cc82e8c638a8af4f4679d9",
+  "scope": "3queries x4profiles over30syntheticepisodes; not modelquality evidence"
+}

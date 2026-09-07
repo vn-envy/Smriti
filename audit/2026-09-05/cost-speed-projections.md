@@ -99,3 +99,15 @@ config with model `nomic-embed-text:v1.5`, endpoint
 `http://127.0.0.1:11436`, and the model's measured 768 dimensions. The output
 must retain the effective provider/model/dimensions/endpoint and must not be
 merged with the BGE table if the listener or model call fails.
+
+For the maintained lexical GBrain overtime variant, set `GBRAIN_ROOT` to the
+pinned checkout and use the optional maintenance path. It runs the public
+engine's `executeRaw('ANALYZE')` after each checkpoint and records maintenance
+time in a separate artifact; omit the flag for the default raw track:
+
+```bash
+GBRAIN_ROOT=/path/to/pinned/gbrain \
+python3 -m bench.growth --adapter gbrain \
+  --checkpoints 3000 9000 36500 --repeats 20 --gbrain-analyze \
+  --out audit/2026-09-05/growth-gbrain-analyze-overtime-schema2.json
+```

@@ -76,6 +76,21 @@ def _embedder_identity(embedder) -> str:
     return _json.dumps(data, sort_keys=True, separators=(",", ":"))
 
 
+def _embed_many(embedder, texts: List[str], context: str) -> List[list]:
+    """Embed a batch without allowing zip() to silently drop writes."""
+    try:
+        vectors = list(embedder.embed(texts))
+    except BaseException:
+        raise
+    if len(vectors) != len(texts):
+        raise ValueError(
+            f"{context} embedder returned {len(vectors)} vectors for {len(texts)} texts"
+        )
+    if any(vector is None for vector in vectors):
+        raise ValueError(f"{context} embedder returned a null vector")
+    return vectors
+
+
 class Smriti:
     def __init__(self, path: str = ":memory:", embedder=None, llm: Optional[LLM] = None,
                  mode: str = "auto", embed_episodes: bool = True, reranker=None,
@@ -171,7 +186,8 @@ class Smriti:
 
         # -- expensive, side-effect-free work happens BEFORE the transaction --
         contents = [m.get("content", "")[:4000] for m in messages]
-        embs = self.embedder.embed(contents) if (self.embed_episodes and contents) else [None] * len(contents)
+        embs = (_embed_many(self.embedder, contents, "episode")
+                if (self.embed_episodes and contents) else [None] * len(contents))
         facts, fembs = [], []
         if self.mode == "full":
             raw = self.llm.complete(
@@ -186,7 +202,7 @@ class Smriti:
                         f.search_keys = []
                 # embed the clean statement only; expansion keys live in the
                 # separate key index (Build 10) so they can't dilute precision.
-                fembs = self.embedder.embed([f.statement for f in facts])
+                fembs = _embed_many(self.embedder, [f.statement for f in facts], "fact")
 
         # -- atomic ingest: hash claim + all writes commit or roll back as one.
         # Two concurrent ingests serialize on BEGIN IMMEDIATE; the loser's
@@ -241,7 +257,7 @@ class Smriti:
             )
         if not self.expand_keys:
             fact.search_keys = []
-        emb = self.embedder.embed([fact.statement])[0]
+        emb = _embed_many(self.embedder, [fact.statement], "fact")[0]
         self.store.begin()
         try:
             if resolve_conflicts:
@@ -257,7 +273,8 @@ class Smriti:
 
     # --------------------------------------------------------------- search
     def _profiled(self, query: str, profile, k: Optional[int], now: Optional[str],
-                  channels=None) -> tuple:
+                  channels=None, session_diverse: Optional[bool] = None,
+                  session_overfetch: Optional[int] = None) -> tuple:
         """Resolve a profile (name / 'auto' / RetrievalProfile) and run
         retrieval with its policy. Returns (profile, results). Explicit k and
         channels args override the profile — knobs beat presets."""
@@ -272,30 +289,43 @@ class Smriti:
             use_key_channel=p.use_key_channel and self.expand_keys,
             include_observations=p.include_observations,
             channels=channels if channels is not None else p.channels,
-            current_first=p.current_first)
+            current_first=p.current_first,
+            session_diverse=(p.session_diverse if session_diverse is None else session_diverse),
+            session_overfetch=(p.session_overfetch if session_overfetch is None else session_overfetch))
         return p, results
 
     def search(self, query: str, k: Optional[int] = None, now: Optional[str] = None,
-               profile=None, channels=None) -> List[RetrievalResult]:
+               profile=None, channels=None, session_diverse: Optional[bool] = None,
+               session_overfetch: Optional[int] = None) -> List[RetrievalResult]:
         """profile: None (legacy default), a name ("facts" / "relations" /
         "timeline" / "deep" / "precision"), "auto" (v2 router), or a custom
         RetrievalProfile. channels: optional mask — {"lexical","semantic",
-        "entity","temporal"} or Sanskrit aliases — orthogonal to profiles."""
+        "entity","temporal"} or Sanskrit aliases — orthogonal to profiles.
+        session_diverse optionally favors evidence from distinct conversation
+        sessions after bounded overfetch; it is disabled by default."""
         if profile is not None:
-            return self._profiled(query, profile, k, now, channels=channels)[1]
+            return self._profiled(query, profile, k, now, channels=channels,
+                                  session_diverse=session_diverse,
+                                  session_overfetch=session_overfetch)[1]
         return retrieve(self.store, self.embedder, query, now=now, k=k or 12,
                         reranker=self.reranker,
                         semantic_entities=self.semantic_entities,
                         semantic_threshold=self.semantic_threshold,
-                        channels=channels)
+                        channels=channels,
+                        session_diverse=bool(session_diverse),
+                        session_overfetch=(session_overfetch if session_overfetch is not None else 3))
 
     def context(self, query: str, k: Optional[int] = None, now: Optional[str] = None,
-                char_budget: int = 9000, profile=None, channels=None) -> str:
+                char_budget: int = 9000, profile=None, channels=None,
+                session_diverse: Optional[bool] = None,
+                session_overfetch: Optional[int] = None) -> str:
         # Explicit profile (drishti): named policy, evidence attached. The
         # legacy path below stays byte-identical when profile is None, so the
         # Build 10 A/B evidence keeps describing the default behavior.
         if profile is not None:
-            p, results = self._profiled(query, profile, k, now, channels=channels)
+            p, results = self._profiled(query, profile, k, now, channels=channels,
+                                        session_diverse=session_diverse,
+                                        session_overfetch=session_overfetch)
             return pack_context(results, now=now, char_budget=char_budget,
                                 aggregate=p.aggregate_pack,
                                 current_first=p.current_first)
@@ -313,17 +343,22 @@ class Smriti:
                                semantic_entities=True,
                                semantic_threshold=self.semantic_threshold,
                                include_observations=True,
-                               channels=channels)
+                               channels=channels,
+                               session_diverse=bool(session_diverse),
+                               session_overfetch=(session_overfetch if session_overfetch is not None else 3))
             return pack_context(results, now=now, char_budget=char_budget, aggregate=True)
         # precision path: exclude observation summaries — they launder stale
         # values on current-state questions (knowledge-update diagnostic, -5.1pts).
         results = retrieve(self.store, self.embedder, query, now=now, k=k or 12,
                            reranker=self.reranker, include_observations=False,
-                           channels=channels)
+                           channels=channels,
+                           session_diverse=bool(session_diverse),
+                           session_overfetch=(session_overfetch if session_overfetch is not None else 3))
         return pack_context(results, now=now, char_budget=char_budget)
 
     def search_iterative(self, query: str, k: int = 12, now: Optional[str] = None,
-                         rounds: int = 2) -> List[RetrievalResult]:
+                         rounds: int = 2, session_diverse: bool = False,
+                         session_overfetch: int = 3) -> List[RetrievalResult]:
         """Multi-step retrieval for multi-hop questions (DualRAG-style).
 
         After the first pass, ask the LLM what's still missing, issue a
@@ -332,7 +367,12 @@ class Smriti:
         mentor, then the mentor's field) get a second look. Full mode only;
         with no llm or rounds<2 it degrades to a normal single-pass search.
         """
-        results = self.search(query, k=k, now=now)
+        if session_diverse:
+            raise ValueError(
+                "session_diverse is not supported by iterative retrieval; "
+                "use search() or context() until merged-result selection is defined")
+        results = self.search(query, k=k, now=now,
+                              session_overfetch=session_overfetch)
         if self.llm is None or rounds < 2:
             return results
         seen = {(r.kind, r.id) for r in results}
@@ -353,8 +393,16 @@ class Smriti:
         return results
 
     def context_iterative(self, query: str, k: int = 12, now: Optional[str] = None,
-                          char_budget: int = 9000, rounds: int = 2) -> str:
-        return pack_context(self.search_iterative(query, k=k, now=now, rounds=rounds),
+                          char_budget: int = 9000, rounds: int = 2,
+                          session_diverse: bool = False,
+                          session_overfetch: int = 3) -> str:
+        if session_diverse:
+            raise ValueError(
+                "session_diverse is not supported by iterative retrieval; "
+                "use context() until merged-result selection is defined")
+        return pack_context(self.search_iterative(
+            query, k=k, now=now, rounds=rounds,
+            session_overfetch=session_overfetch),
                             now=now, char_budget=char_budget)
 
     # -------------------------------------------------------- observations
@@ -375,7 +423,7 @@ class Smriti:
         ents = self.store.entities_of_facts([f.id for f in facts if f.id])[:10]
         obs = Fact(id=None, statement=summary, subject=subject, predicate=predicate,
                    object="", kind="observation", entities=ents, valid_from=utcnow())
-        emb = self.embedder.embed([summary])[0]
+        emb = _embed_many(self.embedder, [summary], "observation")[0]
         prior = self.store.similar_valid_facts(subject, predicate)
         new_id = self.store.add_fact(obs, emb)
         for p in prior:

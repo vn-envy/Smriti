@@ -114,8 +114,13 @@ class OllamaEmbedder:
         try:
             resp = _post_json(f"{self.base_url}/api/embed", {"model": self.model, "input": list(texts)})
             return resp["embeddings"]
-        except Exception:
-            # older Ollama versions: one prompt per call
+        except urllib.error.HTTPError as exc:
+            # Older Ollama versions may not expose the batch endpoint. Keep
+            # the legacy fallback narrowly scoped to an actually unsupported
+            # endpoint; authentication, validation, server, transport, and
+            # malformed-response errors must retain their original failure.
+            if exc.code not in (404, 405):
+                raise
             return [
                 _post_json(f"{self.base_url}/api/embeddings", {"model": self.model, "prompt": t})["embedding"]
                 for t in texts

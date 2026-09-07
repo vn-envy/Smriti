@@ -68,6 +68,12 @@ async function handle(message: Record<string, unknown>): Promise<void> {
     reply({ ok: true, results: rows.map((row) => ({ slug: row.slug, score: row.score })) });
     return;
   }
+  if (op === 'analyze') {
+    const started = performance.now();
+    await engine.executeRaw('ANALYZE');
+    reply({ ok: true, maintenance_ms: performance.now() - started, operation: "ANALYZE" });
+    return;
+  }
   if (op === 'close') {
     await engine.disconnect();
     reply({ ok: true, closed: true });

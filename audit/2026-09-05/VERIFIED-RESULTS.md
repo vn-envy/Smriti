@@ -15,3 +15,8 @@ The subsequent HTTP retry fix was independently tested in an ordinary wheel outs
 Graphify 0.9.54 installed successfully and extracted 229 nodes / 531 edges from the 13 Smriti core code files; a source-linked method query was independently checked. Hindsight 0.9.2 ran with embedded pg0 and local qwen3:8b/nomic models, retaining three dated updates and returning current/historical evidence. These are real installation smokes, not comparable quality scores. See [Graphify evidence](raw/graphify-installed-smoke.json), [Hindsight fresh-bank trace](hindsight-smoke-full.json), and [independent Hindsight recall](raw/hindsight-independent-recall.json).
 
 The failure-aware QA harness is statically ready with shared reader/judge configuration, opaque source labels, bounded contexts, stable IDs, and failure-inclusive denominators. A two-question context sanity check completed for both adapters with zero failures at the 1,000-character chunk budget, but no full model-backed QA run has been executed yet. The matched nomic growth/cost route also remains unfinished. The launch film is complete and independently checked as described in [video verification](video.md).
+
+Session-diverse retrieval is an opt-in ablation: call `memory.search(...,
+session_diverse=True, session_overfetch=3)` or the matching `memory.context`
+option. Defaults remain unchanged; iterative retrieval/context currently reject
+the option, and overfetch should stay bounded for comparable runs.

@@ -93,6 +93,12 @@ unique returned sessions. This is a follow-up hypothesis about session
 diversity, chunk allocation, and truncation, not an accepted superiority claim;
 the raw review is [`raw/multi-session-gap-review.json`](raw/multi-session-gap-review.json).
 
+The opt-in session-diverse read path is available for held-out ablations with
+`memory.search(query, k=12, session_diverse=True, session_overfetch=3)` or the
+equivalent `memory.context(...)` call. It is disabled by default, and the
+iterative search/context APIs reject the option until a merged-result policy is
+defined; keep `session_overfetch` bounded when measuring the ablation.
+
 ## Phase 3 — Maintainable operator experience (P1, complete for current candidate; documentation kept current)
 
 - [x] Public resource lifecycle (`close` and context manager), read-only doctor

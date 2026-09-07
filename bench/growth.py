@@ -270,6 +270,11 @@ class GbrainPersistent:
     def add(self, d: dict[str, str]) -> None:
         self.add_many([d])
 
+    def analyze(self) -> float:
+        result = self._request({"op": "analyze"})
+        self.last_analyze_result = result
+        return float(result["maintenance_ms"])
+
     def search(self, q: str, k: int) -> list[tuple[str, float]]:
         result = self._request({"op": "search", "query": q, "limit": k})
         return [(str(row["slug"]).split("/")[-1], float(row.get("score", 0))) for row in result["results"]]
@@ -331,11 +336,14 @@ def main() -> None:
     parser.add_argument("--checkpoints", nargs="+", type=int, default=[100, 1000, 5000])
     parser.add_argument("--out", required=True)
     parser.add_argument("--repeats", type=int, default=10)
+    parser.add_argument("--gbrain-analyze", action="store_true", help="run executeRaw('ANALYZE') after each gbrain checkpoint as a maintained variant")
     args = parser.parse_args()
     if not args.checkpoints or any(x <= 0 for x in args.checkpoints) or args.checkpoints != sorted(set(args.checkpoints)):
         parser.error("checkpoints must be unique, positive, and increasing")
     if args.repeats <= 0:
         parser.error("--repeats must be positive")
+    if args.gbrain_analyze and args.adapter != "gbrain":
+        parser.error("--gbrain-analyze is only valid with --adapter gbrain")
 
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     adapter: object | None = None
@@ -354,7 +362,10 @@ def main() -> None:
             "model_cost": {"observed_paid_api_usd": 0 if not isinstance(adapter, Mem0Growth) or adapter.local_cost_verified else None, "hardware_electricity_cost_usd": None, "note": "Local/API charge is $0 only for the verified local route; otherwise paid API cost is unknown. Electricity, hardware purchase/rental, and depreciation were not measured. Shared model cache is excluded."},
             "verification": {"synthetic_queries": QUERIES, "nonempty_and_relevant_definition": "A result is relevant when its synthetic document bucket matches the query topic."},
             "checkpoints": rows,
+            "gbrain_analyze": bool(args.gbrain_analyze),
         }
+        if args.gbrain_analyze:
+            result["timing_scope"] = "persistent gbrain engine process; executeRaw('ANALYZE') after each checkpoint; process-restart cold query; keyword-only, no embedding"
         if error is not None:
             result["error"] = error
         if adapter is not None:
@@ -399,6 +410,9 @@ def main() -> None:
                 adapter.add(last)
             update_ms = (time.perf_counter_ns() - update_started) / 1e6
             update_batch = getattr(adapter, "last_batch_result", None)
+            maintenance_ms = None
+            if args.gbrain_analyze:
+                maintenance_ms = adapter.analyze()
             started = time.perf_counter_ns()
             first_hits = adapter.search(QUERIES[0], 5)
             first_ms = (time.perf_counter_ns() - started) / 1e6
@@ -438,6 +452,7 @@ def main() -> None:
                 "incremental_ingest_ms": round(ingest_ms, 3),
                 "same_payload_update_ms": round(update_ms, 3),
                 "update_definition": "idempotent re-submit of the final record unchanged; adapter dedup/update semantics apply",
+                "gbrain_analyze_maintenance_ms": round(maintenance_ms, 3) if maintenance_ms is not None else None,
                 "gbrain_ingest_statuses": (ingest_batch or {}).get("statuses") if isinstance(ingest_batch, dict) else None,
                 "gbrain_update_statuses": (update_batch or {}).get("statuses") if isinstance(update_batch, dict) else None,
                 "first_query_after_ingest_ms": round(first_ms, 3),
