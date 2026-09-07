@@ -1,0 +1,36 @@
+{
+  "checked_on": "2026-09-07",
+  "mem0_platform": {
+    "source": "https://mem0.ai/pricing",
+    "currency": "USD",
+    "billing": "monthly",
+    "plans": [
+      {
+        "name": "Hobby",
+        "price": 0,
+        "adds": 10000,
+        "retrievals": 1000
+      },
+      {
+        "name": "Starter",
+        "price": 19,
+        "adds": 50000,
+        "retrievals": 5000
+      },
+      {
+        "name": "Pro",
+        "price": 249,
+        "adds": 500000,
+        "retrievals": 50000
+      }
+    ],
+    "note": "Managed service; does not price the measured self-hosted OSS deployment. Overage/custom rates not verified."
+  },
+  "gbrain": {
+    "source": "https://github.com/garrytan/gbrain/blob/master/docs/integrations/embedding-providers.md",
+    "local_ollama_supported": true,
+    "local_model_api_charge_usd": 0,
+    "note": "Local compute/electricity/hardware costs are additional and unmeasured. Keyless default is keyword-only; choose Ollama explicitly for semantic parity."
+  },
+  "measurement_plan": "Growing corpus, fixed workload, cold/warm latency distributions, ingestion/update cost, storage, cumulative30/90/365day projections explicitly distinguished from actual measurements."
+}

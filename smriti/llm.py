@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import re
+import urllib.error
 from typing import List, Optional
 
 from .embedder import _post_json
@@ -40,6 +41,8 @@ class LLM:
         self.tokens_in = 0
         self.tokens_out = 0
         self.calls = 0
+        self.attempts = 0
+        self.usage_missing = 0
 
     def complete(self, messages: List[dict], json_mode: bool = False,
                  max_tokens: Optional[int] = None) -> str:
@@ -53,15 +56,19 @@ class LLM:
         if json_mode:
             payload["response_format"] = {"type": "json_object"}
         headers = {"Authorization": f"Bearer {self.api_key}"} if self.api_key else {}
+        self.attempts += 1
         try:
             resp = _post_json(f"{self.base_url}/chat/completions", payload, headers)
-        except Exception:
-            if json_mode:
+        except urllib.error.HTTPError as exc:
+            if json_mode and exc.code in (400, 422):
                 payload.pop("response_format", None)  # some servers reject it
+                self.attempts += 1
                 resp = _post_json(f"{self.base_url}/chat/completions", payload, headers)
             else:
                 raise
         usage = resp.get("usage") or {}
+        if not usage:
+            self.usage_missing += 1
         self.tokens_in += usage.get("prompt_tokens", 0)
         self.tokens_out += usage.get("completion_tokens", 0)
         self.calls += 1
@@ -76,6 +83,8 @@ class MockLLM:
     def __init__(self, responses: Optional[List[str]] = None):
         self.responses = list(responses or [])
         self.calls = 0
+        self.attempts = 0
+        self.usage_missing = 0
         self.tokens_in = 0
         self.tokens_out = 0
         self.history: List[List[dict]] = []
@@ -83,6 +92,7 @@ class MockLLM:
     def complete(self, messages: List[dict], json_mode: bool = False,
                  max_tokens: Optional[int] = None) -> str:
         self.history.append(messages)
+        self.attempts += 1
         self.calls += 1
         return self.responses.pop(0) if self.responses else "[]"
 
@@ -90,19 +100,13 @@ class MockLLM:
 def extract_json(text: str):
     """Robustly pull the first JSON array/object out of an LLM reply."""
     text = re.sub(r"```(?:json)?", "", text).strip()
-    for opener, closer in (("[", "]"), ("{", "}")):
-        start = text.find(opener)
-        if start == -1:
+    decoder = json.JSONDecoder()
+    for start, char in enumerate(text):
+        if char not in "[{":
             continue
-        depth = 0
-        for i in range(start, len(text)):
-            if text[i] == opener:
-                depth += 1
-            elif text[i] == closer:
-                depth -= 1
-                if depth == 0:
-                    try:
-                        return json.loads(text[start:i + 1])
-                    except json.JSONDecodeError:
-                        break
+        try:
+            value, _ = decoder.raw_decode(text[start:])
+            return value
+        except json.JSONDecodeError:
+            continue
     return None

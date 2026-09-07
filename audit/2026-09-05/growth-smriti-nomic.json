@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "adapter": "smriti-nomic",
+  "configuration": "Smriti lite / Ollama nomic-embed-text:v1.5",
+  "measurement": "growing-corpus simulation in one run, not elapsed-day longitudinal data",
+  "timing_scope": "in-process calls",
+  "model_cost": {
+    "observed_paid_api_usd": 0,
+    "note": "local compute/electricity and hardware depreciation unmeasured; shared model-cache bytes excluded"
+  },
+  "checkpoints": [
+    {
+      "documents": 100,
+      "incremental_ingest_ms": 1467.023,
+      "cold_query_ms": 10.464,
+      "warm_query_ms_p50": 9.742,
+      "warm_query_ms_p95": 16.715,
+      "storage_bytes": 4693616
+    },
+    {
+      "documents": 1000,
+      "incremental_ingest_ms": 11051.683,
+      "cold_query_ms": 10.361,
+      "warm_query_ms_p50": 9.729,
+      "warm_query_ms_p95": 10.356,
+      "storage_bytes": 8613704
+    },
+    {
+      "documents": 5000,
+      "incremental_ingest_ms": 49609.818,
+      "cold_query_ms": 12.511,
+      "warm_query_ms_p50": 10.417,
+      "warm_query_ms_p95": 15.93,
+      "storage_bytes": 26296184
+    }
+  ]
+}

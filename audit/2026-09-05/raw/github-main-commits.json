@@ -1,0 +1,2950 @@
+[
+  {
+    "sha": "a2afb3d5f7d2b896585c91abb8bcce2f7c4a9585",
+    "node_id": "C_kwDOS7pZUNoAKGEyYWZiM2Q1ZjdkMmI4OTY1ODVjOTFhYmI4YmNjZTJmN2M0YTk1ODU",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-07-19T17:09:30Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-07-19T17:09:30Z"
+      },
+      "message": "Enterprise release",
+      "tree": {
+        "sha": "1f815ec42fba1c1ce0f68b6499202e989fef09a6",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/1f815ec42fba1c1ce0f68b6499202e989fef09a6"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/a2afb3d5f7d2b896585c91abb8bcce2f7c4a9585",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/a2afb3d5f7d2b896585c91abb8bcce2f7c4a9585",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/a2afb3d5f7d2b896585c91abb8bcce2f7c4a9585",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/a2afb3d5f7d2b896585c91abb8bcce2f7c4a9585/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "b771033d04f720055d028069740529a069f44171",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/b771033d04f720055d028069740529a069f44171",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/b771033d04f720055d028069740529a069f44171"
+      }
+    ]
+  },
+  {
+    "sha": "b771033d04f720055d028069740529a069f44171",
+    "node_id": "C_kwDOS7pZUNoAKGI3NzEwMzNkMDRmNzIwMDU1ZDAyODA2OTc0MDUyOWEwNjlmNDQxNzE",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-07-17T08:02:16Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-07-17T08:02:16Z"
+      },
+      "message": "Fix link formatting in README.md",
+      "tree": {
+        "sha": "269086c7ca0a7459da57d4e50d8e9d8111a548a0",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/269086c7ca0a7459da57d4e50d8e9d8111a548a0"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/b771033d04f720055d028069740529a069f44171",
+      "comment_count": 0,
+      "verification": {
+        "verified": true,
+        "reason": "valid",
+        "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJqWeGJCRC1aQ7uu5UhlAAACTkQADTTvTW8wepv0Z/CY9wH96r9\n8S+ktvBolU+rgZOC+87UgXmnOOKbAdvHJPppS4AJ9jbq+MI9SBomrxOAe+7EhEVI\nwOrLq+x0zWDjwIdHv0y17JOYTAp3DUc0rIDoQFmopw4H8lavp8hMEdyioCAh6wk0\nbswORrcWBSl0qYt6oT2CGSrZ5Yv1aPLsOpMtXwTKGdqsxw/Bp8OhzSjdZAFkT644\nVy8Wbc3jHhlnNG93pBqwhnuC4X3A46AhYtnVhu+pyRpl+aKfZO+22Oy++FszEDcD\nz1ibmLbm9/ZS6KuX4gWVH9KEMrMdG9h42FoDYzEtGUxd9CHwhziBlw23ZwkfqHLX\nV1eWdhc/nfJHY0ljhUMS9OXUq0meyKFdQ4mKFk30G8qAUXFnKzBL1KcLb95SzMOk\nGeoIGU2+zOMb4xSBjurA+tdceNlux1iCsdtLUas2oZqjBDBYJPx8jGoz1CK654Ue\nG/wYK0NmX1z07WiLy7/i7/LbYD75pYu3ifebDon+HXZIR1lxZKAPicp5cwp7yet+\ne5a+xUaP7NCv2dWLubPmuKReYWGiFL5xhBmNbIBypkmQv5hUaU6lbm3ObmF+TlNy\nvowknh9NHUr3fstk7g0xASlgTxgfSToUL6k1wTIx5FBmFiYZuRfRdA4QTOaILMlU\njTYNGcuw0edHcXKLgphy\n=cX3E\n-----END PGP SIGNATURE-----\n",
+        "payload": "tree 269086c7ca0a7459da57d4e50d8e9d8111a548a0\nparent 5b8d1af1673bcd15d71def5a4e056334da64cdea\nauthor Neekhil Vatsa <vatsaneekhil@gmail.com> 1784275336 +0530\ncommitter GitHub <noreply@github.com> 1784275336 +0530\n\nFix link formatting in README.md",
+        "verified_at": "2026-07-17T08:02:17Z"
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/b771033d04f720055d028069740529a069f44171",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/b771033d04f720055d028069740529a069f44171",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/b771033d04f720055d028069740529a069f44171/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447,
+      "node_id": "MDQ6VXNlcjE5ODY0NDQ3",
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/web-flow",
+      "html_url": "https://github.com/web-flow",
+      "followers_url": "https://api.github.com/users/web-flow/followers",
+      "following_url": "https://api.github.com/users/web-flow/following{/other_user}",
+      "gists_url": "https://api.github.com/users/web-flow/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/web-flow/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/web-flow/subscriptions",
+      "organizations_url": "https://api.github.com/users/web-flow/orgs",
+      "repos_url": "https://api.github.com/users/web-flow/repos",
+      "events_url": "https://api.github.com/users/web-flow/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/web-flow/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "5b8d1af1673bcd15d71def5a4e056334da64cdea",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/5b8d1af1673bcd15d71def5a4e056334da64cdea",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/5b8d1af1673bcd15d71def5a4e056334da64cdea"
+      }
+    ]
+  },
+  {
+    "sha": "5b8d1af1673bcd15d71def5a4e056334da64cdea",
+    "node_id": "C_kwDOS7pZUNoAKDViOGQxYWYxNjczYmNkMTVkNzFkZWY1YTRlMDU2MzM0ZGE2NGNkZWE",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-07-17T08:01:26Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-07-17T08:01:26Z"
+      },
+      "message": "Fix link formatting in README.md",
+      "tree": {
+        "sha": "bcd9fb450d90e51ee35701757a46f775db59c3bd",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/bcd9fb450d90e51ee35701757a46f775db59c3bd"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/5b8d1af1673bcd15d71def5a4e056334da64cdea",
+      "comment_count": 0,
+      "verification": {
+        "verified": true,
+        "reason": "valid",
+        "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJqWeFWCRC1aQ7uu5UhlAAAkf0QAHN2uoSUnYdfPnWgXJ9W2P9T\n50C0WOFRoJl0GPpUs/QOXtM98/FDVQZZP+js3Zx/3XBVG2pWuu7eZQFexKiRkGXD\n6U0psIr832WNham0a5Xgfey/yHqZN5no8buWKWiXO4LOfVVTwGY9dA//84NOa3VZ\nxalxbeV7xg0fjz/c9bwaWo/IKpL2G+yADXkRNBGvgfSmuhAN2xvzJy4a3td1HjGQ\nosKub959gZE0mlIA8bMN99Z5F/wAx3qbmINjwGfVabLgSOqIv5UpfiJFtExB9hBS\n9N2BbnKgvpnBhumxfyNajwEKGT5Y9grv/wSqj34iRiiPA3o4+o70I9Ygx/lsnSRl\n4FhFoF2zWgba1HsvqVIr1wpMCXCIEvDCFtayPtB5ihuuGTY+CHS7aRKLabRnihKv\nSoyKwh+15pwiy11w7rfTPBQQByRhlG7ZV56BJ9fdYeYkY/DdjyyM2JZk7NRuFPYc\ncgWyL+yWx6Yg6ea6iA6198wOBMLk+UIPIz7OA3KDM8TgsTDPKZTIKJAwrhIRUoHQ\n5LfbA5Gh1SKOM3sXRiDttsRo/VrLIrDcLLVckODcH31KMDB+zFUWckCKIovu10t7\nc50cES7bQyIPJZLy3UWDJxVobZK8WxPMbyre9OqjUhCYNulBR1rKTmsMF7Zweei/\nXr6wHmRPifOBcxJA8wRQ\n=x6+h\n-----END PGP SIGNATURE-----\n",
+        "payload": "tree bcd9fb450d90e51ee35701757a46f775db59c3bd\nparent da59d5a7c3299e9712aa8853d6e321790426c318\nauthor Neekhil Vatsa <vatsaneekhil@gmail.com> 1784275286 +0530\ncommitter GitHub <noreply@github.com> 1784275286 +0530\n\nFix link formatting in README.md",
+        "verified_at": "2026-07-17T08:01:27Z"
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/5b8d1af1673bcd15d71def5a4e056334da64cdea",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/5b8d1af1673bcd15d71def5a4e056334da64cdea",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/5b8d1af1673bcd15d71def5a4e056334da64cdea/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447,
+      "node_id": "MDQ6VXNlcjE5ODY0NDQ3",
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/web-flow",
+      "html_url": "https://github.com/web-flow",
+      "followers_url": "https://api.github.com/users/web-flow/followers",
+      "following_url": "https://api.github.com/users/web-flow/following{/other_user}",
+      "gists_url": "https://api.github.com/users/web-flow/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/web-flow/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/web-flow/subscriptions",
+      "organizations_url": "https://api.github.com/users/web-flow/orgs",
+      "repos_url": "https://api.github.com/users/web-flow/repos",
+      "events_url": "https://api.github.com/users/web-flow/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/web-flow/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "da59d5a7c3299e9712aa8853d6e321790426c318",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/da59d5a7c3299e9712aa8853d6e321790426c318",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/da59d5a7c3299e9712aa8853d6e321790426c318"
+      }
+    ]
+  },
+  {
+    "sha": "da59d5a7c3299e9712aa8853d6e321790426c318",
+    "node_id": "C_kwDOS7pZUNoAKGRhNTlkNWE3YzMyOTllOTcxMmFhODg1M2Q2ZTMyMTc5MDQyNmMzMTg",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-07-17T08:00:47Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-07-17T08:00:47Z"
+      },
+      "message": "Update live link in README.md",
+      "tree": {
+        "sha": "891192e9b42fb1d72c7de1f6673e5230f5dcf50e",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/891192e9b42fb1d72c7de1f6673e5230f5dcf50e"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/da59d5a7c3299e9712aa8853d6e321790426c318",
+      "comment_count": 0,
+      "verification": {
+        "verified": true,
+        "reason": "valid",
+        "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJqWeEvCRC1aQ7uu5UhlAAAWfwQABX5oBxVlEtMOI0L7BqXmpIf\n5yYTSUiAQ8caISBwIKqWaDSsxjbmYCFC+cwYtgx5bRn+oxZtAgKmeuHez6d9Tj8I\nXkkgagyCSc8HQ/r/Qc4a0DSJ7Zu7inwCWNLjBeOUKmeJw6ggdaBn1ZnEqSHXpz1p\nINZNBZcbczoBZSbXxf+quGtpC9SWg2Icg/L5xj3fzo2N1w/5Wn9NZlNHehY4CVga\n6iGVgHj+o7g30x/cGUUh2RvKGWm89QyplfutoN8Za/PfNtsf0daV5vihAJsI5iEp\nA7gcLvgwb6JAbfZPSEimWUv7SqoYjQA2EYfXwSdGxi8QQCi1MaMKx2u95O1ZrSlv\nY6KFCxiYlSws9ZIcwPSIcnpCPBZm2xt09eu3k3p6vpWwaL8Kws61iwqh1eixP6yG\nn9tQOv1I7/hZgCg96YyvFaanSd6ztBV0hO7oCVgxfeQS2wv673lvPSK/nFqUFPCs\nEV7x/dbLh3dSV72UUr5AmHixgcULjhDihynHD++hDcPjWUoBGUSOuqVdUL6Xe7Iv\n7aol4MDGsTdDWDpom8mPwG3HFbGHLIyVdqcmSjkV2XrlhXTtSosKlRCJXweF7SeZ\nnabmQ4/uiAEX6/EMFLx3rJnhN51pML9/MXOx5jEdWelKoW8aBMuPXKDXJ5ZjpXUl\nIaeTjZxabB+BbI3Nd5oy\n=Ms2E\n-----END PGP SIGNATURE-----\n",
+        "payload": "tree 891192e9b42fb1d72c7de1f6673e5230f5dcf50e\nparent ac9298270fda66102f239ce70c271ef7bdfe4e27\nauthor Neekhil Vatsa <vatsaneekhil@gmail.com> 1784275247 +0530\ncommitter GitHub <noreply@github.com> 1784275247 +0530\n\nUpdate live link in README.md",
+        "verified_at": "2026-07-17T08:00:48Z"
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/da59d5a7c3299e9712aa8853d6e321790426c318",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/da59d5a7c3299e9712aa8853d6e321790426c318",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/da59d5a7c3299e9712aa8853d6e321790426c318/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447,
+      "node_id": "MDQ6VXNlcjE5ODY0NDQ3",
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/web-flow",
+      "html_url": "https://github.com/web-flow",
+      "followers_url": "https://api.github.com/users/web-flow/followers",
+      "following_url": "https://api.github.com/users/web-flow/following{/other_user}",
+      "gists_url": "https://api.github.com/users/web-flow/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/web-flow/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/web-flow/subscriptions",
+      "organizations_url": "https://api.github.com/users/web-flow/orgs",
+      "repos_url": "https://api.github.com/users/web-flow/repos",
+      "events_url": "https://api.github.com/users/web-flow/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/web-flow/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "ac9298270fda66102f239ce70c271ef7bdfe4e27",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/ac9298270fda66102f239ce70c271ef7bdfe4e27",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/ac9298270fda66102f239ce70c271ef7bdfe4e27"
+      }
+    ]
+  },
+  {
+    "sha": "ac9298270fda66102f239ce70c271ef7bdfe4e27",
+    "node_id": "C_kwDOS7pZUNoAKGFjOTI5ODI3MGZkYTY2MTAyZjIzOWNlNzBjMjcxZWY3YmRmZTRlMjc",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-07-16T19:26:20Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-07-16T19:26:20Z"
+      },
+      "message": "Suppression Validity aware release",
+      "tree": {
+        "sha": "f8070fe5ff242245f044ace98bad9d9b926f6aae",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/f8070fe5ff242245f044ace98bad9d9b926f6aae"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/ac9298270fda66102f239ce70c271ef7bdfe4e27",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/ac9298270fda66102f239ce70c271ef7bdfe4e27",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/ac9298270fda66102f239ce70c271ef7bdfe4e27",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/ac9298270fda66102f239ce70c271ef7bdfe4e27/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "844b48fd8ee9c8c3b388d985f92ccf9d0d99f0b8",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/844b48fd8ee9c8c3b388d985f92ccf9d0d99f0b8",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/844b48fd8ee9c8c3b388d985f92ccf9d0d99f0b8"
+      }
+    ]
+  },
+  {
+    "sha": "844b48fd8ee9c8c3b388d985f92ccf9d0d99f0b8",
+    "node_id": "C_kwDOS7pZUNoAKDg0NGI0OGZkOGVlOWM4YzNiMzg4ZDk4NWY5MmNjZjlkMGQ5OWYwYjg",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-07-16T18:22:42Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-07-16T18:22:42Z"
+      },
+      "message": "User Delivery Hardening",
+      "tree": {
+        "sha": "9fb25d7230fd6a40a614a8d70880267e35d2814b",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/9fb25d7230fd6a40a614a8d70880267e35d2814b"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/844b48fd8ee9c8c3b388d985f92ccf9d0d99f0b8",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/844b48fd8ee9c8c3b388d985f92ccf9d0d99f0b8",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/844b48fd8ee9c8c3b388d985f92ccf9d0d99f0b8",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/844b48fd8ee9c8c3b388d985f92ccf9d0d99f0b8/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "5513a84a076c3fce2b44530d00f7abc2acf4b7a3",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/5513a84a076c3fce2b44530d00f7abc2acf4b7a3",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/5513a84a076c3fce2b44530d00f7abc2acf4b7a3"
+      }
+    ]
+  },
+  {
+    "sha": "5513a84a076c3fce2b44530d00f7abc2acf4b7a3",
+    "node_id": "C_kwDOS7pZUNoAKDU1MTNhODRhMDc2YzNmY2UyYjQ0NTMwZDAwZjdhYmMyYWNmNGI3YTM",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-07-16T17:58:51Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-07-16T17:58:51Z"
+      },
+      "message": "Update pages.yml",
+      "tree": {
+        "sha": "815c7b89987f5e603059f55262736962cd6b0257",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/815c7b89987f5e603059f55262736962cd6b0257"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/5513a84a076c3fce2b44530d00f7abc2acf4b7a3",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/5513a84a076c3fce2b44530d00f7abc2acf4b7a3",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/5513a84a076c3fce2b44530d00f7abc2acf4b7a3",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/5513a84a076c3fce2b44530d00f7abc2acf4b7a3/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "de4e174de1fde3e20db692ab4fbd1f68a9b2d9b2",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/de4e174de1fde3e20db692ab4fbd1f68a9b2d9b2",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/de4e174de1fde3e20db692ab4fbd1f68a9b2d9b2"
+      }
+    ]
+  },
+  {
+    "sha": "de4e174de1fde3e20db692ab4fbd1f68a9b2d9b2",
+    "node_id": "C_kwDOS7pZUNoAKGRlNGUxNzRkZTFmZGUzZTIwZGI2OTJhYjRmYmQxZjY4YTliMmQ5YjI",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-07-16T17:52:11Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-07-16T17:52:11Z"
+      },
+      "message": "pages and release 0.3.0",
+      "tree": {
+        "sha": "eda8b724b4394df0f52591389182219740031835",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/eda8b724b4394df0f52591389182219740031835"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/de4e174de1fde3e20db692ab4fbd1f68a9b2d9b2",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/de4e174de1fde3e20db692ab4fbd1f68a9b2d9b2",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/de4e174de1fde3e20db692ab4fbd1f68a9b2d9b2",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/de4e174de1fde3e20db692ab4fbd1f68a9b2d9b2/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "d2d23ad09b82d6a6bb81e1c37251846ff9b03189",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/d2d23ad09b82d6a6bb81e1c37251846ff9b03189",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/d2d23ad09b82d6a6bb81e1c37251846ff9b03189"
+      }
+    ]
+  },
+  {
+    "sha": "d2d23ad09b82d6a6bb81e1c37251846ff9b03189",
+    "node_id": "C_kwDOS7pZUNoAKGQyZDIzYWQwOWI4MmQ2YTZiYjgxZTFjMzcyNTE4NDZmZjliMDMxODk",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-07-16T17:18:26Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-07-16T17:18:26Z"
+      },
+      "message": "v0.3.0: drishti profiles + hardening, README overhaul, CI, landing site",
+      "tree": {
+        "sha": "5c6c7c506c2c5f4eeca9b6af2308d2cd67104804",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/5c6c7c506c2c5f4eeca9b6af2308d2cd67104804"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/d2d23ad09b82d6a6bb81e1c37251846ff9b03189",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/d2d23ad09b82d6a6bb81e1c37251846ff9b03189",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/d2d23ad09b82d6a6bb81e1c37251846ff9b03189",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/d2d23ad09b82d6a6bb81e1c37251846ff9b03189/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "6375a7bdf2acb78a11d8fd0ce3ecf189192b1710",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/6375a7bdf2acb78a11d8fd0ce3ecf189192b1710",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/6375a7bdf2acb78a11d8fd0ce3ecf189192b1710"
+      }
+    ]
+  },
+  {
+    "sha": "6375a7bdf2acb78a11d8fd0ce3ecf189192b1710",
+    "node_id": "C_kwDOS7pZUNoAKDYzNzVhN2JkZjJhY2I3OGExMWQ4ZmQwY2UzZWNmMTg5MTkyYjE3MTA",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-18T15:25:25Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-18T15:25:25Z"
+      },
+      "message": "docs: user-facing README — hero banner, 60-second try-it, MCP usage, post-ship priorities\n\nAdd assets/smriti-hero.svg (intro banner visualizing bi-temporal supersession);\nlead README with install/quickstart/MCP/benchmark-it-yourself from a user's POV;\nroadmap reorganized into Shipped + clearly-visible Next priorities (post-ship),\nsqlite-vec deferred but prominent. Clean repo: untrack stray :memory: scratch\nfiles and per-build patches (git history is the audit trail), add pyproject\nconsole script. py_compile + 33 tests + HTML/SVG validation all pass.",
+      "tree": {
+        "sha": "c03545999b0bd309d638d2ad10f7ca31ada593f8",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/c03545999b0bd309d638d2ad10f7ca31ada593f8"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/6375a7bdf2acb78a11d8fd0ce3ecf189192b1710",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/6375a7bdf2acb78a11d8fd0ce3ecf189192b1710",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/6375a7bdf2acb78a11d8fd0ce3ecf189192b1710",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/6375a7bdf2acb78a11d8fd0ce3ecf189192b1710/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "22a4527004cd0e6b9064ced725936315bc880d1a",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/22a4527004cd0e6b9064ced725936315bc880d1a",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/22a4527004cd0e6b9064ced725936315bc880d1a"
+      }
+    ]
+  },
+  {
+    "sha": "22a4527004cd0e6b9064ced725936315bc880d1a",
+    "node_id": "C_kwDOS7pZUNoAKDIyYTQ1MjcwMDRjZDBlNmI5MDY0Y2VkNzI1OTM2MzE1YmM4ODBkMWE",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-18T15:13:46Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-18T15:13:46Z"
+      },
+      "message": "Build: MCP server (drop-in memory for any MCP agent)\n\nsmriti/mcp_server.py — stdlib-only newline-delimited JSON-RPC over stdio (no mcp\nSDK, zero new deps). 6 typed tools returning structured JSON: remember, recall,\nsearch, facts_about, add_fact, stats. Lite/offline by default; full mode via\nenv/flags. Security per Codebase-Memory blueprint: SQLite ATTACH/DETACH\nauthorizer, db path fixed at launch (no traversal), input size caps, malformed\nJSON-RPC + tool exceptions caught (loop never crashes). console script\nsmriti-mcp. +4 tests, 33/33; stdio smoke verified.",
+      "tree": {
+        "sha": "122df94656ee47e5cdf361991e0a0e1ceb7d220b",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/122df94656ee47e5cdf361991e0a0e1ceb7d220b"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/22a4527004cd0e6b9064ced725936315bc880d1a",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/22a4527004cd0e6b9064ced725936315bc880d1a",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/22a4527004cd0e6b9064ced725936315bc880d1a",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/22a4527004cd0e6b9064ced725936315bc880d1a/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "63bac1a44c89d1b2e36c1bd03c7d7f9045052391",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/63bac1a44c89d1b2e36c1bd03c7d7f9045052391",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/63bac1a44c89d1b2e36c1bd03c7d7f9045052391"
+      }
+    ]
+  },
+  {
+    "sha": "63bac1a44c89d1b2e36c1bd03c7d7f9045052391",
+    "node_id": "C_kwDOS7pZUNoAKDYzYmFjMWE0NGM4OWQxYjJlMzZjMWJkMDNjN2Q3ZjkwNDUwNTIzOTE",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-18T15:06:40Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-18T15:06:40Z"
+      },
+      "message": "README: lead with tested production wins + ship-and-verify (not benchmark deficit)\n\nReframe positioning around what users actually win — one-line/zero-dep run,\nnothing to break, cheap by design, predictable at scale + non-destructive\nhistory, readable/verifiable — each grounded in a tested reality (offline tests,\nscale harness, hardening, supersession, measured per-query cost). Replace the\n'we haven't benchmarked / competitors challenged' framing with a confident\nbring-your-own-benchmark stance.",
+      "tree": {
+        "sha": "4de48c67ebbd8c99b7f7fcd0a41e2965917cebf5",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/4de48c67ebbd8c99b7f7fcd0a41e2965917cebf5"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/63bac1a44c89d1b2e36c1bd03c7d7f9045052391",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/63bac1a44c89d1b2e36c1bd03c7d7f9045052391",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/63bac1a44c89d1b2e36c1bd03c7d7f9045052391",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/63bac1a44c89d1b2e36c1bd03c7d7f9045052391/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "1042e2f05a1ac9319fa0db767ebeff25673420e6",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/1042e2f05a1ac9319fa0db767ebeff25673420e6",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/1042e2f05a1ac9319fa0db767ebeff25673420e6"
+      }
+    ]
+  },
+  {
+    "sha": "1042e2f05a1ac9319fa0db767ebeff25673420e6",
+    "node_id": "C_kwDOS7pZUNoAKDEwNDJlMmYwNWExYWM5MzE5ZmEwZGI3NjdlYmVmZjI1NjczNDIwZTY",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-18T14:52:14Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-18T14:52:14Z"
+      },
+      "message": "Build 12 validated: multi-session +10.3 (p=0.046), knowledge-update +1.3 — tax gone\n\nPer-type router delivers the multi-session gain without the knowledge-update\nregression. Fill landscape multi-session number (+10 pts, p<0.05); record the\nfocused A/B in BENCHMARKS.md as the shipped default config.",
+      "tree": {
+        "sha": "16cb1eacc5ab4184ddac03b1e863e63267069577",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/16cb1eacc5ab4184ddac03b1e863e63267069577"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/1042e2f05a1ac9319fa0db767ebeff25673420e6",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/1042e2f05a1ac9319fa0db767ebeff25673420e6",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/1042e2f05a1ac9319fa0db767ebeff25673420e6",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/1042e2f05a1ac9319fa0db767ebeff25673420e6/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "74070e0d62078570ef40936ec73e6ec1494e6e59",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/74070e0d62078570ef40936ec73e6ec1494e6e59",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/74070e0d62078570ef40936ec73e6ec1494e6e59"
+      }
+    ]
+  },
+  {
+    "sha": "74070e0d62078570ef40936ec73e6ec1494e6e59",
+    "node_id": "C_kwDOS7pZUNoAKDc0MDcwZTBkNjIwNzg1NzBlZjQwOTM2ZWM3M2U2ZWMxNDk0ZTZlNTk",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-18T13:43:20Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-18T13:43:20Z"
+      },
+      "message": "landscape: add 'why SMRITI for production' top-5 positioning (infra/cost/trust/scale)\n\nLeads with production-fit value props (zero-infra single file; updates-not-deletes\nvs delete-on-write rot at 50k; reproducible vs self-graded; cheap+Apache no gated\ntiers; per-type routing). Multi-session number left as a marked placeholder to\nfill once the final A/B lands.",
+      "tree": {
+        "sha": "ff3eed87c9a4efbefb6e94c0f635d7bef9d3da64",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/ff3eed87c9a4efbefb6e94c0f635d7bef9d3da64"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/74070e0d62078570ef40936ec73e6ec1494e6e59",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/74070e0d62078570ef40936ec73e6ec1494e6e59",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/74070e0d62078570ef40936ec73e6ec1494e6e59",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/74070e0d62078570ef40936ec73e6ec1494e6e59/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "8508d8cc61fae0349f2b3d6ddf73ab6bf8ebad49",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/8508d8cc61fae0349f2b3d6ddf73ab6bf8ebad49",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/8508d8cc61fae0349f2b3d6ddf73ab6bf8ebad49"
+      }
+    ]
+  },
+  {
+    "sha": "8508d8cc61fae0349f2b3d6ddf73ab6bf8ebad49",
+    "node_id": "C_kwDOS7pZUNoAKDg1MDhkOGNjNjFmYWUwMzQ5ZjJiM2Q2ZGRmNzNhYjZiZjhlYmFkNDk",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-18T12:08:42Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-18T12:08:42Z"
+      },
+      "message": "Build 12: observations are recall-profile only (fix knowledge-update laundering)\n\nDiagnostic (knowledge-update, n=78): full stack 0.756 vs raw 0.808 (-5.1), every\nbreak a stale/superseded value served in place of the current one (mortgage\n$350k not $400k, therapist biweekly not weekly, 3 issues not 5). Cause: obs/digest\nsummaries flatten temporal progressions into authoritative text without\nCURRENT/SUPERSEDED markers. Fix: retrieve() include_observations gate; context()\nincludes observations ONLY on the aggregation path, precision path uses raw\nvalidity-annotated facts (proven 0.808). +test, 29/29.",
+      "tree": {
+        "sha": "ae936e81d35c2545cfaa29ed769b8438f77481ed",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/ae936e81d35c2545cfaa29ed769b8438f77481ed"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/8508d8cc61fae0349f2b3d6ddf73ab6bf8ebad49",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/8508d8cc61fae0349f2b3d6ddf73ab6bf8ebad49",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/8508d8cc61fae0349f2b3d6ddf73ab6bf8ebad49",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/8508d8cc61fae0349f2b3d6ddf73ab6bf8ebad49/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "7521d4b148e0e9022e05d4813cbb98b92f786601",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/7521d4b148e0e9022e05d4813cbb98b92f786601",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/7521d4b148e0e9022e05d4813cbb98b92f786601"
+      }
+    ]
+  },
+  {
+    "sha": "7521d4b148e0e9022e05d4813cbb98b92f786601",
+    "node_id": "C_kwDOS7pZUNoAKDc1MjFkNGIxNDhlMGU5MDIyZTA1ZDQ4MTNjYmI5OGI5MmY3ODY2MDE",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-18T07:41:05Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-18T07:41:05Z"
+      },
+      "message": "Build 11: per-type router — isolate recall expansion to aggregation (fix n=300 regression)\n\nRoot cause of the n=300 knowledge-update -13: Build 9 key expansion polluted the\nshared statement FTS + embedding globally. Fix: keys now live in a SEPARATE\nfact_keys_fts index + embeddings stay clean (statement only); the recall profile\n(aggregation queries) consults the key channel + semantic-entity linking, while\nevery other query takes the unchanged precision path. Aggregation gate tightened\n(dropped 'how often'/bare 'different' that caught current-state questions).\nAgile per-type profiles in context(). +1 test, 29/29.",
+      "tree": {
+        "sha": "ef14d0912d59f091e1ee5ff096523282bbdce0de",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/ef14d0912d59f091e1ee5ff096523282bbdce0de"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/7521d4b148e0e9022e05d4813cbb98b92f786601",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/7521d4b148e0e9022e05d4813cbb98b92f786601",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/7521d4b148e0e9022e05d4813cbb98b92f786601",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/7521d4b148e0e9022e05d4813cbb98b92f786601/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "e8e4c687ea6583881ea7606dc8fe4e98d699f78e",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/e8e4c687ea6583881ea7606dc8fe4e98d699f78e",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/e8e4c687ea6583881ea7606dc8fe4e98d699f78e"
+      }
+    ]
+  },
+  {
+    "sha": "e8e4c687ea6583881ea7606dc8fe4e98d699f78e",
+    "node_id": "C_kwDOS7pZUNoAKGU4ZTRjNjg3ZWE2NTgzODgxZWE3NjA2ZGM4ZmU0ZTk4ZDY5OWY3OGU",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-18T07:37:45Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-18T07:37:45Z"
+      },
+      "message": "docs: n=300 A/B report + competitive landscape (HTML)",
+      "tree": {
+        "sha": "9e7532af02e9c3007a5289127a9e36862cf7294a",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/9e7532af02e9c3007a5289127a9e36862cf7294a"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/e8e4c687ea6583881ea7606dc8fe4e98d699f78e",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/e8e4c687ea6583881ea7606dc8fe4e98d699f78e",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/e8e4c687ea6583881ea7606dc8fe4e98d699f78e",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/e8e4c687ea6583881ea7606dc8fe4e98d699f78e/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "23246dd69fdf7cbbaf4e453c73be8ee1d6811d13",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/23246dd69fdf7cbbaf4e453c73be8ee1d6811d13",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/23246dd69fdf7cbbaf4e453c73be8ee1d6811d13"
+      }
+    ]
+  },
+  {
+    "sha": "23246dd69fdf7cbbaf4e453c73be8ee1d6811d13",
+    "node_id": "C_kwDOS7pZUNoAKDIzMjQ2ZGQ2OWZkZjdjYmJhZjRlNDUzYzczYmU4ZWUxZDY4MTFkMTM",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-18T07:37:45Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-18T07:37:45Z"
+      },
+      "message": "Build 10: mem0-inspired recall levers (Porter stemmer + semantic entity linking)\n\nTwo zero-dependency, off-by-default, A/B-able levers from mem0's 2026 layer:\n- stem: FTS5 Porter stemmer so conjugation variants match (keyword normalization)\n- semantic_entities: cosine query->entity-name embedding match to reach entities\n  lexical token matching misses ('my cousin Rachel' -> 'Rachel'); additive,\n  lexical hits stay first. bench: --stem / --semantic-entities; ab_features.sh\n  4-arm harness. Tests passing (28).",
+      "tree": {
+        "sha": "973771264e368a5119e7ce526d25a787bb04c401",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/973771264e368a5119e7ce526d25a787bb04c401"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/23246dd69fdf7cbbaf4e453c73be8ee1d6811d13",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/23246dd69fdf7cbbaf4e453c73be8ee1d6811d13",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/23246dd69fdf7cbbaf4e453c73be8ee1d6811d13",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/23246dd69fdf7cbbaf4e453c73be8ee1d6811d13/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "4da1535ee9de78a2cbc3c5116e28b6073b3fe3df",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/4da1535ee9de78a2cbc3c5116e28b6073b3fe3df",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/4da1535ee9de78a2cbc3c5116e28b6073b3fe3df"
+      }
+    ]
+  },
+  {
+    "sha": "4da1535ee9de78a2cbc3c5116e28b6073b3fe3df",
+    "node_id": "C_kwDOS7pZUNoAKDRkYTE1MzVlZTlkZTc4YTJjYmMzYzUxMTZlMjhiNjA3M2IzZmUzZGY",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-17T08:03:43Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-17T08:03:43Z"
+      },
+      "message": "ab.sh: BASELINE flags applied to both arms (isolate a marginal change)",
+      "tree": {
+        "sha": "21265b48f742c0993eb0e07890fa116a030cfd9c",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/21265b48f742c0993eb0e07890fa116a030cfd9c"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/4da1535ee9de78a2cbc3c5116e28b6073b3fe3df",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/4da1535ee9de78a2cbc3c5116e28b6073b3fe3df",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/4da1535ee9de78a2cbc3c5116e28b6073b3fe3df",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/4da1535ee9de78a2cbc3c5116e28b6073b3fe3df/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "1836f0adfa5913edacff60d05669adb8e0f3540f",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/1836f0adfa5913edacff60d05669adb8e0f3540f",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/1836f0adfa5913edacff60d05669adb8e0f3540f"
+      }
+    ]
+  },
+  {
+    "sha": "1836f0adfa5913edacff60d05669adb8e0f3540f",
+    "node_id": "C_kwDOS7pZUNoAKDE4MzZmMGFkZmE1OTEzZWRhY2ZmNjBkMDU2NjlhZGI4ZTBmMzU0MGY",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-17T08:03:02Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-17T08:03:02Z"
+      },
+      "message": "Build 9: recall track — fact-augmented key expansion (A) + aggregation tally path (B)\n\nPart A (write-time, full mode): extraction emits search_keys (category/synonym\nterms, zero extra LLM calls); indexed with the statement in FTS + embedding so\n'citrus' finds a 'lime' fact. Clean statement preserved for display.\nPart B (read-time, intent-gated): is_aggregation_query() routes counting/total\nquestions to a high-recall pass (k_agg, wider per-channel) with an enumerate-\nand-count instruction that resists abstention. Non-aggregation queries take the\nbyte-identical existing path (gating test proves no-harm). bench: --key-expansion,\n--aggregate. +3 tests, 25/25.",
+      "tree": {
+        "sha": "7ae8e122df49de21393eed939e498893ff51199c",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/7ae8e122df49de21393eed939e498893ff51199c"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/1836f0adfa5913edacff60d05669adb8e0f3540f",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/1836f0adfa5913edacff60d05669adb8e0f3540f",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/1836f0adfa5913edacff60d05669adb8e0f3540f",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/1836f0adfa5913edacff60d05669adb8e0f3540f/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "1b2393455d89db877de95056388e4a90d4feee69",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/1b2393455d89db877de95056388e4a90d4feee69",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/1b2393455d89db877de95056388e4a90d4feee69"
+      }
+    ]
+  },
+  {
+    "sha": "1b2393455d89db877de95056388e4a90d4feee69",
+    "node_id": "C_kwDOS7pZUNoAKDFiMjM5MzQ1NWQ4OWRiODc3ZGU5NTA1NjM4OGU0YTkwZDRmZWVlNjk",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-17T07:33:29Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-17T07:33:29Z"
+      },
+      "message": "docs: BENCHMARKS.md — n=200 observation-stack A/B (+4.8 overall, per-type, p~0.095)",
+      "tree": {
+        "sha": "bc7151628436c4f40ddd0ed6dd0ab08752003e99",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/bc7151628436c4f40ddd0ed6dd0ab08752003e99"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/1b2393455d89db877de95056388e4a90d4feee69",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/1b2393455d89db877de95056388e4a90d4feee69",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/1b2393455d89db877de95056388e4a90d4feee69",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/1b2393455d89db877de95056388e4a90d4feee69/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "bb28845b406e7454dea82b0ef3cf5e863dcd813d",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/bb28845b406e7454dea82b0ef3cf5e863dcd813d",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/bb28845b406e7454dea82b0ef3cf5e863dcd813d"
+      }
+    ]
+  },
+  {
+    "sha": "bb28845b406e7454dea82b0ef3cf5e863dcd813d",
+    "node_id": "C_kwDOS7pZUNoAKGJiMjg4NDViNDA2ZTc0NTRkZWE4MmIwZWYzY2Y1ZTg2M2RjZDgxM2Q",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-17T05:05:43Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-17T05:05:43Z"
+      },
+      "message": "ab.sh: let QTYPE= clear the type filter (all-types runs)",
+      "tree": {
+        "sha": "aa15e740f9dd51eb88e47a8536a82feb84f9c6c7",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/aa15e740f9dd51eb88e47a8536a82feb84f9c6c7"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/bb28845b406e7454dea82b0ef3cf5e863dcd813d",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/bb28845b406e7454dea82b0ef3cf5e863dcd813d",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/bb28845b406e7454dea82b0ef3cf5e863dcd813d",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/bb28845b406e7454dea82b0ef3cf5e863dcd813d/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "265a8d29f3ec3d649edef72c4430197f47b32f1a",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/265a8d29f3ec3d649edef72c4430197f47b32f1a",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/265a8d29f3ec3d649edef72c4430197f47b32f1a"
+      }
+    ]
+  },
+  {
+    "sha": "265a8d29f3ec3d649edef72c4430197f47b32f1a",
+    "node_id": "C_kwDOS7pZUNoAKDI2NWE4ZDI5ZjNlYzNkNjQ5ZWRlZjcyYzQ0MzAxOTdmNDdiMzJmMWE",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-17T05:05:12Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-17T05:05:12Z"
+      },
+      "message": "Build 8: numeric/sum digests + ab.sh SAMPLE support\n\ncompute_numeric_totals() sums same-unit quantities (currency, hours, days, …)\ndeterministically in Python and carries the total into observations/digests, so\nSUM-type aggregation questions ('how much total money / hours') get a trustworthy\npre-computed total instead of relying on LLM arithmetic. ab.sh gains SAMPLE for\nlarger stratified A/B runs. +1 test, 22/22.",
+      "tree": {
+        "sha": "78b19ce09db7c78a15c18d9c7230bb27595b5aa4",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/78b19ce09db7c78a15c18d9c7230bb27595b5aa4"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/265a8d29f3ec3d649edef72c4430197f47b32f1a",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/265a8d29f3ec3d649edef72c4430197f47b32f1a",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/265a8d29f3ec3d649edef72c4430197f47b32f1a",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/265a8d29f3ec3d649edef72c4430197f47b32f1a/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "d2cb10a2d4c0947bea40dc6e4b3c1d706cd67eb3",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/d2cb10a2d4c0947bea40dc6e4b3c1d706cd67eb3",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/d2cb10a2d4c0947bea40dc6e4b3c1d706cd67eb3"
+      }
+    ]
+  },
+  {
+    "sha": "d2cb10a2d4c0947bea40dc6e4b3c1d706cd67eb3",
+    "node_id": "C_kwDOS7pZUNoAKGQyY2IxMGEyZDRjMDk0N2JlYTQwZGM2ZTRiM2MxZDcwNmNkNjdlYjM",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-17T04:59:20Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-17T04:59:20Z"
+      },
+      "message": "harden: network retry + per-question fault tolerance + partial-result flush\n\n_post_json retries transient errors (the socket.timeout that killed a full-S run\nat 52/80). run_longmemeval wraps each question in try/except (one flaky question\nskips, not aborts) and checkpoints results every 10 questions so a wall-clock\ntimeout keeps progress. +1 test, 21/21.",
+      "tree": {
+        "sha": "a8e2d4df5f62b5ecc03ce1536b9bbbecd0b607e7",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/a8e2d4df5f62b5ecc03ce1536b9bbbecd0b607e7"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/d2cb10a2d4c0947bea40dc6e4b3c1d706cd67eb3",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/d2cb10a2d4c0947bea40dc6e4b3c1d706cd67eb3",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/d2cb10a2d4c0947bea40dc6e4b3c1d706cd67eb3",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/d2cb10a2d4c0947bea40dc6e4b3c1d706cd67eb3/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "a545d121ba140cf1df847d19014ae62e84bbca0a",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/a545d121ba140cf1df847d19014ae62e84bbca0a",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/a545d121ba140cf1df847d19014ae62e84bbca0a"
+      }
+    ]
+  },
+  {
+    "sha": "a545d121ba140cf1df847d19014ae62e84bbca0a",
+    "node_id": "C_kwDOS7pZUNoAKGE1NDVkMTIxYmExNDBjZjFkZjg0N2QxOTAxNGFlNjJlODRiYmNhMGE",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-16T19:33:08Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-16T19:33:08Z"
+      },
+      "message": "docs: update roadmap — mark shipped builds, add post-benchmark next steps\n\nShipped: observations (+ additive/enumerate/multi-granularity), 2-hop, rerank,\niterative, harness hardening. Next (post-bench): entity canonicalization,\nrecursive-CTE N-hop, sqlite-vec ANN, incremental refresh, MCP server+security\n(borrowings from Codebase-Memory paper), dim guard, namespacing.",
+      "tree": {
+        "sha": "ea6427ea43a6e4517076288f2e59ac3493c8ab67",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/ea6427ea43a6e4517076288f2e59ac3493c8ab67"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/a545d121ba140cf1df847d19014ae62e84bbca0a",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/a545d121ba140cf1df847d19014ae62e84bbca0a",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/a545d121ba140cf1df847d19014ae62e84bbca0a",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/a545d121ba140cf1df847d19014ae62e84bbca0a/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "1f4b8a79757677398b025cea739fb22f8288a879",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/1f4b8a79757677398b025cea739fb22f8288a879",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/1f4b8a79757677398b025cea739fb22f8288a879"
+      }
+    ]
+  },
+  {
+    "sha": "1f4b8a79757677398b025cea739fb22f8288a879",
+    "node_id": "C_kwDOS7pZUNoAKDFmNGI4YTc5NzU3Njc3Mzk4YjAyNWNlYTczOWZiMjJmODI4OGE4Nzk",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-16T18:50:20Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-16T18:50:20Z"
+      },
+      "message": "Build 7: multi-granularity digests (predicate-level, cross-entity aggregation)\n\nrefresh_observations now also emits per-(subject,predicate) digests that\nenumerate every object across all entities/sessions (kind='observation',\npredicate='digest:<pred>'). Targets the cross-entity totals per-entity\nsummaries structurally miss (camping trips, distinct doctors, babies, charity\ntotals) — the MemGAS multi-granularity lesson. +1 test, 20/20.",
+      "tree": {
+        "sha": "ffcaeab9fdc229840ad45cb032873be4e3f7af33",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/ffcaeab9fdc229840ad45cb032873be4e3f7af33"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/1f4b8a79757677398b025cea739fb22f8288a879",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/1f4b8a79757677398b025cea739fb22f8288a879",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/1f4b8a79757677398b025cea739fb22f8288a879",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/1f4b8a79757677398b025cea739fb22f8288a879/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "bf34eba8684ecda65f4556ee41f977f257379fb7",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/bf34eba8684ecda65f4556ee41f977f257379fb7",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/bf34eba8684ecda65f4556ee41f977f257379fb7"
+      }
+    ]
+  },
+  {
+    "sha": "bf34eba8684ecda65f4556ee41f977f257379fb7",
+    "node_id": "C_kwDOS7pZUNoAKGJmMzRlYmE4Njg0ZWNkYTY1ZjQ1NTZlZTQxZjk3N2YyNTczNzlmYjc",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-16T17:50:21Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-16T17:50:21Z"
+      },
+      "message": "Build 6: observations additive + enumerate (fix crowding-out & wrong-totals)\n\nFix 1: observations get their own context slots (obs_k), never displacing raw\nfacts/episodes from the k budget; rendered as a dedicated ENTITY SUMMARIES\nsection with a verify-against-facts caveat. Fix 2: observation prompt enumerates\nevery instance instead of asserting possibly-incomplete totals. Informed by\nMastra Observational Memory (SOTA) + MemGAS multi-granularity. +1 test, 19/19.",
+      "tree": {
+        "sha": "288bf07d077d0ae5de9e0e20dcd5151b35537c3d",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/288bf07d077d0ae5de9e0e20dcd5151b35537c3d"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/bf34eba8684ecda65f4556ee41f977f257379fb7",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/bf34eba8684ecda65f4556ee41f977f257379fb7",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/bf34eba8684ecda65f4556ee41f977f257379fb7",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/bf34eba8684ecda65f4556ee41f977f257379fb7/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "49cf44eea7de3e90b35b3061791ccf4fcc3749f4",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/49cf44eea7de3e90b35b3061791ccf4fcc3749f4",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/49cf44eea7de3e90b35b3061791ccf4fcc3749f4"
+      }
+    ]
+  },
+  {
+    "sha": "49cf44eea7de3e90b35b3061791ccf4fcc3749f4",
+    "node_id": "C_kwDOS7pZUNoAKDQ5Y2Y0NGVlYTdkZTNlOTBiMzViMzA2MTc5MWNjZjRmY2MzNzQ5ZjQ",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-16T15:40:39Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-16T15:40:39Z"
+      },
+      "message": "run_all.sh: FEATURES env to enable --observations/--iterative on full-mode steps",
+      "tree": {
+        "sha": "dee0078f56d2834fe1b209a14cf3b973d60a016c",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/dee0078f56d2834fe1b209a14cf3b973d60a016c"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/49cf44eea7de3e90b35b3061791ccf4fcc3749f4",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/49cf44eea7de3e90b35b3061791ccf4fcc3749f4",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/49cf44eea7de3e90b35b3061791ccf4fcc3749f4",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/49cf44eea7de3e90b35b3061791ccf4fcc3749f4/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "73c9cea5bb46964613564a4338c8bfa322c12c05",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/73c9cea5bb46964613564a4338c8bfa322c12c05",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/73c9cea5bb46964613564a4338c8bfa322c12c05"
+      }
+    ]
+  },
+  {
+    "sha": "73c9cea5bb46964613564a4338c8bfa322c12c05",
+    "node_id": "C_kwDOS7pZUNoAKDczYzljZWE1YmI0Njk2NDYxMzU2NGE0MzM4YzhiZmEzMjJjMTJjMDU",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-16T15:37:50Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-16T15:37:50Z"
+      },
+      "message": "bench/ab.sh: one-command A/B of a feature flag with accuracy delta",
+      "tree": {
+        "sha": "483aebd6564cb562a55b36ce985aec84cc1a704a",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/483aebd6564cb562a55b36ce985aec84cc1a704a"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/73c9cea5bb46964613564a4338c8bfa322c12c05",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/73c9cea5bb46964613564a4338c8bfa322c12c05",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/73c9cea5bb46964613564a4338c8bfa322c12c05",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/73c9cea5bb46964613564a4338c8bfa322c12c05/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "b6fb35701969b371c0f854689b9bfc454afb4b2c",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/b6fb35701969b371c0f854689b9bfc454afb4b2c",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/b6fb35701969b371c0f854689b9bfc454afb4b2c"
+      }
+    ]
+  },
+  {
+    "sha": "b6fb35701969b371c0f854689b9bfc454afb4b2c",
+    "node_id": "C_kwDOS7pZUNoAKGI2ZmIzNTcwMTk2OWIzNzFjMGY4NTQ2ODliOWJmYzQ1NGFmYjRiMmM",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-16T15:33:22Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-16T15:33:22Z"
+      },
+      "message": "bench: --question-type filter to focus a single gap (e.g. multi-session A/B)",
+      "tree": {
+        "sha": "580c2c5fc7c26aa90c247ceb60469275fca4b392",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/580c2c5fc7c26aa90c247ceb60469275fca4b392"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/b6fb35701969b371c0f854689b9bfc454afb4b2c",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/b6fb35701969b371c0f854689b9bfc454afb4b2c",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/b6fb35701969b371c0f854689b9bfc454afb4b2c",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/b6fb35701969b371c0f854689b9bfc454afb4b2c/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "1326f33a67fb2ea3f65766c8598c3698e6e8474c",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/1326f33a67fb2ea3f65766c8598c3698e6e8474c",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/1326f33a67fb2ea3f65766c8598c3698e6e8474c"
+      }
+    ]
+  },
+  {
+    "sha": "1326f33a67fb2ea3f65766c8598c3698e6e8474c",
+    "node_id": "C_kwDOS7pZUNoAKDEzMjZmMzNhNjdmYjJlYTNmNjU3NjZjODU5OGMzNjk4ZTZlODQ3NGM",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-16T15:32:16Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-16T15:32:16Z"
+      },
+      "message": "Wire Builds 1/4/5 into the benchmark harness (opt-in flags for A/B)\n\nbench/run.py: --observations (refresh_observations after ingest), --iterative\n(context_iterative), --reranker-url/-model/-key (HTTPReranker). Runners gain\nobservations/iterative params, guarded to full mode. +1 integration test, 18/18.",
+      "tree": {
+        "sha": "d7c4effb0dfa0f3554f0579e29a463305ef3f9b9",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/d7c4effb0dfa0f3554f0579e29a463305ef3f9b9"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/1326f33a67fb2ea3f65766c8598c3698e6e8474c",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/1326f33a67fb2ea3f65766c8598c3698e6e8474c",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/1326f33a67fb2ea3f65766c8598c3698e6e8474c",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/1326f33a67fb2ea3f65766c8598c3698e6e8474c/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "d672c65fb165c41d694a7068ce5c6289a11fe05b",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/d672c65fb165c41d694a7068ce5c6289a11fe05b",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/d672c65fb165c41d694a7068ce5c6289a11fe05b"
+      }
+    ]
+  },
+  {
+    "sha": "d672c65fb165c41d694a7068ce5c6289a11fe05b",
+    "node_id": "C_kwDOS7pZUNoAKGQ2NzJjNjVmYjE2NWM0MWQ2OTRhNzA2OGNlNWM2Mjg5YTExZmUwNWI",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-16T15:23:09Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-16T15:23:09Z"
+      },
+      "message": "Build 5: iterative retrieval for multi-hop (full mode, optional)\n\nmem.search_iterative()/context_iterative(): after the first pass, the LLM\nproposes a follow-up query for the missing piece (DualRAG-style), a second\nretrieval runs, and results merge. Degrades to single-pass without an llm.\n+1 test, 17/17 passing.",
+      "tree": {
+        "sha": "0025a0d386b1b44b52203a03dbeb9d66463cdfcc",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/0025a0d386b1b44b52203a03dbeb9d66463cdfcc"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/d672c65fb165c41d694a7068ce5c6289a11fe05b",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/d672c65fb165c41d694a7068ce5c6289a11fe05b",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/d672c65fb165c41d694a7068ce5c6289a11fe05b",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/d672c65fb165c41d694a7068ce5c6289a11fe05b/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "8ac2e968c4c542d1b49fea271a53d639729a0739",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/8ac2e968c4c542d1b49fea271a53d639729a0739",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/8ac2e968c4c542d1b49fea271a53d639729a0739"
+      }
+    ]
+  },
+  {
+    "sha": "8ac2e968c4c542d1b49fea271a53d639729a0739",
+    "node_id": "C_kwDOS7pZUNoAKDhhYzJlOTY4YzRjNTQyZDFiNDlmZWEyNzFhNTNkNjM5NzI5YTA3Mzk",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-16T15:21:42Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-16T15:21:42Z"
+      },
+      "message": "Build 4: optional cross-encoder reranking (RRF + rerank, Hindsight-style)\n\nNew smriti/rerank.py (MockReranker, HTTPReranker for TEI/Jina/Cohere /rerank).\nretrieve() materializes a larger fused pool then re-sorts by a model-agnostic\nreranker and tags results 'rerank'. Wired through Smriti(reranker=...). Opt-in,\nstdlib-only core. +1 test, 16/16 passing.",
+      "tree": {
+        "sha": "799da2c9f6ab004b73b5b7f5482806e8dbb83d8d",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/799da2c9f6ab004b73b5b7f5482806e8dbb83d8d"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/8ac2e968c4c542d1b49fea271a53d639729a0739",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/8ac2e968c4c542d1b49fea271a53d639729a0739",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/8ac2e968c4c542d1b49fea271a53d639729a0739",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/8ac2e968c4c542d1b49fea271a53d639729a0739/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "6805fe157d8a86b25c620fef38df308cbca93a9f",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/6805fe157d8a86b25c620fef38df308cbca93a9f",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/6805fe157d8a86b25c620fef38df308cbca93a9f"
+      }
+    ]
+  },
+  {
+    "sha": "6805fe157d8a86b25c620fef38df308cbca93a9f",
+    "node_id": "C_kwDOS7pZUNoAKDY4MDVmZTE1N2Q4YTg2YjI1YzYyMGZlZjM4ZGYzMDhjYmNhOTNhOWY",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-16T15:10:14Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-16T15:10:14Z"
+      },
+      "message": "Build 2: 2-hop entity traversal (graph-lite multi-hop)\n\nExtend the sambandha channel with a bounded, down-weighted second entity hop\nso facts one link away from query entities are reachable (Rachel->Acme->Berlin).\nPure SQL over the existing entities table, no graph DB. +1 test, 15/15 passing.",
+      "tree": {
+        "sha": "f82e446ee1ebfea4cb2131e500ebe3a3afb7f7ec",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/f82e446ee1ebfea4cb2131e500ebe3a3afb7f7ec"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/6805fe157d8a86b25c620fef38df308cbca93a9f",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/6805fe157d8a86b25c620fef38df308cbca93a9f",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/6805fe157d8a86b25c620fef38df308cbca93a9f",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/6805fe157d8a86b25c620fef38df308cbca93a9f/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "5298dcf1edf15797c3208120b1e47f5dedc091d3",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/5298dcf1edf15797c3208120b1e47f5dedc091d3",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/5298dcf1edf15797c3208120b1e47f5dedc091d3"
+      }
+    ]
+  },
+  {
+    "sha": "5298dcf1edf15797c3208120b1e47f5dedc091d3",
+    "node_id": "C_kwDOS7pZUNoAKDUyOThkY2YxZWRmMTU3OTdjMzIwODEyMGIxZTQ3ZjVkZWRjMDkxZDM",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-16T15:08:07Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-16T15:08:25Z"
+      },
+      "message": "Build 1: observation/summary layer (Hindsight observation paradigm) — +2 tests, 14/14 passing",
+      "tree": {
+        "sha": "99a634fd493b6cb9f6b77299d9076e5c0432f0f2",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/99a634fd493b6cb9f6b77299d9076e5c0432f0f2"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/5298dcf1edf15797c3208120b1e47f5dedc091d3",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/5298dcf1edf15797c3208120b1e47f5dedc091d3",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/5298dcf1edf15797c3208120b1e47f5dedc091d3",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/5298dcf1edf15797c3208120b1e47f5dedc091d3/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "46ed5aa9f04c7810d6cddb5a5ac77e321ebf5e37",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/commits/46ed5aa9f04c7810d6cddb5a5ac77e321ebf5e37",
+        "html_url": "https://github.com/vn-envy/Smriti/commit/46ed5aa9f04c7810d6cddb5a5ac77e321ebf5e37"
+      }
+    ]
+  },
+  {
+    "sha": "46ed5aa9f04c7810d6cddb5a5ac77e321ebf5e37",
+    "node_id": "C_kwDOS7pZUNoAKDQ2ZWQ1YWE5ZjA0Yzc4MTBkNmNkZGI1YTVhYzc3ZTMyMWViZjVlMzc",
+    "commit": {
+      "author": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-16T15:02:37Z"
+      },
+      "committer": {
+        "name": "Neekhil Vatsa",
+        "email": "vatsaneekhil@gmail.com",
+        "date": "2026-06-16T15:02:37Z"
+      },
+      "message": "baseline: original Smriti + benchmark hardening (download, deepseek, sampling, dir-create, UA fix)",
+      "tree": {
+        "sha": "53fa790781afeb076db6c20f18c9cc725063d38b",
+        "url": "https://api.github.com/repos/vn-envy/Smriti/git/trees/53fa790781afeb076db6c20f18c9cc725063d38b"
+      },
+      "url": "https://api.github.com/repos/vn-envy/Smriti/git/commits/46ed5aa9f04c7810d6cddb5a5ac77e321ebf5e37",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/vn-envy/Smriti/commits/46ed5aa9f04c7810d6cddb5a5ac77e321ebf5e37",
+    "html_url": "https://github.com/vn-envy/Smriti/commit/46ed5aa9f04c7810d6cddb5a5ac77e321ebf5e37",
+    "comments_url": "https://api.github.com/repos/vn-envy/Smriti/commits/46ed5aa9f04c7810d6cddb5a5ac77e321ebf5e37/comments",
+    "author": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "vn-envy",
+      "id": 262362620,
+      "node_id": "U_kgDOD6NV_A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/262362620?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/vn-envy",
+      "html_url": "https://github.com/vn-envy",
+      "followers_url": "https://api.github.com/users/vn-envy/followers",
+      "following_url": "https://api.github.com/users/vn-envy/following{/other_user}",
+      "gists_url": "https://api.github.com/users/vn-envy/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/vn-envy/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/vn-envy/subscriptions",
+      "organizations_url": "https://api.github.com/users/vn-envy/orgs",
+      "repos_url": "https://api.github.com/users/vn-envy/repos",
+      "events_url": "https://api.github.com/users/vn-envy/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/vn-envy/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+
+    ]
+  }
+]

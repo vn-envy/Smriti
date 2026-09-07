@@ -19,7 +19,9 @@ import hashlib
 import json as _json
 import re as _re
 import uuid
+from dataclasses import replace
 from typing import List, Optional
+from urllib.parse import urlsplit
 
 # Secret redaction (opt-in, hardening 0.3.0): scrub common credential shapes
 # BEFORE anything is persisted or sent to an extraction model. Conservative
@@ -53,13 +55,35 @@ from .types import Episode, Fact, RetrievalResult
 MODE_ALIASES = {"laghu": "lite", "purna": "full"}
 
 
+def _embedder_identity(embedder) -> str:
+    """Stable, secret-free identity for persistent vector compatibility."""
+    data = {"class": f"{type(embedder).__module__}.{type(embedder).__qualname__}"}
+    for name in ("model", "provider", "dim"):
+        value = getattr(embedder, name, None)
+        if isinstance(value, (str, int, float, bool)) and value != "":
+            data[name] = value
+    base_url = getattr(embedder, "base_url", None)
+    if isinstance(base_url, str) and base_url:
+        parsed = urlsplit(base_url)
+        host = parsed.hostname or ""
+        if ":" in host:
+            host = f"[{host}]"
+        try:
+            port = f":{parsed.port}" if parsed.port is not None else ""
+        except ValueError:
+            port = ""
+        data["endpoint"] = f"{parsed.scheme}://{host}{port}{parsed.path}".rstrip("/")
+    return _json.dumps(data, sort_keys=True, separators=(",", ":"))
+
+
 class Smriti:
     def __init__(self, path: str = ":memory:", embedder=None, llm: Optional[LLM] = None,
                  mode: str = "auto", embed_episodes: bool = True, reranker=None,
                  expand_keys: bool = True, aggregate: bool = True, k_agg: int = 40,
                  stem: bool = False, semantic_entities: bool = False,
                  semantic_threshold: float = 0.3,
-                 redact: bool = False, dedupe: bool = True):
+                 redact: bool = False, dedupe: bool = True,
+                 adopt_legacy_embedder: bool = False):
         """mode: "full"/"purna" (LLM extraction+consolidation), "lite"/"laghu"
         (episodic only), or "auto" (full if an llm is provided, else lite).
         reranker: optional cross-encoder (any .rerank(query, docs)->scores) applied
@@ -75,8 +99,23 @@ class Smriti:
         embeddings to reach entities lexical token matching misses (mem0's
         'entity linking' lever). Zero-dependency; uses the existing embedder.
         semantic_threshold: cosine cutoff for the semantic-entity channel."""
-        self.store = Store(path, stem=stem)
         self.embedder = embedder or HashEmbedder()
+        if not isinstance(mode, str):
+            raise ValueError("mode must be 'auto', 'lite'/'laghu', or 'full'/'purna'")
+        mode = MODE_ALIASES.get(mode, mode)
+        if mode == "auto":
+            mode = "full" if llm is not None else "lite"
+        if mode not in ("lite", "full"):
+            raise ValueError("mode must be 'auto', 'lite'/'laghu', or 'full'/'purna'")
+        if mode == "full" and llm is None:
+            raise ValueError("full mode requires an llm")
+        self.store = Store(path, stem=stem)
+        try:
+            self.store.ensure_embedder(_embedder_identity(self.embedder),
+                                       adopt_legacy=adopt_legacy_embedder)
+        except BaseException:
+            self.store.close()
+            raise
         self.llm = llm
         self.reranker = reranker
         self.expand_keys = expand_keys
@@ -85,18 +124,25 @@ class Smriti:
         self.stem = stem
         self.semantic_entities = semantic_entities
         self.semantic_threshold = semantic_threshold
+        self.last_extraction_diagnostics = None
         # hardening (0.3.0): redact scrubs credential-shaped strings before
         # persistence/extraction (opt-in); dedupe makes ingestion idempotent —
         # replaying an identical (messages, timestamp, session) is a no-op.
         self.redact = redact
         self.dedupe = dedupe
-        mode = MODE_ALIASES.get(mode, mode)
-        if mode == "auto":
-            mode = "full" if llm is not None else "lite"
-        if mode == "full" and llm is None:
-            raise ValueError("full mode requires an llm")
         self.mode = mode
         self.embed_episodes = embed_episodes
+
+    def close(self) -> None:
+        """Close the underlying SQLite connection."""
+        self.store.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        self.close()
+        return False
 
     # ------------------------------------------------------------------ add
     def add(self, messages: List[dict], session_id: Optional[str] = None,
@@ -131,7 +177,9 @@ class Smriti:
             raw = self.llm.complete(
                 build_extraction_prompt(messages, timestamp), json_mode=False
             )
-            facts = parse_facts(raw, session_id, timestamp)
+            diagnostics = {}
+            facts = parse_facts(raw, session_id, timestamp, diagnostics=diagnostics)
+            self.last_extraction_diagnostics = diagnostics
             if facts:
                 if not self.expand_keys:
                     for f in facts:
@@ -181,13 +229,31 @@ class Smriti:
 
     def add_fact(self, fact: Fact, resolve_conflicts: bool = True) -> Optional[int]:
         """Directly insert a fact (e.g. from an agent's own observations)."""
+        if self.redact:
+            fact = replace(
+                fact,
+                statement=redact_secrets(fact.statement),
+                subject=redact_secrets(fact.subject),
+                predicate=redact_secrets(fact.predicate),
+                object=redact_secrets(fact.object),
+                entities=[redact_secrets(e) for e in fact.entities],
+                search_keys=[redact_secrets(k) for k in fact.search_keys],
+            )
         if not self.expand_keys:
             fact.search_keys = []
         emb = self.embedder.embed([fact.statement])[0]
-        if resolve_conflicts:
-            return consolidate(self.store, fact, emb, self.embedder,
-                               self.llm if self.mode == "full" else None)
-        return self.store.add_fact(fact, emb)
+        self.store.begin()
+        try:
+            if resolve_conflicts:
+                fid = consolidate(self.store, fact, emb, self.embedder,
+                                  self.llm if self.mode == "full" else None)
+            else:
+                fid = self.store.add_fact(fact, emb)
+            self.store.commit()
+            return fid
+        except BaseException:
+            self.store.rollback()
+            raise
 
     # --------------------------------------------------------------- search
     def _profiled(self, query: str, profile, k: Optional[int], now: Optional[str],
@@ -390,11 +456,12 @@ class Smriti:
         return {"episodes": len(data["episodes"]), "facts": len(data["facts"]),
                 "path": path}
 
-    def import_json(self, path: str) -> dict:
+    def import_json(self, path: str, adopt_legacy_embedder: bool = False) -> dict:
         """Restore an export into this (empty) store. IDs are preserved, so
         supersession chains and episode links survive the round trip."""
         with open(path, encoding="utf-8") as fh:
-            self.store.import_data(_json.load(fh))
+            self.store.import_data(_json.load(fh),
+                                   adopt_legacy_embedder=adopt_legacy_embedder)
         return self.stats()
 
     # ---------------------------------------------------------------- misc

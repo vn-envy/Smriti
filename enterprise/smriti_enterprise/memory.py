@@ -13,7 +13,7 @@ from typing import List, Optional
 
 import smriti as _core
 from smriti import Smriti
-from smriti.memory import redact_secrets
+from smriti.memory import _embedder_identity, redact_secrets
 from smriti.store import utcnow
 from smriti.types import Fact, RetrievalResult
 
@@ -35,17 +35,28 @@ class EnterpriseSmriti(Smriti):
         if profile not in policy.PROFILES:
             raise ValueError(f"unknown profile {profile!r}; known: {policy.PROFILES}")
         if profile == "local":
-            kw.setdefault("redact", True)   # forced-on unless caller overrides
+            kw["redact"] = True
+        if origin_default not in policy.VALID_ORIGINS:
+            raise ValueError(f"invalid origin {origin_default!r}")
         super().__init__(path=path, **kw)
         # replace the core store with the enterprise store (runs migration)
         stem = kw.get("stem", False)
         self.store.db.close()
         self.store = EnterpriseStore(path, stem=stem)
+        self.store.ensure_embedder(
+            _embedder_identity(self.embedder),
+            adopt_legacy=kw.get("adopt_legacy_embedder", False),
+        )
         # profile enforcement: built-in adapter egress fails closed
         policy.check_egress(profile, [self.embedder, self.llm, self.reranker],
                             allowlist=allowlist)
         if profile == "regulated" and (sink is None or isinstance(sink, NullSink)):
             raise ValueError("profile 'regulated' requires a persistent AuditSink")
+        if profile == "regulated" and signer is None:
+            raise ValueError("profile 'regulated' requires a receipt signer")
+        if profile == "regulated" and getattr(sink, "signer", None) is not signer:
+            raise ValueError("profile 'regulated' requires the sink and memory to use "
+                             "the same receipt signer")
         self.profile = profile
         self.sink = sink or NullSink()
         self.signer = signer
@@ -91,6 +102,7 @@ class EnterpriseSmriti(Smriti):
                 db.execute(
                     "UPDATE facts SET uuid=?, recorded_at=?, origin=? WHERE id=?",
                     (_uuid.uuid4().hex, now, origin, fid))
+                self.store._record_validity(fid, now)
             eids = [r[0] for r in db.execute(
                 "SELECT id FROM episodes WHERE session_id=?", (session_id,))]
             fids = [r[0] for r in db.execute(
@@ -119,8 +131,12 @@ class EnterpriseSmriti(Smriti):
         origin = origin or self.origin_default
         if origin not in policy.VALID_ORIGINS:
             raise ValueError(f"invalid origin {origin!r}")
-        out = super().add(messages, session_id=session_id, timestamp=timestamp,
-                          dedupe=dedupe)
+        self.store._knowledge_time = timestamp
+        try:
+            out = super().add(messages, session_id=session_id, timestamp=timestamp,
+                              dedupe=dedupe)
+        finally:
+            self.store._knowledge_time = None
         if not out.get("deduped"):
             self._stamp_session(out["session_id"], origin, recorded_at=timestamp)
         self._emit("ingest", {"session_id": out["session_id"],
@@ -131,6 +147,9 @@ class EnterpriseSmriti(Smriti):
 
     def add_fact(self, fact: Fact, resolve_conflicts: bool = True,
                  origin: Optional[str] = None, correlation_id=None):
+        origin = origin or self.origin_default
+        if origin not in policy.VALID_ORIGINS:
+            raise ValueError(f"invalid origin {origin!r}")
         # redaction covers EVERY write path here, including direct fact writes
         if self.redact:
             fact.statement = redact_secrets(fact.statement)
@@ -139,9 +158,9 @@ class EnterpriseSmriti(Smriti):
             self.store.db.execute(
                 "UPDATE facts SET uuid=?, recorded_at=?, origin=? WHERE id=?",
                 (_uuid.uuid4().hex, utcnow(),
-                 origin or self.origin_default, fid))
+                 origin, fid))
         self._emit("add_fact", {"fact_id": fid, "stored": fid is not None,
-                                "origin": origin or self.origin_default},
+                                "origin": origin},
                    correlation_id)
         return fid
 
@@ -256,6 +275,20 @@ class EnterpriseSmriti(Smriti):
         self._emit("pack_build", {"name": name, "sha256": m["sha256"],
                                   "path": out_path})
         return m
+
+    def export_json(self, path: str) -> dict:
+        raise RuntimeError(
+            "Enterprise JSON export is unsupported because the core format "
+            "omits governance and validity-history metadata. Use snapshot(path) "
+            "for a lossless database backup or build_pack(path, name=...) for a "
+            "verified, portable artifact.")
+
+    def import_json(self, path: str) -> dict:
+        raise RuntimeError(
+            "Enterprise JSON import is unsupported because the core format "
+            "cannot restore governance metadata. Restore a snapshot as the "
+            "EnterpriseSmriti database path, or use verify_pack/open_pack for a "
+            "verified read-only artifact.")
 
     def verify_audit(self) -> dict:
         return self.sink.verify(signer=self.signer)

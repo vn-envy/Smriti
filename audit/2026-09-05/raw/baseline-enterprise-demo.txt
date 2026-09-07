@@ -1,0 +1,52 @@
+
+[1m1 · Ingest — the world changes in June, we learn about it in July[0m
+──────────────────────────────────────────────────────────────────
+store_id      : 62ea716717144bff…
+schema        : v1
+stats         : {'episodes': 2, 'facts': 2, 'valid_facts': 1, 'entities': 2, 'mode': 'full'}
+
+[1m2 · Tri-temporal — world time and knowledge time are independent[0m
+──────────────────────────────────────────────────────────────────
+world: valid until   2026-06-01   (the move happened)
+known: withdrawn at  2026-09-05T14:18:51Z   (we found out)
+believed on 2026-03-01 : ['Hyderabad']
+believed today         : ['Bengaluru']
+→ late-arriving corrections no longer rewrite what we believed then
+
+[1m3 · Lineage — exact parents, not heuristics[0m
+──────────────────────────────────────────────────────────────────
+fact 2 derives from: [('episode', 2, 'extract')]
+
+[1m4 · Evidence receipt — binds the exact packed context[0m
+──────────────────────────────────────────────────────────────────
+op=context  correlation=req-4f2a  profile=regulated
+query_digest   : 261444d314bed3f1004d002840350f4b…
+context_digest : b920f35ae72b26780381a1b5b341784c…  (390 chars)
+first ctx line : - [2026-06-01 | CURRENT] The user lives in Bengaluru.
+→ plaintext is never stored in the receipt; digests bind it
+
+[1m5 · Audit integrity — chain + customer-key checkpoints[0m
+──────────────────────────────────────────────────────────────────
+verify (correct key) : {'receipts': 6, 'violations': 0, 'checkpoints_verified': 2, 'ok': True}
+verify (wrong key)   : {'receipts': 6, 'violations': 2, 'checkpoints_verified': 2, 'ok': False}
+
+[1m6 · Legal hold beats erasure[0m
+──────────────────────────────────────────────────────────────────
+erase refused  : session 's-jan' is under an active legal hold
+after release  : {'episodes': 1, 'facts': 1, 'derived': 0, 'lineage_exact': True}
+
+[1m7 · Profiles fail closed[0m
+──────────────────────────────────────────────────────────────────
+local profile  : profile 'local' forbids non-loopback endpoint 'http://api.example.com' (OllamaEmbedder); use an allowlisted 'team' profile instead
+data flow      : {"adapter": "HashEmbedder", "endpoint": null, "remote": false}
+
+[1m8 · Verified knowledge pack + federation[0m
+──────────────────────────────────────────────────────────────────
+pack built     : org-handbook  sha256=aecd08fcc7771261…  signed=True
+verify         : ok (c0a4e137795d…)
+  [fact] The user lives in Bengaluru.…  channels=['store:personal']
+  [episode] Company policy: expense reports are due on the 5th o…  channels=['store:org']
+pack write     : refused (OperationalError) — read-only mount
+tampered pack  : checksum mismatch — pack modified after build
+
+[1mdemo files:[0m /var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/smriti-demo-vkh0v7dx

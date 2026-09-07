@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "adapter": "mem0",
+  "configuration": "mem0 OSS / infer=False / FastEmbed BAAI-bge-small-en-v1.5 / local Qdrant (BM25 unavailable)",
+  "measurement": "growing-corpus simulation in one run, not elapsed-day longitudinal data",
+  "timing_scope": "in-process calls",
+  "model_cost": {
+    "observed_paid_api_usd": 0,
+    "note": "local compute/electricity and hardware depreciation unmeasured; shared model-cache bytes excluded"
+  },
+  "checkpoints": [
+    {
+      "documents": 100,
+      "incremental_ingest_ms": 1523.483,
+      "cold_query_ms": 13.028,
+      "warm_query_ms_p50": 11.657,
+      "warm_query_ms_p95": 15.687,
+      "storage_bytes": 897617
+    },
+    {
+      "documents": 1000,
+      "incremental_ingest_ms": 12256.347,
+      "cold_query_ms": 21.159,
+      "warm_query_ms_p50": 23.557,
+      "warm_query_ms_p95": 29.672,
+      "storage_bytes": 8618577
+    }
+  ]
+}

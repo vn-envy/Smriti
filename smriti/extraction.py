@@ -127,25 +127,55 @@ def build_followup_prompt(question: str, notes: str) -> List[dict]:
     ]
 
 
-def parse_facts(raw: str, session_id: Optional[str], session_ts: Optional[str]) -> List[Fact]:
+_PREDICATE_ALIASES = {
+    "moved_to": "lives_in",
+    "relocated_to": "lives_in",
+}
+
+
+def parse_facts(raw: str, session_id: Optional[str], session_ts: Optional[str],
+                diagnostics: Optional[dict] = None) -> List[Fact]:
     data = extract_json(raw)
+    if diagnostics is not None:
+        diagnostics.update(raw_chars=len(raw or ""), status="ok", items=0,
+                           accepted=0, skipped=0, normalized_predicates=0)
     if not isinstance(data, list):
+        if diagnostics is not None:
+            diagnostics["status"] = "malformed" if data is None else "wrong_shape"
         return []
+    if diagnostics is not None:
+        diagnostics["items"] = len(data)
     facts = []
     for item in data:
         if not isinstance(item, dict) or not item.get("statement"):
+            if diagnostics is not None:
+                diagnostics["skipped"] += 1
             continue
+        entities = item.get("entities") or []
+        keys = item.get("search_keys") or []
+        if not isinstance(entities, list) or not isinstance(keys, list):
+            if diagnostics is not None:
+                diagnostics["skipped"] += 1
+            continue
+        predicate = str(item.get("predicate", "")).lower().strip()
+        normalized = _PREDICATE_ALIASES.get(predicate, predicate)
+        if diagnostics is not None and normalized != predicate:
+            diagnostics["normalized_predicates"] += 1
         facts.append(Fact(
             id=None,
             statement=str(item["statement"]).strip(),
             subject=str(item.get("subject", "user")),
-            predicate=str(item.get("predicate", "")),
+            predicate=normalized,
             object=str(item.get("object", "")),
             kind=str(item.get("kind", "knowledge")),
-            entities=[str(e) for e in item.get("entities", []) if e],
-            search_keys=[str(k) for k in item.get("search_keys", []) if k],
+            entities=[str(e) for e in entities if e],
+            search_keys=[str(k) for k in keys if k],
             event_date=item.get("event_date") or None,
             valid_from=item.get("event_date") or session_ts,
             session_id=session_id,
         ))
+    if diagnostics is not None:
+        diagnostics["accepted"] = len(facts)
+        if data and not facts:
+            diagnostics["status"] = "all_items_rejected"
     return facts

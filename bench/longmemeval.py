@@ -113,11 +113,12 @@ def run_longmemeval(
                                    "partial": True}, "results": results}, f, indent=2)
 
     for idx, item in enumerate(items):
+        qid = item.get("question_id", str(idx))
+        qtype = item.get("question_type", "unknown")
+        question = item.get("question", "")
+        gold = str(item.get("answer", ""))
         try:
-            qid = item.get("question_id", str(idx))
-            qtype = item.get("question_type", "unknown")
             question = item["question"]
-            gold = str(item.get("answer", ""))
             qdate = parse_lme_date(item.get("question_date"))
 
             mem = memory_factory()
@@ -147,7 +148,11 @@ def run_longmemeval(
             correct = judge(judge_llm, question, gold, hypothesis, question_id=qid)
         except Exception as e:  # one flaky question must not abandon the whole run
             if verbose:
-                print(f"[{idx+1}/{len(items)}] ERR {type(e).__name__}: {str(e)[:50]} — skipped")
+                print(f"[{idx+1}/{len(items)}] ERR {type(e).__name__}: {str(e)[:50]} — scored incorrect")
+            per_type.setdefault(qtype, []).append(False)
+            results.append({"question_id":qid,"question_type":qtype,"question":question,
+                            "gold":gold,"hypothesis":"","correct":False,
+                            "error":{"type":type(e).__name__,"message":str(e)}})
             continue
 
         per_type.setdefault(qtype, []).append(correct)
@@ -173,6 +178,7 @@ def run_longmemeval(
         "avg_answer_s": round(sum(r["answer_s"] for r in results) / max(len(results), 1), 2),
         "answer_tokens_in": getattr(answer_llm, "tokens_in", 0),
         "answer_tokens_out": getattr(answer_llm, "tokens_out", 0),
+        "errors": sum(1 for r in results if "error" in r),
     }
     if out_path:
         parent = os.path.dirname(out_path)

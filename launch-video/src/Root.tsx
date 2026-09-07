@@ -6,10 +6,19 @@ import {SmritiEnterpriseVideo} from './enterprise/EnterpriseVideo';
 import {
   FPS as EFPS, TOTAL_FRAMES as E_TOTAL_FRAMES,
 } from './enterprise/etheme';
+import {LaunchTeaser30} from './teaser/LaunchTeaser30';
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      <Composition
+        id="SmritiLaunch30"
+        component={LaunchTeaser30}
+        durationInFrames={900}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
       <Composition
         id="SmritiLaunch"
         component={SmritiLaunchVideo}

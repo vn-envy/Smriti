@@ -7,6 +7,8 @@
     "postinstall": "node scripts/copy-fonts.mjs",
     "dev": "remotion studio",
     "render": "remotion render SmritiLaunch out/smriti-launch.mp4",
+    "render:teaser": "remotion render SmritiLaunch30 out/smriti-launch-teaser-30s.mp4 --codec=h264 --crf=18",
+    "bundle:webgpu": "esbuild webgpu/preview.ts --bundle --format=esm --outfile=public/webgpu-preview.js",
     "still": "remotion still SmritiLaunch",
     "typecheck": "tsc --noEmit"
   },
@@ -28,6 +30,7 @@
   "devDependencies": {
     "@types/react": "^18.3.3",
     "@types/three": "^0.166.0",
+    "esbuild": "^0.28.2",
     "typescript": "^5.5.4"
   }
 }

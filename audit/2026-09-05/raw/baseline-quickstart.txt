@@ -1,0 +1,17 @@
+stats: {'episodes': 2, 'facts': 3, 'valid_facts': 2, 'entities': 3, 'mode': 'full'}
+
+--- search: 'where does the user live?' ---
+  [episode] I live in Hyderabad and I'm building SigmaFlow.  (channels: bm25_episode,vec_episode)
+  [fact] The user lives in Bengaluru.  (channels: bm25_fact,vec_fact)
+  [fact] The user is building SigmaFlow, a reliability middleware for agent pipelines.  (channels: bm25_fact,vec_fact)
+  [fact] The user lives in Hyderabad.  (channels: bm25_fact,vec_fact)
+
+--- packed context (what the answering model sees) ---
+KNOWN FACTS (each with validity window; CURRENT means still true, SUPERSEDED means it was true then but later changed):
+- [2026-06-01 | CURRENT] The user lives in Bengaluru.
+- [2026-01-15 | CURRENT] The user is building SigmaFlow, a reliability middleware for agent pipelines.
+- [2026-01-15 | SUPERSEDED on 2026-06-01] The user lives in Hyderabad.
+
+RAW CONVERSATION EVIDENCE (timestamped):
+- [2026-01-15] user: I live in Hyderabad and I'm building SigmaFlow.
+- [2026-06-02] user: Update: I moved to Bengaluru on June 1st.

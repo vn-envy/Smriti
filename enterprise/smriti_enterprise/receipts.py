@@ -58,6 +58,10 @@ class HMACSigner:
     MAC, deliberately not marketed as an asymmetric signature."""
 
     def __init__(self, key: bytes, key_id: str = "default"):
+        if not isinstance(key, bytes) or not key:
+            raise ValueError("HMAC key must be non-empty bytes")
+        if not key_id:
+            raise ValueError("HMAC key_id must be non-empty")
         self.key = key
         self.key_id = key_id
 
@@ -66,26 +70,41 @@ class HMACSigner:
                 "mac": _hmac.new(self.key, payload, hashlib.sha256).hexdigest()}
 
     def verify(self, payload: bytes, sig: dict) -> bool:
+        if sig.get("alg") != "HMAC-SHA256" or sig.get("key_id") != self.key_id:
+            return False
         expect = _hmac.new(self.key, payload, hashlib.sha256).hexdigest()
         return _hmac.compare_digest(expect, sig.get("mac", ""))
 
 
-def verify_chain(rows, signer: Optional[HMACSigner] = None) -> dict:
+def verify_chain(rows, signer: Optional[HMACSigner] = None,
+                 checkpoint_every: Optional[int] = None) -> dict:
     """rows: iterable of (seq, body_json, hash, prev_hash, checkpoint_json|None).
     Recomputes every link; verifies checkpoints when a signer is supplied."""
     prev = ""
+    expected_seq = 1
     checked = bad = checkpoints = 0
     for seq, body_json, h, prev_hash, checkpoint in rows:
         checked += 1
+        if seq != expected_seq:
+            bad += 1
         if prev_hash != prev:
             bad += 1
         if digest(prev_hash + body_json) != h:
             bad += 1
+        checkpoint_required = bool(signer and checkpoint_every
+                                   and seq % checkpoint_every == 0)
+        if checkpoint_required and not checkpoint:
+            bad += 1
         if checkpoint and signer is not None:
-            cp = json.loads(checkpoint)
             checkpoints += 1
-            if not signer.verify(h.encode(), cp):
+            try:
+                cp = json.loads(checkpoint)
+                valid = isinstance(cp, dict) and signer.verify(h.encode(), cp)
+            except (TypeError, ValueError, json.JSONDecodeError):
+                valid = False
+            if not valid:
                 bad += 1
         prev = h
+        expected_seq += 1
     return {"receipts": checked, "violations": bad,
             "checkpoints_verified": checkpoints, "ok": bad == 0}

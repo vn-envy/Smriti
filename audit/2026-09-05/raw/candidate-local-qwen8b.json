@@ -1,0 +1,35 @@
+{"ingest": {"session_id": "s0", "episodes": 1, "facts": 2}, "elapsed_s": 32.35701704211533}
+{"ingest": {"session_id": "s1", "episodes": 1, "facts": 1}, "elapsed_s": 17.469136958010495}
+{
+  "model": "qwen3:8b",
+  "purpose": "real model integration smoke, not leaderboard",
+  "results": [
+    {
+      "ingest": {
+        "session_id": "s0",
+        "episodes": 1,
+        "facts": 2
+      },
+      "elapsed_s": 32.35701704211533
+    },
+    {
+      "ingest": {
+        "session_id": "s1",
+        "episodes": 1,
+        "facts": 1
+      },
+      "elapsed_s": 17.469136958010495
+    }
+  ],
+  "context": "KNOWN FACTS (each with validity window; CURRENT means still true, SUPERSEDED means it was true then but later changed):\n- [2026-01-01 | CURRENT] Maya's name is Maya\n- [2026-01-01 | CURRENT] Maya lives in Hyderabad\n- [2026-06-01 | CURRENT] The user moved to Bengaluru on June 1st, 2026\n\nRAW CONVERSATION EVIDENCE (timestamped):\n- [2026-01-01] user: My name is Maya. I live in Hyderabad.\n- [2026-06-02] user: I moved to Bengaluru on June 1st, 2026.",
+  "stats": {
+    "episodes": 2,
+    "facts": 3,
+    "valid_facts": 3,
+    "entities": 3,
+    "mode": "full"
+  },
+  "llm_calls": 2,
+  "tokens_in": 955,
+  "tokens_out": 635
+}

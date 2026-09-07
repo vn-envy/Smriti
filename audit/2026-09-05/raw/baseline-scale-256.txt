@@ -1,0 +1,33 @@
+SMRITI scaling pariksha | embedding dim=256 (scale vector ms ~3x for 768-dim models)
+
+N=  1,251 rows | file     0.0 MB | ingest   1,032 rows/s
+  cold first query :      2.3 ms (vector cache build)
+  warm retrieve    :      0.7 ms mean |    2.3 ms p95
+  pack_context     :     0.01 ms -> 1,211 chars (budget-capped)
+  write->read      :      0.6 ms (cache rebuild penalty)
+  channels: bm25 0.1 ms | vector 0.0 ms | temporal 0.0 ms
+  needle@12 recall : OK
+
+N= 12,501 rows | file    18.3 MB | ingest  43,191 rows/s
+  cold first query :     23.5 ms (vector cache build)
+  warm retrieve    :      3.3 ms mean |    4.3 ms p95
+  pack_context     :     0.01 ms -> 1,213 chars (budget-capped)
+  write->read      :      3.2 ms (cache rebuild penalty)
+  channels: bm25 0.5 ms | vector 0.4 ms | temporal 0.1 ms
+  needle@12 recall : OK
+
+N=125,001 rows | file   182.6 MB | ingest  50,704 rows/s
+  cold first query :    249.0 ms (vector cache build)
+  warm retrieve    :     31.0 ms mean |   40.3 ms p95
+  pack_context     :     0.01 ms -> 1,280 chars (budget-capped)
+  write->read      :     34.3 ms (cache rebuild penalty)
+  channels: bm25 6.0 ms | vector 6.7 ms | temporal 0.1 ms
+  needle@12 recall : OK
+
+N=312,501 rows | file   457.2 MB | ingest  50,635 rows/s
+  cold first query :    990.3 ms (vector cache build)
+  warm retrieve    :     80.5 ms mean |  106.0 ms p95
+  pack_context     :     0.01 ms -> 1,092 chars (budget-capped)
+  write->read      :    116.7 ms (cache rebuild penalty)
+  channels: bm25 15.5 ms | vector 17.3 ms | temporal 0.1 ms
+  needle@12 recall : OK

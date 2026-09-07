@@ -19,7 +19,7 @@ import smriti as _core
 from smriti.store import utcnow
 
 from ._version import __version__ as _ent_version
-from .migrations import schema_version, store_id
+from .migrations import ENTERPRISE_SCHEMA_VERSION, schema_version, store_id
 from .receipts import HMACSigner, canonical
 from .store import EnterpriseStore
 
@@ -96,7 +96,15 @@ def verify_pack(pack_path: str, signer: Optional[HMACSigner] = None,
         m = json.load(fh)
     if m.get("format") != PACK_FORMAT or m.get("pack_version") != PACK_VERSION:
         raise PackError(f"unsupported pack format {m.get('format')!r} "
-                        f"v{m.get('pack_version')!r}")
+            f"v{m.get('pack_version')!r}")
+    if not m.get("store_id") or not isinstance(m.get("enterprise_schema_version"), int):
+        raise PackError("pack identity or enterprise schema metadata missing")
+    if m["enterprise_schema_version"] != ENTERPRISE_SCHEMA_VERSION:
+        raise PackError(
+            f"enterprise schema mismatch: pack has "
+            f"v{m['enterprise_schema_version']}, runtime requires "
+            f"v{ENTERPRISE_SCHEMA_VERSION}; open a writable copy with "
+            "EnterpriseSmriti to migrate it, then rebuild the pack")
     actual = _file_sha256(pack_path)
     if actual != m.get("sha256"):
         raise PackError("checksum mismatch — pack modified after build")
@@ -119,8 +127,7 @@ def open_pack(pack_path: str, signer: Optional[HMACSigner] = None,
               now: Optional[str] = None) -> "tuple[EnterpriseStore, dict]":
     """verify-before-open, then an immutable read-only mount."""
     m = verify_pack(pack_path, signer=signer, now=now)
-    if expected_embedder and m.get("embedder_fingerprint") \
-            and m["embedder_fingerprint"] != expected_embedder:
+    if expected_embedder and m.get("embedder_fingerprint") != expected_embedder:
         raise PackError(
             f"embedder mismatch: pack built with {m['embedder_fingerprint']!r}, "
             f"mount requested {expected_embedder!r} — vectors are not comparable")

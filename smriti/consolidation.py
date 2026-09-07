@@ -21,6 +21,7 @@ Two tiers, cheapest first:
 """
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from typing import List, Optional, Tuple
 
 from .llm import extract_json
@@ -64,14 +65,58 @@ def llm_arbitrate(llm, fact: Fact, candidates: List[Fact]) -> Tuple[str, Optiona
     data = extract_json(raw) or {}
     action = data.get("action", "add")
     target = data.get("target_id")
-    if action == "supersede" and target is None:
-        action = "add"
+    if action not in {"add", "supersede", "skip"}:
+        return "add", None
+    if action == "supersede":
+        if isinstance(target, bool):
+            return "add", None
+        try:
+            target = int(target)
+        except (TypeError, ValueError):
+            return "add", None
+        if target not in {candidate.id for candidate in candidates}:
+            return "add", None
     return action, target
+
+
+def _time_key(value: Optional[str]):
+    try:
+        parsed = datetime.fromisoformat((value or "").replace("Z", "+00:00"))
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=timezone.utc)
+        return (0, parsed.timestamp())
+    except (TypeError, ValueError):
+        return (1, value or "")
 
 
 def consolidate(store: Store, fact: Fact, emb, embedder=None, llm=None,
                 sim_threshold: float = 0.72) -> Optional[int]:
     """Insert a fact with conflict resolution. Returns new fact id (or None if skipped)."""
+    # Resolve the effective event time once. This is also what Store.add_fact
+    # persists, and comparing it prevents late-arriving history from replacing
+    # a fact that became true later.
+    fact.valid_from = fact.valid_from or fact.event_date or fact.ingested_at
+    pred = fact.predicate.lower().strip()
+    if fact.subject and (pred in SINGLE_VALUED or pred.startswith("favorite")):
+        history = store.facts_for_key(fact.subject, fact.predicate)
+        effective = fact.valid_from or fact.event_date or fact.ingested_at
+        for old in history:
+            if (old.statement.strip().lower() == fact.statement.strip().lower()
+                    and (effective is None or old.valid_from == effective)):
+                return None
+        if history:
+            new_id = store.add_fact(fact, emb)
+            history.append(store.get_fact(new_id))
+
+            history.sort(key=lambda item: (*_time_key(item.valid_from), item.id))
+            for current, successor in zip(history, history[1:]):
+                # Route through the store hook so EnterpriseStore can maintain
+                # its independent knowledge-time withdrawal axis too.
+                store.invalidate_fact(current.id, successor.id,
+                                      invalid_at=successor.valid_from)
+            store.set_fact_successor(history[-1].id, None)
+            return new_id
+
     # tier 1: key collision, free
     conflicts = heuristic_conflicts(store, fact)
     if conflicts:
@@ -103,7 +148,11 @@ def consolidate(store: Store, fact: Fact, emb, embedder=None, llm=None,
                 new_id = store.add_fact(fact, emb)
                 old = store.get_fact(int(target)) if target else None
                 if old and old.invalid_at is None:
-                    store.invalidate_fact(old.id, new_id, invalid_at=fact.valid_from)
+                    new = store.get_fact(new_id)
+                    if _time_key(old.valid_from) > _time_key(new.valid_from):
+                        store.invalidate_fact(new_id, old.id, invalid_at=old.valid_from)
+                    else:
+                        store.invalidate_fact(old.id, new_id, invalid_at=new.valid_from)
                 return new_id
 
     return store.add_fact(fact, emb)

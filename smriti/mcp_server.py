@@ -218,7 +218,10 @@ class SmritiMCP:
     # ---- JSON-RPC dispatch ----
     def dispatch(self, method, params):
         if method == "initialize":
-            return {"protocolVersion": params.get("protocolVersion", PROTOCOL_VERSION),
+            # Negotiate to the protocol revision this server actually implements.
+            # Echoing an arbitrary client value falsely claims compatibility and
+            # lets the two sides continue with incompatible wire semantics.
+            return {"protocolVersion": PROTOCOL_VERSION,
                     "capabilities": {"tools": {}},
                     "serverInfo": {"name": "smriti", "version": __version__}}
         if method == "tools/list":
@@ -238,7 +241,10 @@ class SmritiMCP:
             except Exception as e:  # tool failure -> error result, not a crash
                 return {"content": [{"type": "text", "text": f"tool error: {str(e)[:300]}"}],
                         "isError": True}
-            return {"content": [{"type": "text", "text": json.dumps(out, default=str)}]}
+            # Keep JSON text for older hosts and expose native structured data
+            # for current MCP clients.
+            return {"content": [{"type": "text", "text": json.dumps(out, default=str)}],
+                    "structuredContent": out}
         if method == "ping":
             return {}
         raise McpError(-32601, f"method not found: {method}")
@@ -249,11 +255,18 @@ class SmritiMCP:
             return _err(None, -32600, "invalid request")
         mid = msg.get("id")
         is_notification = "id" not in msg
+        if msg.get("jsonrpc") != "2.0":
+            return None if is_notification else _err(mid, -32600, "invalid JSON-RPC version")
         method = msg.get("method")
         if not isinstance(method, str):
             return None if is_notification else _err(mid, -32600, "missing method")
         try:
-            result = self.dispatch(method, msg.get("params") or {})
+            params = msg.get("params", {})
+            if params is None:
+                params = {}
+            if not isinstance(params, dict):
+                raise McpError(-32602, "params must be an object")
+            result = self.dispatch(method, params)
         except McpError as e:
             return None if is_notification else _err(mid, e.code, e.message)
         except Exception as e:  # never crash the loop
@@ -289,7 +302,7 @@ def _write(obj):
 
 
 def build_memory(db: str, *, embed_model="", provider="", model="", api_key="",
-                 embed_provider="") -> Smriti:
+                 embed_provider="", adopt_legacy_embedder=False) -> Smriti:
     """Construct a Smriti instance from env/flags. Lite (offline) by default."""
     llm = LLM(model=model, provider=provider, api_key=api_key) if model else None
     if embed_provider == "ollama" or (not embed_provider and embed_model and not provider):
@@ -299,7 +312,8 @@ def build_memory(db: str, *, embed_model="", provider="", model="", api_key="",
     else:
         embedder = HashEmbedder()
     return Smriti(path=db, embedder=embedder, llm=llm,
-                  mode="full" if llm else "lite")
+                  mode="full" if llm else "lite",
+                  adopt_legacy_embedder=adopt_legacy_embedder)
 
 
 def main(argv=None):
@@ -311,12 +325,15 @@ def main(argv=None):
     p.add_argument("--api-key", default=os.environ.get("SMRITI_API_KEY", ""))
     p.add_argument("--embed-model", default=os.environ.get("SMRITI_EMBED_MODEL", ""))
     p.add_argument("--embed-provider", default=os.environ.get("SMRITI_EMBED_PROVIDER", ""))
+    p.add_argument("--adopt-legacy-embedder", action="store_true",
+                   help="bind a pre-metadata database to the configured embedder")
     args = p.parse_args(argv)
     # path containment: never accept a db path from tool calls; fixed here.
     db = os.path.abspath(os.path.expanduser(args.db))
     mem = build_memory(db, embed_model=args.embed_model, provider=args.provider,
                        model=args.model, api_key=args.api_key,
-                       embed_provider=args.embed_provider)
+                       embed_provider=args.embed_provider,
+                       adopt_legacy_embedder=args.adopt_legacy_embedder)
     SmritiMCP(mem).serve_stdio()
 
 

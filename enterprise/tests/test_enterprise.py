@@ -95,6 +95,12 @@ def test_world_and_knowledge_axes_are_independent():
     ).fetchone()
     assert row[0].startswith("2026-06-01")      # world validity ended in June
     assert row[1] >= "2026-07"                  # knowledge withdrawn in July
+
+    # Learning in July that the move happened in June must not erase the
+    # store's later ability to reconstruct that Hyderabad was true in February.
+    historical = [f.object for f in mem.facts_asof(
+        world="2026-02-01T00:00:00Z", known="2026-08-01T00:00:00Z")]
+    assert "Hyderabad" in historical
     assert row[0] != row[1]                     # never the same column/value
 
 

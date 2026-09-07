@@ -1,0 +1,35 @@
+{
+  "recorded_at": "2026-09-07T13:17:16.920547+00:00",
+  "packages": {
+    "smriti_enterprise-0.1.0-py3-none-any.whl": "227c75f072b8ec2fd95a9ff4a4813d0446d678bf89dfcd8da8b693acc8543aca",
+    "smriti_enterprise-0.1.0.tar.gz": "4cbb8c08f5b0e8dc229cbefa39c560ade77bc4afb07fadf4be9c850808fa00c8",
+    "smriti_agents-0.3.2-py3-none-any.whl": "057c71dbd5630f3ae0e0afda75325243130d003d013e739e89c13516537b2dec",
+    "smriti_agents-0.3.2.tar.gz": "1d92ed346f5d92b153d23e67974d5d98f113588a89bdee8e5b9ceba7cd4a4ee6"
+  },
+  "tests": [
+    {
+      "runtime": "macOS Python3.11",
+      "install": "noneditable wheels",
+      "passed": 169
+    },
+    {
+      "runtime": "Linux Python3.9",
+      "install": "sdist with isolated build",
+      "passed": 169
+    },
+    {
+      "runtime": "Linux Python3.12",
+      "install": "noneditable wheels",
+      "passed": 169
+    }
+  ],
+  "dependencies": "pip check passed in Linux3.9/3.12; mac previous check passed",
+  "upgrade": "Actual original-package database reopened and v1 backup restored with explicit legacy embedding adoption; saved Cedar fact retrieved",
+  "temporal": "Independent Jan/June/lateMarch probe passed with both historical object and invalid_at matching expected knowledge snapshot",
+  "limitations": [
+    "Original database with unrecorded historical revisions cannot reconstruct lost past knowledge",
+    "Model extraction accuracy not established by offline tests",
+    "Full matched public benchmark and growing-corpus cost/speed comparison unfinished",
+    "Workspace candidate; not published or deployed"
+  ]
+}

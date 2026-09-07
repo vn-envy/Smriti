@@ -39,4 +39,9 @@ def judge(judge_llm, question: str, gold: str, hypothesis: str,
          {"role": "user", "content": prompt}],
         max_tokens=8,
     )
-    return bool(re.search(r"\byes\b", raw.lower()))
+    verdict = raw.strip().lower()
+    # Reject explanations and malformed output instead of accepting any text
+    # that happens to contain the token "yes".
+    if verdict not in {"yes", "no"}:
+        raise ValueError(f"judge returned invalid verdict: {raw[:120]!r}")
+    return verdict == "yes"

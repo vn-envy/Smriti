@@ -1,0 +1,41 @@
+{
+  "name": "smriti-comparative-retrieval-v1",
+  "license": "CC0-1.0",
+  "description": "Synthetic, non-private agent-memory corpus. Document identifiers are part of the payload so adapters can report stable evidence IDs.",
+  "documents": [
+    {"id":"d01","timestamp":"2024-01-10T09:00:00Z","text":"Maya's preferred coffee is a flat white."},
+    {"id":"d02","timestamp":"2024-03-02T09:00:00Z","text":"Maya stopped drinking coffee and now prefers jasmine tea."},
+    {"id":"d03","timestamp":"2024-01-12T09:00:00Z","text":"Arun's mentor is Dr. Imani Cole."},
+    {"id":"d04","timestamp":"2024-01-13T09:00:00Z","text":"Dr. Imani Cole researches marine robotics."},
+    {"id":"d05","timestamp":"2024-02-01T09:00:00Z","text":"The passport renewal appointment is at Begumpet office on Friday."},
+    {"id":"d06","timestamp":"2024-02-03T09:00:00Z","text":"The blue bicycle is stored in locker 17."},
+    {"id":"d07","timestamp":"2024-02-05T09:00:00Z","text":"Priya is allergic to cashews."},
+    {"id":"d08","timestamp":"2024-02-07T09:00:00Z","text":"Project Lantern's launch date is 18 June 2024."},
+    {"id":"d09","timestamp":"2024-02-09T09:00:00Z","text":"The veterinarian for Pixel is Dr. Nwosu."},
+    {"id":"d10","timestamp":"2024-02-11T09:00:00Z","text":"The Wi-Fi guest password is orchard-lake-27."},
+    {"id":"d11","timestamp":"2024-02-13T09:00:00Z","text":"Leena booked the Cedar Room for the design review."},
+    {"id":"d12","timestamp":"2024-02-15T09:00:00Z","text":"Omar's emergency contact is his sister Salma."},
+    {"id":"d13","timestamp":"2024-02-17T09:00:00Z","text":"The quarterly tax documents are in the green archive box."},
+    {"id":"d14","timestamp":"2024-02-19T09:00:00Z","text":"Ravi's running shoes are size 10 and the brand is Asics."},
+    {"id":"d15","timestamp":"2024-02-21T09:00:00Z","text":"The team lunch reservation is at Saffron Table."},
+    {"id":"d16","timestamp":"2024-02-23T09:00:00Z","text":"Nila's train to Mysuru leaves from platform 6."},
+    {"id":"d17","timestamp":"2024-02-25T09:00:00Z","text":"The invoice for Northstar Labs is due on 30 April."},
+    {"id":"d18","timestamp":"2024-02-27T09:00:00Z","text":"Kabir keeps the spare apartment key with neighbor Elena."},
+    {"id":"d19","timestamp":"2024-02-28T09:00:00Z","text":"The book club selected The Left Hand of Darkness."},
+    {"id":"d20","timestamp":"2024-03-01T09:00:00Z","text":"Asha's physiotherapist recommended swimming twice weekly."}
+  ],
+  "queries": [
+    {"id":"q01","category":"single-hop","query":"Where is my passport renewal appointment?","relevant":["d05"]},
+    {"id":"q02","category":"paraphrase","query":"Which nut must Priya avoid?","relevant":["d07"]},
+    {"id":"q03","category":"single-hop","query":"Who treats Pixel?","relevant":["d09"]},
+    {"id":"q04","category":"single-hop","query":"Where will the design review happen?","relevant":["d11"]},
+    {"id":"q05","category":"multi-hop","query":"What field does Arun's mentor study?","relevant":["d03","d04"]},
+    {"id":"q06","category":"current-state","query":"What drink does Maya currently prefer?","relevant":["d02"]},
+    {"id":"q07","category":"as-of","query":"What drink did Maya prefer in January 2024?","relevant":["d01"]},
+    {"id":"q08","category":"temporal","query":"What was scheduled for 18 June 2024?","relevant":["d08"]},
+    {"id":"q09","category":"paraphrase","query":"Who should be called if Omar has an emergency?","relevant":["d12"]},
+    {"id":"q10","category":"single-hop","query":"Where are the tax records stored?","relevant":["d13"]},
+    {"id":"q11","category":"abstention","query":"What is Maya's passport number?","relevant":[]},
+    {"id":"q12","category":"abstention","query":"Which university did Arun attend?","relevant":[]}
+  ]
+}

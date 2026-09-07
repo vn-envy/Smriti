@@ -4,6 +4,7 @@ aliases, export/import round trips, secret redaction, WAL durability,
 contradiction/knowledge-update handling, date parsing, multilingual content,
 and noisy-haystack retrieval. All offline: HashEmbedder + MockLLM."""
 import json
+import pytest
 
 from smriti import Fact, HashEmbedder, MockLLM, Smriti
 from smriti.mcp_server import SmritiMCP
@@ -210,6 +211,29 @@ def test_import_refuses_nonempty_store(tmp_path):
         assert False, "expected ValueError on non-empty import target"
     except ValueError:
         pass
+
+
+def test_failed_import_is_atomic_and_retryable():
+    source = lite()
+    source.add([{"role": "user", "content": "first"}],
+               timestamp="2026-01-01T00:00:00Z")
+    source.add([{"role": "user", "content": "second"}],
+               timestamp="2026-01-02T00:00:00Z")
+    good = source.store.export_data()
+    broken = json.loads(json.dumps(good))
+    broken["episodes"][1]["emb"] = "%%%not-base64%%%"
+    target = lite()
+    with pytest.raises(ValueError, match="base64"):
+        target.store.import_data(broken)
+    assert target.stats()["episodes"] == 0
+    target.store.import_data(good)
+    assert target.stats()["episodes"] == 2
+
+
+def test_import_rejects_unknown_export_version():
+    target = lite()
+    with pytest.raises(ValueError, match="unsupported"):
+        target.store.import_data({"format": "smriti-export", "version": 999})
 
 
 # ---------------------------------------------------------------- redaction
@@ -474,3 +498,316 @@ def test_needle_survives_noisy_typo_haystack():
             timestamp="2026-02-01T10:00:00Z")
     hits = mem.search("where is my notary appointment?", k=5)
     assert any("Koramangala" in r.text for r in hits)
+
+
+def test_mode_typo_is_rejected():
+    with pytest.raises(ValueError, match="mode must be"):
+        Smriti(mode="ltei")
+    with pytest.raises(ValueError, match="mode must be"):
+        Smriti(mode=None)
+
+
+def test_direct_add_fact_honors_redaction():
+    mem = lite(redact=True)
+    mem.add_fact(Fact(id=None,
+                      statement="API key is sk-abcdefghijklmnop1234",
+                      subject="user", predicate="credential",
+                      object="sk-abcdefghijklmnop1234",
+                      entities=["sk-abcdefghijklmnop1234"]))
+    row = mem.store.db.execute(
+        "SELECT statement, object FROM facts").fetchone()
+    assert "sk-abcdefghijklmnop1234" not in " ".join(row)
+    assert "[REDACTED]" in row[0]
+
+
+def test_cross_connection_vector_cache_sees_committed_rows(tmp_path):
+    path = str(tmp_path / "shared.db")
+    reader = Smriti(path=path, embedder=HashEmbedder(), mode="lite")
+    writer = Smriti(path=path, embedder=HashEmbedder(), mode="lite")
+    reader.add([{"role": "user", "content": "initial unrelated note"}],
+               timestamp="2026-01-01T00:00:00Z")
+    reader.search("semantic cache warmup", channels={"semantic"})
+    writer.add([{"role": "user", "content": "new cross connection memory"}],
+               timestamp="2026-02-01T00:00:00Z")
+    hits = reader.search("new cross connection memory", channels={"semantic"})
+    assert any("new cross connection memory" in h.text for h in hits)
+
+
+def test_late_arriving_history_does_not_supersede_newer_truth():
+    mem = lite()
+    newer = Fact(id=None, statement="The user lives in Bengaluru.",
+                 subject="user", predicate="lives_in", object="Bengaluru",
+                 valid_from="2026-06-01T00:00:00Z")
+    older = Fact(id=None, statement="The user lives in Hyderabad.",
+                 subject="user", predicate="lives_in", object="Hyderabad",
+                 valid_from="2026-01-01T00:00:00Z")
+    newer_id = mem.add_fact(newer)
+    older_id = mem.add_fact(older)
+    newer_row = mem.store.get_fact(newer_id)
+    older_row = mem.store.get_fact(older_id)
+    assert newer_row.invalid_at is None
+    assert older_row.invalid_at == newer_row.valid_from
+    assert older_row.superseded_by == newer_id
+
+
+def test_late_middle_fact_rebuilds_complete_validity_chain():
+    mem = lite()
+    jan = mem.add_fact(Fact(id=None, statement="Lives in Hyderabad", subject="user",
+                             predicate="lives_in", object="Hyderabad",
+                             valid_from="2026-01-01T00:00:00Z"))
+    june = mem.add_fact(Fact(id=None, statement="Lives in Bengaluru", subject="user",
+                              predicate="lives_in", object="Bengaluru",
+                              valid_from="2026-06-01T00:00:00Z"))
+    march = mem.add_fact(Fact(id=None, statement="Lives in Pune", subject="user",
+                               predicate="lives_in", object="Pune",
+                               valid_from="2026-03-01T05:30:00+05:30"))
+    jan_f, march_f, june_f = map(mem.store.get_fact, (jan, march, june))
+    assert jan_f.invalid_at == march_f.valid_from and jan_f.superseded_by == march
+    assert march_f.invalid_at == june_f.valid_from and march_f.superseded_by == june
+    assert june_f.invalid_at is None and june_f.superseded_by is None
+
+
+def test_llm_arbiter_cannot_supersede_fact_outside_candidates(monkeypatch):
+    llm = MockLLM(['{"action":"supersede","target_id":2}'])
+    mem = Smriti(embedder=HashEmbedder(), llm=llm, mode="full")
+    candidate = mem.add_fact(Fact(id=None, statement="Works at Acme", subject="user",
+                                  predicate="role", object="Acme"),
+                             resolve_conflicts=False)
+    unrelated = mem.add_fact(Fact(id=None, statement="Maya lives in Pune", subject="maya",
+                                  predicate="lives_in", object="Pune"),
+                             resolve_conflicts=False)
+    monkeypatch.setattr(mem.store, "vector_search",
+                        lambda *args, **kwargs: [(candidate, 0.99)])
+    mem.add_fact(Fact(id=None, statement="Works at Beta", subject="user",
+                      predicate="employer", object="Beta"))
+    assert mem.store.get_fact(unrelated).invalid_at is None
+
+
+def test_llm_semantic_supersession_respects_event_chronology(monkeypatch):
+    llm = MockLLM(['{"action":"supersede","target_id":1}'])
+    mem = Smriti(embedder=HashEmbedder(), llm=llm, mode="full")
+    newer = mem.add_fact(Fact(id=None, statement="Works at Acme", subject="user",
+                              predicate="role", object="Acme",
+                              valid_from="2026-06-01T00:00:00Z"),
+                         resolve_conflicts=False)
+    monkeypatch.setattr(mem.store, "vector_search",
+                        lambda *args, **kwargs: [(newer, 0.99)])
+    older = mem.add_fact(Fact(id=None, statement="Was an Acme contractor", subject="user",
+                              predicate="employment", object="contractor",
+                              valid_from="2026-01-01T00:00:00Z"))
+    assert mem.store.get_fact(newer).invalid_at is None
+    assert mem.store.get_fact(older).superseded_by == newer
+
+
+def test_embedding_dimension_change_rolls_back_before_write():
+    class ChangingEmbedder:
+        def __init__(self):
+            self.calls = 0
+
+        def embed(self, texts):
+            self.calls += 1
+            size = 3 if self.calls == 1 else 4
+            return [[1.0] * size for _ in texts]
+
+    mem = Smriti(embedder=ChangingEmbedder(), mode="lite")
+    mem.add([{"role": "user", "content": "first"}])
+    with pytest.raises(ValueError, match="embedding dimension mismatch"):
+        mem.add([{"role": "user", "content": "second"}])
+    assert mem.stats()["episodes"] == 1
+
+
+def test_invalid_embedding_is_rejected_before_write():
+    class BadEmbedder:
+        def embed(self, texts):
+            return [[float("nan"), 0.0] for _ in texts]
+
+    mem = Smriti(embedder=BadEmbedder(), mode="lite")
+    with pytest.raises(ValueError, match="finite"):
+        mem.add([{"role": "user", "content": "bad vector"}])
+    assert mem.stats()["episodes"] == 0
+
+
+def test_repeated_undated_direct_fact_remains_deduped():
+    mem = lite()
+    fact = Fact(id=None, statement="The user lives in Pune", subject="user",
+                predicate="lives_in", object="Pune")
+    assert mem.add_fact(fact) is not None
+    assert mem.add_fact(fact) is None
+    assert mem.stats()["facts"] == 1
+
+
+def test_smriti_context_manager_closes_connection():
+    with lite() as mem:
+        assert mem.stats()["episodes"] == 0
+    with pytest.raises(Exception):
+        mem.stats()
+
+
+def test_doctor_inspects_database_read_only(tmp_path):
+    from smriti.doctor import inspect_database
+    path = str(tmp_path / "doctor.db")
+    with Smriti(path=path, mode="lite") as mem:
+        mem.add([{"role": "user", "content": "doctor test"}],
+                timestamp="2026-01-01T00:00:00Z")
+    before = (tmp_path / "doctor.db").stat().st_mtime_ns
+    report = inspect_database(path)
+    after = (tmp_path / "doctor.db").stat().st_mtime_ns
+    assert report["ok"] is True
+    assert report["counts"]["episodes"] == 1
+    assert report["embedding_dimensions"]["episodes"] == [256]
+    assert before == after
+
+
+def test_doctor_reports_missing_database_without_creating_it(tmp_path):
+    from smriti.doctor import inspect_database
+    path = tmp_path / "missing.db"
+    report = inspect_database(str(path))
+    assert report["ok"] is False
+    assert not path.exists()
+
+
+def test_doctor_handles_uri_metacharactersacters_in_path(tmp_path):
+    from smriti.doctor import inspect_database
+    path = tmp_path / "memory #1?.db"
+    with Smriti(path=str(path), mode="lite"):
+        pass
+    assert inspect_database(str(path))["ok"] is True
+
+
+def test_database_rejects_incompatible_embedder_identity(tmp_path):
+    path = str(tmp_path / "identity.db")
+    with Smriti(path=path, embedder=HashEmbedder(dim=64), mode="lite") as mem:
+        mem.add([{"role": "user", "content": "identity test"}])
+    with pytest.raises(ValueError, match="incompatible"):
+        Smriti(path=path, embedder=HashEmbedder(dim=128), mode="lite")
+    with Smriti(path=path, embedder=HashEmbedder(dim=64), mode="lite") as reopened:
+        assert reopened.stats()["episodes"] == 1
+
+
+def test_database_rejects_same_dimension_different_model(tmp_path):
+    class NamedHash(HashEmbedder):
+        def __init__(self, model):
+            super().__init__(dim=64)
+            self.model = model
+
+    path = str(tmp_path / "models.db")
+    with Smriti(path=path, embedder=NamedHash("model-a"), mode="lite") as mem:
+        mem.add([{"role": "user", "content": "model identity"}])
+    with pytest.raises(ValueError, match="incompatible"):
+        Smriti(path=path, embedder=NamedHash("model-b"), mode="lite")
+
+
+def test_export_identity_prevents_mislabeled_vector_restore():
+    source = Smriti(embedder=HashEmbedder(dim=64), mode="lite")
+    source.add([{"role": "user", "content": "portable vectors"}])
+    exported = source.store.export_data()
+    target = Smriti(embedder=HashEmbedder(dim=128), mode="lite")
+    with pytest.raises(ValueError, match="export embedder is incompatible"):
+        target.store.import_data(exported)
+    assert target.stats()["episodes"] == 0
+
+
+def test_legacy_export_vectors_require_explicit_adoption():
+    source = Smriti(embedder=HashEmbedder(dim=64), mode="lite")
+    source.add([{"role": "user", "content": "old export"}])
+    exported = source.store.export_data()
+    exported.pop("embedder_identity")
+    target = Smriti(embedder=HashEmbedder(dim=64), mode="lite")
+    with pytest.raises(ValueError, match="legacy export"):
+        target.store.import_data(exported)
+    target.store.import_data(exported, adopt_legacy_embedder=True)
+    assert target.stats()["episodes"] == 1
+
+
+def test_version_one_export_restores_only_with_explicit_adoption():
+    source = Smriti(embedder=HashEmbedder(dim=64), mode="lite")
+    source.add([{"role": "user", "content": "version one backup"}])
+    exported = source.store.export_data()
+    exported["version"] = 1
+    exported.pop("embedder_identity")
+    target = Smriti(embedder=HashEmbedder(dim=64), mode="lite")
+    with pytest.raises(ValueError, match="version 1 export"):
+        target.store.import_data(exported)
+    target.store.import_data(exported, adopt_legacy_embedder=True)
+    assert target.stats()["episodes"] == 1
+
+
+def test_legacy_vectors_require_explicit_embedder_adoption(tmp_path):
+    from smriti.doctor import inspect_database
+    path = str(tmp_path / "legacy.db")
+    with Smriti(path=path, embedder=HashEmbedder(dim=64), mode="lite") as mem:
+        mem.add([{"role": "user", "content": "legacy vector"}])
+        mem.store.db.execute("DELETE FROM metadata WHERE key='embedder_identity'")
+    report = inspect_database(path)
+    assert report["embedder_compatibility"].startswith("legacy-untracked")
+    with pytest.raises(ValueError, match="adopt_legacy_embedder"):
+        Smriti(path=path, embedder=HashEmbedder(dim=64), mode="lite")
+    with Smriti(path=path, embedder=HashEmbedder(dim=64), mode="lite",
+                adopt_legacy_embedder=True) as adopted:
+        assert adopted.search("legacy vector")
+    assert inspect_database(path)["embedder_compatibility"] == "tracked"
+
+
+def test_extraction_json_parser_respects_brackets_inside_strings():
+    from smriti.llm import extract_json
+    raw = 'prefix [{"statement":"Use ] in the draft", "entities":[]}] suffix'
+    assert extract_json(raw)[0]["statement"] == "Use ] in the draft"
+
+
+def test_extraction_diagnostics_distinguish_empty_malformed_and_rejected():
+    from smriti.extraction import parse_facts
+    diagnostics = {}
+    assert parse_facts("[]", "s", None, diagnostics) == []
+    assert diagnostics["status"] == "ok" and diagnostics["items"] == 0
+    assert parse_facts("not json", "s", None, diagnostics) == []
+    assert diagnostics["status"] == "malformed"
+    assert parse_facts('[{"statement":"x","entities":null,"search_keys":null}]',
+                       "s", None, diagnostics)
+    assert diagnostics["accepted"] == 1
+    assert parse_facts('[{"statement":"x","entities":"not-an-array"}]',
+                       "s", None, diagnostics) == []
+    assert diagnostics["status"] == "all_items_rejected"
+
+
+def test_extraction_normalizes_conservative_location_update_predicates():
+    from smriti.extraction import parse_facts
+    diagnostics = {}
+    facts = parse_facts(
+        '[{"statement":"The user moved to Bengaluru", "subject":"user", '
+        '"predicate":"moved_to", "object":"Bengaluru"}]',
+        "s", "2026-01-01T00:00:00Z", diagnostics,
+    )
+    assert facts[0].predicate == "lives_in"
+    assert diagnostics["normalized_predicates"] == 1
+
+
+def test_llm_does_not_retry_network_failure_as_format_fallback(monkeypatch):
+    import urllib.error
+    import smriti.llm as llm_module
+    client = llm_module.LLM("model")
+
+    def fail(*args, **kwargs):
+        raise urllib.error.URLError("offline")
+
+    monkeypatch.setattr(llm_module, "_post_json", fail)
+    with pytest.raises(urllib.error.URLError):
+        client.complete([], json_mode=True)
+    assert client.attempts == 1 and client.calls == 0
+
+
+def test_llm_tracks_format_fallback_attempt_and_missing_usage(monkeypatch):
+    import urllib.error
+    import smriti.llm as llm_module
+    client = llm_module.LLM("model")
+    responses = [urllib.error.HTTPError("url", 400, "bad format", {}, None),
+                 {"choices": [{"message": {"content": "{}"}}]}]
+
+    def respond(*args, **kwargs):
+        value = responses.pop(0)
+        if isinstance(value, Exception):
+            raise value
+        return value
+
+    monkeypatch.setattr(llm_module, "_post_json", respond)
+    assert client.complete([], json_mode=True) == "{}"
+    assert client.attempts == 2 and client.calls == 1 and client.usage_missing == 1

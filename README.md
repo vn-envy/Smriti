@@ -191,7 +191,11 @@ python examples/quickstart.py # see supersession live
 > [!WARNING]
 > SMRITI publishes to PyPI as **`smriti-agents`** (the `smriti-memory` name there belongs to an unrelated project — `pip install smriti-memory` installs something else). Until the first PyPI release lands, install from source as above. The import name is `smriti` either way.
 
-The quickstart runs fully **offline** (lite mode). For LLM-backed extraction + supersession, point SMRITI at any OpenAI-compatible endpoint (Ollama, vLLM, LM Studio, Groq, DeepSeek, OpenRouter, hosted) and any embedder — nothing else to install.
+The quickstart runs fully **offline** using `MockLLM` to demonstrate full-mode extraction and supersession. For real LLM-backed extraction, point SMRITI at any OpenAI-compatible endpoint (Ollama, vLLM, LM Studio, Groq, DeepSeek, OpenRouter, hosted) and any embedder — nothing else to install.
+
+For an existing database, `smriti-doctor --db memory.db` performs read-only SQLite integrity, schema, count, and embedding-dimension checks.
+
+SMRITI records the embedder identity in each new database and rejects a reopen with an incompatible model, endpoint, or dimension. Databases created before this metadata existed require a one-time explicit `Smriti(..., adopt_legacy_embedder=True)` after you verify that the configured embedder matches the one originally used. For MCP-managed databases, use `smriti-mcp --adopt-legacy-embedder --db memory.db` for that one-time adoption.
 
 ### Drop it into your agent (MCP)
 

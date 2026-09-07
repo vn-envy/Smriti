@@ -24,7 +24,7 @@ import uuid as _uuid
 
 from smriti.store import utcnow
 
-ENTERPRISE_SCHEMA_VERSION = 1
+ENTERPRISE_SCHEMA_VERSION = 2
 
 _M1_COLUMNS = {
     "facts": [
@@ -58,6 +58,15 @@ _M1_TABLES = [
     " reason TEXT, authority TEXT, created_at TEXT NOT NULL,"
     " expires_at TEXT, released_at TEXT)",
     "CREATE TABLE IF NOT EXISTS store_meta(key TEXT PRIMARY KEY, value TEXT)",
+]
+
+_M2_TABLES = [
+    "CREATE TABLE IF NOT EXISTS fact_validity_history("
+    " revision_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+    " fact_id INTEGER NOT NULL, valid_from TEXT, invalid_at TEXT,"
+    " superseded_by INTEGER, known_at TEXT NOT NULL)",
+    "CREATE INDEX IF NOT EXISTS idx_fact_validity_history_lookup "
+    "ON fact_validity_history(fact_id, known_at, revision_id)",
 ]
 
 
@@ -107,6 +116,17 @@ def migrate(db: sqlite3.Connection) -> dict:
         for (eid,) in db.execute("SELECT id FROM episodes WHERE uuid IS NULL").fetchall():
             db.execute("UPDATE episodes SET uuid=? WHERE id=?", (_uuid.uuid4().hex, eid))
         db.execute("UPDATE episodes SET recorded_at=COALESCE(recorded_at, ts)")
+        for stmt in _M2_TABLES:
+            db.execute(stmt)
+        db.execute(
+            """INSERT INTO fact_validity_history(
+                   fact_id, valid_from, invalid_at, superseded_by, known_at)
+               SELECT f.id, f.valid_from, f.invalid_at, f.superseded_by,
+                      COALESCE(f.withdrawn_at, f.recorded_at, f.ingested_at, ?)
+                 FROM facts f
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM fact_validity_history h WHERE h.fact_id=f.id)""",
+            (utcnow(),))
         db.execute(f"PRAGMA user_version={ENTERPRISE_SCHEMA_VERSION}")
         db.execute("COMMIT")
     except BaseException:

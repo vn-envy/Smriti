@@ -1,0 +1,20 @@
+Processing /private/tmp/smriti-baseline-20260905/enterprise
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Requirement already satisfied: smriti-agents>=0.3.2 in /private/tmp/smriti-qa-20260905/lib/python3.11/site-packages (from smriti-enterprise==0.1.0) (0.3.2)
+Requirement already satisfied: numpy>=1.24 in /private/tmp/smriti-qa-20260905/lib/python3.11/site-packages (from smriti-agents>=0.3.2->smriti-enterprise==0.1.0) (2.4.6)
+Building wheels for collected packages: smriti-enterprise
+  Building wheel for smriti-enterprise (pyproject.toml): started
+  Building wheel for smriti-enterprise (pyproject.toml): finished with status 'done'
+  Created wheel for smriti-enterprise: filename=smriti_enterprise-0.1.0-py3-none-any.whl size=25365 sha256=134509570d11f46375bb9f9ff4f884f4740a7b64548726e060e7e342eb51f195
+  Stored in directory: /private/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/pip-ephem-wheel-cache-oev1835d/wheels/08/58/dc/a794acd235608ffbf23f05ca6705d3e9ce89f37b241f484466
+Successfully built smriti-enterprise
+Installing collected packages: smriti-enterprise
+Successfully installed smriti-enterprise-0.1.0
+
+[notice] A new release of pip is available: 24.0 -> 26.2.1
+[notice] To update, run: /private/tmp/smriti-qa-20260905/bin/python -m pip install --upgrade pip
