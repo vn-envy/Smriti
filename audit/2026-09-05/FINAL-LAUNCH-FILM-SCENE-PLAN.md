@@ -30,6 +30,16 @@ object between scenes so the film feels continuous.
 | 41–53 | Memory cards multiply into a corpus counter. Resolve to a large measured latency figure, then a simple comparison at the same corpus size. Give labels and configuration scope a stable hold. | **36,500 records.** / **20.5 ms median retrieval.** | Local synthetic warm-query measurement. Optional GBrain/Mem0 bars use the completed pinned configurations and exact values below. No year-long production or end-to-end answer-speed claim. |
 | 53–60 | All four streams return to the core; the retained historical card stays visible. Finish on a quiet, strong brand frame with a repository invitation. | **Remember what changed.** / **Smriti** / **github.com/vn-envy/Smriti** | Invite developers to inspect and run the project. Do not imply the PR candidate is already released on PyPI. |
 
+## Market framing checked against primary sources
+
+The [root market-claim review](raw/final-film-market-claims-review.json)
+confirms that Hindsight also uses four retrieval strategies and Mem0 documents
+multi-signal retrieval and temporal reasoning. Use Smriti's four streams as
+its recognizable visual identity and architecture explanation, without implying
+competitors lack those capabilities. Lead with the focused SQLite core and
+inspectable fact state/history. The opening panels describe overlapping product
+priorities, not mutually exclusive categories.
+
 ## Evidence to carry into the composition
 
 The temporal example uses Leila and `project:Cedar`, not a new invented

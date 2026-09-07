@@ -14,11 +14,13 @@ candidate identifies as 0.3.2. The `smriti-agents` PyPI JSON endpoint returned
 Both GitHub Pages and the documented Netlify site returned HTTP 200. Raw
 metadata and public-site responses are saved in `raw/`.
 
-The current local candidate has a newer verification receipt than that public
-snapshot: 169 tests pass across non-editable wheel and source-distribution
-installations, targeted temporal and extraction-metadata checks pass, and the
-30-second teaser/browser preview was verified. Those checks describe the local
-candidate; they do not imply a published release or deployment.
+The historical local candidate passed 169 tests across non-editable wheel and
+source-distribution installations. The current installed-v7 candidate passes
+276 offline core/enterprise tests with clean dependency checks; bounded Mira,
+generalization, and corrected prior-tool reviews are recorded in
+[verified results](VERIFIED-RESULTS.md). The original 30-second teaser/browser
+preview was verified; the newly requested social film remains pending. These
+checks describe local candidates, not a published release or deployment.
 
 The independent growth evidence now includes a persistent GBrain lexical run at
 100 and 1,000 documents with process-restart timing. It uses no embeddings and
@@ -140,6 +142,18 @@ intervention-calibrated credit for memory operations and version chains. It is a
 separate research paper, not evidence about the Vectorize Hindsight product.
 Treat trainable memory policies as a later experiment; first capture trustworthy
 operation and evidence traces. [Paper](https://arxiv.org/abs/2608.29605)
+
+## Final-film source recheck — September 8
+
+Root rechecked the official repositories before locking launch claims.
+[Hindsight](https://github.com/vectorize-io/hindsight#recall) also describes
+semantic, keyword, graph, and temporal retrieval, with retained evidence behind
+observations. [Mem0](https://github.com/mem0ai/mem0#new-memory-algorithm-april-2026)
+also describes fused retrieval and temporal reasoning; its managed benchmark
+scope remains distinct from the local OSS configuration tested here. Smriti's
+four streams explain its design, but do not establish architectural novelty.
+The defensible emphasis is the focused implementation and observable behavior
+under disclosed conditions. See the [root claim review](raw/final-film-market-claims-review.json).
 
 ## Recommended positioning
 

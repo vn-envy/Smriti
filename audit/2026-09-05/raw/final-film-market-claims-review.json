@@ -1,0 +1,34 @@
+{
+  "status": "root_primary_source_recheck_complete",
+  "captured_at_utc": "2026-09-07T21:33:53.048543+00:00",
+  "purpose": "Constrain final social-film positioning; vendor feature documentation is not an independent performance measurement.",
+  "sources": [
+    {
+      "system": "GBrain",
+      "url": "https://github.com/garrytan/gbrain",
+      "observed": "Describes synthesis, typed entity graph traversal, gap analysis, and a local PGLite default.",
+      "film_constraint": "Do not portray GBrain as keyword-only or as universally requiring an external database."
+    },
+    {
+      "system": "Mem0",
+      "url": "https://github.com/mem0ai/mem0#new-memory-algorithm-april-2026",
+      "observed": "Describes fused semantic/BM25/entity retrieval and temporal reasoning. Published 94.4 LongMemEval and 92.5 LoCoMo scores explicitly use the managed platform, proprietary optimizations, and top_200 retrieval.",
+      "film_constraint": "Do not imply Mem0 lacks temporal or multi-signal memory, or compare managed published scores directly with our local infer=False benchmark."
+    },
+    {
+      "system": "Hindsight",
+      "url": "https://github.com/vectorize-io/hindsight#recall",
+      "observed": "Describes semantic, keyword, graph, and temporal recall followed by rank fusion and cross-encoder reranking. Observations retain evidence and are refined as information changes.",
+      "film_constraint": "Four retrieval channels and retained evidence are not unique Smriti inventions. Do not claim Hindsight discards history."
+    },
+    {
+      "system": "Graphify",
+      "url": "https://github.com/Graphify-Labs/graphify",
+      "observed": "Describes deterministic local AST parsing for code, explained extracted/inferred graph edges, and model-assisted processing for other media.",
+      "film_constraint": "Treat code-graph tooling as an adjacent category, not an inferior conversational-memory system."
+    }
+  ],
+  "positioning_inference": "Smriti can foreground its focused Python/SQLite implementation, explicit fact validity and applicability, inspectability, and measured performance under disclosed local configurations. This is positioning judgment, not proof of exclusivity or quality leadership.",
+  "benchmark_settings_changed": false,
+  "scores_changed": false
+}
