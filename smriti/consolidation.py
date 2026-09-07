@@ -25,7 +25,7 @@ from datetime import datetime, timezone
 from typing import List, Optional, Tuple
 
 from .llm import extract_json
-from .store import Store
+from .store import Store, normalize_scope
 from .types import Fact
 
 # predicates where only one value can be true at a time
@@ -33,7 +33,34 @@ SINGLE_VALUED = {
     "lives_in", "works_at", "employed_by", "married_to", "named", "aged",
     "weighs", "earns", "studies_at", "drives", "located_in", "job_title",
     "favorite", "favourite", "uses_phone", "current_city", "current_job",
+    "primary_programming_language", "preferred_theme",
 }
+
+# Semantic arbitration can bridge the two explicitly equivalent employer
+# labels, but it must not let a high-similarity event invalidate an unrelated
+# relation. Exact-key consolidation remains authoritative; these groups only
+# constrain the optional semantic tier.
+SEMANTIC_PREDICATE_GROUPS = (
+    # These two labels describe the same employer relation in the extraction
+    # schema. Keep role/title separate: a person can have a job title and an
+    # employer at the same time.
+    frozenset({"employed_by", "works_at"}),
+)
+
+
+def _predicates_semantically_compatible(left: str, right: str) -> bool:
+    left = left.lower().strip()
+    right = right.lower().strip()
+    if not left or not right:
+        return False
+    # ``prefers`` is intentionally multi-valued across domains (language,
+    # theme, food, and so on); an embedding match cannot safely decide which
+    # preference a new fact replaces.
+    if left == "prefers" or right == "prefers":
+        return False
+    if left == right:
+        return True
+    return any(left in group and right in group for group in SEMANTIC_PREDICATE_GROUPS)
 
 ARBITER_SYSTEM = """You manage a long-term memory store. Given a NEW fact and a list of EXISTING valid facts, decide the action:
 - "add": the new fact is genuinely new information.
@@ -48,15 +75,15 @@ def heuristic_conflicts(store: Store, fact: Fact) -> List[Fact]:
     pred = fact.predicate.lower().strip()
     if pred not in SINGLE_VALUED and not pred.startswith("favorite"):
         return []
-    existing = store.similar_valid_facts(fact.subject, fact.predicate)
+    existing = store.similar_valid_facts(fact.subject, fact.predicate, fact.scope)
     return [e for e in existing if e.object.strip().lower() != fact.object.strip().lower()]
 
 
 def llm_arbitrate(llm, fact: Fact, candidates: List[Fact]) -> Tuple[str, Optional[int]]:
-    lines = [f"NEW FACT: {fact.statement}"]
+    lines = [f"NEW FACT: {fact.statement} (subject={fact.subject}; predicate={fact.predicate}; object={fact.object}; scope={fact.scope})"]
     lines.append("EXISTING FACTS:")
     for c in candidates:
-        lines.append(f"  id={c.id}: {c.statement} (since {c.valid_from})")
+        lines.append(f"  id={c.id}: {c.statement} (subject={c.subject}; predicate={c.predicate}; object={c.object}; scope={c.scope}; since {c.valid_from})")
     raw = llm.complete(
         [{"role": "system", "content": ARBITER_SYSTEM},
          {"role": "user", "content": "\n".join(lines)}],
@@ -92,13 +119,14 @@ def _time_key(value: Optional[str]):
 def consolidate(store: Store, fact: Fact, emb, embedder=None, llm=None,
                 sim_threshold: float = 0.72) -> Optional[int]:
     """Insert a fact with conflict resolution. Returns new fact id (or None if skipped)."""
+    fact.scope = normalize_scope(fact.scope)
     # Resolve the effective event time once. This is also what Store.add_fact
     # persists, and comparing it prevents late-arriving history from replacing
     # a fact that became true later.
     fact.valid_from = fact.valid_from or fact.event_date or fact.ingested_at
     pred = fact.predicate.lower().strip()
     if fact.subject and (pred in SINGLE_VALUED or pred.startswith("favorite")):
-        history = store.facts_for_key(fact.subject, fact.predicate)
+        history = store.facts_for_key(fact.subject, fact.predicate, fact.scope)
         effective = fact.valid_from or fact.event_date or fact.ingested_at
         for old in history:
             if (old.statement.strip().lower() == fact.statement.strip().lower()
@@ -126,7 +154,7 @@ def consolidate(store: Store, fact: Fact, emb, embedder=None, llm=None,
         return new_id
 
     # exact duplicate guard
-    for e in store.similar_valid_facts(fact.subject, fact.predicate):
+    for e in store.similar_valid_facts(fact.subject, fact.predicate, fact.scope):
         if e.statement.strip().lower() == fact.statement.strip().lower():
             return None
 
@@ -138,7 +166,10 @@ def consolidate(store: Store, fact: Fact, emb, embedder=None, llm=None,
             if sim < sim_threshold:
                 continue
             f = store.get_fact(fid)
-            if f and f.invalid_at is None:
+            if (f and f.invalid_at is None and fact.subject.strip() and f.subject.strip()
+                    and f.subject.strip().lower() == fact.subject.strip().lower()
+                    and (f.scope or "") == (fact.scope or "")
+                    and _predicates_semantically_compatible(f.predicate, fact.predicate)):
                 candidates.append(f)
         if candidates:
             action, target = llm_arbitrate(llm, fact, candidates)

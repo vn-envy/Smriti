@@ -4,9 +4,11 @@ aliases, export/import round trips, secret redaction, WAL durability,
 contradiction/knowledge-update handling, date parsing, multilingual content,
 and noisy-haystack retrieval. All offline: HashEmbedder + MockLLM."""
 import json
+import sqlite3
+from concurrent.futures import ThreadPoolExecutor
 import pytest
 
-from smriti import Fact, HashEmbedder, MockLLM, Smriti
+from smriti import Fact, HashEmbedder, MockLLM, RetrievalResult, Smriti
 from smriti.mcp_server import SmritiMCP
 from smriti.memory import redact_secrets
 from smriti.retrieval import extract_dates
@@ -317,6 +319,19 @@ def test_pack_context_puts_current_facts_before_superseded():
     assert fact_lines, ctx
     assert "CURRENT" in fact_lines[0] and "Bengaluru" in fact_lines[0]
     assert any("SUPERSEDED" in l for l in fact_lines[1:])
+
+
+def test_pack_context_annotates_scoped_observation_without_changing_legacy_text():
+    from smriti.retrieval import pack_context
+
+    scoped = pack_context([RetrievalResult(
+        kind="observation", id=1, text="Atlas uses Rust", score=1.0,
+        scope="project:Atlas")])
+    unscoped = pack_context([RetrievalResult(
+        kind="observation", id=2, text="The user likes tea", score=1.0)])
+    assert "- Atlas uses Rust [scope=project:Atlas]" in scoped
+    assert "- The user likes tea\n" in unscoped
+    assert "scope=" not in unscoped
 
 
 def test_failed_ingest_rolls_back_completely(monkeypatch):
@@ -648,16 +663,245 @@ def test_llm_semantic_supersession_respects_event_chronology(monkeypatch):
     llm = MockLLM(['{"action":"supersede","target_id":1}'])
     mem = Smriti(embedder=HashEmbedder(), llm=llm, mode="full")
     newer = mem.add_fact(Fact(id=None, statement="Works at Acme", subject="user",
-                              predicate="role", object="Acme",
+                              predicate="employed_by", object="Acme",
                               valid_from="2026-06-01T00:00:00Z"),
                          resolve_conflicts=False)
     monkeypatch.setattr(mem.store, "vector_search",
                         lambda *args, **kwargs: [(newer, 0.99)])
     older = mem.add_fact(Fact(id=None, statement="Was an Acme contractor", subject="user",
-                              predicate="employment", object="contractor",
+                              predicate="works_at", object="contractor",
                               valid_from="2026-01-01T00:00:00Z"))
     assert mem.store.get_fact(newer).invalid_at is None
     assert mem.store.get_fact(older).superseded_by == newer
+
+
+def test_semantic_arbiter_keeps_role_and_employer_facts_distinct(monkeypatch):
+    llm = MockLLM(['{"action":"supersede","target_id":1}'])
+    mem = Smriti(embedder=HashEmbedder(), llm=llm, mode="full")
+    role = mem.add_fact(Fact(id=None, statement="The user's role is engineer", subject="user",
+                             predicate="role", object="engineer"), resolve_conflicts=False)
+    monkeypatch.setattr(mem.store, "vector_search", lambda *args, **kwargs: [(role, 0.99)])
+    employer = mem.add_fact(Fact(id=None, statement="The user works at Acme", subject="user",
+                                 predicate="employed_by", object="Acme"))
+    assert employer is not None
+    assert mem.store.get_fact(role).invalid_at is None
+    assert mem.stats()["facts"] == 2
+    assert llm.calls == 0
+
+
+def test_semantic_arbiter_does_not_conflate_preference_domains(monkeypatch):
+    llm = MockLLM(['{"action":"supersede","target_id":1}'])
+    mem = Smriti(embedder=HashEmbedder(), llm=llm, mode="full")
+    language = mem.add_fact(Fact(id=None, statement="Mira prefers Python", subject="user",
+                                 predicate="prefers", object="Python"), resolve_conflicts=False)
+    monkeypatch.setattr(mem.store, "vector_search", lambda *args, **kwargs: [(language, 0.99)])
+    theme = mem.add_fact(Fact(id=None, statement="Mira prefers light mode", subject="user",
+                              predicate="prefers", object="light mode"))
+    assert theme is not None
+    assert mem.store.get_fact(language).invalid_at is None
+    assert mem.stats()["facts"] == 2
+    assert llm.calls == 0
+
+
+def test_scoped_state_replaces_only_same_scope_and_round_trips():
+    source = Smriti(embedder=HashEmbedder(), mode="lite")
+    source.add_fact(Fact(id=None, statement="Atlas uses Python", subject="user",
+                         predicate="primary_programming_language", object="Python",
+                         scope="project:Atlas", valid_from="2025-01-01T00:00:00Z"))
+    source.add_fact(Fact(id=None, statement="Atlas uses Rust", subject="user",
+                         predicate="primary_programming_language", object="Rust",
+                         scope="project:Atlas", valid_from="2025-02-01T00:00:00Z"))
+    source.add_fact(Fact(id=None, statement="Orion uses Python", subject="user",
+                         predicate="primary_programming_language", object="Python",
+                         scope="project:Orion", valid_from="2025-02-01T00:00:00Z"))
+    atlas = source.store.facts_for_key("user", "primary_programming_language", "project:Atlas")
+    orion = source.store.facts_for_key("user", "primary_programming_language", "project:Orion")
+    assert len(atlas) == 2 and atlas[0].invalid_at == atlas[1].valid_from
+    assert len(orion) == 1 and orion[0].invalid_at is None
+
+    exported = source.store.export_data()
+    assert exported["version"] == 3
+    assert {fact["scope"] for fact in exported["facts"]} == {"project:Atlas", "project:Orion"}
+    restored = Smriti(embedder=HashEmbedder(), mode="lite")
+    restored.store.import_data(exported)
+    assert restored.store.get_fact(atlas[-1].id).scope == "project:Atlas"
+
+
+def test_semantic_arbiter_cannot_cross_scopes(monkeypatch):
+    llm = MockLLM(['{"action":"supersede","target_id":1}'])
+    mem = Smriti(embedder=HashEmbedder(), llm=llm, mode="full")
+    atlas = mem.add_fact(Fact(id=None, statement="Atlas uses Rust", subject="user",
+                              predicate="works_at", object="Rust", scope="project:Atlas"),
+                         resolve_conflicts=False)
+    monkeypatch.setattr(mem.store, "vector_search", lambda *args, **kwargs: [(atlas, 0.99)])
+    borealis = mem.add_fact(Fact(id=None, statement="Borealis uses Python", subject="user",
+                                 predicate="works_at", object="Python", scope="project:Borealis"))
+    assert borealis is not None
+    assert mem.store.get_fact(atlas).invalid_at is None
+    assert llm.calls == 0
+
+
+def test_scope_is_in_vector_index_input_and_result_provenance():
+    class RecordingEmbedder(HashEmbedder):
+        def __init__(self):
+            super().__init__(dim=64)
+            self.inputs = []
+
+        def embed(self, texts):
+            self.inputs.extend(texts)
+            return super().embed(texts)
+
+    embedder = RecordingEmbedder()
+    mem = Smriti(embedder=embedder, mode="lite")
+    fid = mem.add_fact(Fact(id=None, statement="Uses the same tool", subject="user",
+                            predicate="primary_programming_language", object="Rust",
+                            search_keys=["programming language", "tool"],
+                            scope="project:Atlas"))
+    assert any("scope:project:Atlas" in text for text in embedder.inputs)
+    assert "Uses the same tool scope:project:Atlas" in embedder.inputs
+    assert "Uses the same tool scope:project:Atlas programming language tool" not in embedder.inputs
+    hits = mem.search("same tool", k=3, channels={"lexical"})
+    assert any(hit.id == fid and hit.scope == "project:Atlas" for hit in hits)
+
+
+def test_extracted_scoped_fact_embedding_excludes_search_keys():
+    class RecordingEmbedder(HashEmbedder):
+        def __init__(self):
+            super().__init__(dim=64)
+            self.inputs = []
+
+        def embed(self, texts):
+            self.inputs.extend(texts)
+            return super().embed(texts)
+
+    raw = json.dumps([{
+        "statement": "Atlas uses Rust",
+        "subject": "user",
+        "predicate": "primary_programming_language",
+        "object": "Rust",
+        "entities": ["Atlas"],
+        "search_keys": ["programming language", "tool"],
+        "scope": "project:Atlas",
+        "event_date": None,
+        "kind": "knowledge",
+    }])
+    embedder = RecordingEmbedder()
+    mem = Smriti(embedder=embedder, llm=MockLLM([raw]), mode="full")
+    result = mem.add(
+        [{"role": "user", "content": "Atlas uses Rust"}],
+        session_id="scope-test",
+        timestamp="2025-01-01T00:00:00Z",
+    )
+    assert result["facts"] == 1
+    fact_inputs = [text for text in embedder.inputs if text.startswith("Atlas uses Rust")]
+    assert "Atlas uses Rust scope:project:Atlas" in fact_inputs
+    assert "Atlas uses Rust scope:project:Atlas programming language tool" not in fact_inputs
+
+
+def test_scoped_entity_and_predicate_observations_keep_scope_and_refresh():
+    llm = MockLLM([
+        "Atlas project overview", "Orion project overview",
+        "Atlas attended events", "Orion attended events",
+        "Atlas project overview v2", "Orion project overview v2",
+        "Atlas attended events v2", "Orion attended events v2",
+    ])
+    mem = Smriti(embedder=HashEmbedder(), llm=llm, mode="full")
+    for scope, entity in (("project:Atlas", "Atlas"), ("project:Orion", "Orion")):
+        for event in ("launch", "review"):
+            mem.add_fact(Fact(
+                id=None, statement=f"{entity} had {event}", subject="user",
+                predicate="attended", object=event, entities=[entity], scope=scope),
+                resolve_conflicts=False)
+
+    first = mem.refresh_observations(min_facts=2)
+    assert first["entity"] == 2 and first["predicate"] == 2
+    entity_obs = [f for f in mem.store.facts_for_entity(
+        "atlas", valid_only=True, include_observations=True)
+                  if f.kind == "observation"]
+    assert {f.scope for f in entity_obs} == {"project:Atlas"}
+    predicate_obs = [f for f in mem.store.facts_for_key(
+        "user", "digest:attended", "project:Atlas") if f.kind == "observation"]
+    assert len(predicate_obs) == 1 and predicate_obs[0].scope == "project:Atlas"
+
+    second = mem.refresh_observations(min_facts=2)
+    assert second["entity"] == 2 and second["predicate"] == 2
+    assert len(mem.store.similar_valid_facts(
+        "user", "digest:attended", "project:Atlas")) == 1
+    assert len(mem.store.similar_valid_facts(
+        "user", "digest:attended", "project:Orion")) == 1
+    assert len([f for f in mem.store.facts_for_key(
+        "user", "digest:attended", "project:Atlas")
+                if f.kind == "observation"]) == 2
+
+
+def test_observation_prompt_preserves_fact_scope_and_interval():
+    from smriti.extraction import build_observation_prompt
+
+    prompts = build_observation_prompt("Mira", [
+        Fact(id=None, statement="Mira uses Rust", subject="user",
+             predicate="primary_programming_language", object="Rust",
+             scope="project:Atlas", valid_from="2025-02-20T00:00:00Z"),
+        Fact(id=None, statement="Mira prefers Python", subject="user",
+             predicate="prefers", object="Python", valid_from="2024-01-10T00:00:00Z"),
+    ])
+    system, user = prompts
+    assert "never" in system["content"] and "global" in system["content"]
+    assert "scope=project:Atlas" in user["content"]
+    assert "scope=<unscoped/global>" in user["content"]
+    assert "valid_from=2025-02-20T00:00:00Z" in user["content"]
+
+
+def test_scope_whitespace_normalizes_to_same_conflict_key():
+    mem = lite()
+    first = mem.add_fact(Fact(id=None, statement="Atlas uses Python", subject="user",
+                              predicate="primary_programming_language", object="Python",
+                              scope=" project:Atlas ", valid_from="2025-01-01"))
+    second = mem.add_fact(Fact(id=None, statement="Atlas uses Rust", subject="user",
+                               predicate="primary_programming_language", object="Rust",
+                               scope="project:Atlas", valid_from="2025-02-01"))
+    assert mem.store.get_fact(first).invalid_at == mem.store.get_fact(second).valid_from
+    assert mem.store.get_fact(second).scope == "project:Atlas"
+
+
+def test_unscoped_legacy_fact_defaults_to_empty_scope():
+    mem = Smriti(embedder=HashEmbedder(), mode="lite")
+    fid = mem.add_fact(Fact(id=None, statement="The user lives in Pune", subject="user",
+                            predicate="lives_in", object="Pune"))
+    fact = mem.store.get_fact(fid)
+    assert fact.scope == ""
+    assert mem.store.facts_for_key("user", "lives_in")[0].scope == ""
+
+
+def test_v2_export_import_defaults_missing_scope_to_empty():
+    source = lite()
+    source.add_fact(Fact(id=None, statement="The user lives in Pune", subject="user",
+                         predicate="lives_in", object="Pune"))
+    exported = source.store.export_data()
+    exported["version"] = 2
+    for fact in exported["facts"]:
+        fact.pop("scope", None)
+    target = lite()
+    target.store.import_data(exported)
+    assert target.store.get_fact(1).scope == ""
+
+
+def test_legacy_scope_migration_is_safe_under_concurrent_open(tmp_path):
+    path = tmp_path / "legacy.db"
+    db = sqlite3.connect(path)
+    db.execute("CREATE TABLE episodes(id INTEGER PRIMARY KEY, session_id TEXT, role TEXT, content TEXT, ts TEXT, emb BLOB)")
+    db.execute("CREATE TABLE facts(id INTEGER PRIMARY KEY, statement TEXT, subject TEXT, predicate TEXT, object TEXT, kind TEXT, event_date TEXT, ingested_at TEXT, valid_from TEXT, invalid_at TEXT, superseded_by INTEGER, episode_id INTEGER, session_id TEXT, emb BLOB)")
+    db.commit()
+    db.close()
+
+    def open_and_close():
+        store = Store(str(path))
+        try:
+            return "scope" in {row[1] for row in store.db.execute("PRAGMA table_info(facts)")}
+        finally:
+            store.close()
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        assert list(pool.map(lambda _: open_and_close(), range(2))) == [True, True]
 
 
 def test_embedding_dimension_change_rolls_back_before_write():
@@ -840,6 +1084,45 @@ def test_extraction_normalizes_conservative_location_update_predicates():
     )
     assert facts[0].predicate == "lives_in"
     assert diagnostics["normalized_predicates"] == 1
+
+
+def test_extraction_normalizes_inflected_preference_predicates():
+    from smriti.extraction import parse_facts
+    diagnostics = {}
+    facts = parse_facts(
+        '[{"statement":"Mira still preferred Python", "subject":"user", '
+        '"predicate":"preferred", "object":"Python"}]',
+        "s", "2026-01-01T00:00:00Z", diagnostics,
+    )
+    assert facts[0].predicate == "prefers"
+    assert diagnostics["normalized_predicates"] == 1
+
+
+def test_extraction_contract_preserves_named_subjects_and_scope_boundaries():
+    from smriti.extraction import EXTRACT_SYSTEM
+
+    assert "Preserve the identity of the fact's subject" in EXTRACT_SYSTEM
+    assert '"subject": "Redwood team"' in EXTRACT_SYSTEM
+    assert '"scope": "project:Cedar"' in EXTRACT_SYSTEM
+    assert "switched from ToolA to ToolB for project Cedar" in EXTRACT_SYSTEM
+    assert 'subject is usually "user"' not in EXTRACT_SYSTEM
+    assert "Dates and time ranges are temporal fields, not applicability scope" in EXTRACT_SYSTEM
+    assert "adjacent preference or fact does not inherit a project scope" in EXTRACT_SYSTEM
+
+
+def test_semantic_arbiter_does_not_cross_unrelated_predicate_groups(monkeypatch):
+    llm = MockLLM(['{"action":"supersede","target_id":1}'])
+    mem = Smriti(embedder=HashEmbedder(), llm=llm, mode="full")
+    location = mem.add_fact(Fact(id=None, statement="Mira lives in Berlin", subject="user",
+                                 predicate="lives_in", object="Berlin"),
+                            resolve_conflicts=False)
+    monkeypatch.setattr(mem.store, "vector_search", lambda *args, **kwargs: [(location, 0.99)])
+    joined = mem.add_fact(Fact(id=None, statement="Mira joined the Atlas project", subject="user",
+                               predicate="joined", object="Atlas project"))
+    assert joined is not None
+    assert mem.store.get_fact(location).invalid_at is None
+    assert mem.stats()["facts"] == 2
+    assert llm.calls == 0
 
 
 def test_llm_does_not_retry_network_failure_as_format_fallback(monkeypatch):

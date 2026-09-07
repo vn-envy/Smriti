@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "installed_imports": [
+    "/private/tmp/smriti-candidate-qa-20260906/lib/python3.11/site-packages/smriti/__init__.py",
+    "/private/tmp/smriti-candidate-qa-20260906/lib/python3.11/site-packages/smriti_enterprise/__init__.py"
+  ],
+  "pack_sha256": "d79a5fcbd7ec4d960a279567ddb90c6a50947d826273eba4de10d63fd4f50984",
+  "pack_unchanged": true,
+  "scope_column_added": false,
+  "retrieved_fact_ids": [
+    1
+  ],
+  "limitations": "One actual pre-scope fact; no scoped migration coverage."
+}

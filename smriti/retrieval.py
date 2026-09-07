@@ -309,13 +309,15 @@ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
                     continue
                 observations.append(RetrievalResult(
                     kind="observation", id=rid, text=f.statement, score=score,
-                    valid_from=f.valid_from, invalid_at=f.invalid_at, channels=chans))
+                    valid_from=f.valid_from, invalid_at=f.invalid_at, channels=chans,
+                    scope=f.scope))
                 continue
             if len(results) >= candidate_limit:
                 continue
             results.append(RetrievalResult(
                 kind="fact", id=rid, text=f.statement, score=score,
-                valid_from=f.valid_from, invalid_at=f.invalid_at, channels=chans))
+                valid_from=f.valid_from, invalid_at=f.invalid_at, channels=chans,
+                scope=f.scope))
         else:
             if len(results) >= candidate_limit:
                 continue
@@ -401,14 +403,16 @@ def pack_context(results: List[RetrievalResult], now: Optional[str] = None,
                       "entities; useful for spotting counts/totals, but confirm the specifics "
                       "against the FACTS and EVIDENCE below):")
         for r in observations:
-            lines.append(f"- {r.text}")
+            scope = f" [scope={r.scope}]" if r.scope else ""
+            lines.append(f"- {r.text}{scope}")
         lines.append("")
     if facts:
         lines.append("KNOWN FACTS (each with validity window; CURRENT means still true, "
                       "SUPERSEDED means it was true then but later changed):")
         for r in facts:
             status = "CURRENT" if r.invalid_at is None else f"SUPERSEDED on {_fmt_date(r.invalid_at)}"
-            lines.append(f"- [{_fmt_date(r.valid_from)} | {status}] {r.text}")
+            scope = f" | scope={r.scope}" if r.scope else ""
+            lines.append(f"- [{_fmt_date(r.valid_from)} | {status}{scope}] {r.text}")
         lines.append("")
     if episodes:
         lines.append("RAW CONVERSATION EVIDENCE (timestamped):")

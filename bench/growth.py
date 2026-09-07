@@ -19,6 +19,7 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 from bench.comparative import Mem0, pct
+from bench.public_retrieval_gbrain_semantic import GbrainSemanticPersistent
 from smriti import HashEmbedder, OllamaEmbedder, Smriti
 
 
@@ -70,6 +71,27 @@ def _safe_endpoint(value: object) -> str | None:
     return "<invalid-or-redacted-endpoint>"
 
 
+def _is_verified_loopback_ollama(value: object) -> bool:
+    """Return true only for the benchmark's local Ollama listener."""
+    try:
+        parsed = urlsplit(str(value))
+        return (
+            parsed.scheme in {"http", "https"}
+            and parsed.hostname in {"127.0.0.1", "localhost", "::1"}
+            and parsed.port == 11436
+        )
+    except ValueError:
+        return False
+
+
+def _endpoint_api_path(value: object) -> str | None:
+    try:
+        path = urlsplit(str(value)).path
+    except ValueError:
+        return None
+    return path or None
+
+
 class SmritiOllama:
     label = "Smriti lite / Ollama nomic-embed-text:v1.5"
 
@@ -82,7 +104,10 @@ class SmritiOllama:
             "provider": "ollama",
             "model": self.model,
             "embedding_dims": NOMIC_EMBEDDING_DIMS if self.model == NOMIC_MODEL else None,
+            "configured_embedding_dims": NOMIC_EMBEDDING_DIMS if self.model == NOMIC_MODEL else None,
             "endpoint": _safe_endpoint(self.base_url),
+            "endpoint_api_path": _endpoint_api_path(self.base_url),
+            "raw_endpoint": _safe_endpoint(self.base_url),
         }
         if self.model != NOMIC_MODEL:
             raise RuntimeError(f"smriti-nomic requires {NOMIC_MODEL}; effective model was {self.model}")
@@ -91,6 +116,7 @@ class SmritiOllama:
         self.effective_embedder["measured_embedding_dims"] = measured_dims
         if measured_dims != NOMIC_EMBEDDING_DIMS:
             raise RuntimeError(f"{NOMIC_MODEL} returned {measured_dims} dimensions; expected {NOMIC_EMBEDDING_DIMS}")
+        self.local_cost_verified = _is_verified_loopback_ollama(self.base_url)
         self._open()
 
     def _open(self) -> None:
@@ -172,11 +198,14 @@ class Mem0Growth(Mem0):
         cfg = getattr(self.m, "config", None)
         embedder = _field(cfg, "embedder", {})
         embed_cfg = _field(embedder, "config", {})
+        raw_endpoint = _field(embed_cfg, "ollama_base_url", self.cfg.get("embedder", {}).get("config", {}).get("ollama_base_url"))
         self.effective_embedder = {
             "provider": _field(embedder, "provider", self.cfg.get("embedder", {}).get("provider")),
             "model": _field(embed_cfg, "model", self.cfg.get("embedder", {}).get("config", {}).get("model")),
             "embedding_dims": _field(embed_cfg, "embedding_dims", self.cfg.get("embedder", {}).get("config", {}).get("embedding_dims")),
-            "endpoint": _safe_endpoint(_field(embed_cfg, "ollama_base_url", self.cfg.get("embedder", {}).get("config", {}).get("ollama_base_url"))),
+            "endpoint": _safe_endpoint(raw_endpoint),
+            "endpoint_api_path": _endpoint_api_path(raw_endpoint),
+            "raw_endpoint": _safe_endpoint(raw_endpoint),
         }
         self.effective_embedder["configured_embedding_dims"] = self.effective_embedder["embedding_dims"]
         if self.effective_embedder["model"] == NOMIC_MODEL and self.effective_embedder["embedding_dims"] != NOMIC_EMBEDDING_DIMS:
@@ -196,7 +225,13 @@ class Mem0Growth(Mem0):
             raise RuntimeError("mem0 effective nomic embedder dimensions are not 768")
         vector = _field(cfg, "vector_store", {})
         self.effective_vector_store = {"provider": _field(vector, "provider", self.cfg.get("vector_store", {}).get("provider"))}
-        self.local_cost_verified = self.effective_embedder["provider"] in {"fastembed", "ollama"} and self.effective_vector_store["provider"] in {"qdrant", "sqlite", "chroma"}
+        self.local_cost_verified = (
+            self.effective_vector_store["provider"] in {"qdrant", "sqlite", "chroma"}
+            and (
+                self.effective_embedder["provider"] == "fastembed"
+                or (self.effective_embedder["provider"] == "ollama" and _is_verified_loopback_ollama(raw_endpoint))
+            )
+        )
         e = self.effective_embedder
         self.label = f"mem0 OSS / infer=False / embedder={e['provider']}:{e['model']} dims={e['embedding_dims']} endpoint={e['endpoint']} / vector_store={self.effective_vector_store['provider']}"
 
@@ -301,6 +336,101 @@ class GbrainPersistent:
         self._stop()
 
 
+class GbrainSemanticGrowth:
+    """GBrain growth adapter using the real semantic/hybrid worker."""
+
+    label = "gbrain PGLite / persistent hybrid semantic + keyword / Ollama nomic 768d"
+
+    def __init__(self) -> None:
+        self.worker = GbrainSemanticPersistent(
+            embed_model="ollama:nomic-embed-text:v1.5",
+            embed_dimensions=NOMIC_EMBEDDING_DIMS,
+            ollama_base_url=os.environ.get("GROWTH_GBRAIN_OLLAMA_URL", "http://127.0.0.1:11436/v1"),
+        )
+        self.root = self.worker.root
+        self.db_path = self.worker.db_path
+        self.startup_ms = self.worker.startup_ms
+        self.effective_embedder = {
+            "provider": "ollama",
+            "model": self.worker.ready_metadata.get("embedding_model"),
+            "configured_embedding_dims": NOMIC_EMBEDDING_DIMS,
+            "measured_embedding_dims": self.worker.ready_metadata.get("measured_embedding_dimensions"),
+            "endpoint": _safe_endpoint(self.worker.ready_metadata.get("ollama_base_url")),
+            "endpoint_api_path": _endpoint_api_path(self.worker.ready_metadata.get("ollama_base_url")),
+            "raw_model": self.worker.ready_metadata.get("embedding_model"),
+            "raw_endpoint": _safe_endpoint(self.worker.ready_metadata.get("ollama_base_url")),
+        }
+        raw_model = str(self.effective_embedder["model"])
+        canonical_model = raw_model.removeprefix("ollama:")
+        self.effective_embedder["model"] = canonical_model
+        if canonical_model != NOMIC_MODEL:
+            raise RuntimeError("semantic GBrain worker did not report the pinned nomic model")
+        if self.effective_embedder["measured_embedding_dims"] != NOMIC_EMBEDDING_DIMS:
+            raise RuntimeError("semantic GBrain worker did not report 768 measured dimensions")
+        self.local_cost_verified = _is_verified_loopback_ollama(self.worker.ready_metadata.get("ollama_base_url"))
+
+    def add_many(self, docs: list[dict[str, str]], expected_count: int | None = None) -> None:
+        # Keep each JSONL request bounded. The worker embeds/imports the whole
+        # request and captures one vector-stat snapshot per request.
+        imported = 0
+        skipped = 0
+        statuses: list[object] = []
+        vector_stats: object = None
+        page_count = None
+        for offset in range(0, len(docs), 100):
+            chunk = docs[offset:offset + 100]
+            result = self.worker._request({"op": "put_many", "documents": chunk})
+            imported += int(result.get("imported", 0))
+            skipped += int(result.get("skipped", 0))
+            statuses.extend(result.get("statuses", []))
+            vector_stats = result.get("vector_stats")
+            page_count = result.get("page_count")
+            if int(result.get("imported", 0)) + int(result.get("skipped", 0)) != len(chunk):
+                raise RuntimeError(f"semantic GBrain batch accounting mismatch: {result}")
+        if expected_count is not None and int(page_count if page_count is not None else -1) != expected_count:
+            raise RuntimeError(
+                f"semantic GBrain checkpoint page count mismatch: expected {expected_count}, got {page_count}"
+            )
+        self.last_batch_result = {
+            "imported": imported,
+            "skipped": skipped,
+            "statuses": statuses,
+            "page_count": page_count,
+            "vector_stats": vector_stats,
+        }
+        self.last_import_stats = vector_stats
+
+    def add(self, d: dict[str, str]) -> None:
+        self.add_many([d])
+
+    def search(self, q: str, k: int) -> list[tuple[str, float]]:
+        result = self.worker.search(q, k)
+        self.last_search_meta = result.get("search_meta")
+        return [(str(row["slug"]).rsplit("/", 1)[-1], float(row.get("score", 0))) for row in result["results"]]
+
+    def storage(self) -> int:
+        return size_tree(self.root)
+
+    def storage_paths(self) -> list[str]:
+        return [self.db_path]
+
+    def analyze(self) -> float:
+        result = self.worker._request({"op": "analyze"})
+        self.last_analyze_result = result
+        return float(result["maintenance_ms"])
+
+    def restart(self) -> None:
+        self.worker._stop()
+        self.last_restart_startup_ms = self.worker._start()
+
+    def close(self) -> None:
+        self.worker.close()
+
+
+def _is_gbrain_adapter(adapter: object) -> bool:
+    return isinstance(adapter, (GbrainPersistent, GbrainSemanticGrowth))
+
+
 def _relevant_ids(query: str, hits: list[tuple[str, float]]) -> list[str]:
     topic_index = QUERIES.index(query)
     out = []
@@ -312,7 +442,7 @@ def _relevant_ids(query: str, hits: list[tuple[str, float]]) -> list[str]:
 
 
 def _meta(adapter: object) -> dict[str, object]:
-    local_model = isinstance(adapter, (SmritiOllama, Mem0Growth))
+    local_model = isinstance(adapter, (SmritiOllama, Mem0Growth, GbrainSemanticGrowth))
     return {
         "model_calls": {
             "successful_calls": None if local_model else 0,
@@ -330,9 +460,20 @@ def _meta(adapter: object) -> dict[str, object]:
     }
 
 
+def _observed_paid_api_cost(adapter: object) -> int | None:
+    """Return zero only for a verified local route; unknown remains null."""
+    if adapter is None:
+        return None
+    if isinstance(adapter, GbrainPersistent):
+        return 0
+    if isinstance(adapter, (SmritiOllama, Mem0Growth, GbrainSemanticGrowth)):
+        return 0 if getattr(adapter, "local_cost_verified", False) else None
+    return 0
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--adapter", choices=["smriti", "smriti-nomic", "mem0", "gbrain"], required=True)
+    parser.add_argument("--adapter", choices=["smriti", "smriti-nomic", "mem0", "gbrain", "gbrain-nomic"], required=True)
     parser.add_argument("--checkpoints", nargs="+", type=int, default=[100, 1000, 5000])
     parser.add_argument("--out", required=True)
     parser.add_argument("--repeats", type=int, default=10)
@@ -342,8 +483,8 @@ def main() -> None:
         parser.error("checkpoints must be unique, positive, and increasing")
     if args.repeats <= 0:
         parser.error("--repeats must be positive")
-    if args.gbrain_analyze and args.adapter != "gbrain":
-        parser.error("--gbrain-analyze is only valid with --adapter gbrain")
+    if args.gbrain_analyze and args.adapter not in {"gbrain", "gbrain-nomic"}:
+        parser.error("--gbrain-analyze is only valid with --adapter gbrain or --adapter gbrain-nomic")
 
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     adapter: object | None = None
@@ -358,21 +499,24 @@ def main() -> None:
             "adapter": args.adapter,
             "configuration": getattr(adapter, "label", args.adapter),
             "measurement": "growing-corpus simulation in one run; checkpoints are not elapsed-day longitudinal observations",
-            "timing_scope": "persistent gbrain engine process; process-restart cold query; keyword-only, no embedding" if args.adapter == "gbrain" else "in-process operations; cold query follows same-process client/database reopen (not a new OS process)",
-            "model_cost": {"observed_paid_api_usd": 0 if not isinstance(adapter, Mem0Growth) or adapter.local_cost_verified else None, "hardware_electricity_cost_usd": None, "note": "Local/API charge is $0 only for the verified local route; otherwise paid API cost is unknown. Electricity, hardware purchase/rental, and depreciation were not measured. Shared model cache is excluded."},
+            "timing_scope": ("persistent gbrain engine process; process-restart cold query; semantic hybrid search with real nomic embeddings" if args.adapter == "gbrain-nomic" else "persistent gbrain engine process; process-restart cold query; keyword-only, no embedding" if args.adapter == "gbrain" else "in-process operations; cold query follows same-process client/database reopen (not a new OS process)"),
+            "model_cost": {"observed_paid_api_usd": _observed_paid_api_cost(adapter), "hardware_electricity_cost_usd": None, "note": "Local/API charge is $0 only for a verified loopback/local route; otherwise paid API cost is unknown. Electricity, hardware purchase/rental, and depreciation were not measured. Shared model cache is excluded."},
             "verification": {"synthetic_queries": QUERIES, "nonempty_and_relevant_definition": "A result is relevant when its synthetic document bucket matches the query topic."},
             "checkpoints": rows,
             "gbrain_analyze": bool(args.gbrain_analyze),
         }
         if args.gbrain_analyze:
-            result["timing_scope"] = "persistent gbrain engine process; executeRaw('ANALYZE') after each checkpoint; process-restart cold query; keyword-only, no embedding"
+            if args.adapter == "gbrain-nomic":
+                result["timing_scope"] = "persistent gbrain engine process; executeRaw('ANALYZE') after each checkpoint; process-restart cold query; semantic hybrid search with real nomic embeddings"
+            else:
+                result["timing_scope"] = "persistent gbrain engine process; executeRaw('ANALYZE') after each checkpoint; process-restart cold query; keyword-only, no embedding"
         if error is not None:
             result["error"] = error
         if adapter is not None:
             result.update(_meta(adapter))
-            if isinstance(adapter, GbrainPersistent):
+            if _is_gbrain_adapter(adapter):
                 result["process_startup_ms"] = round(adapter.startup_ms, 3)
-            if isinstance(adapter, (SmritiOllama, Mem0Growth)):
+            if isinstance(adapter, (SmritiOllama, Mem0Growth, GbrainSemanticGrowth)):
                 result["effective_embedder"] = adapter.effective_embedder
             if isinstance(adapter, Mem0Growth):
                 result["effective_vector_store"] = adapter.effective_vector_store
@@ -381,6 +525,8 @@ def main() -> None:
     try:
         if args.adapter == "gbrain":
             adapter = GbrainPersistent()
+        elif args.adapter == "gbrain-nomic":
+            adapter = GbrainSemanticGrowth()
         elif args.adapter == "mem0":
             adapter = Mem0Growth()
         elif args.adapter == "smriti-nomic":
@@ -391,7 +537,7 @@ def main() -> None:
         for target in args.checkpoints:
             pending = [doc(i) for i in range(added, target)]
             started = time.perf_counter_ns()
-            if isinstance(adapter, GbrainPersistent):
+            if _is_gbrain_adapter(adapter):
                 adapter.add_many(pending, expected_count=target)
             else:
                 for item in pending:
@@ -404,7 +550,7 @@ def main() -> None:
             # does not introduce a new synthetic fact into the query set.
             update_started = time.perf_counter_ns()
             last = doc(target - 1)
-            if isinstance(adapter, GbrainPersistent):
+            if _is_gbrain_adapter(adapter):
                 adapter.add_many([last], expected_count=target)
             else:
                 adapter.add(last)
@@ -415,6 +561,7 @@ def main() -> None:
                 maintenance_ms = adapter.analyze()
             started = time.perf_counter_ns()
             first_hits = adapter.search(QUERIES[0], 5)
+            first_search_meta = getattr(adapter, "last_search_meta", None)
             first_ms = (time.perf_counter_ns() - started) / 1e6
             if not first_hits:
                 raise RuntimeError(f"{args.adapter} returned no results at {target} documents after ingest")
@@ -422,6 +569,7 @@ def main() -> None:
                 adapter.restart()
             started = time.perf_counter_ns()
             cold_hits = adapter.search(QUERIES[0], 5)
+            cold_search_meta = getattr(adapter, "last_search_meta", None)
             cold_ms = (time.perf_counter_ns() - started) / 1e6
             if not cold_hits:
                 raise RuntimeError(f"{args.adapter} returned no results at {target} documents after restart")
@@ -444,6 +592,7 @@ def main() -> None:
                     "per_hit_relevance": [identifier in relevant_ids for identifier, _ in hits],
                     "relevant_ids": relevant_ids,
                     "latency_ms": round(samples[-1], 3),
+                    "search_meta": getattr(adapter, "last_search_meta", None),
                 })
             cold_relevant = _relevant_ids(QUERIES[0], cold_hits)
             storage = adapter.storage()
@@ -455,19 +604,22 @@ def main() -> None:
                 "gbrain_analyze_maintenance_ms": round(maintenance_ms, 3) if maintenance_ms is not None else None,
                 "gbrain_ingest_statuses": (ingest_batch or {}).get("statuses") if isinstance(ingest_batch, dict) else None,
                 "gbrain_update_statuses": (update_batch or {}).get("statuses") if isinstance(update_batch, dict) else None,
+                "gbrain_vector_stats": (ingest_batch or {}).get("vector_stats") if isinstance(ingest_batch, dict) else None,
                 "first_query_after_ingest_ms": round(first_ms, 3),
                 "first_query_after_ingest_returned_ids": [identifier for identifier, _ in first_hits],
                 "first_query_after_ingest_per_hit_relevance": [identifier in _relevant_ids(QUERIES[0], first_hits) for identifier, _ in first_hits],
                 "first_query_after_ingest_returned": len(first_hits),
                 "first_query_after_ingest_relevant_ids": _relevant_ids(QUERIES[0], first_hits),
                 "first_query_after_ingest_relevant": len(_relevant_ids(QUERIES[0], first_hits)),
+                "first_query_after_ingest_search_meta": first_search_meta,
                 "cold_query_after_restart_ms": round(cold_ms, 3),
-                "cold_query_boundary": "process_restart" if isinstance(adapter, GbrainPersistent) else "same_process_client_reopen",
+                "cold_query_boundary": "process_restart" if _is_gbrain_adapter(adapter) else "same_process_client_reopen",
                 "process_restart_startup_ms": round(getattr(adapter, "last_restart_startup_ms", 0), 3),
                 "cold_query_returned_ids": [identifier for identifier, _ in cold_hits],
                 "cold_query_per_hit_relevance": [identifier in cold_relevant for identifier, _ in cold_hits],
                 "cold_query_returned": len(cold_hits),
                 "cold_query_relevant": len(cold_relevant),
+                "cold_query_search_meta": cold_search_meta,
                 "warm_query_ms_p50": pct(samples, 0.5),
                 "warm_query_ms_p95": pct(samples, 0.95),
                 "timed_query_samples": len(samples),

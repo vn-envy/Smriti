@@ -1,0 +1,29 @@
+{
+  "source_wheel": "/private/tmp/smriti-scope-reviewed-wheel-v2/smriti_agents-0.3.2-py3-none-any.whl",
+  "wheel_sha256": "a5a6ef45d2a9956f745dbcf7ffe490ff0083d0fcb163ce5423d79b7ac4d6b118",
+  "frozen_root": "/private/tmp/smriti-gbrain-semantic-growth-frozen-v2",
+  "file_sha256": {
+    "bench/growth_report.py": "fb14d089cfdefe0a74d0704c6834621718accafbad0f2b9a053f0762c1c3faae",
+    "bench/longmemeval.py": "37be83f49fb40909229241d576e0a50fe7cdac111aa3ab987f57a2de2e1b4728",
+    "bench/hindsight_probe.py": "c5c99f57888ef82b7083584130ff682c715d08165049ea2696739a3f7504e15e",
+    "bench/run.py": "226b3fe7f45a47a6edc42619c6e222fab6878064c55b53b1440af80e081d27f4",
+    "bench/public_retrieval_ablation.py": "0c8b6d9b97d99ee96815e270966ff32450827c21ee7d6fd5b829bf463f78ae64",
+    "bench/locomo.py": "f5d734566ee12ffce534a84c426a16bb611132ceb031cb5aafebbbd6c20a586a",
+    "bench/public_retrieval_gbrain.py": "83dbe5f45acf97daaff9e1ea4d6beb780627aed7ca27d03d84ea1dd7bd8e5e33",
+    "bench/public_retrieval.py": "8ef79434d8e0171c014ad1f72d742d883dd266b2a02e4a2dac45ac65a032ab2f",
+    "bench/qa_comparison.py": "862d3c7af8cfcc3c33928bd225a935e96376fc8cf7e2308c4084f3758926e977",
+    "bench/download.py": "489e7f8e5b524bbb538c754636a2997b939dfd166383f42667596d470232c121",
+    "bench/__init__.py": "eeadcd87c2737e3bdc0220c7fd5875af16f392ef0e185ff51395e9893bc972b3",
+    "bench/growth.py": "36efdd72d71e3d71d2552106921d78195a19eace7cb4054d84d39d32e03ca1fb",
+    "bench/gbrain_public_semantic_worker.ts": "ccbd2d7ece97b124a4dbf2e94a0d16ae86c750d406b14b200041a4d7a4836f30",
+    "bench/gbrain_growth_worker.ts": "1791fc7f0f87d8e51fe30a1ad86c9ca2bafcf72647b32b6d64f6518885d11a0b",
+    "bench/comparative_dataset.json": "277d1bf48b2dea7babb1459841be1a0af4deb74820eb01f1d74ad61fe3436944",
+    "bench/update_dashboard.py": "b2a1704118fa94b7e98e96a3459b33cd1dba08d84f950ba47f8b5fcbfe931e20",
+    "bench/judge.py": "176b54097a34deb693812f47aec77e09e9e6cc235bb31ac3d9a0d1332b607bbd",
+    "bench/comparative.py": "09c1a142498bf522e4e129fb02fa42cd7f4b101dc26586da1c2c363ac90668c4",
+    "bench/public_retrieval_gbrain_semantic.py": "88c353dc380462dbc52544b581383eac0f91653356c06b9ce9ffe30822373f13",
+    "bench/growth_charts.py": "343a6a5abc9998d8c90db95d43518adb055f72e058cc5b4994b2dc8ccdae56de",
+    "bench/scale.py": "0e0b2f90989a2f62ccd492461af7ab46628da3dc66ddbe46e4be3493c3f794f3"
+  },
+  "purpose": "Immutable benchmark harness for real GBrain semantic growth; uses pinned GBrain checkout and Ollama model. Concurrent core edits do not change this harness."
+}

@@ -48,9 +48,12 @@ def _effective_embedder(data: dict[str, Any]) -> dict[str, Any] | None:
         return {
             "provider": value.get("provider"),
             "model": value.get("model"),
+            "raw_model": value.get("raw_model"),
             "configured_embedding_dims": value.get("configured_embedding_dims", value.get("embedding_dims")),
             "measured_embedding_dims": value.get("measured_embedding_dims"),
             "endpoint": value.get("endpoint", value.get("ollama_base_url")),
+            "endpoint_api_path": value.get("endpoint_api_path"),
+            "raw_endpoint": value.get("raw_endpoint"),
         }
     return None
 
@@ -125,10 +128,12 @@ def _validity(data: dict[str, Any]) -> dict[str, Any]:
                 errors.append(f"checkpoint {index} nonempty count does not match query details")
             if row.get("warm_queries_with_relevant_result") != observed_relevant:
                 errors.append(f"checkpoint {index} relevant-query count does not match query details")
-        if data.get("adapter") == "gbrain":
+        if data.get("adapter") in {"gbrain", "gbrain-nomic"}:
             for field in ("gbrain_ingest_statuses", "gbrain_update_statuses"):
                 if row.get(field) is None:
                     warnings.append(f"checkpoint {index} lacks {field}")
+            if data.get("adapter") == "gbrain-nomic" and row.get("gbrain_vector_stats") is None:
+                warnings.append(f"checkpoint {index} lacks semantic vector coverage stats")
     headline_valid = not errors and status == "complete"
     return {
         "status": status,
@@ -159,6 +164,10 @@ def _checkpoint_row(data: dict[str, Any], row: dict[str, Any], cumulative_ingest
         "storage_mb": row.get("storage_mb"),
         "gbrain_analyze_maintenance_ms": row.get("gbrain_analyze_maintenance_ms"),
         "cumulative_gbrain_analyze_maintenance_ms": round(cumulative_maintenance, 3) if cumulative_maintenance is not None else None,
+        "gbrain_vector_stats": row.get("gbrain_vector_stats"),
+        "first_query_after_ingest_search_meta": row.get("first_query_after_ingest_search_meta"),
+        "cold_query_search_meta": row.get("cold_query_search_meta"),
+        "timed_queries": row.get("timed_queries"),
     }
 
 

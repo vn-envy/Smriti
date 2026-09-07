@@ -114,6 +114,15 @@ flowchart LR
 
 Facts are **never** deleted — supersession preserves the full bi-temporal history (validity window = *avadhi* अवधि), so one store answers both "what's true now" and "what was true then."
 
+Facts may also carry an explicit applicability `scope`, such as
+`project:Atlas`. An empty scope is the legacy unscoped value. Only explicitly
+single-valued predicates such as `primary_programming_language` and
+`preferred_theme` replace an older value within the same subject, predicate,
+and scope; generic `prefers` facts remain multi-valued. Scope is persisted and
+included in retrieval evidence, MCP structured results, exports, and enterprise
+packs. Export format v3 preserves it; v1/v2 imports remain supported under
+their existing embedding-identity checks.
+
 Two design decisions worth defending:
 
 1. **Facts AND raw episodes are both first-class at retrieval time.** Extraction-only systems lose whatever the extractor missed; episode-only systems fumble knowledge updates. Fusing both gets the precision of consolidated facts with the recall safety net of raw evidence.

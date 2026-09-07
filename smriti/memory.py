@@ -48,7 +48,7 @@ from .extraction import (build_extraction_prompt, build_followup_prompt,
 from .llm import LLM
 from .profiles import RetrievalProfile, get_profile
 from .retrieval import is_aggregation_query, pack_context, retrieve
-from .store import Store, utcnow
+from .store import Store, normalize_scope, utcnow
 from .types import Episode, Fact, RetrievalResult
 
 # Sanskrit aliases: laghu (लघु, "light") and purna (पूर्ण, "complete")
@@ -202,7 +202,7 @@ class Smriti:
                         f.search_keys = []
                 # embed the clean statement only; expansion keys live in the
                 # separate key index (Build 10) so they can't dilute precision.
-                fembs = _embed_many(self.embedder, [f.statement for f in facts], "fact")
+                fembs = _embed_many(self.embedder, [self._index_text(f) for f in facts], "fact")
 
         # -- atomic ingest: hash claim + all writes commit or roll back as one.
         # Two concurrent ingests serialize on BEGIN IMMEDIATE; the loser's
@@ -238,13 +238,22 @@ class Smriti:
 
     @staticmethod
     def _index_text(fact: Fact) -> str:
-        """Text used for embedding/FTS: statement plus expansion keys (Build 9 A)."""
-        if fact.search_keys:
-            return fact.statement + " " + " ".join(fact.search_keys)
-        return fact.statement
+        """Text used for vector indexing; raw statements remain unchanged.
+
+        Scope is included only in the embedding input so a scoped query can
+        distinguish identical statements without laundering scope into the
+        persisted fact text or answer context.
+        """
+        scoped = fact.statement
+        if fact.scope:
+            scoped += " scope:" + fact.scope
+        return scoped
 
     def add_fact(self, fact: Fact, resolve_conflicts: bool = True) -> Optional[int]:
         """Directly insert a fact (e.g. from an agent's own observations)."""
+        if fact.scope is not None and not isinstance(fact.scope, str):
+            raise ValueError("fact scope must be a string or None")
+        fact.scope = normalize_scope(fact.scope)
         if self.redact:
             fact = replace(
                 fact,
@@ -254,10 +263,11 @@ class Smriti:
                 object=redact_secrets(fact.object),
                 entities=[redact_secrets(e) for e in fact.entities],
                 search_keys=[redact_secrets(k) for k in fact.search_keys],
+                scope=redact_secrets(fact.scope or ""),
             )
         if not self.expand_keys:
             fact.search_keys = []
-        emb = _embed_many(self.embedder, [fact.statement], "fact")[0]
+        emb = _embed_many(self.embedder, [self._index_text(fact)], "fact")[0]
         self.store.begin()
         try:
             if resolve_conflicts:
@@ -407,9 +417,10 @@ class Smriti:
 
     # -------------------------------------------------------- observations
     def _write_observation(self, subject: str, predicate: str, label: str,
-                           facts: List[Fact]) -> bool:
+                           facts: List[Fact], scope: str = "") -> bool:
         """Synthesize one observation/digest fact from `facts`, superseding any
-        prior one with the same (subject, predicate). Returns True if written."""
+        prior one with the same (subject, predicate, scope). Returns True if written."""
+        scope = normalize_scope(scope)
         summary = self.llm.complete(
             build_observation_prompt(label, facts), max_tokens=256
         ).strip()
@@ -422,9 +433,10 @@ class Smriti:
             return False
         ents = self.store.entities_of_facts([f.id for f in facts if f.id])[:10]
         obs = Fact(id=None, statement=summary, subject=subject, predicate=predicate,
-                   object="", kind="observation", entities=ents, valid_from=utcnow())
-        emb = _embed_many(self.embedder, [summary], "observation")[0]
-        prior = self.store.similar_valid_facts(subject, predicate)
+                   object="", kind="observation", entities=ents, valid_from=utcnow(),
+                   scope=scope)
+        emb = _embed_many(self.embedder, [self._index_text(obs)], "observation")[0]
+        prior = self.store.similar_valid_facts(subject, predicate, scope)
         new_id = self.store.add_fact(obs, emb)
         for p in prior:
             self.store.invalidate_fact(p.id, new_id)
@@ -457,18 +469,25 @@ class Smriti:
                        if entities is not None else self.store.all_entities())
             for ent in targets:
                 facts = self.store.facts_for_entity(ent, valid_only=True)
-                if len(facts) >= min_facts and self._write_observation(ent, "observation", ent, facts):
-                    made["entity"] += 1
+                by_scope = {}
+                for fact in facts:
+                    by_scope.setdefault(normalize_scope(fact.scope), []).append(fact)
+                for scope, scoped_facts in by_scope.items():
+                    if (len(scoped_facts) >= min_facts
+                            and self._write_observation(
+                                ent, "observation", ent, scoped_facts, scope=scope)):
+                        made["entity"] += 1
 
         # predicate digests are global; skip when caller targets specific entities
         if "predicate" in granularity and entities is None:
-            for subj, pred, _c in self.store.predicate_groups(min_facts=min_facts):
-                facts = [f for f in self.store.similar_valid_facts(subj, pred)
+            for subj, pred, scope, _c in self.store.predicate_groups_scoped(min_facts=min_facts):
+                facts = [f for f in self.store.similar_valid_facts(subj, pred, scope)
                          if f.kind != "observation"]
                 if len(facts) < min_facts:
                     continue
                 label = f"{subj} — {pred.replace('_', ' ')}"
-                if self._write_observation(subj, f"digest:{pred}", label, facts):
+                if self._write_observation(subj, f"digest:{pred}", label, facts,
+                                            scope=scope):
                     made["predicate"] += 1
 
         made["observations"] = made["entity"] + made["predicate"]

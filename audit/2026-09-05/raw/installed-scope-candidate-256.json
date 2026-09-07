@@ -1,0 +1,75 @@
+{
+  "wheels": [
+    {
+      "wheel": "/private/tmp/smriti-scope-reviewed-wheel-v3/smriti_agents-0.3.2-py3-none-any.whl",
+      "sha256": "40e3fd28fbb73b011530d059c39d4bfb60181e5a6b71751c542819ad3c70d248",
+      "source_verified_files": [
+        "bench/__init__.py",
+        "bench/comparative.py",
+        "bench/download.py",
+        "bench/gbrain_growth_worker.ts",
+        "bench/gbrain_public_semantic_worker.ts",
+        "bench/growth.py",
+        "bench/growth_report.py",
+        "bench/hindsight_probe.py",
+        "bench/judge.py",
+        "bench/locomo.py",
+        "bench/longmemeval.py",
+        "bench/public_retrieval.py",
+        "bench/public_retrieval_ablation.py",
+        "bench/public_retrieval_gbrain.py",
+        "bench/public_retrieval_gbrain_semantic.py",
+        "bench/qa_comparison.py",
+        "bench/run.py",
+        "bench/scale.py",
+        "bench/update_dashboard.py",
+        "smriti/__init__.py",
+        "smriti/consolidation.py",
+        "smriti/doctor.py",
+        "smriti/embedder.py",
+        "smriti/extraction.py",
+        "smriti/llm.py",
+        "smriti/mcp_server.py",
+        "smriti/memory.py",
+        "smriti/profiles.py",
+        "smriti/rerank.py",
+        "smriti/retrieval.py",
+        "smriti/store.py",
+        "smriti/types.py"
+      ],
+      "benchmark_files_changed_after_build": [
+        "bench/growth_charts.py"
+      ]
+    },
+    {
+      "wheel": "/private/tmp/smriti-scope-reviewed-wheel-v3/smriti_enterprise-0.1.0-py3-none-any.whl",
+      "sha256": "6bf951053876a6f022da49b5f14a8fb3d4eea5449feca0bb93cb03002dfc939a",
+      "source_verified_files": [
+        "smriti_enterprise/__init__.py",
+        "smriti_enterprise/_version.py",
+        "smriti_enterprise/federation.py",
+        "smriti_enterprise/lifecycle.py",
+        "smriti_enterprise/lineage.py",
+        "smriti_enterprise/memory.py",
+        "smriti_enterprise/migrations.py",
+        "smriti_enterprise/packs.py",
+        "smriti_enterprise/policy.py",
+        "smriti_enterprise/receipts.py",
+        "smriti_enterprise/sinks.py",
+        "smriti_enterprise/store.py",
+        "smriti_enterprise/temporal.py"
+      ],
+      "benchmark_files_changed_after_build": []
+    }
+  ],
+  "installed_imports": [
+    "/private/tmp/smriti-candidate-qa-20260906/lib/python3.11/site-packages/smriti/__init__.py",
+    "/private/tmp/smriti-candidate-qa-20260906/lib/python3.11/site-packages/smriti_enterprise/__init__.py"
+  ],
+  "tests": {
+    "passed": 256,
+    "mode": "installed wheels, cwd /private/tmp, pytest --import-mode=importlib"
+  },
+  "pip_check": "clean",
+  "acceptance": "Offline checks passed; actual-model scope contract v3 and real historical pack verification pending."
+}

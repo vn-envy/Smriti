@@ -17,15 +17,20 @@ from typing import List, Optional
 
 from smriti.types import Fact
 
-_COLS = ("id, statement, subject, predicate, object, kind, event_date, "
-         "ingested_at, valid_from, invalid_at, superseded_by, episode_id, session_id")
+_BASE_COLS = ("id, statement, subject, predicate, object, kind, event_date, "
+              "ingested_at, valid_from, invalid_at, superseded_by, episode_id, session_id")
+
+
+def _fact_columns(store) -> str:
+    columns = {row[1] for row in store.db.execute("PRAGMA table_info(facts)")}
+    return _BASE_COLS + (", scope" if "scope" in columns else "")
 
 
 def _row_to_fact(row) -> Fact:
     return Fact(id=row[0], statement=row[1], subject=row[2], predicate=row[3],
                 object=row[4], kind=row[5], event_date=row[6], ingested_at=row[7],
                 valid_from=row[8], invalid_at=row[9], superseded_by=row[10],
-                episode_id=row[11], session_id=row[12])
+                episode_id=row[11], session_id=row[12], scope=(row[13] if len(row) > 13 else "") or "")
 
 
 def facts_asof(store, world: Optional[str] = None, known: Optional[str] = None,
@@ -77,7 +82,7 @@ def facts_asof(store, world: Optional[str] = None, known: Optional[str] = None,
     elif known is None:
         conds.append("invalid_at IS NULL")   # default: current world truth
 
-    sql = f"SELECT {_COLS} FROM facts WHERE " + " AND ".join(f"({c})" for c in conds)
+    sql = f"SELECT {_fact_columns(store)} FROM facts WHERE " + " AND ".join(f"({c})" for c in conds)
     facts = [_row_to_fact(r) for r in store.db.execute(sql, args).fetchall()]
     if world is not None and known is not None:
         # The row columns are the mutable current projection. Return the same

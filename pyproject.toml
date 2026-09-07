@@ -40,4 +40,4 @@ dev = ["pytest>=7"]
 include = ["smriti*", "bench*"]
 
 [tool.setuptools.package-data]
-bench = ["comparative_dataset.json", "gbrain_growth_worker.ts"]
+bench = ["comparative_dataset.json", "gbrain_growth_worker.ts", "gbrain_public_semantic_worker.ts"]

@@ -14,6 +14,12 @@ from typing import Any
 
 
 TARGET_DAYS = {3000: 30, 9000: 90, 36500: 365}
+TRACK_COLORS = {
+    "smriti-nomic": "#2563eb",
+    "mem0": "#16a34a",
+    "gbrain": "#dc2626",
+    "gbrain-nomic": "#7c3aed",
+}
 
 
 def _load_plotting():
@@ -47,6 +53,8 @@ def _label(report: dict[str, Any]) -> str:
     if track.get("kind") == "lexical":
         suffix = " (ANALYZE maintained)" if track.get("gbrain_analyze") else " (default)"
         return "GBrain lexical/no embedding" + suffix
+    if adapter == "gbrain-nomic":
+        return "GBrain semantic / Ollama nomic / PGLite"
     if adapter == "mem0":
         return "Mem0 semantic / Ollama nomic / local Qdrant (spaCy absent)"
     return "Smriti semantic / Ollama nomic" if "nomic" in config.lower() else "Smriti semantic"
@@ -57,6 +65,8 @@ def _short_label(report: dict[str, Any]) -> str:
     track = report["track"]
     if track.get("kind") == "lexical":
         return "GBrain lexical maintained" if track.get("gbrain_analyze") else "GBrain lexical default"
+    if str(track.get("adapter")) == "gbrain-nomic":
+        return "GBrain semantic"
     return "Mem0 semantic" if str(track.get("adapter")) == "mem0" else "Smriti semantic"
 
 
@@ -102,13 +112,13 @@ def _normalize_svg(path: Path) -> None:
     path.write_text("\n".join(line.rstrip() for line in text.splitlines()) + "\n", encoding="utf-8")
 
 
-def render(summary: dict[str, Any], output_dir: str) -> list[str]:
+def render(summary: dict[str, Any], output_dir: str, prefix: str = "growth") -> list[str]:
     _validate_summary(summary)
     plt = _load_plotting()
     reports = summary["reports"]
     out = Path(output_dir)
     out.mkdir(parents=True, exist_ok=True)
-    colors = {"smriti-nomic": "#2563eb", "mem0": "#16a34a", "gbrain": "#dc2626"}
+    colors = TRACK_COLORS
     paths: list[str] = []
 
     latency_fig, latency_ax = plt.subplots(figsize=(12, 7))
@@ -136,7 +146,7 @@ def render(summary: dict[str, Any], output_dir: str) -> list[str]:
     _annotate(latency_fig, reports)
     latency_fig.tight_layout(rect=(0, 0.18, 1, 0.94))
     for extension in ("svg", "png"):
-        path = out / f"growth-query-latency.{extension}"
+        path = out / f"{prefix}-query-latency.{extension}"
         latency_fig.savefig(path, dpi=160, bbox_inches="tight")
         if extension == "svg":
             _normalize_svg(path)
@@ -164,7 +174,7 @@ def render(summary: dict[str, Any], output_dir: str) -> list[str]:
     _annotate(storage_fig, reports)
     storage_fig.tight_layout(rect=(0, 0.18, 1, 0.94))
     for extension in ("svg", "png"):
-        path = out / f"growth-storage.{extension}"
+        path = out / f"{prefix}-storage.{extension}"
         storage_fig.savefig(path, dpi=160, bbox_inches="tight")
         if extension == "svg":
             _normalize_svg(path)
@@ -177,9 +187,10 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--summary", required=True, help="validated bench.growth_report JSON")
     parser.add_argument("--out-dir", required=True, help="audit output directory")
+    parser.add_argument("--prefix", default="growth", help="output filename prefix")
     args = parser.parse_args()
     summary = json.loads(Path(args.summary).read_text())
-    for path in render(summary, args.out_dir):
+    for path in render(summary, args.out_dir, prefix=args.prefix):
         print(path)
 
 

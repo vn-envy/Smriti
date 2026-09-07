@@ -43,6 +43,9 @@ class Fact:
     superseded_by: Optional[int] = None
     episode_id: Optional[int] = None
     session_id: Optional[str] = None
+    # Explicit applicability context (for example ``project:Atlas``).
+    # Empty scope preserves the legacy unscoped fact semantics.
+    scope: str = ""
 
 
 @dataclass
@@ -57,3 +60,6 @@ class RetrievalResult:
     invalid_at: Optional[str] = None
     role: Optional[str] = None
     channels: List[str] = field(default_factory=list)
+    # Applicability scope copied from fact provenance; appended for positional
+    # constructor compatibility.
+    scope: str = ""

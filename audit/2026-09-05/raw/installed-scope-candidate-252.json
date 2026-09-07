@@ -1,0 +1,12 @@
+{
+  "status": "installed_tests_passed_extraction_acceptance_open",
+  "core_wheel": "/private/tmp/smriti-scope-reviewed-wheel-v2/smriti_agents-0.3.2-py3-none-any.whl",
+  "core_wheel_sha256": "a5a6ef45d2a9956f745dbcf7ffe490ff0083d0fcb163ce5423d79b7ac4d6b118",
+  "enterprise_wheel": "/private/tmp/smriti-scope-reviewed-wheel/smriti_enterprise-0.1.0-py3-none-any.whl",
+  "tests_passed": 252,
+  "test_cwd": "/private/tmp",
+  "import_mode": "importlib",
+  "pip_check": "clean",
+  "actual_model_artifact": "../smriti-mira-full-scoped-contract-v2.json",
+  "acceptance": "Rejected: structured current Rust target absent although scope and Berlin preservation improved. Later working-tree observation/legacy-pack corrections not covered by this wheel."
+}

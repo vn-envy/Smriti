@@ -1,5 +1,7 @@
 """No-network checks for the matched public answer/judge wrapper."""
 
+import json
+
 import bench.qa_comparison as qa
 
 
@@ -136,6 +138,59 @@ def test_failures_cleanup_and_abs_denominator_are_explicit(monkeypatch):
     assert result["provenance"]["memory"]["mode"] == "lite"
 
 
+def test_progress_checkpoint_is_running_and_includes_errors_cleanup(monkeypatch, tmp_path):
+    monkeypatch.setattr(qa, "SmritiAdapter", _Adapter)
+    _Adapter.instances = 0
+    _Adapter.fail_first_add = True
+    progress = tmp_path / "progress.json"
+    result = qa.run_comparison(
+        [_item("q1"), _item("q2_abs", qtype="adversarial", unanswerable=True)],
+        b"dataset", "smriti", _Answer(["I don't have enough information"]),
+        _Judge([]), sample=2, k=3, verbose=False, progress_path=progress,
+    )
+    checkpoint = json.loads(progress.read_text())
+    assert checkpoint["status"] == "running"
+    assert "summary" not in checkpoint
+    assert checkpoint["progress"] == {
+        "processed_questions": 2, "requested_questions": 2,
+        "failed_questions": 1, "cleanup_failures": 0,
+        "last_question_id": "q2_abs",
+    }
+    assert checkpoint["results"][0]["errors"][0]["stage"] == "ingest"
+    assert len(checkpoint["cleanup"]) == 2
+    assert all(row["ok"] for row in checkpoint["cleanup"])
+    assert result["summary"]["accuracy"] == 0.5
+    assert not list(tmp_path.glob("*.tmp"))
+
+
+def test_progress_checkpoint_survives_interruption(monkeypatch, tmp_path):
+    class Abort(BaseException):
+        pass
+
+    class InterruptingAnswer(_Answer):
+        def complete(self, messages, max_tokens):
+            raise Abort("stop after first question")
+
+    monkeypatch.setattr(qa, "SmritiAdapter", _Adapter)
+    _Adapter.instances = 0
+    _Adapter.fail_first_add = False
+    progress = tmp_path / "interrupted.json"
+    try:
+        qa.run_comparison(
+            [_item("q1")], b"dataset", "smriti", InterruptingAnswer([]),
+            _Judge([]), sample=1, k=1, verbose=False, progress_path=progress,
+        )
+    except Abort:
+        pass
+    else:
+        raise AssertionError("test must interrupt the comparison")
+    checkpoint = json.loads(progress.read_text())
+    assert checkpoint["status"] == "running"
+    assert checkpoint["progress"]["processed_questions"] == 1
+    assert checkpoint["results"][0]["errors"][0]["stage"] == "interrupted"
+    assert checkpoint["cleanup"][0]["ok"] is True
+
+
 def test_matched_route_rejects_invalid_budgets_and_embed_model():
     answer = _Answer(["answer"])
     judge = _Judge([])
@@ -160,6 +215,58 @@ def test_sampling_reserves_an_abstention_stratum_when_sample_allows():
     items = [_item("q1"), _item("q2"), _item("q3_abs", qtype="single", unanswerable=True)]
     selected = qa.stratified_answerable_sample(items, 2)
     assert [item["question_id"] for item in selected] == ["q1", "q3_abs"]
+
+
+def test_locomo_sampling_covers_conversations_within_each_category():
+    items = []
+    for conversation in range(10):
+        for category, unanswerable in (("1", False), ("2", False),
+                                       ("3", False), ("4", False), ("5", True)):
+            item = _item(f"c{conversation}-{category}", qtype=category,
+                         unanswerable=unanswerable)
+            item["sample_id"] = f"conversation-{conversation}"
+            items.append(item)
+    selected = qa.stratified_answerable_sample(items, 50)
+    assert len({item["sample_id"] for item in selected}) == 10
+    assert {item["question_type"] for item in selected} == {"1", "2", "3", "4", "5"}
+    assert all(sum(item["question_type"] == category for item in selected) == 10
+               for category in ("1", "2", "3", "4", "5"))
+
+
+def test_locomo_rows_preserve_speakers_image_caption_and_date():
+    data = [{
+        "sample_id": "conversation-a",
+        "conversation": {
+            "session_1_date_time": "1:56 pm on 8 May, 2023",
+            "session_1": [
+                {"speaker": "Caroline", "text": "hello"},
+                {"speaker": "Bob", "text": "a photo", "blip_caption": "a dog"},
+            ],
+        },
+        "qa": [{"question": "What happened?", "answer": "hello", "category": 4}],
+    }]
+    item = qa._locomo_questions(data, 1000, 1000)[0]
+    assert item["question_id"] == "conversation-a-q0"
+    assert item["rows"][0]["timestamp"] == "2023-05-08T00:00:00Z"
+    assert item["rows"][0]["text"] == "Caroline: hello\nBob: a photo [shared an image: a dog]"
+
+
+def test_locomo_category5_gold_is_not_sent_to_reader(monkeypatch):
+    monkeypatch.setattr(qa, "SmritiAdapter", _Adapter)
+    _Adapter.instances = 0
+    _Adapter.fail_first_add = False
+    answer = _Answer(["I don't have enough information."])
+    item = _item("conversation-a-q0", qtype="5", unanswerable=True)
+    item["gold"] = "self-care is important"
+    result = qa.run_comparison([item], b"dataset", "smriti", answer,
+                               _Judge([]), sample=1, k=1, verbose=False)
+    prompt = answer.prompts[0][1]["content"]
+    assert "self-care is important" not in prompt
+    assert result["results"][0]["unanswerable"] is True
+    assert result["summary"]["abstention_requested"] == 1
+    assert result["summary"]["abstention_correct"] == 1
+    assert result["summary"]["source_count"] == 1
+    assert result["selection"]["sample_ids"] == ["sample-1"]
 
 
 def test_judge_sanity_retains_failed_raw_verdict():

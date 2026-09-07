@@ -1,0 +1,49 @@
+{
+  "status": "passed",
+  "source_sha256": "7369251822b6cc82735247c8c7fe841a10884747e5c1ce0d8fc195a126f749ea",
+  "checkpoints": [
+    {
+      "documents": 100,
+      "p50_ms": 25.486,
+      "p95_ms": 29.118,
+      "verified_relevant_hits": 100,
+      "embedded_chunks": 100
+    },
+    {
+      "documents": 1000,
+      "p50_ms": 32.935,
+      "p95_ms": 40.838,
+      "verified_relevant_hits": 100,
+      "embedded_chunks": 1000
+    },
+    {
+      "documents": 3000,
+      "p50_ms": 44.231,
+      "p95_ms": 49.984,
+      "verified_relevant_hits": 100,
+      "embedded_chunks": 3000
+    },
+    {
+      "documents": 9000,
+      "p50_ms": 43.396,
+      "p95_ms": 51.072,
+      "verified_relevant_hits": 100,
+      "embedded_chunks": 9000
+    },
+    {
+      "documents": 36500,
+      "p50_ms": 66.268,
+      "p95_ms": 92.448,
+      "verified_relevant_hits": 100,
+      "embedded_chunks": 36500
+    }
+  ],
+  "total_queries_checked": 100,
+  "total_relevant_hits_checked": 500,
+  "cumulative_ingest_s": 1060.755713,
+  "final_storage_mb": 840.246,
+  "limits": [
+    "Synthetic five-topic corpus; no answer-quality conclusion.",
+    "Calendar references model 100 additions/day, not elapsed-year measurements."
+  ]
+}

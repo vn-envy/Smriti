@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS facts(
     id INTEGER PRIMARY KEY,
     statement TEXT, subject TEXT, predicate TEXT, object TEXT, kind TEXT,
     event_date TEXT, ingested_at TEXT, valid_from TEXT, invalid_at TEXT,
-    superseded_by INTEGER, episode_id INTEGER, session_id TEXT, emb BLOB
+    superseded_by INTEGER, episode_id INTEGER, session_id TEXT, scope TEXT NOT NULL DEFAULT '', emb BLOB
 );
 CREATE TABLE IF NOT EXISTS entities(
     name TEXT, fact_id INTEGER
@@ -81,6 +81,14 @@ def _fts_ddl(stem: bool) -> str:
 
 def utcnow() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def normalize_scope(scope) -> str:
+    if scope is None:
+        return ""
+    if not isinstance(scope, str):
+        raise ValueError("fact scope must be a string or None")
+    return scope.strip()
 
 
 def _fts_query(text: str) -> str:
@@ -125,6 +133,19 @@ class Store:
                 self.db.execute("PRAGMA journal_mode=WAL")
                 self.db.execute("PRAGMA synchronous=NORMAL")
                 self.db.executescript(_SCHEMA_BASE)
+                columns = {row[1] for row in self.db.execute("PRAGMA table_info(facts)")}
+                if "scope" not in columns:
+                    try:
+                        self.db.execute("ALTER TABLE facts ADD COLUMN scope TEXT NOT NULL DEFAULT ''")
+                    except sqlite3.OperationalError as exc:
+                        # Two processes may open a legacy database together.
+                        # One ALTER wins; accept only the duplicate-column race
+                        # and verify the column now exists before continuing.
+                        if "duplicate column name" not in str(exc).lower():
+                            raise
+                        columns = {row[1] for row in self.db.execute("PRAGMA table_info(facts)")}
+                        if "scope" not in columns:
+                            raise
                 self.db.executescript(_fts_ddl(stem))
                 last_err = None
                 break
@@ -210,18 +231,19 @@ class Store:
 
     # ---------------------------------------------------------------- facts
     def add_fact(self, f: Fact, emb=None) -> int:
+        scope = normalize_scope(f.scope)
         self._validate_embedding("facts", emb)
         cur = self.db.execute(
             """INSERT INTO facts(statement, subject, predicate, object, kind,
                event_date, ingested_at, valid_from, invalid_at, superseded_by,
-               episode_id, session_id)
-               VALUES(?,?,?,?,?,?,?,?,?,?,?,?)""",
+               episode_id, session_id, scope)
+               VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)""",
             (
                 f.statement, f.subject.lower().strip(), f.predicate.lower().strip(),
                 f.object, f.kind, f.event_date,
                 f.ingested_at or utcnow(),
                 f.valid_from or f.event_date or f.ingested_at or utcnow(),
-                f.invalid_at, f.superseded_by, f.episode_id, f.session_id,
+                f.invalid_at, f.superseded_by, f.episode_id, f.session_id, scope,
             ),
         )
         rowid = cur.lastrowid
@@ -250,9 +272,11 @@ class Store:
         return rowid
 
     def get_fact(self, fid: int) -> Optional[Fact]:
+        scope_column = self._scope_column()
         row = self.db.execute(
             """SELECT id, statement, subject, predicate, object, kind, event_date,
-               ingested_at, valid_from, invalid_at, superseded_by, episode_id, session_id
+               ingested_at, valid_from, invalid_at, superseded_by, episode_id, session_id, """
+               + scope_column + """
                FROM facts WHERE id=?""",
             (fid,),
         ).fetchone()
@@ -262,7 +286,7 @@ class Store:
             id=row[0], statement=row[1], subject=row[2], predicate=row[3],
             object=row[4], kind=row[5], event_date=row[6], ingested_at=row[7],
             valid_from=row[8], invalid_at=row[9], superseded_by=row[10],
-            episode_id=row[11], session_id=row[12],
+            episode_id=row[11], session_id=row[12], scope=row[13] or "",
         )
 
     def invalidate_fact(self, fid: int, superseded_by: int, invalid_at: Optional[str] = None):
@@ -272,18 +296,34 @@ class Store:
             (invalid_at or utcnow(), superseded_by, fid),
         )  # embeddings unchanged; vector cache stays valid
 
-    def similar_valid_facts(self, subject: str, predicate: str) -> List[Fact]:
+    def _scope_column(self) -> str:
+        """Return a safe SQL projection for core and pre-scope databases.
+
+        Enterprise read-only packs intentionally skip migrations.  A pack
+        created before scope was added therefore needs an empty-scope
+        projection rather than a write or a failing SELECT.
+        """
+        column = getattr(self, "_scope_column_cache", None)
+        if column is None:
+            columns = {row[1] for row in self.db.execute("PRAGMA table_info(facts)")}
+            column = "scope" if "scope" in columns else "''"
+            self._scope_column_cache = column
+        return column
+
+    def similar_valid_facts(self, subject: str, predicate: str, scope: str = "") -> List[Fact]:
+        scope_column = self._scope_column()
         rows = self.db.execute(
-            "SELECT id FROM facts WHERE subject=? AND predicate=? AND invalid_at IS NULL",
-            (subject.lower().strip(), predicate.lower().strip()),
+            "SELECT id FROM facts WHERE subject=? AND predicate=? AND " + scope_column + "=? AND invalid_at IS NULL",
+            (subject.lower().strip(), predicate.lower().strip(), normalize_scope(scope)),
         ).fetchall()
         return [self.get_fact(r[0]) for r in rows]
 
-    def facts_for_key(self, subject: str, predicate: str) -> List[Fact]:
+    def facts_for_key(self, subject: str, predicate: str, scope: str = "") -> List[Fact]:
         """Return the complete validity history for a fact key."""
+        scope_column = self._scope_column()
         rows = self.db.execute(
-            "SELECT id FROM facts WHERE subject=? AND predicate=?",
-            (subject.lower().strip(), predicate.lower().strip()),
+            "SELECT id FROM facts WHERE subject=? AND predicate=? AND " + scope_column + "=?",
+            (subject.lower().strip(), predicate.lower().strip(), normalize_scope(scope)),
         ).fetchall()
         return [self.get_fact(r[0]) for r in rows]
 
@@ -321,12 +361,29 @@ class Store:
         Excludes observation/digest rows so digests aren't summarized again."""
         cond = "AND invalid_at IS NULL" if valid_only else ""
         rows = self.db.execute(
-            f"SELECT subject, predicate, COUNT(*) c FROM facts "
+            "SELECT subject, predicate, COUNT(*) c FROM facts "
             f"WHERE kind != 'observation' AND subject != '' AND predicate != '' {cond} "
-            f"GROUP BY subject, predicate HAVING COUNT(*) >= ?",
+            "GROUP BY subject, predicate HAVING COUNT(*) >= ?",
             (min_facts,),
         ).fetchall()
         return [(r[0], r[1], r[2]) for r in rows]
+
+    def predicate_groups_scoped(self, min_facts: int = 2, valid_only: bool = True) -> List[Tuple[str, str, str, int]]:
+        """Return predicate groups partitioned by applicability scope.
+
+        ``predicate_groups`` retains its legacy three-column API; observation
+        refresh uses this scoped form so a digest cannot combine unrelated
+        project or tenant facts.
+        """
+        cond = "AND invalid_at IS NULL" if valid_only else ""
+        scope_column = self._scope_column()
+        rows = self.db.execute(
+            f"SELECT subject, predicate, {scope_column} AS scope, COUNT(*) c FROM facts "
+            f"WHERE kind != 'observation' AND subject != '' AND predicate != '' {cond} "
+            f"GROUP BY subject, predicate, {scope_column} HAVING COUNT(*) >= ?",
+            (min_facts,),
+        ).fetchall()
+        return [(r[0], r[1], r[2] or "", r[3]) for r in rows]
 
     def entities_of_facts(self, fact_ids: Sequence[int]) -> List[str]:
         """Entities mentioned by the given facts (for graph-lite multi-hop)."""
@@ -717,17 +774,18 @@ class Store:
                     for r in self.db.execute(
                         "SELECT id, session_id, role, content, ts, emb FROM episodes")]
         facts = []
+        scope_column = self._scope_column()
         for r in self.db.execute(
                 """SELECT id, statement, subject, predicate, object, kind,
                    event_date, ingested_at, valid_from, invalid_at,
-                   superseded_by, episode_id, session_id, emb FROM facts"""):
+                   superseded_by, episode_id, session_id, """ + scope_column + ", emb FROM facts"):
             krow = self.db.execute(
                 "SELECT keys FROM fact_keys_fts WHERE rowid=?", (r[0],)).fetchone()
             facts.append(dict(
                 id=r[0], statement=r[1], subject=r[2], predicate=r[3],
                 object=r[4], kind=r[5], event_date=r[6], ingested_at=r[7],
                 valid_from=r[8], invalid_at=r[9], superseded_by=r[10],
-                episode_id=r[11], session_id=r[12], emb=b64(r[13]),
+                episode_id=r[11], session_id=r[12], scope=r[13] or "", emb=b64(r[14]),
                 search_keys=krow[0] if krow else None))
         entities = [dict(name=r[0], fact_id=r[1]) for r in
                     self.db.execute("SELECT name, fact_id FROM entities")]
@@ -738,7 +796,7 @@ class Store:
         identity = self.db.execute(
             "SELECT value FROM metadata WHERE key='embedder_identity'"
         ).fetchone()
-        return {"format": "smriti-export", "version": 2, "exported_at": utcnow(),
+        return {"format": "smriti-export", "version": 3, "exported_at": utcnow(),
                 "embedder_identity": identity[0] if identity else None,
                 "episodes": episodes, "facts": facts, "entities": entities,
                 "aliases": aliases, "ingest_log": ingest_log}
@@ -752,7 +810,7 @@ class Store:
         if data.get("format") != "smriti-export":
             raise ValueError("not a smriti export")
         export_version = data.get("version")
-        if export_version not in (1, 2):
+        if export_version not in (1, 2, 3):
             raise ValueError(f"unsupported smriti export version: {data.get('version')!r}")
         if export_version == 1 and not adopt_legacy_embedder:
             raise ValueError(
@@ -807,14 +865,18 @@ class Store:
                 self.db.execute("INSERT INTO episodes_fts(rowid, content) VALUES(?,?)",
                                 (e["id"], e["content"]))
             for f in data.get("facts", []):
+                scope = f.get("scope", "")
+                if scope is None:
+                    scope = ""
+                scope = normalize_scope(scope)
                 self.db.execute(
                     """INSERT INTO facts(id, statement, subject, predicate, object, kind,
                        event_date, ingested_at, valid_from, invalid_at, superseded_by,
-                       episode_id, session_id, emb) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                       episode_id, session_id, scope, emb) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
                     (f["id"], f["statement"], f["subject"], f["predicate"], f["object"],
                      f["kind"], f["event_date"], f["ingested_at"], f["valid_from"],
                      f["invalid_at"], f["superseded_by"], f["episode_id"],
-                     f["session_id"], unb64(f.get("emb"))))
+                     f.get("session_id"), scope, unb64(f.get("emb"))))
                 self.db.execute("INSERT INTO facts_fts(rowid, statement) VALUES(?,?)",
                                 (f["id"], f["statement"]))
                 if f.get("search_keys"):

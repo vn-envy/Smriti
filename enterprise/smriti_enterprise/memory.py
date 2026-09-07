@@ -14,7 +14,7 @@ from typing import List, Optional
 import smriti as _core
 from smriti import Smriti
 from smriti.memory import _embedder_identity, redact_secrets
-from smriti.store import utcnow
+from smriti.store import normalize_scope, utcnow
 from smriti.types import Fact, RetrievalResult
 
 from ._version import __version__ as _ent_version
@@ -122,6 +122,7 @@ class EnterpriseSmriti(Smriti):
     def _result_evidence(results: List[RetrievalResult]) -> list:
         return [{"kind": r.kind, "id": r.id, "score": round(r.score, 6),
                  "valid_from": r.valid_from, "invalid_at": r.invalid_at,
+                 "scope": r.scope,
                  "channels": r.channels, "text_digest": digest(r.text)}
                 for r in results]
 
@@ -164,13 +165,15 @@ class EnterpriseSmriti(Smriti):
                    correlation_id)
         return fid
 
-    def _write_observation(self, subject, predicate, label, facts) -> bool:
-        ok = super()._write_observation(subject, predicate, label, facts)
+    def _write_observation(self, subject, predicate, label, facts, scope="") -> bool:
+        scope = normalize_scope(scope)
+        ok = super()._write_observation(subject, predicate, label, facts, scope=scope)
         if ok:
             row = self.store.db.execute(
                 "SELECT id FROM facts WHERE kind='observation' AND subject=? "
-                "AND predicate=? AND invalid_at IS NULL ORDER BY id DESC LIMIT 1",
-                (subject, predicate)).fetchone()
+                "AND predicate=? AND scope=? AND invalid_at IS NULL "
+                "ORDER BY id DESC LIMIT 1",
+                (subject, predicate, scope)).fetchone()
             if row:
                 self.store.db.execute(
                     "UPDATE facts SET uuid=?, recorded_at=? WHERE id=? AND uuid IS NULL",

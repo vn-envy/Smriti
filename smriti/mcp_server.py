@@ -77,7 +77,7 @@ TOOL_DEFS = [
          "required": ["query"]}},
     {"name": "search",
      "description": "Structured retrieval: ranked memory hits as JSON "
-                    "(kind, text, score, validity window, channels). Same profile/"
+                    "(kind, text, score, validity window, scope, channels). Same profile/"
                     "channels selection as recall: 'facts' current-state, 'relations' "
                     "connections, 'timeline' when-questions, 'deep' counts/summaries.",
      "inputSchema": {"type": "object", "properties": {
@@ -97,6 +97,7 @@ TOOL_DEFS = [
      "inputSchema": {"type": "object", "properties": {
          "statement": {"type": "string"}, "subject": {"type": "string"},
          "predicate": {"type": "string"}, "object": {"type": "string"},
+         "scope": {"type": "string", "description": "Optional explicit applicability context, e.g. project:Atlas."},
          "entities": {"type": "array", "items": {"type": "string"}}},
          "required": ["statement"]}},
     {"name": "stats",
@@ -186,6 +187,7 @@ class SmritiMCP:
         return {"results": [
             {"kind": r.kind, "text": r.text, "score": round(r.score, 4),
              "valid_from": r.valid_from, "invalid_at": r.invalid_at,
+             "scope": r.scope,
              "current": (r.kind != "fact") or (r.invalid_at is None),
              "ts": r.ts, "role": r.role, "channels": r.channels}
             for r in hits]}
@@ -195,7 +197,8 @@ class SmritiMCP:
         facts = self.mem.store.facts_for_entity(ent, valid_only=False, include_observations=True)
         return {"entity": ent, "facts": [
             {"statement": f.statement, "valid_from": f.valid_from,
-             "invalid_at": f.invalid_at, "current": f.invalid_at is None}
+             "invalid_at": f.invalid_at, "scope": f.scope,
+             "current": f.invalid_at is None}
             for f in facts]}
 
     def t_add_fact(self, a):
@@ -206,7 +209,8 @@ class SmritiMCP:
         fid = self.mem.add_fact(Fact(
             id=None, statement=stmt, subject=str(a.get("subject", "user")),
             predicate=str(a.get("predicate", "")), object=str(a.get("object", "")),
-            entities=[str(e)[:120] for e in ents][:20]))
+            entities=[str(e)[:120] for e in ents][:20],
+            scope=_check_str(a.get("scope", ""), "scope", 200)))
         return {"fact_id": fid, "stored": fid is not None}
 
     def t_stats(self, a):

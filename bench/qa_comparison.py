@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import os
 import json
 import platform
 import tempfile
@@ -82,26 +83,113 @@ def _usage(llm: object) -> dict[str, Any]:
             ("calls", "attempts", "http_attempts", "tokens_in", "tokens_out", "usage_missing")}
 
 
+def _atomic_write_json(path: str | Path, payload: Mapping[str, Any]) -> None:
+    """Replace a JSON artifact atomically after flushing its temporary file."""
+    destination = Path(path)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    temporary: str | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w", encoding="utf-8", dir=destination.parent,
+            prefix=f".{destination.name}.", suffix=".tmp", delete=False,
+        ) as handle:
+            temporary = handle.name
+            json.dump(payload, handle, indent=2, ensure_ascii=False)
+            handle.write("\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, destination)
+        temporary = None
+    finally:
+        if temporary is not None:
+            try:
+                os.unlink(temporary)
+            except FileNotFoundError:
+                pass
+
+
+def _write_progress_checkpoint(path: str | Path | None, *, raw: bytes,
+                               benchmark: str, adapter_name: str,
+                               selected: Sequence[Mapping[str, Any]],
+                               results: Sequence[Mapping[str, Any]],
+                               cleanup: Sequence[Mapping[str, Any]],
+                               answer_llm: object, judge_llm: object) -> None:
+    """Persist an in-flight result without presenting it as a completed run."""
+    if path is None:
+        return
+    failed = sum(bool(row.get("errors")) for row in results)
+    payload = {
+        "schema_version": SCHEMA_VERSION,
+        "status": "running",
+        "dataset_sha256": hashlib.sha256(raw).hexdigest(),
+        "progress": {
+            "processed_questions": len(results),
+            "requested_questions": len(selected),
+            "failed_questions": failed,
+            "cleanup_failures": sum(not bool(row.get("ok")) for row in cleanup),
+            "last_question_id": results[-1].get("question_id") if results else None,
+        },
+        "selection": {
+            "question_ids": [str(item.get("question_id", "")) for item in selected],
+            "sample_ids": list(dict.fromkeys(str(item.get("sample_id", ""))
+                                             for item in selected)),
+        },
+        "provenance": {
+            "benchmark": benchmark,
+            "adapter": adapter_name,
+            "models": {"answer": _llm_meta(answer_llm),
+                        "judge": _llm_meta(judge_llm)},
+        },
+        "usage": {"answer": _usage(answer_llm), "judge": _usage(judge_llm)},
+        "cleanup": list(cleanup),
+        "results": list(results),
+    }
+    _atomic_write_json(path, payload)
+
+
 def stratified_answerable_sample(items: Sequence[Mapping[str, Any]], n: int) -> list[Mapping[str, Any]]:
-    """Stable round-robin sample over type and answerability strata."""
+    """Stable round-robin sample over type, answerability, and source strata.
+
+    LoCoMo has many questions per conversation.  Sampling only by question
+    category would therefore consume the first conversation's questions before
+    reaching any other conversation.  Cycling through ``sample_id`` buckets
+    keeps a small pilot broad across conversations while retaining the stable
+    category/answerability allocation used by the matched route.
+    """
     if n < 1 or n > len(items):
         raise ValueError(f"sample must be between 1 and {len(items)}")
-    groups: dict[tuple[str, bool], list[Mapping[str, Any]]] = {}
+    groups: dict[tuple[str, bool], dict[str, list[Mapping[str, Any]]]] = {}
     for item in items:
         key = (str(item.get("question_type", "unknown")),
                bool(item.get("unanswerable", False)))
-        groups.setdefault(key, []).append(item)
-    cursors = {key: 0 for key in groups}
+        source = str(item.get("sample_id", ""))
+        groups.setdefault(key, {}).setdefault(source, []).append(item)
+    source_cursors = {key: {source: 0 for source in buckets}
+                      for key, buckets in groups.items()}
+    source_positions = {key: 0 for key in groups}
     active = list(groups)
     selected: list[Mapping[str, Any]] = []
     while active and len(selected) < n:
         for key in list(active):
-            pos = cursors[key]
-            if pos >= len(groups[key]):
+            buckets = groups[key]
+            sources = list(buckets)
+            if not sources:
                 active.remove(key)
                 continue
-            selected.append(groups[key][pos])
-            cursors[key] = pos + 1
+            start = source_positions[key] % len(sources)
+            picked = None
+            for offset in range(len(sources)):
+                source = sources[(start + offset) % len(sources)]
+                pos = source_cursors[key][source]
+                if pos < len(buckets[source]):
+                    picked = source
+                    break
+            if picked is None:
+                active.remove(key)
+                continue
+            selected.append(buckets[picked][source_cursors[key][picked]])
+            source_cursors[key][picked] += 1
+            source_positions[key] = (sources.index(picked) + 1) % len(sources)
             if len(selected) >= n:
                 break
     return selected
@@ -219,7 +307,15 @@ def run_comparison(data: Sequence[Mapping[str, Any]], raw: bytes, adapter_name: 
                    base_url: str = DEFAULT_BASE_URL,
                    mem0_config: Mapping[str, Any] | None = None,
                    temp_root: str | None = None, verbose: bool = True,
-                   benchmark: str = "LongMemEval-S") -> dict[str, Any]:
+                   benchmark: str = "LongMemEval-S",
+                   progress_path: str | Path | None = None) -> dict[str, Any]:
+    """Run the matched evaluation.
+
+    When ``progress_path`` is provided, a status-``running`` artifact is
+    atomically replaced after each selected question, including its errors and
+    cleanup record. The caller remains responsible for writing the final
+    completed result, which keeps the existing return/API behavior unchanged.
+    """
     if sample < 1 or sample > len(data):
         raise ValueError(f"sample must be between 1 and {len(data)}")
     if any(value < 1 for value in (k, session_char_budget, chunk_char_budget,
@@ -300,15 +396,30 @@ def run_comparison(data: Sequence[Mapping[str, Any]], raw: bytes, adapter_name: 
         except Exception as exc:
             rec["errors"].append(_error("ingest", exc))
             results.append(rec)
+        except BaseException as exc:
+            # Preserve the interrupted question before allowing Ctrl-C or a
+            # process-level abort to propagate.  The finally block below then
+            # records cleanup and atomically checkpoints this error-inclusive
+            # partial result.
+            rec["errors"].append(_error("interrupted", exc))
+            results.append(rec)
+            raise
         finally:
             row = {"sample_id": item["sample_id"], "question_id": item["question_id"],
                    "attempted": adapter is not None, "ok": True}
-            if adapter is not None:
-                try:
-                    adapter.close()
-                except Exception as exc:
-                    row.update({"ok": False, "error": _error("cleanup", exc)})
-            cleanup.append(row)
+            try:
+                if adapter is not None:
+                    try:
+                        adapter.close()
+                    except Exception as exc:
+                        row.update({"ok": False, "error": _error("cleanup", exc)})
+            finally:
+                cleanup.append(row)
+                _write_progress_checkpoint(
+                    progress_path, raw=raw, benchmark=benchmark,
+                    adapter_name=adapter_name, selected=selected,
+                    results=results, cleanup=cleanup,
+                    answer_llm=answer_llm, judge_llm=judge_llm)
     failures = sum(1 for row in results if row["errors"])
     answerable_rows = [row for row in results if not row["unanswerable"]]
     abstention_rows = [row for row in results if row["unanswerable"]]
@@ -333,6 +444,13 @@ def run_comparison(data: Sequence[Mapping[str, Any]], raw: bytes, adapter_name: 
         "answerable_accuracy": round(answerable_correct / max(1, len(answerable_rows)), 4),
         "abstention_accuracy": round(abstention_correct / max(1, len(abstention_rows)), 4)
         if abstention_rows else None,
+        "source_count": len({str(item.get("sample_id", "")) for item in selected}),
+        "question_type_counts": {
+            question_type: sum(str(item.get("question_type", "unknown")) == question_type
+                               for item in selected)
+            for question_type in dict.fromkeys(
+                str(item.get("question_type", "unknown")) for item in selected)
+        },
         "elapsed_s": round(time.time() - started, 4),
         "usage": {"answer": _usage(answer_llm), "judge": _usage(judge_llm)},
     }
@@ -366,6 +484,8 @@ def run_comparison(data: Sequence[Mapping[str, Any]], raw: bytes, adapter_name: 
                        "usage_scope": "Cumulative counters on shared answer/judge objects; not per-question deltas.",
                        "failure_policy": "Every selected question remains in the denominator; raw errors are retained."},
         "selection": {"question_ids": [item["question_id"] for item in selected],
+                      "sample_ids": list(dict.fromkeys(str(item.get("sample_id", ""))
+                                                       for item in selected)),
                       "answerable_question_ids": [item["question_id"] for item in selected
                                                    if not item["unanswerable"]],
                       "abstention_question_ids": [item["question_id"] for item in selected
@@ -457,7 +577,7 @@ def main() -> None:
                                "ollama_request": ollama_request},
                 "judge_sanity": sanity,
             }
-            destination.write_text(json.dumps(blocked, indent=2, ensure_ascii=False) + "\n")
+            _atomic_write_json(destination, blocked)
             print(json.dumps(blocked, indent=2))
             raise SystemExit(2)
     else:
@@ -470,10 +590,11 @@ def main() -> None:
                             context_char_budget=args.context_char_budget,
                             base_url=args.base_url, mem0_config=config,
                             verbose=not args.quiet,
-                            benchmark="LongMemEval-S" if args.dataset == "longmemeval" else "LoCoMo")
+                            benchmark="LongMemEval-S" if args.dataset == "longmemeval" else "LoCoMo",
+                            progress_path=destination)
     result["judge_sanity"] = sanity
     result["provenance"]["ollama_request"] = ollama_request
-    destination.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n")
+    _atomic_write_json(destination, result)
     print(json.dumps(result["summary"], indent=2))
     if result["status"] != "complete":
         raise SystemExit(2)

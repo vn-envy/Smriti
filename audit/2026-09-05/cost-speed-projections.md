@@ -3,8 +3,9 @@
 These are bounded corpus-growth simulations, not calendar-long observations.
 The measured semantic runs use the same Ollama `nomic-embed-text:v1.5` model
 and 768-dimensional output at `http://127.0.0.1:11436`; Mem0 uses local Qdrant
-with `infer=False`. GBrain is a separate lexical/no-embedding track. A local
-model/API charge of `$0` is shared by all three tested local routes; it is not a
+with `infer=False`, and GBrain semantic uses its PGLite hybrid route. GBrain's
+lexical/no-embedding track is reported separately. A local
+model/API charge of `$0` is shared by the tested local routes; it is not a
 unique Smriti advantage and does not mean hardware, electricity, hosting, or
 operator cost is zero. Those costs were not measured.
 
@@ -40,6 +41,36 @@ GBrain maintenance was measured separately after each checkpoint: cumulative
 separate observation: its independent 5,000-document run had warm p50 1,516.268
 ms and p95 1,613.560 ms. Do not merge that untuned query-plan cliff with this
 maintained variant or interpolate across it.
+
+## Matched semantic GBrain track
+
+The completed `gbrain-nomic` run uses the same nomic model and measured 768
+dimensions as the Smriti and Mem0 semantic runs. It uses GBrain's hybrid
+semantic+keyword search on persistent PGLite, with a process-restart cold
+boundary. Every checkpoint has 20/20 nonempty, topic-relevant timed queries;
+vector stats report `embedded_count == chunk_count` (100 through 36,500).
+The raw artifact and derived three-semantic validation are
+[`growth-gbrain-nomic-schema2.json`](growth-gbrain-nomic-schema2.json) and
+[`growth-semantic-final-report.json`](growth-semantic-final-report.json).
+
+| Track | Docs | Ingest ms | Cumulative ingest ms | Resubmit ms | First ms | Cold ms | Warm p50 / p95 ms (nearest-rank) | ANALYZE ms | Storage MB |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| GBrain semantic / nomic / PGLite | 100 | 2,331.867 | 2,331.867 | 4.828 | 41.549 | 66.564 | 25.486 / 29.118 | 52.295 | 45.253 |
+| GBrain semantic / nomic / PGLite | 1,000 | 19,481.866 | 21,813.733 | 12.600 | 33.904 | 75.377 | 32.935 / 40.838 | 73.674 | 71.713 |
+| GBrain semantic / nomic / PGLite | 3,000 | 45,050.291 | 66,864.024 | 27.625 | 50.068 | 89.282 | 44.231 / 49.984 | 86.965 | 109.765 |
+| GBrain semantic / nomic / PGLite | 9,000 | 140,889.773 | 207,753.797 | 79.539 | 48.405 | 97.114 | 43.396 / 51.072 | 114.449 | 223.388 |
+| GBrain semantic / nomic / PGLite | 36,500 | 853,001.916 | 1,060,755.713 | 310.472 | 140.356 | 139.753 | 66.268 / 92.448 | 260.591 | 840.246 |
+
+At the 100-adds/day workload equivalents, the measured semantic row is:
+
+| Track | 30 days / 3,000 docs p50 / p95 ms | 90 days / 9,000 docs p50 / p95 ms | 365 days / 36,500 docs p50 / p95 ms | Storage MB at 365 days |
+|---|---:|---:|---:|---:|
+| GBrain semantic / nomic / PGLite | 44.231 / 49.984 | 43.396 / 51.072 | 66.268 / 92.448 | 840.246 |
+
+These semantic GBrain measurements are comparable on embedder identity and
+checkpoint workload to Smriti and Mem0, while storage and process boundaries
+remain implementation-specific. The lexical GBrain rows above have no model
+calls and remain a separate comparison.
 
 Mem0 also logged that optional spaCy full and lemma models were unavailable.
 `infer=False` direct-message embedding and semantic Qdrant search still ran;
@@ -84,5 +115,8 @@ and [raw/cost-source-snapshot.json](./raw/cost-source-snapshot.json).
 The final runs used schema-2 artifacts with fresh databases, the shared local
 Ollama listener, and 20 warm samples per checkpoint. The derived validated
 summary is [growth-matched-final-report.json](./growth-matched-final-report.json).
-Charts are generated offline from that summary by
-`python3 -m bench.growth_charts`; no missing checkpoints are interpolated.
+The separate three-semantic summary is
+[growth-semantic-final-report.json](./growth-semantic-final-report.json), with
+charts under [charts/semantic](./charts/semantic/). Charts are generated offline
+from these summaries by `python3 -m bench.growth_charts`; no missing checkpoints
+are interpolated.

@@ -16,10 +16,10 @@ from __future__ import annotations
 
 import argparse
 import dataclasses
+from datetime import datetime
 import importlib.metadata
 import json
 import os
-import re
 import shlex
 import sys
 import time
@@ -50,14 +50,22 @@ UPDATES = [
 ]
 NOW = "2025-03-01T12:00:00Z"
 QUERIES = {
-    "current_rust_atlas": "What programming language does Mira currently prefer for the Atlas project?",
+    "current_rust_atlas": "What programming language does Mira currently use for the Atlas project?",
     "history_mumbai_python": "In January 2024, where did Mira work and what programming language did she prefer?",
 }
 GOLDS = {
-    "current_rust_atlas": "Mira currently prefers Rust for the Atlas project.",
+    "current_rust_atlas": "Mira currently uses Rust for the Atlas project.",
     "history_mumbai_python": "In January 2024, Mira preferred Python and worked in Mumbai.",
 }
 HISTORY_POINT = "2024-01-10T12:00:00Z"
+SWITCH_POINT = "2025-02-20T12:00:00Z"
+ATLAS_SCOPE = "project:Atlas"
+MIRA_SUBJECT = "Mira"
+LANGUAGE_STATE_PREDICATES = (
+    "prefers", "preferred", "preference", "primary_programming_language",
+    "preferred_language", "preferred_programming_language", "uses_language",
+    "uses_programming_language", "currently_uses_language",
+)
 
 
 def jsonable(value: Any) -> Any:
@@ -177,7 +185,7 @@ def read_facts(memory: Smriti) -> List[Dict[str, Any]]:
     columns = (
         "id", "statement", "subject", "predicate", "object", "kind",
         "event_date", "ingested_at", "valid_from", "invalid_at",
-        "superseded_by", "episode_id", "session_id",
+        "superseded_by", "episode_id", "session_id", "scope",
     )
     cursor = memory.store.db.execute("SELECT " + ", ".join(columns) + " FROM facts ORDER BY id")
     names = [description[0] for description in cursor.description]
@@ -206,6 +214,15 @@ def interval_contains(fact: Dict[str, Any], point: str) -> bool:
     return (start is None or str(start) <= point) and (end is None or point < str(end))
 
 
+def same_calendar_day(left: Any, right: str) -> bool:
+    def parse(value: Any):
+        return datetime.fromisoformat(str(value).replace("Z", "+00:00")).date()
+    try:
+        return parse(left) == parse(right)
+    except (TypeError, ValueError):
+        return False
+
+
 def structured_fact_matches(fact: Dict[str, Any], terms: Iterable[str], point: Optional[str] = None) -> bool:
     structured = " ".join(str(fact.get(key, "")) for key in ("subject", "predicate", "object"))
     searchable = structured + " " + str(fact.get("statement", ""))
@@ -221,21 +238,46 @@ def active_preference_facts(facts: List[Dict[str, Any]]) -> List[Dict[str, Any]]
 
 def active_language_preference_facts(facts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """Limit ambiguity checking to the programming-language preference."""
-    return [fact for fact in active_preference_facts(facts) if any(
-        language in (str(fact.get("object", "")) + " " + str(fact.get("statement", ""))).lower()
-        for language in ("python", "rust")
-    )]
+    return [fact for fact in facts if fact.get("invalid_at") is None and
+            str(fact.get("predicate", "")).strip().lower() in
+            LANGUAGE_STATE_PREDICATES and
+            any(language in str(fact.get("object", "")).lower()
+                for language in ("python", "rust"))]
 
 
 def language_preference_value(fact: Dict[str, Any]) -> Optional[str]:
     value = str(fact.get("object", "")).strip().lower()
-    if value:
-        return value
-    statement = str(fact.get("statement", "")).lower()
-    for language in ("python", "rust"):
-        if language in statement:
-            return language
-    return None
+    return value or None
+
+
+def language_preference_matches(fact: Dict[str, Any], language: str,
+                                point: Optional[str] = None,
+                                scope: Optional[str] = None,
+                                subject: Optional[str] = None) -> bool:
+    predicate = str(fact.get("predicate", "")).strip().lower()
+    value = language_preference_value(fact)
+    return (predicate in LANGUAGE_STATE_PREDICATES and
+            value is not None and language.lower() in value and
+            (scope is None or str(fact.get("scope", "")) == scope) and
+            (subject is None or str(fact.get("subject", "")).strip().casefold() == subject.casefold()) and
+            (point is None or interval_contains(fact, point)))
+
+
+def raw_fact_matches(fact: Dict[str, Any], *, predicate: Optional[str] = None,
+                     object_terms: Iterable[str] = (), scope: Optional[str] = None,
+                     event_date: Optional[str] = None,
+                     subject: Optional[str] = MIRA_SUBJECT) -> bool:
+    """Match audit-critical structured fields without statement substring inference."""
+    if subject is not None and str(fact.get("subject", "")).strip().casefold() != subject.casefold():
+        return False
+    if predicate is not None and str(fact.get("predicate", "")).strip().casefold() != predicate.casefold():
+        return False
+    value = str(fact.get("object", "")).casefold()
+    if any(str(term).casefold() not in value for term in object_terms):
+        return False
+    if scope is not None and str(fact.get("scope", "")) != scope:
+        return False
+    return event_date is None or str(fact.get("event_date", "")) == event_date
 
 
 def judge_verdict(text: Optional[str]) -> Optional[str]:
@@ -420,32 +462,86 @@ def main(argv: Optional[List[str]] = None) -> int:
             report["answers"][label]["judge_raw"] = verdict_raw
             report["answers"][label]["judge_verdict"] = judge_verdict(verdict_raw)
 
-        current_facts = [fact.get("statement", "") for fact in facts if fact.get("invalid_at") is None]
         current_source = evidence.get("current_rust_atlas", {})
         history_source = evidence.get("history_mumbai_python", {})
         active_preferences = active_preference_facts(facts)
         active_language_preferences = active_language_preference_facts(facts)
-        current_rust_facts = [fact for fact in facts if structured_fact_matches(fact, ("rust", "atlas")) and interval_contains(fact, NOW)]
-        january_python_facts = [fact for fact in facts if structured_fact_matches(fact, ("python",)) and interval_contains(fact, HISTORY_POINT)]
+        current_rust_state_facts = [fact for fact in facts if language_preference_matches(
+            fact, "rust", NOW, ATLAS_SCOPE, subject=MIRA_SUBJECT)]
+        january_python_facts = [fact for fact in facts if language_preference_matches(
+            fact, "python", HISTORY_POINT, subject=MIRA_SUBJECT)]
+        atlas_python_preference_facts = [fact for fact in facts if language_preference_matches(
+            fact, "python", scope=ATLAS_SCOPE, subject=MIRA_SUBJECT)]
+        current_atlas_facts = [fact for fact in facts if structured_fact_matches(
+            fact, ("atlas",), NOW) and str(fact.get("subject", "")).strip().casefold() == MIRA_SUBJECT.casefold()]
+        current_berlin_facts = [fact for fact in facts if structured_fact_matches(fact, ("berlin",), NOW)
+                                and str(fact.get("predicate", "")).lower() in ("lives_in", "located_in", "current_city")
+                                and str(fact.get("subject", "")).strip().casefold() == MIRA_SUBJECT.casefold()]
+        latest_python = max(atlas_python_preference_facts,
+                            key=lambda fact: str(fact.get("valid_from") or ""),
+                            default=None)
+        prior_python_ended = not atlas_python_preference_facts or (
+            not any(interval_contains(fact, NOW) for fact in atlas_python_preference_facts)
+            and latest_python.get("invalid_at") is not None
+            and same_calendar_day(latest_python["invalid_at"], SWITCH_POINT)
+        )
+        identity_scope_assertions = {
+            "aurora_event_keeps_mira_subject": any(raw_fact_matches(
+                fact, predicate="worked_on", object_terms=("aurora", "mumbai"),
+                scope="", event_date="2024-01-10")
+                for fact in facts),
+            "aurora_date_is_not_applicability_scope": any(raw_fact_matches(
+                fact, predicate="worked_on", object_terms=("aurora",),
+                scope="", event_date="2024-01-10")
+                for fact in facts),
+            "berlin_event_keeps_mira_subject": any(raw_fact_matches(
+                fact, predicate="lives_in", object_terms=("berlin",), scope="", event_date="2024-06-15")
+                for fact in facts),
+            "atlas_project_event_keeps_mira_subject": any(raw_fact_matches(
+                fact, predicate="joined_project", object_terms=("atlas",), scope="", event_date="2024-06-15")
+                for fact in facts),
+            "atlas_language_state_keeps_mira_subject": bool(current_rust_state_facts),
+            "atlas_transition_keeps_mira_subject": any(raw_fact_matches(
+                fact, predicate="switched_from", object_terms=("python",), scope=ATLAS_SCOPE)
+                for fact in facts),
+            "adjacent_theme_does_not_inherit_atlas_scope": any(
+                raw_fact_matches(fact, object_terms=("light",), scope="")
+                and str(fact.get("predicate", "")).strip().lower() in ("prefers", "prefers_theme")
+                for fact in facts),
+        }
         report["temporal_fact_review"] = {
-            "current_rust_atlas_facts": current_rust_facts,
+            "current_rust_state_facts": current_rust_state_facts,
+            "current_atlas_facts": current_atlas_facts,
+            "current_berlin_facts": current_berlin_facts,
             "january_python_facts": january_python_facts,
+            "atlas_python_preference_facts": atlas_python_preference_facts,
+            "prior_python_preference_ended_before_now": prior_python_ended,
+            "python_preference_end_dates": [fact.get("invalid_at") for fact in atlas_python_preference_facts],
+            "latest_python_preference": latest_python,
             "active_preference_facts": active_preferences,
             "active_language_preference_facts": active_language_preferences,
-            "competing_active_preference_objects": sorted({value for value in (language_preference_value(fact) for fact in active_language_preferences) if value}),
-            "ambiguity_note": "Active preference values are reported from structured intervals. Any competing active values remain unresolved and prevent an OK status.",
+            "competing_active_preference_objects": sorted({value for value in (language_preference_value(fact) for fact in active_language_preferences if str(fact.get("scope", "")) == ATLAS_SCOPE) if value}),
+            "ambiguity_note": "Preference replacement is evaluated only within the explicit project:Atlas scope. Global Python may remain valid alongside Atlas-scoped Rust; competing values within that scope remain unresolved and prevent an OK status.",
+        }
+        report["identity_scope_review"] = {
+            "expected_named_subject": MIRA_SUBJECT,
+            "observed_subjects": sorted({str(fact.get("subject", "")) for fact in facts}),
+            "assertions": identity_scope_assertions,
         }
         judge_verdicts = {
             label: report.get("answers", {}).get(label, {}).get("judge_verdict")
             for label in QUERIES
         }
         report["assertions"] = {
-            "current_fact_contains_rust": has_terms(current_facts, ("rust",)),
-            "current_fact_contains_atlas": has_terms(current_facts, ("atlas",)),
+            "current_fact_contains_rust": bool(current_rust_state_facts),
+            "current_fact_contains_atlas": bool(current_atlas_facts),
             "history_fact_contains_mumbai": has_terms(facts, ("mumbai",)),
             "history_fact_contains_python": has_terms(facts, ("python",)),
-            "current_rust_atlas_structured_interval": bool(current_rust_facts),
+            "current_rust_preference_object_interval": bool(current_rust_state_facts),
+            "prior_python_preference_ended_before_now": prior_python_ended,
+            "current_rust_atlas_structured_interval": bool(current_rust_state_facts and current_atlas_facts),
             "january_python_structured_interval": bool(january_python_facts),
+            "current_berlin_structured_interval": bool(current_berlin_facts),
             "no_competing_active_preferences": len(report["temporal_fact_review"]["competing_active_preference_objects"]) <= 1,
             "current_source_contains_rust": has_terms(current_source, ("rust",)),
             "current_source_contains_atlas": has_terms(current_source, ("atlas",)),
@@ -455,6 +551,7 @@ def main(argv: Optional[List[str]] = None) -> int:
             "judge_sanity_negative_no": report["judge_sanity_negative_control"]["verdict"] == "NO",
             "current_answer_judge_yes": judge_verdicts.get("current_rust_atlas") == "YES",
             "history_answer_judge_yes": judge_verdicts.get("history_mumbai_python") == "YES",
+            **identity_scope_assertions,
         }
     except Exception as exc:
         report["failures"].append({"step": "workflow", "error_type": type(exc).__name__, "error": str(exc), "traceback": traceback.format_exc()})

@@ -1,6 +1,6 @@
 # Smriti: evidence-led build roadmap
 
-Status checked 2026-09-07. Baseline: GitHub main `a2afb3d` (core 0.3.2,
+Status checked 2026-09-08. Baseline: GitHub main `a2afb3d` (core 0.3.2,
 enterprise 0.1.0). The current candidate has completed the hardening and launch
 film work described below. This document remains a build plan and status record,
 not a release certificate or benchmark leaderboard.
@@ -23,7 +23,7 @@ Graphify addresses code structure rather than replacing conversational temporal
 memory. Smriti's distinction is the focused combination of explicit validity
 history, provenance, and a portable core.
 
-## Phase 1 — Correctness and installation (P0, complete for current candidate)
+## Phase 1 — Correctness and installation (P0, reopened pending temporal follow-up)
 
 - [x] Fix historical fact insertion, including chronology and interval-chain
   consistency; preserve newer current state when older evidence arrives late.
@@ -51,41 +51,89 @@ passed, including core/enterprise Python 3.9 and 3.12 jobs.
 The temporal journal probes, extraction diagnostics, embedder identity checks,
 doctor command, and MCP protocol checks are recorded in
 [`VERIFIED-RESULTS.md`](VERIFIED-RESULTS.md) and [`core-hardening.md`](core-hardening.md).
+The newer installed-candidate-224 artifact is retained at
+[`raw/installed-candidate-224.json`](raw/installed-candidate-224.json), pending
+the temporal follow-up and fresh installed-wheel rerun.
 The candidate is verified locally; it is not yet published to PyPI or deployed.
+The phase is reopened for the installed Mira review: the targeted probe reported
+success, but the independent root review rejected the quality pass after finding
+an unrelated same-date event invalidated Berlin's `lives_in` fact and a probe
+substring assertion misread a structured Python/Rust preference. The original
+evidence is preserved in [`raw/smriti-mira-root-review.json`](raw/smriti-mira-root-review.json);
+the temporal/consolidation follow-up and a fresh installed-wheel rerun remain
+open.
+
+The latest installed scope candidate passed **261 tests** with `pip check` clean
+from v5 core and v3 enterprise wheels. Offline scope checks are accepted. The
+named-Mira model-backed contract remains rejected: independent review found the
+named third party rewritten as `user`, a light-mode preference inheriting
+`project:Atlas`, and an event date encoded as applicability scope. The raw run
+and reviews are preserved in [`raw/installed-scope-candidate-261.json`](raw/installed-scope-candidate-261.json),
+[`raw/smriti-mira-contract-v3-independent-review.json`](raw/smriti-mira-contract-v3-independent-review.json),
+and [`raw/smriti-mira-full-scoped-contract-v3-corrected-review.json`](raw/smriti-mira-full-scoped-contract-v3-corrected-review.json).
+The generic fix is installed offline; the next model-backed runtime remains
+pending, so this is installation evidence rather than phase completion.
 
 ## Phase 2 — Reproducible evaluation (P0, in progress)
 
 - [x] Pin versions, data hashes, runtime and retrieval configuration for the
   completed synthetic and oracle tracks; retain raw per-query results and errors.
-- [x] Run a matched raw-document diagnostic against simple lexical retrieval,
-  local Mem0, and keyless GBrain. Results use different embedding/search
-  configurations and remain diagnostic rather than a quality ranking.
+- [x] Run the matched raw-document diagnostic and the completed growth track.
+  The final growth comparison uses the same Ollama `nomic-embed-text:v1.5`
+  768-dimensional route for Smriti and local Mem0/Qdrant; GBrain is a separate
+  lexical/no-embedding track with an explicitly maintained `ANALYZE` variant.
+  These are speed/storage diagnostics, not a quality ranking. A separate
+  independently reviewed GBrain nomic semantic growth run checked 100 queries
+  and 500 relevant hits across the same five checkpoints with verified vector
+  counts; it remains a synthetic retrieval/storage diagnostic with no
+  answer-quality conclusion. See
+  [`raw/gbrain-semantic-growth-independent-review.json`](raw/gbrain-semantic-growth-independent-review.json).
 - [x] Run the bounded paired LongMemEval-S public50 retrieval route with the
   same selected IDs, dataset hash, nomic embedding, retrieval budgets, and
   failure-inclusive denominator. Smriti and Mem0 each completed 48/50; the
   results do not establish superiority.
-- [x] Measure targeted Smriti temporal correctness independently of answer-model
-  skill, including stale facts and late arrivals. Broad abstention and full
-  multi-hop quality still need representative evaluation.
-- [~] Fix benchmark methodology: seeded corpus, accurate storage including WAL,
-  correct CLI parsing, no label leakage, and explicit error denominators are in
-  the current harness; embedding parity and process-boundary reporting still
-  need to be completed for growth comparisons.
+- [~] Measure targeted Smriti temporal correctness independently of answer-model
+  skill, including stale facts and late arrivals. The targeted probes are
+  preserved, but the installed Mira root review rejected the quality pass after
+  finding temporal/consolidation errors; broader abstention and full multi-hop
+  quality still need representative evaluation.
+- [x] Fix benchmark methodology: seeded corpus, accurate storage including WAL,
+  correct CLI parsing, no label leakage, explicit error denominators, measured
+  embedding parity, and process-boundary reporting are in the current harness.
+  The matched growth artifacts cover 100, 1,000, 3,000, 9,000, and 36,500
+  documents with durable partial outputs and per-query relevance evidence.
+- [x] Run a bounded six-question LongMemEval-S answer/judge preflight for both
+  adapters with the same reader/judge configuration. Smriti scored 4/6 overall
+  (2/4 answerable; 2/2 `_abs` questions judged by the abstention heuristic) and
+  Mem0 scored 3/6 (1/4 answerable; 2/2 `_abs` questions judged by the
+  abstention heuristic); this is exploratory and does not close full QA.
 - [ ] Run LongMemEval full-history and LoCoMo with one shared answer/judge
   configuration. The 500-question oracle run bypasses extraction and answer
   generation, so it is evidence-only and not full-haystack QA.
 
-The independent GBrain persistent run now covers 100 and 1,000 documents with
-process-restart timing and a lexical, no-embedding configuration; see
-[`raw/independent-gbrain-growth.json`](raw/independent-gbrain-growth.json).
-This improves the measurement boundary over the earlier single-checkpoint CLI
-run, but it still does not establish embedding-parity speed or cost. The current
-Smriti/Mem0 growth artifacts also use different effective embedding setups.
+A bounded LoCoMo50 answer/judge preflight is currently running from the
+immutable installed v4 candidate. Until it completes, no LoCoMo quality result
+is recorded.
+
+The final matched growth report covers 100, 1,000, 3,000, 9,000, and 36,500
+documents for Smriti and Mem0 with the same local Ollama nomic model and for a
+separate lexical/no-embedding GBrain route. GBrain's maintained variant records
+`executeRaw('ANALYZE')` time separately at each checkpoint; the untuned default
+5,000-document cliff remains a separate raw observation. See
+[`growth-matched-final-report.json`](growth-matched-final-report.json),
+[`cost-speed-projections.md`](cost-speed-projections.md), and the rendered
+[`charts`](charts/). Calendar labels are corpus equivalents under 100 adds/day,
+not elapsed longitudinal observations. All three local routes use the same
+local-model API cost of $0; hardware/electricity cost remains unknown.
 
 Exit: reproducible local results for executable tracks; missing services/models
-are marked unmeasured, never scored as zero or replaced by mocks. Full
-model-backed comparison remains unfinished until actually executed with a fixed
-reader and judge.
+are marked unmeasured, never scored as zero or replaced by mocks. The bounded
+growth speed/storage comparison is complete for these routes; the separate
+GBrain nomic semantic growth artifact is complete as a retrieval/storage
+diagnostic but excluded from the matched three-track report. The six-question
+QA preflight is recorded, but full model-backed quality comparison remains
+unfinished until the complete LongMemEval-S and LoCoMo runs are executed with a
+fixed reader and judge.
 
 The paired public50 review found a multi-session recall gap (Smriti 0.6111,
 Mem0 0.7407 across nine questions) and seven questions with fewer than five
@@ -98,6 +146,13 @@ The opt-in session-diverse read path is available for held-out ablations with
 equivalent `memory.context(...)` call. It is disabled by default, and the
 iterative search/context APIs reject the option until a merged-result policy is
 defined; keep `session_overfetch` bounded when measuring the ablation.
+
+Facts now carry an optional persisted `scope` (for example
+`project:Atlas`). An empty scope retains legacy unscoped behavior; scoped
+conflict resolution keys on subject, predicate, and scope together. Scope is
+applicability context, while the predicate carries the fact category, so a
+project-specific programming-language state can coexist with a global
+preference. Extraction leaves scope empty unless the statement establishes it.
 
 ## Phase 3 — Maintainable operator experience (P1, complete for current candidate; documentation kept current)
 
@@ -138,8 +193,9 @@ accuracy or speed-superiority claim.
    contamination before enabling defaults.
 2. **Durable chronology:** normalized temporal types, same-time tie policy, late
    corrections, and precise system-known history; add migration tests from real
-   old database layouts. Targeted temporal journal corrections pass; this broader
-   contract remains a priority.
+   old database layouts. Some targeted temporal journal corrections pass, but the
+   installed Mira review keeps consolidation/extraction follow-up open; this
+   broader contract remains a priority.
 3. **Selective retrieval:** session-start synthesis and on-demand recall with
    cache invalidation; compare against no memory and a simple text/wiki baseline.
    Avoid injecting unrelated memory on every turn.
@@ -148,7 +204,9 @@ accuracy or speed-superiority claim.
 5. **Scaling:** evaluate 768/1536-dimension embeddings, interleaved writes, and
    concurrency before adding optional ANN/quantization. Preserve an exact-search
    oracle for recall regression checks. The new persistent GBrain run is useful
-   context, but matched Smriti/Mem0/GBrain growth and cost evidence is still open.
+   context; the matched growth and cost evidence is now recorded for the bounded
+   local semantic and maintained lexical routes. Further scaling and concurrency
+   work remains gated by workload evidence.
 6. **Distribution:** reliable agent integration and import/export first; hosted
    multi-tenant service, broad connectors, and a proprietary runtime are separate
    product decisions.

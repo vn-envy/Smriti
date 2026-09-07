@@ -402,6 +402,21 @@ def test_pack_build_and_verify(tmp_path):
     assert verify_pack(path)["name"] == "org-knowledge"
 
 
+def test_scoped_fact_survives_enterprise_pack(tmp_path):
+    mem = lite(str(tmp_path / "scoped.db"))
+    mem.add_fact(Fact(id=None, statement="Atlas uses Rust", subject="user",
+                      predicate="primary_programming_language", object="Rust",
+                      scope="project:Atlas"))
+    path = str(tmp_path / "scoped.pack.db")
+    mem.build_pack(path, name="scoped", embedder_fingerprint="hash-256")
+    store, _manifest = open_pack(path, expected_embedder="hash-256")
+    try:
+        row = store.db.execute("SELECT scope FROM facts WHERE object='Rust'").fetchone()
+        assert row[0] == "project:Atlas"
+    finally:
+        store.close()
+
+
 def test_pack_tamper_fails_closed(tmp_path):
     _mem, path, _m = _pack(tmp_path)
     db = sqlite3.connect(path)
@@ -414,6 +429,58 @@ def test_pack_tamper_fails_closed(tmp_path):
         assert False, "tampered pack must fail verification"
     except PackError as e:
         assert "checksum" in str(e)
+
+
+def test_legacy_pack_projects_empty_scope_for_read_only_queries(tmp_path):
+    """A pre-scope pack remains mountable without mutating its verified file."""
+    source_path = str(tmp_path / "legacy.db")
+    db = sqlite3.connect(source_path)
+    db.executescript("""
+        CREATE TABLE episodes(
+            id INTEGER PRIMARY KEY, session_id TEXT, role TEXT,
+            content TEXT, ts TEXT, emb BLOB);
+        CREATE TABLE facts(
+            id INTEGER PRIMARY KEY, statement TEXT, subject TEXT,
+            predicate TEXT, object TEXT, kind TEXT, event_date TEXT,
+            ingested_at TEXT, valid_from TEXT, invalid_at TEXT,
+            superseded_by INTEGER, episode_id INTEGER, session_id TEXT,
+            uuid TEXT, recorded_at TEXT, withdrawn_at TEXT,
+            origin TEXT DEFAULT 'owner', quarantined INTEGER DEFAULT 0,
+            retain_until TEXT, hold_id TEXT, emb BLOB);
+        CREATE VIRTUAL TABLE episodes_fts USING fts5(content);
+        CREATE VIRTUAL TABLE facts_fts USING fts5(statement);
+        CREATE VIRTUAL TABLE fact_keys_fts USING fts5(keys);
+        CREATE TABLE entities(name TEXT, fact_id INTEGER);
+        CREATE TABLE entity_aliases(alias TEXT PRIMARY KEY, canonical TEXT);
+        CREATE TABLE ingest_log(hash TEXT PRIMARY KEY, session_id TEXT, ingested_at TEXT);
+        CREATE TABLE metadata(key TEXT PRIMARY KEY, value TEXT);
+        CREATE TABLE store_meta(key TEXT PRIMARY KEY, value TEXT);
+        INSERT INTO store_meta(key, value) VALUES('store_id', 'legacy-store');
+        INSERT INTO facts(id, statement, subject, predicate, object, kind)
+            VALUES(1, 'The legacy fact is retained.', 'user', 'knows', 'legacy', 'knowledge');
+        INSERT INTO facts_fts(rowid, statement) VALUES(1, 'The legacy fact is retained.');
+    """)
+    db.execute("PRAGMA user_version=2")
+    db.commit()
+    before = db.execute("PRAGMA table_info(facts)").fetchall()
+    pack_path = str(tmp_path / "legacy.pack.db")
+    build_pack(db, pack_path, name="legacy", embedder_fingerprint="hash-256")
+    db.close()
+
+    mounted, _ = open_pack(pack_path, expected_embedder="hash-256")
+    try:
+        assert mounted.get_fact(1).scope == ""
+        assert mounted.fts_search("legacy", "fact")
+        assert facts_asof(mounted)[0].scope == ""
+        exported = mounted.export_data()
+        assert exported["facts"][0]["scope"] == ""
+    finally:
+        mounted.close()
+    check = sqlite3.connect(pack_path)
+    try:
+        assert check.execute("PRAGMA table_info(facts)").fetchall() == before
+    finally:
+        check.close()
 
 
 def test_pack_expiry_fails_closed(tmp_path):
