@@ -75,7 +75,7 @@ class _Judge:
         return "yes"
 
 
-def test_ingest_failure_keeps_each_selected_question_in_denominator_and_closes():
+def test_ingest_failure_keeps_each_selected_question_in_denominator_and_closes(tmp_path):
     memories = []
 
     def factory():
@@ -83,7 +83,7 @@ def test_ingest_failure_keeps_each_selected_question_in_denominator_and_closes()
         memories.append(mem)
         return mem
 
-    out_path = "/private/tmp/locomo-failure-test.json"
+    out_path = str(tmp_path / "locomo-failure-test.json")
     summary = run_locomo(_data(), _Answer(), _Judge(), factory,
                          verbose=False, out_path=out_path)
     report = json.load(open(out_path))
@@ -97,7 +97,7 @@ def test_ingest_failure_keeps_each_selected_question_in_denominator_and_closes()
     ]
 
 
-def test_answer_and_judge_failures_are_raw_and_counted_separately():
+def test_answer_and_judge_failures_are_raw_and_counted_separately(tmp_path):
     answer = _Answer(failures={0})
     judge = _Judge(failures={0})
     summary = run_locomo(_data(), answer, judge, _Memory,
@@ -109,7 +109,7 @@ def test_answer_and_judge_failures_are_raw_and_counted_separately():
         return _Memory()
 
     # Re-run to inspect each raw stage without relying on console output.
-    report_path = "/private/tmp/locomo-answer-judge-failure.json"
+    report_path = str(tmp_path / "locomo-answer-judge-failure.json")
     run_locomo(_data(), _Answer(failures={0}), _Judge(failures={0}),
                factory, verbose=False, out_path=report_path)
     captured = json.load(open(report_path))["results"]
@@ -127,8 +127,8 @@ def test_cleanup_failure_is_reported_after_successful_question():
     assert summary["cleanup_errors"] == 1 and mem.closed
 
 
-def test_retrieval_failure_has_its_own_stage():
-    report_path = "/private/tmp/locomo-retrieval-failure.json"
+def test_retrieval_failure_has_its_own_stage(tmp_path):
+    report_path = str(tmp_path / "locomo-retrieval-failure.json")
     summary = run_locomo(_data(question_count=1), _Answer(), _Judge(),
                          lambda: _Memory(fail_context=True), verbose=False,
                          out_path=report_path)

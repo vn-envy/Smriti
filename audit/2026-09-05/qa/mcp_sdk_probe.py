@@ -1,9 +1,10 @@
-import asyncio,json,tempfile, pathlib
+import asyncio,json,os,tempfile, pathlib
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 async def main():
     with tempfile.TemporaryDirectory(prefix='smriti-agent-probe-') as tmp:
-        params=StdioServerParameters(command='/private/tmp/smriti-qa-20260905/bin/smriti-mcp',args=['--db',str(pathlib.Path(tmp)/'memory.db')])
+        command = os.environ.get('SMRITI_MCP_COMMAND', 'smriti-mcp')
+        params=StdioServerParameters(command=command,args=['--db',str(pathlib.Path(tmp)/'memory.db')])
         log=[]
         async with stdio_client(params) as (read,write):
             async with ClientSession(read,write) as session:
