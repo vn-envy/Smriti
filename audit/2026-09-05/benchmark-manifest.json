@@ -5,7 +5,7 @@
     "gbrain": {"repository":"https://github.com/garrytan/gbrain","commit":"8c70f6255047a7647adb30b1d6333a48068d9fa5","observed_package_version":"0.42.51.0","mode":"PGLite, --no-embedding, keyword-only"},
     "mem0": {"repository":"https://github.com/mem0ai/mem0","commit":"dae67f74f5cc7bf138c7d7d6f9cec5ce4b4373b3","version":"2.0.20","mode":"infer=False; Qdrant local; FastEmbed 0.7.4 BAAI/bge-small-en-v1.5; BM25 unavailable"},
     "graphify": {"repository":"https://github.com/Graphify-Labs/graphify","commit":"937e59a5476fcb2665d6c4f4b7c0d0a4142011b6","version":"0.9.54","status":"adjacent code/document graph task; excluded from forced memory-retrieval score"},
-    "hindsight": {"repository":"https://github.com/vectorize-io/hindsight","commit":"eb32332e26fc9d3d827632a8e48ae405a78f9801","version":"0.9.2","status":"not scored: full service requires an LLM-backed retain/recall pipeline; no extraction-bypass track equivalent was established"}
+    "hindsight": {"repository":"https://github.com/vectorize-io/hindsight","commit":"eb32332e26fc9d3d827632a8e48ae405a78f9801","version":"0.9.2","status":"real local v0.9.2 embedded-pg0 installation and three-update retain/recall smoke passed; full comparable quality benchmark remains unmeasured"}
   },
   "models_available": {"answer_and_extraction":"qwen3:8b via isolated Ollama","embedding":"nomic-embed-text:v1.5 via isolated Ollama"},
   "dataset":"bench/comparative_dataset.json",

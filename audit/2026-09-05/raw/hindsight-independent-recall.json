@@ -1,0 +1,15 @@
+{
+  "checked_utc": "2026-09-07T14:07:20.940737+00:00",
+  "service": "http://127.0.0.1:8892",
+  "bank": "smriti-hindsight-smoke-20260907",
+  "health": "healthy; database connected",
+  "query": "What programming language did Mira prefer before switching to Rust?",
+  "query_timestamp": "2025-03-01T12:00:00Z",
+  "returned_count": 6,
+  "verified_evidence": [
+    "Mira switched from Python to Rust for the Atlas project | When: 2025-02-20 | Involving: Mira",
+    "Mira still preferred Python | When: 2024-06-15 | Involving: Mira",
+    "Mira preferred Python | When: 2024-01-10 | Involving: Mira"
+  ],
+  "interpretation": "Independent read-only service check found historical preference and update evidence. No answer generation or cross-system accuracy score was tested."
+}
