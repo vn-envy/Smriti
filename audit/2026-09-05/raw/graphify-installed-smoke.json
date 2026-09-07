@@ -1,0 +1,26 @@
+{
+  "checked_utc": "2026-09-07T14:03:30.873055+00:00",
+  "package": "graphifyy",
+  "version": "0.9.54",
+  "track": "adjacent code AST graph; not conversational memory retrieval",
+  "command": "python -m graphify extract <Smriti>/smriti --code-only --no-cluster --max-workers 1 --out <temp>",
+  "install": "isolated ordinary PyPI install, pip check passed",
+  "files": 13,
+  "nodes": 229,
+  "edges": 531,
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "graph_sha256": "4a223f42ad3ad18e240b0c0551010663b569783549422d7e180968eafe469bdf",
+  "verified_query": "explain ensure_embedder resolved store.py L150 and its Store method relationship",
+  "limitations": [
+    "Single Smriti code corpus smoke; not a quality leaderboard",
+    "No semantic document extraction or LLM calls tested",
+    "Extraction observed approximately 0.61 seconds once; not a repeated latency estimate"
+  ],
+  "edges_with_endpoints_outside_node_table": 46,
+  "external_endpoint_relations": {
+    "imports_from": 20,
+    "imports": 26
+  },
+  "external_endpoint_note": "Raw AST output includes external import targets such as datetime and typing without local node records; this count is not a confirmed defect."
+}
