@@ -1,0 +1,1178 @@
+{
+  "schema_version": 1,
+  "status": "completed_bounded_selected_chunk_review",
+  "review_type": "LongMemEval_S50_Smriti_exact_official_utterance_vs_reader_chunk_audit",
+  "captured_at_utc": "2026-09-07T21:01:52.331891+00:00",
+  "model_calls": false,
+  "official_scores_modified": false,
+  "source_artifacts": {
+    "qa_result": {
+      "path": "audit/2026-09-05/longmemeval-qa-smriti-s50.json",
+      "sha256": "ec192606fa89134004366d0eed30866b303d5103b9fb78c2a89dcf1676d80768",
+      "status": "complete"
+    },
+    "dataset": {
+      "path": "/private/tmp/smriti-public-data/longmemeval_s_cleaned.json",
+      "sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442"
+    },
+    "extracted_official_fixture": {
+      "path": "/private/tmp/official_long_evidence.json",
+      "sha256": "8275d6f1d3351e487cb045fc778730460120966481e0dfe4845c17386ff08546"
+    }
+  },
+  "method": {
+    "rows_reviewed": [
+      "0a995998",
+      "6a1eabeb",
+      "51a45a95",
+      "945e3d21",
+      "118b2229"
+    ],
+    "official_unit": "answer_session_ids and raw messages from the official cleaned dataset fixture",
+    "reader_unit": "exact source-labelled blocks in stored reader_context, with zero-based character offsets",
+    "literal_presence_rule": "A full user/assistant message is present only when its exact text occurs in the selected blocks; key-phrase presence is reported separately.",
+    "causal_limit": "The review identifies whether the necessary source text was available to the reader input. It does not infer retrieval or reader causality from session presence alone.",
+    "offset_convention": "offset_start is zero-based inclusive and offset_end is zero-based exclusive, measured in Python characters of the preserved reader_context. Each stored block text equals the exact reader_context[offset_start:offset_end] string after the review extraction removed trailing whitespace from each block."
+  },
+  "rows": [
+    {
+      "question_id": "0a995998",
+      "question_type": "multi-session",
+      "question": "How many items of clothing do I need to pick up or return from a store?",
+      "gold": "3",
+      "hypothesis": "I don't have enough information to answer that.",
+      "recorded_correct": false,
+      "official_answer_session_ids": [
+        "answer_afa9873b_1",
+        "answer_afa9873b_2",
+        "answer_afa9873b_3"
+      ],
+      "official_relevant_raw_messages": [
+        {
+          "session_id": "answer_afa9873b_2",
+          "session_index": 11,
+          "message_index": 0,
+          "role": "user",
+          "content": "I need help organizing my closet. Can you give me some tips on how to declutter and categorize my clothes? Also, by the way, I still need to pick up my dry cleaning for the navy blue blazer I wore to a meeting a few weeks ago.",
+          "exact_full_message_in_selected_context": true,
+          "key_phrase_hits_in_selected_context": [
+            "dry cleaning",
+            "blazer"
+          ]
+        },
+        {
+          "session_id": "answer_afa9873b_2",
+          "session_index": 11,
+          "message_index": 10,
+          "role": "user",
+          "content": "I'm making progress, but I still have a lot to sort through. I think I'll take a break and pick up my dry cleaning for the navy blue blazer I wore to a meeting a few weeks ago. What's the best way to care for a blazer like that?",
+          "exact_full_message_in_selected_context": false,
+          "key_phrase_hits_in_selected_context": [
+            "dry cleaning",
+            "blazer"
+          ]
+        },
+        {
+          "session_id": "answer_afa9873b_3",
+          "session_index": 19,
+          "message_index": 2,
+          "role": "user",
+          "content": "I'm also trying to decide what to wear to an outdoor concert this weekend. I was thinking of wearing my green sweater, but I lent it to my sister and I'm not sure when she'll return it. Do you have any other suggestions?",
+          "exact_full_message_in_selected_context": false,
+          "key_phrase_hits_in_selected_context": []
+        },
+        {
+          "session_id": "answer_afa9873b_3",
+          "session_index": 19,
+          "message_index": 6,
+          "role": "user",
+          "content": "I need to return some boots to Zara, actually. I got them on February 5th, but they were too small, so I exchanged them for a larger size. I just haven't had a chance to pick them up yet.",
+          "exact_full_message_in_selected_context": false,
+          "key_phrase_hits_in_selected_context": [
+            "Zara"
+          ]
+        },
+        {
+          "session_id": "answer_afa9873b_1",
+          "session_index": 30,
+          "message_index": 4,
+          "role": "user",
+          "content": "I think I'll use some boxes I have at home to store my winter clothes. By the way, I just exchanged a pair of boots I got from Zara on 2/5, and I still need to pick up the new pair. Do you have any tips on how to keep track of items I need to pick up or return?",
+          "exact_full_message_in_selected_context": false,
+          "key_phrase_hits_in_selected_context": [
+            "exchanged a pair of boots",
+            "Zara",
+            "pick up the new pair"
+          ]
+        }
+      ],
+      "source_map_for_official_sessions": [
+        {
+          "source_label": "source-0031",
+          "session_id": "answer_afa9873b_1",
+          "timestamps": [
+            "2023/02/15 (Wed) 16:19"
+          ]
+        },
+        {
+          "source_label": "source-0012",
+          "session_id": "answer_afa9873b_2",
+          "timestamps": [
+            "2023/02/15 (Wed) 06:30"
+          ]
+        },
+        {
+          "source_label": "source-0020",
+          "session_id": "answer_afa9873b_3",
+          "timestamps": [
+            "2023/02/15 (Wed) 11:13"
+          ]
+        }
+      ],
+      "retrieval_rows_for_official_sessions": [
+        {
+          "source_label": "source-0031",
+          "session_id": "answer_afa9873b_1",
+          "chunk_index": 5,
+          "timestamp": "2023/02/15 (Wed) 16:19",
+          "match": "exact"
+        },
+        {
+          "source_label": "source-0012",
+          "session_id": "answer_afa9873b_2",
+          "chunk_index": 7,
+          "timestamp": "2023/02/15 (Wed) 06:30",
+          "match": "exact"
+        },
+        {
+          "source_label": "source-0031",
+          "session_id": "answer_afa9873b_1",
+          "chunk_index": 6,
+          "timestamp": "2023/02/15 (Wed) 16:19",
+          "match": "exact"
+        },
+        {
+          "source_label": "source-0020",
+          "session_id": "answer_afa9873b_3",
+          "chunk_index": 1,
+          "timestamp": "2023/02/15 (Wed) 11:13",
+          "match": "exact"
+        },
+        {
+          "source_label": "source-0012",
+          "session_id": "answer_afa9873b_2",
+          "chunk_index": 6,
+          "timestamp": "2023/02/15 (Wed) 06:30",
+          "match": "exact"
+        },
+        {
+          "source_label": "source-0020",
+          "session_id": "answer_afa9873b_3",
+          "chunk_index": 7,
+          "timestamp": "2023/02/15 (Wed) 11:13",
+          "match": "exact"
+        },
+        {
+          "source_label": "source-0012",
+          "session_id": "answer_afa9873b_2",
+          "chunk_index": 0,
+          "timestamp": "2023/02/15 (Wed) 06:30",
+          "match": "exact"
+        },
+        {
+          "source_label": "source-0031",
+          "session_id": "answer_afa9873b_1",
+          "chunk_index": 7,
+          "timestamp": "2023/02/15 (Wed) 16:19",
+          "match": "exact"
+        },
+        {
+          "source_label": "source-0012",
+          "session_id": "answer_afa9873b_2",
+          "chunk_index": 12,
+          "timestamp": "2023/02/15 (Wed) 06:30",
+          "match": "exact"
+        },
+        {
+          "source_label": "source-0031",
+          "session_id": "answer_afa9873b_1",
+          "chunk_index": 3,
+          "timestamp": "2023/02/15 (Wed) 16:19",
+          "match": "exact"
+        }
+      ],
+      "selected_reader_context_blocks": [
+        {
+          "source_label": "source-0031",
+          "offset_start": 0,
+          "offset_end": 1039,
+          "text": "[source-0031 @ 2023/02/15 (Wed) 16:19] just exchanged a pair of boots I got from Zara on 2/5, and I still need to pick up the new pair. Do you have any tips on how to keep track of items I need to pick up or return?\nassistant: Using boxes you already have at home is a great way to reduce waste and get started with seasonal storage.\n\nNow, about keeping track of items to pick up or return...\n\nHere are some tips to help you stay on top of your pickups and returns:\n\n1. **Create a \"To-Pickup\" list**: Write down the item, store, and pickup date on a sticky note or in a notes app on your phone. This will help you remember what you need to collect and when.\n2. **Set reminders**: Set reminders on your phone or calendar for the pickup date, so you don't forget to grab your new boots!\n3. **Designate a \"Returns\" spot**: Choose a specific area in your home, like a hook or a bin, where you'll place items that need to be returned. This will help keep them separate from your regular belongings and prevent them from getting lost or forgotte"
+        },
+        {
+          "source_label": "source-0012",
+          "offset_start": 2080,
+          "offset_end": 3119,
+          "text": "[source-0012 @ 2023/02/15 (Wed) 06:30] nkled or out of place, and put away items that are clean and folded.\n\n**Additional Tips:**\n\n* **Use the \"one in, one out\" rule**: Whenever you purchase a new top, get rid of an old one to maintain a balanced amount of clothing.\n* **Consider a dresser organizer system**: If you have a lot of small items like socks, underwear, or accessories, consider investing in a dresser organizer system with separate compartments.\n* **Keep frequently worn items accessible**: Store your most frequently worn tops in easy-to-reach locations, like the top drawer or near the front of the drawer.\n\nNow, let's get started on decluttering and organizing your tops! Which category of tops do you want to tackle first?\nuser: I'll start with my short-sleeve shirts. I've got a lot of them, and some of them are from last summer. I'm not sure if I'll wear them again this year.\nassistant: Short-sleeve shirts can be a great place to start!\n\n**Evaluating Your Short-Sleeve Shirts:**\n\n1. **Try them on**: Try on each short"
+        },
+        {
+          "source_label": "source-0031",
+          "offset_start": 3120,
+          "offset_end": 4159,
+          "text": "[source-0031 @ 2023/02/15 (Wed) 16:19] n.\n4. **Keep receipts organized**: Store receipts for items you need to return in a designated spot, like a folder or envelope, so you can easily find them when you need to return the item.\n5. **Use a task management app**: Consider using an app like Todoist, Trello, or AnyList to keep track of your pickups and returns. You can create a \" Errands\" or \"Shopping\" list and add tasks for each item, complete with due dates and reminders.\n6. **Take a photo**: Take a photo of the item and the receipt as a backup, in case you need to refer to them later.\n\nBy implementing these strategies, you'll be more likely to remember to pick up your new boots and return any items that don't fit quite right.\n\nHow do you usually keep track of your pickups and returns? Do you have a system in place, or is this something you're looking to improve?\nuser: I usually just remember it in my head, but sometimes I forget. I think I'll try using a notes app on my phone to keep track of them from now on.\nassistant: Th"
+        },
+        {
+          "source_label": "source-0020",
+          "offset_start": 4160,
+          "offset_end": 5199,
+          "text": "[source-0020 @ 2023/02/15 (Wed) 11:13] ves to store items like socks, accessories, and out-of-season clothing. Label each container so you can easily find what you need.\n5. **Utilize vertical space**: Maximize your closet's vertical space by using stackable shelves or hanging rods with multiple levels. This will help keep your floor clear and make the most of your closet's square footage.\n6. **Implement a \"one in, one out\" policy**: To maintain your newly organized closet, adopt a rule where you get rid of an old item every time you bring a new one into your closet.\n7. **Store out-of-season clothes**: Consider storing winter clothes in labeled bins or containers and keeping them on a high shelf or underbed storage. This will free up space in your main closet area for current season clothes.\n8. **Hang clothes by type**: Organize your clothes by type, such as dresses, tops, pants, and skirts. Within each category, arrange items by color, sleeve length, or occasion.\n9. **Use dividers**: Use dividers or bins to separate items w"
+        },
+        {
+          "source_label": "source-0012",
+          "offset_start": 5200,
+          "offset_end": 6239,
+          "text": "[source-0012 @ 2023/02/15 (Wed) 06:30] e shirts, sweaters, blouses). Within each category, group similar items together (e.g., all black short-sleeve shirts together).\n3. **Assign a home**: Designate a specific drawer or section for each category. This will make it easy to find what you need and prevent clutter from building up in the future.\n4. **Use dividers or bins**: Separate each category or group with dividers or bins to keep items organized and prevent them from getting jumbled.\n5. **Fold and store**: Fold your tops in a way that allows you to see what's inside the fold (e.g., fold sleeves in, fold the bottom of the shirt up). This will help you quickly identify what's inside without having to unfold everything.\n6. **Store out-of-season items**: Consider storing out-of-season tops in storage bins or containers and keeping them on a high shelf or underbed storage to free up space in your dresser.\n7. **Maintain your space**: Set aside time each week to maintain your organized dresser drawers. Hang up items that are wri"
+        },
+        {
+          "source_label": "source-0020",
+          "offset_start": 7280,
+          "offset_end": 8319,
+          "text": "[source-0020 @ 2023/02/15 (Wed) 11:13] le and fit well.\n\nSince you exchanged the boots on February 5th, you should be able to pick up the new pair at Zara. Just make sure to check their return and exchange policies to confirm you have enough time to pick up the new boots and return the old ones.\n\nOnce you have the new boots, you can try them on with your outfit to ensure you're comfortable and stylish for the concert. If you're still unsure about what to wear, feel free to share more about your style and preferences, and I can try to help you come up with some alternative outfit ideas!\nuser: I'm also planning to do a load of laundry this weekend, do you have any tips on how to prevent losing socks in the wash?\nassistant: The great sock conspiracy! Losing socks in the wash is a common phenomenon, but there are some tips to help minimize the risk:\n\n1. **Use a mesh laundry bag**: Place your socks in a mesh laundry bag before washing to keep them together and prevent them from getting tangled or lost.\n2. **Pin or clip them toge"
+        },
+        {
+          "source_label": "source-0012",
+          "offset_start": 8320,
+          "offset_end": 8999,
+          "text": "[source-0012 @ 2023/02/15 (Wed) 06:30] user: I need help organizing my closet. Can you give me some tips on how to declutter and categorize my clothes? Also, by the way, I still need to pick up my dry cleaning for the navy blue blazer I wore to a meeting a few weeks ago.\nassistant: I'd be happy to help you with organizing your closet and decluttering your clothes!\n\nAs for your dry cleaning, don't forget to pick it up soon! You might want to add it to your to-do list or set a reminder so you don't forget.\n\nNow, let's get started on organizing your closet!\n\n**Decluttering Tips:**\n\n1. **Take everything out**: Start by removing everything from your closet, including clothes,"
+        }
+      ],
+      "selected_reader_context_length": 9000,
+      "assessment": "The selected context contains the dry-cleaning blazer fact and a boots exchange/pickup fact, but does not contain the official green-sweater user turn. The sweater was lent to the sister rather than explicitly being a store pickup/return, and the two boots mentions may describe the same exchange. The omission is verified, but its relevance to the store-count question and the gold count of 3 are not established by the official sessions; no causal chunk-selection claim is made."
+    },
+    {
+      "question_id": "6a1eabeb",
+      "question_type": "knowledge-update",
+      "question": "What was my personal best time in the charity 5K run?",
+      "gold": "25 minutes and 50 seconds (or 25:50)",
+      "hypothesis": "27:12",
+      "recorded_correct": false,
+      "official_answer_session_ids": [
+        "answer_a25d4a91_1",
+        "answer_a25d4a91_2"
+      ],
+      "official_relevant_raw_messages": [
+        {
+          "session_id": "answer_a25d4a91_1",
+          "session_index": 19,
+          "message_index": 4,
+          "role": "user",
+          "content": "That's really helpful, thanks! I've been doing some running lately, and I'm happy to say that I recently set a personal best time in a charity 5K run with a time of 27:12. Do you have any tips on how to improve my running technique to make me more efficient and effective on the soccer field?",
+          "exact_full_message_in_selected_context": true,
+          "key_phrase_hits_in_selected_context": [
+            "27:12"
+          ]
+        },
+        {
+          "session_id": "answer_a25d4a91_2",
+          "session_index": 39,
+          "message_index": 0,
+          "role": "user",
+          "content": "I'm training for another charity 5K run coming up and I was wondering if you could give me some tips on how to improve my endurance. By the way, I'm hoping to beat my personal best time of 25:50 this time around.",
+          "exact_full_message_in_selected_context": true,
+          "key_phrase_hits_in_selected_context": [
+            "25:50"
+          ]
+        }
+      ],
+      "source_map_for_official_sessions": [
+        {
+          "source_label": "source-0020",
+          "session_id": "answer_a25d4a91_1",
+          "timestamps": [
+            "2023/05/23 (Tue) 13:01"
+          ]
+        },
+        {
+          "source_label": "source-0040",
+          "session_id": "answer_a25d4a91_2",
+          "timestamps": [
+            "2023/05/30 (Tue) 13:53"
+          ]
+        }
+      ],
+      "retrieval_rows_for_official_sessions": [
+        {
+          "source_label": "source-0040",
+          "session_id": "answer_a25d4a91_2",
+          "chunk_index": 0,
+          "timestamp": "2023/05/30 (Tue) 13:53",
+          "match": "exact"
+        },
+        {
+          "source_label": "source-0040",
+          "session_id": "answer_a25d4a91_2",
+          "chunk_index": 14,
+          "timestamp": "2023/05/30 (Tue) 13:53",
+          "match": "exact"
+        },
+        {
+          "source_label": "source-0020",
+          "session_id": "answer_a25d4a91_1",
+          "chunk_index": 3,
+          "timestamp": "2023/05/23 (Tue) 13:01",
+          "match": "exact"
+        },
+        {
+          "source_label": "source-0040",
+          "session_id": "answer_a25d4a91_2",
+          "chunk_index": 3,
+          "timestamp": "2023/05/30 (Tue) 13:53",
+          "match": "exact"
+        },
+        {
+          "source_label": "source-0040",
+          "session_id": "answer_a25d4a91_2",
+          "chunk_index": 1,
+          "timestamp": "2023/05/30 (Tue) 13:53",
+          "match": "exact"
+        },
+        {
+          "source_label": "source-0040",
+          "session_id": "answer_a25d4a91_2",
+          "chunk_index": 2,
+          "timestamp": "2023/05/30 (Tue) 13:53",
+          "match": "exact"
+        }
+      ],
+      "selected_reader_context_blocks": [
+        {
+          "source_label": "source-0040",
+          "offset_start": 0,
+          "offset_end": 1039,
+          "text": "[source-0040 @ 2023/05/30 (Tue) 13:53] user: I'm training for another charity 5K run coming up and I was wondering if you could give me some tips on how to improve my endurance. By the way, I'm hoping to beat my personal best time of 25:50 this time around.\nassistant: Congratulations on your upcoming charity 5K run! Improving your endurance requires a combination of consistent training, gradual progression, and smart strategies. Given your goal to beat your personal best time of 25:50, I'll provide you with tailored tips to help you achieve it.\n\n**1. Gradually Increase Your Weekly Mileage**: To build endurance, you need to increase your weekly mileage. Aim to add 10-15% to your weekly total every week. This allows your body to adapt to the demands of running without risking injury.\n\n**2. Incorporate Interval Training**: Intervals are an excellent way to boost your endurance and speed. Try incorporating interval workouts like:\n\t* 4-6 x 800m at a fast pace, with 400m active recovery in between\n\t* 3-5 x 1600m at a moderate pac"
+        },
+        {
+          "source_label": "source-0040",
+          "offset_start": 1040,
+          "offset_end": 2079,
+          "text": "[source-0040 @ 2023/05/30 (Tue) 13:53] he distance and speed of the toss as you get more comfortable.\n* This drill helps improve your timing, coordination, and communication.\n\nRemember to start slow and gradually increase the difficulty of each drill as you become more comfortable. It's also essential to practice your toss with both hands to improve overall coordination and dexterity.\n\nPractice these drills regularly, and you'll see improvement in your toss consistency and overall serving skills. Good luck, and have fun!\nuser: I'm getting ready for a charity 5K run and I was wondering if you could give me some tips on how to improve my endurance. By the way, I'm hoping to beat my personal best time this time around.\nassistant: Improving endurance for a 5K run requires a combination of consistent training, strategic pacing, and mental preparation. Given your goal to beat your personal best time of 25:50, I'll provide you with tailored tips to help you achieve it.\n\n**1. Incorporate Interval Training:**\nInterval training is an"
+        },
+        {
+          "source_label": "source-0020",
+          "offset_start": 2080,
+          "offset_end": 3119,
+          "text": "[source-0020 @ 2023/05/23 (Tue) 13:01] tes, lean protein, and healthy fats to help fuel your body.\n10. **Get Enough Rest and Recovery**: Adequate rest and recovery are crucial for your body to adapt to the demands of soccer. Aim for 7-9 hours of sleep and take rest days as needed.\n\nRemember to start slowly and gradually increase the intensity and duration of your workouts as you get closer to your game. It's also important to listen to your body and not overdo it, as overtraining can lead to injury or burnout.\n\nI hope these tips help you improve your endurance and perform well in your upcoming game!\nuser: That's really helpful, thanks! I've been doing some running lately, and I'm happy to say that I recently set a personal best time in a charity 5K run with a time of 27:12. Do you have any tips on how to improve my running technique to make me more efficient and effective on the soccer field?\nassistant: Congratulations on your personal best time in the 5K run! That's a great achievement!\n\nRunning technique is crucial for ef"
+        },
+        {
+          "source_label": "source-0040",
+          "offset_start": 3120,
+          "offset_end": 4159,
+          "text": "[source-0040 @ 2023/05/30 (Tue) 13:53] nute easy run\nTuesday: Interval training (4-6 x 800m)\nWednesday: Rest day\nThursday: 30-minute easy run\nFriday: Strength training (legs and core)\nSaturday: 6-8 kilometer long run\nSunday: Rest day or active recovery (e.g., yoga or a leisurely bike ride)\n\nRemember to listen to your body and adjust your training plan as needed. With consistent training and focus on these tips, you'll be well on your way to beating your personal best time!\nuser: What should I focus on during my interval training, is it more important to push myself to complete the intervals or to focus on maintaining a consistent pace throughout the workout?\nassistant: During interval training, it's essential to strike a balance between pushing yourself and maintaining a consistent pace. Here's a breakdown of what to focus on:\n\n**1. Pushing yourself:**\n\t* Intervals are designed to challenge you and push your anaerobic threshold (the point at which your body starts to accumulate lactic acid). To achieve this, you need to run"
+        }
+      ],
+      "selected_reader_context_length": 9000,
+      "assessment": "Both old 27:12 and newer 25:50 user updates are present in selected reader chunks. The wrong 27:12 answer is therefore an update/current-value interpretation candidate; session presence alone does not establish why it was selected."
+    },
+    {
+      "question_id": "118b2229",
+      "question_type": "single-session-user",
+      "question": "How long is my daily commute to work?",
+      "gold": "45 minutes each way",
+      "hypothesis": "I don't have enough information to answer that.",
+      "recorded_correct": false,
+      "official_answer_session_ids": [
+        "answer_40a90d51"
+      ],
+      "official_relevant_raw_messages": [
+        {
+          "session_id": "answer_40a90d51",
+          "session_index": 7,
+          "message_index": 8,
+          "role": "user",
+          "content": "I've been listening to audiobooks during my daily commute, which takes 45 minutes each way.",
+          "exact_full_message_in_selected_context": false,
+          "key_phrase_hits_in_selected_context": []
+        },
+        {
+          "session_id": "answer_40a90d51",
+          "session_index": 7,
+          "message_index": 9,
+          "role": "assistant",
+          "content": "That's a great way to make the most of your commute time! An hour each way is a significant amount of time that can be utilized for personal development, entertainment, or relaxation. Audiobooks are an excellent choice for commutes, as they allow you to multitask while still enjoying a good story or learning something new.\n\nWith an hour of commute time each way, you can easily get through a significant portion of an audiobook. You might even find yourself looking forward to your commute, knowing that you'll have some dedicated time to immerse yourself in a good story or learn something new.\n\nHave you noticed any benefits from listening to audiobooks during your commute? For example, do you feel more relaxed, energized, or inspired after listening to a particular book?\n\nAlso, are there any specific genres or topics you prefer to listen to during your commute? Do you find that certain types of books help you relax, while others keep you more engaged and awake?",
+          "exact_full_message_in_selected_context": false,
+          "key_phrase_hits_in_selected_context": [
+            "an hour of commute"
+          ]
+        }
+      ],
+      "source_map_for_official_sessions": [
+        {
+          "source_label": "source-0008",
+          "session_id": "answer_40a90d51",
+          "timestamps": [
+            "2023/05/22 (Mon) 21:18"
+          ]
+        }
+      ],
+      "retrieval_rows_for_official_sessions": [
+        {
+          "source_label": "source-0008",
+          "session_id": "answer_40a90d51",
+          "chunk_index": 10,
+          "timestamp": "2023/05/22 (Mon) 21:18",
+          "match": "exact"
+        },
+        {
+          "source_label": "source-0008",
+          "session_id": "answer_40a90d51",
+          "chunk_index": 9,
+          "timestamp": "2023/05/22 (Mon) 21:18",
+          "match": "exact"
+        }
+      ],
+      "selected_reader_context_blocks": [
+        {
+          "source_label": "source-0008",
+          "offset_start": 0,
+          "offset_end": 1039,
+          "text": "[source-0008 @ 2023/05/22 (Mon) 21:18] at can be utilized for personal development, entertainment, or relaxation. Audiobooks are an excellent choice for commutes, as they allow you to multitask while still enjoying a good story or learning something new.\n\nWith an hour of commute time each way, you can easily get through a significant portion of an audiobook. You might even find yourself looking forward to your commute, knowing that you'll have some dedicated time to immerse yourself in a good story or learn something new.\n\nHave you noticed any benefits from listening to audiobooks during your commute? For example, do you feel more relaxed, energized, or inspired after listening to a particular book?\n\nAlso, are there any specific genres or topics you prefer to listen to during your commute? Do you find that certain types of books help you relax, while others keep you more engaged and awake?\nuser: I've noticed that I tend to retain more information from audiobooks than e-books, maybe because audiobooks are more engaging or be"
+        }
+      ],
+      "selected_reader_context_length": 9000,
+      "assessment": "The exact user fact “45 minutes each way” is absent from the selected chunk, while an assistant response saying “an hour each way” is present. This is a concrete chunk-selection omission exposing a contradictory neighboring assistant approximation; the answer-stage effect is not separately proven."
+    },
+    {
+      "question_id": "51a45a95",
+      "question_type": "single-session-user",
+      "question": "Where did I redeem a $5 coupon on coffee creamer?",
+      "gold": "Target",
+      "hypothesis": "In your email inbox.",
+      "recorded_correct": false,
+      "official_answer_session_ids": [
+        "answer_d61669c7"
+      ],
+      "official_relevant_raw_messages": [
+        {
+          "session_id": "answer_d61669c7",
+          "session_index": 42,
+          "message_index": 2,
+          "role": "user",
+          "content": "I like the idea of using a binder with labeled sections. I've been using the Cartwheel app from Target and it's been really helpful for saving money on household items.",
+          "exact_full_message_in_selected_context": true,
+          "key_phrase_hits_in_selected_context": [
+            "Target"
+          ]
+        },
+        {
+          "session_id": "answer_d61669c7",
+          "session_index": 42,
+          "message_index": 4,
+          "role": "user",
+          "content": "I actually redeemed a $5 coupon on coffee creamer last Sunday, which was a nice surprise since I didn't know I had it in my email inbox.",
+          "exact_full_message_in_selected_context": true,
+          "key_phrase_hits_in_selected_context": [
+            "redeemed a $5 coupon",
+            "coffee creamer"
+          ]
+        },
+        {
+          "session_id": "answer_d61669c7",
+          "session_index": 42,
+          "message_index": 6,
+          "role": "user",
+          "content": "I shop at Target pretty frequently, maybe every other week. I like buying household items, toiletries, and sometimes clothes for my kids. I've also been using their Cartwheel app for a few weeks now and have saved around $20 total on various household items.",
+          "exact_full_message_in_selected_context": true,
+          "key_phrase_hits_in_selected_context": [
+            "Target"
+          ]
+        }
+      ],
+      "source_map_for_official_sessions": [
+        {
+          "source_label": "source-0043",
+          "session_id": "answer_d61669c7",
+          "timestamps": [
+            "2023/05/29 (Mon) 13:28"
+          ]
+        }
+      ],
+      "retrieval_rows_for_official_sessions": [
+        {
+          "source_label": "source-0043",
+          "session_id": "answer_d61669c7",
+          "chunk_index": 4,
+          "timestamp": "2023/05/29 (Mon) 13:28",
+          "match": "exact"
+        },
+        {
+          "source_label": "source-0043",
+          "session_id": "answer_d61669c7",
+          "chunk_index": 2,
+          "timestamp": "2023/05/29 (Mon) 13:28",
+          "match": "exact"
+        },
+        {
+          "source_label": "source-0043",
+          "session_id": "answer_d61669c7",
+          "chunk_index": 0,
+          "timestamp": "2023/05/29 (Mon) 13:28",
+          "match": "exact"
+        },
+        {
+          "source_label": "source-0043",
+          "session_id": "answer_d61669c7",
+          "chunk_index": 1,
+          "timestamp": "2023/05/29 (Mon) 13:28",
+          "match": "exact"
+        },
+        {
+          "source_label": "source-0043",
+          "session_id": "answer_d61669c7",
+          "chunk_index": 5,
+          "timestamp": "2023/05/29 (Mon) 13:28",
+          "match": "exact"
+        },
+        {
+          "source_label": "source-0043",
+          "session_id": "answer_d61669c7",
+          "chunk_index": 6,
+          "timestamp": "2023/05/29 (Mon) 13:28",
+          "match": "exact"
+        }
+      ],
+      "selected_reader_context_blocks": [
+        {
+          "source_label": "source-0043",
+          "offset_start": 0,
+          "offset_end": 1038,
+          "text": "[source-0043 @ 2023/05/29 (Mon) 13:28] nder. This way, you'll always have them handy when you need them.\n5. **Review and purge regularly:** Set a reminder to review your binder every few months to remove expired coupons, receipts, and offers. This keeps your system organized and ensures you're not holding onto unnecessary items.\n\nBy combining your Cartwheel app with your binder system, you'll be a savings pro in no time! Remember to always check the Cartwheel app for new offers and add them to your binder accordingly.\n\nDo you have any favorite features or tips for using the Cartwheel app?\nuser: I actually redeemed a $5 coupon on coffee creamer last Sunday, which was a nice surprise since I didn't know I had it in my email inbox.\nassistant: That's awesome! Redeeming a surprise coupon is always a great feeling, especially when it's on something you need or regularly buy like coffee creamer! It's like finding money in your pocket that you didn't know you had.\n\nIt's also a great reminder to regularly check your email inbox for"
+        },
+        {
+          "source_label": "source-0043",
+          "offset_start": 1040,
+          "offset_end": 2079,
+          "text": "[source-0043 @ 2023/05/29 (Mon) 13:28] ore Loyalty Cards:** Keep your store loyalty cards in a separate section of your binder or on a keychain to ensure you always have them handy.\n2. **Cashback Apps:** If you use cashback apps like Rakuten (formerly known as Ebates) or TopCashback, consider storing your receipts in a separate folder or digital file for easy access.\n3. **Budgeting Tools:** Consider using budgeting tools like Mint, Personal Capital, or YNAB (You Need a Budget) to track your expenses and stay on top of your finances.\n4. **Go Digital:** Consider digitizing your entire coupon and receipt system using apps like Expense Manager or Pocketbook to simplify your organization process.\n\nRemember, the key to successful coupon and receipt organization is to create a system that works for you and stick to it. Happy organizing!\nuser: I like the idea of using a binder with labeled sections. I've been using the Cartwheel app from Target and it's been really helpful for saving money on household items.\nassistant: The Cartwhe"
+        },
+        {
+          "source_label": "source-0043",
+          "offset_start": 2080,
+          "offset_end": 3118,
+          "text": "[source-0043 @ 2023/05/29 (Mon) 13:28] user: I'm trying to organize my coupons and receipts, do you have any tips on the best way to do that?\nassistant: The eternal quest for coupon and receipt organization! I'm happy to help. Here are some tips to help you tame the chaos:\n\n**Coupon Organization:**\n\n1. **Coupon Binder:** Invest in a three-ring binder or a small accordion file with labeled sections for different categories (e.g., food, household, personal care, etc.). This will help you keep your coupons organized and easily accessible.\n2. **Coupon Clipping:** Clip coupons as soon as you receive them, and sort them into their respective categories. You can also consider using a coupon clipping service or a coupon app like Fetch Rewards or Ibotta.\n3. **Expiration Dates:** Organize your coupons by expiration date, with the soonest expiring coupons in the front. This ensures you use them before they expire.\n4. **Store-Specific Coupons:** Keep separate sections for store-specific coupons, like those for your local grocery store"
+        },
+        {
+          "source_label": "source-0043",
+          "offset_start": 5915,
+          "offset_end": 6954,
+          "text": "[source-0043 @ 2023/05/29 (Mon) 13:28] or favorite retailer.\n5. **Digital Coupons:** If you receive digital coupons via email or apps, consider printing them out and adding them to your binder or storing them digitally in a designated folder on your phone or computer.\n\n**Receipt Organization:**\n\n1. **Receipt File:** Designate a file or folder specifically for receipts, and separate them into categories (e.g., groceries, entertainment, clothing, etc.).\n2. **Digital Receipts:** Take advantage of digital receipts whenever possible, and store them in a designated email folder or app like Shoeboxed or Receipt Bank.\n3. **Receipt Scanner:** Consider investing in a receipt scanner or using a mobile app like Neat or Genius Scan to digitize your paper receipts.\n4. **Label and Date:** Label each receipt with the date, store name, and a brief description of the purchase.\n5. **Purge Regularly:** Set a regular schedule (e.g., quarterly) to review and purge receipts that are no longer needed or have expired.\n\n**Additional Tips:**\n\n1. **St"
+        },
+        {
+          "source_label": "source-0043",
+          "offset_start": 6955,
+          "offset_end": 7993,
+          "text": "[source-0043 @ 2023/05/29 (Mon) 13:28] coupons and offers. Many retailers, like Target, send exclusive coupons and promotions to their email subscribers. By staying on top of your email, you can catch those surprise deals and save even more.\n\nHere's a tip to help you stay organized:\n\n**Designate an email folder:** Create a specific folder in your email inbox for coupons, offers, and promotions. This way, you can easily find and sort through them when you need to. You can also set up filters or labels to automatically sort these emails into your designated folder.\n\nBy doing this, you'll be more likely to catch those surprise coupons and make the most of your savings.\n\nHow often do you typically shop at Target, and what are some of your favorite items to buy there?\nuser: I shop at Target pretty frequently, maybe every other week. I like buying household items, toiletries, and sometimes clothes for my kids. I've also been using their Cartwheel app for a few weeks now and have saved around $20 total on various household items."
+        },
+        {
+          "source_label": "source-0043",
+          "offset_start": 7995,
+          "offset_end": 9000,
+          "text": "[source-0043 @ 2023/05/29 (Mon) 13:28] assistant: You're a regular Target shopper! It's great that you're taking advantage of the Cartwheel app to save money on your regular purchases. $20 in savings might not seem like a lot, but it adds up over time, and it's always nice to have some extra cash in your pocket.\n\nHousehold items, toiletries, and kids' clothes are all great categories to save on. With the Cartwheel app, you can often find offers on those types of items, which can help you stretch your budget further.\n\nHere's a tip to help you maximize your Cartwheel savings:\n\n**Stack your savings:** Remember to stack your Cartwheel offers with other discounts, like sales or manufacturer's coupons. This can help you save even more on the items you need. For example, if you have a Cartwheel offer for 10% off toilet paper and it's also on sale, you'll get an even better deal.\n\nAdditionally, keep an eye out for Cartwheel's \"Bonus Offers\" section, which often features exclusive deals on popular i"
+        }
+      ],
+      "selected_reader_context_length": 9000,
+      "assessment": "The selected context contains the exact redemption sentence and nearby Target clues, but the redemption sentence itself says only that the coupon was in email. The wrong email-inbox answer is a grounding/interpretation candidate; no chunk omission is established."
+    },
+    {
+      "question_id": "945e3d21",
+      "question_type": "knowledge-update",
+      "question": "How often do I attend yoga classes to help with my anxiety?",
+      "gold": "Three times a week.",
+      "hypothesis": "Twice a week.",
+      "recorded_correct": false,
+      "official_answer_session_ids": [
+        "answer_6a4f8626_1",
+        "answer_6a4f8626_2"
+      ],
+      "official_relevant_raw_messages": [
+        {
+          "session_id": "answer_6a4f8626_1",
+          "session_index": 3,
+          "message_index": 4,
+          "role": "user",
+          "content": "I think I've got a good handle on my tasks now. By the way, I've been trying to prioritize my self-care too. I've been doing yoga twice a week, which has really been helping me relax and focus. Do you have any recommendations for stress-reducing apps or meditation techniques?",
+          "exact_full_message_in_selected_context": true,
+          "key_phrase_hits_in_selected_context": [
+            "yoga twice a week"
+          ]
+        },
+        {
+          "session_id": "answer_6a4f8626_2",
+          "session_index": 19,
+          "message_index": 2,
+          "role": "user",
+          "content": "I've got a bunch of projects going on, including a marketing campaign, a report due next Friday, and some website updates. I'd say the marketing campaign is the priority, but the report is time-sensitive. I think each task will take around 2-3 days to complete. As for work hours, I'm available from 9am-5pm, but I try to take a lunch break from 12-1pm. I've also got a meeting on Wednesday from 2-3pm. Oh, and I've noticed that I'm more focused on days when I attend yoga classes, which is three times a week - it really helps me clear my head.",
+          "exact_full_message_in_selected_context": false,
+          "key_phrase_hits_in_selected_context": [
+            "yoga classes"
+          ]
+        }
+      ],
+      "source_map_for_official_sessions": [
+        {
+          "source_label": "source-0004",
+          "session_id": "answer_6a4f8626_1",
+          "timestamps": [
+            "2023/08/11 (Fri) 05:12"
+          ]
+        },
+        {
+          "source_label": "source-0020",
+          "session_id": "answer_6a4f8626_2",
+          "timestamps": [
+            "2023/11/30 (Thu) 03:29"
+          ]
+        }
+      ],
+      "retrieval_rows_for_official_sessions": [
+        {
+          "source_label": "source-0004",
+          "session_id": "answer_6a4f8626_1",
+          "chunk_index": 13,
+          "timestamp": "2023/08/11 (Fri) 05:12",
+          "match": "exact"
+        },
+        {
+          "source_label": "source-0004",
+          "session_id": "answer_6a4f8626_1",
+          "chunk_index": 3,
+          "timestamp": "2023/08/11 (Fri) 05:12",
+          "match": "exact"
+        },
+        {
+          "source_label": "source-0004",
+          "session_id": "answer_6a4f8626_1",
+          "chunk_index": 10,
+          "timestamp": "2023/08/11 (Fri) 05:12",
+          "match": "exact"
+        },
+        {
+          "source_label": "source-0020",
+          "session_id": "answer_6a4f8626_2",
+          "chunk_index": 1,
+          "timestamp": "2023/11/30 (Thu) 03:29",
+          "match": "exact"
+        },
+        {
+          "source_label": "source-0004",
+          "session_id": "answer_6a4f8626_1",
+          "chunk_index": 6,
+          "timestamp": "2023/08/11 (Fri) 05:12",
+          "match": "exact"
+        },
+        {
+          "source_label": "source-0004",
+          "session_id": "answer_6a4f8626_1",
+          "chunk_index": 8,
+          "timestamp": "2023/08/11 (Fri) 05:12",
+          "match": "exact"
+        },
+        {
+          "source_label": "source-0020",
+          "session_id": "answer_6a4f8626_2",
+          "chunk_index": 4,
+          "timestamp": "2023/11/30 (Thu) 03:29",
+          "match": "exact"
+        },
+        {
+          "source_label": "source-0004",
+          "session_id": "answer_6a4f8626_1",
+          "chunk_index": 12,
+          "timestamp": "2023/08/11 (Fri) 05:12",
+          "match": "exact"
+        }
+      ],
+      "selected_reader_context_blocks": [
+        {
+          "source_label": "source-0004",
+          "offset_start": 0,
+          "offset_end": 1039,
+          "text": "[source-0004 @ 2023/08/11 (Fri) 05:12] ly check out those book recommendations and online resources. I've been trying to educate myself more about anxiety and depression, and it's helpful to have a list of trusted resources to refer to. By the way, I've been noticing that my yoga practice has been helping me feel more grounded and centered, especially on days when I'm feeling anxious. Do you have any tips on how I can incorporate more mindfulness into my daily routine, even on busy days?\nassistant: That's wonderful to hear that your yoga practice has been helping you feel more grounded and centered! Incorporating mindfulness into your daily routine can be a game-changer for managing anxiety and stress. Here are some tips to help you bring more mindfulness into your daily life, even on busy days:\n\n**Mindfulness in Daily Activities:**\n\n1. **Eat mindfully**: Savor your food, pay attention to the flavors, textures, and aromas. Chew slowly and enjoy your meals.\n2. **Walk mindfully**: Take a few minutes to walk slowly, paying att"
+        },
+        {
+          "source_label": "source-0004",
+          "offset_start": 1040,
+          "offset_end": 2079,
+          "text": "[source-0004 @ 2023/08/11 (Fri) 05:12] eview and update project plan) can be scheduled for later in the week or next week, as it's not as time-sensitive.\n\nRemember to take breaks and stay focused on one task at a time to ensure you're productive and efficient. Good luck with your tasks!\nuser: I think I've got a good handle on my tasks now. By the way, I've been trying to prioritize my self-care too. I've been doing yoga twice a week, which has really been helping me relax and focus. Do you have any recommendations for stress-reducing apps or meditation techniques?\nassistant: That's great to hear that you're prioritizing your self-care! Yoga is an excellent way to reduce stress and improve focus. I'm happy to recommend some stress-reducing apps and meditation techniques that you might find helpful:\n\n**Apps:**\n\n1. **Headspace**: A popular meditation app that offers guided sessions for stress, anxiety, and focus. It's user-friendly and has a gentle, approachable tone.\n2. **Calm**: Another well-known app that features guided me"
+        },
+        {
+          "source_label": "source-0004",
+          "offset_start": 2080,
+          "offset_end": 3119,
+          "text": "[source-0004 @ 2023/08/11 (Fri) 05:12] talk to, but I think these exercises will help me dive deeper into my thoughts and emotions. Do you have any recommendations for books or resources that can help me better understand my anxiety and depression?\nassistant: I'm so glad you're finding therapy helpful! Journaling and reflection exercises can indeed help you dive deeper into your thoughts and emotions, and complement your therapy sessions.\n\nHere are some book recommendations and resources that might help you better understand your anxiety and depression:\n\n**Books:**\n\n1. **\"The Body Keeps the Score\" by Bessel van der Kolk**: A groundbreaking book that explores the impact of trauma on the body and mind.\n2. **\"Daring Greatly: How the Courage to Be Vulnerable Transforms the Way We Live, Love, Parent, and Lead\" by Brené Brown**: A inspiring book that discusses shame, vulnerability, and wholehearted living.\n3. **\"Reasons to Stay Alive\" by Matt Haig**: A deeply personal and relatable memoir about living with depression and anxiety."
+        },
+        {
+          "source_label": "source-0020",
+          "offset_start": 3120,
+          "offset_end": 4159,
+          "text": "[source-0020 @ 2023/11/30 (Thu) 03:29] ?\n3. Are there any tasks that you enjoy or are more energizing for you, and conversely, any tasks that drain your energy or cause stress?\n\nOnce I have this information, I can help you:\n\n* Prioritize your tasks based on urgency, importance, and dependencies\n* Create a realistic schedule for the week, taking into account your availability and work style\n* Break down larger tasks into smaller, manageable chunks\n* Identify potential roadblocks and suggest strategies to overcome them\n\nLet's get started!\nuser: I've got a bunch of projects going on, including a marketing campaign, a report due next Friday, and some website updates. I'd say the marketing campaign is the priority, but the report is time-sensitive. I think each task will take around 2-3 days to complete. As for work hours, I'm available from 9am-5pm, but I try to take a lunch break from 12-1pm. I've also got a meeting on Wednesday from 2-3pm. Oh, and I've noticed that I'm more focused on days when I attend yoga classes, which is"
+        },
+        {
+          "source_label": "source-0004",
+          "offset_start": 4160,
+          "offset_end": 5198,
+          "text": "[source-0004 @ 2023/08/11 (Fri) 05:12] develop.\n\nRemember, the key is to find what works best for you and make self-care a consistent part of your routine. Keep up the great work with your yoga practice, and I hope you find these recommendations helpful in your stress-reducing journey!\nuser: I'll check out those apps and techniques. I've been using meditation to help me set intentions and focus on my goals for the day. Do you have any suggestions for journaling prompts or reflection exercises that can help me identify my triggers and work through childhood trauma?\nassistant: What a powerful and courageous step you're taking by exploring journaling and reflection exercises to work through childhood trauma! I'm proud of you for taking this journey towards healing and growth.\n\nHere are some journaling prompts and reflection exercises that might help you identify your triggers and work through childhood trauma:\n\n**Journaling Prompts:**\n\n1. **Trigger tracking**: Write down the situations, emotions, or events that trigger strong"
+        },
+        {
+          "source_label": "source-0004",
+          "offset_start": 6240,
+          "offset_end": 7279,
+          "text": "[source-0004 @ 2023/08/11 (Fri) 05:12]  trigger or emotional response. Ask yourself \"why\" five times to uncover the underlying causes and patterns. For example, \"Why do I feel anxious in crowds?\" \"Why do I feel like I need to people-please?\" and so on.\n2. **Emotional mapping**: Create a diagram or mind map to visualize your emotions and how they're connected. This can help you identify patterns, triggers, and areas for growth.\n3. **Grounding techniques**: Practice grounding exercises to help you stay present and centered. Examples include focusing on your five senses, describing your surroundings, or engaging in physical activities like yoga or walking.\n4. **Forgiveness and letting go**: Reflect on the emotions and experiences you're holding onto. Write about what you're ready to forgive and let go of. What steps can you take to release the emotional burden?\n5. **Self-care inventory**: Take stock of your self-care practices. What nourishes your mind, body, and soul? What activities make you feel good, and how can you incorp"
+        },
+        {
+          "source_label": "source-0020",
+          "offset_start": 8320,
+          "offset_end": 9000,
+          "text": "[source-0020 @ 2023/11/30 (Thu) 03:29]  your progress along the way!\n\nHow does this schedule look to you?\nuser: I love that you've taken my yoga schedule into account! The schedule looks pretty good, but I'm a bit concerned about fitting in all the tasks for the report on Friday. Can you suggest some ways to break down the report into smaller tasks so I can make sure I get it done on time?\nassistant: I'm glad you liked the yoga-friendly schedule!\n\nBreaking down the report into smaller tasks will definitely help you manage your time more effectively and reduce stress. Here's a suggested breakdown of the report into smaller tasks:\n\n**Report Tasks:**\n\n1. **Research and Outli"
+        }
+      ],
+      "selected_reader_context_length": 9000,
+      "assessment": "The older twice-a-week user update is fully present, while the newer three-times-a-week update is visibly truncated at “which is” in the selected source-0020 chunk. This is concrete context truncation/selection exposure plus a current-value interpretation candidate."
+    }
+  ],
+  "priority_findings": [
+    {
+      "question_id": "0a995998",
+      "priority": "gold_source_ambiguity",
+      "finding": "The official sessions contain dry-cleaning blazer, green-sweater-lent-to-sister, and Zara boots facts. The selected chunks show the blazer and boots but omit the green-sweater user turn. Because the sweater is not explicitly a store pickup/return and the boot mentions may be one exchange, the gold-count construction is ambiguous; this review does not treat the omission as explaining the failure."
+    },
+    {
+      "question_id": "6a1eabeb",
+      "priority": "reader_update_interpretation",
+      "finding": "Selected chunks include both exact personal-best updates, 27:12 and later 25:50. The recorded 27:12 answer chose the older value despite the newer value being available."
+    },
+    {
+      "question_id": "51a45a95",
+      "priority": "reader_grounding",
+      "finding": "Selected chunks include the redemption sentence, which mentions email inbox, and nearby Target context. The direct redemption sentence does not name the store, so this is a contextual grounding case rather than a proven chunk omission."
+    },
+    {
+      "question_id": "945e3d21",
+      "priority": "chunk_selection_and_update_interpretation",
+      "finding": "The selected chunk includes the old “twice a week” turn in full. The newer turn is truncated after “which is”; the three-times-a-week value is not in the selected text, making this the clearest concrete context-budget exposure among the five."
+    },
+    {
+      "question_id": "118b2229",
+      "priority": "chunk_selection",
+      "finding": "The selected chunk omits the user’s exact “45 minutes each way” statement but includes the assistant’s contradictory “an hour each way” approximation."
+    }
+  ],
+  "limitations": [
+    "These five rows are targeted diagnostics and do not change the 32/50 source score.",
+    "The stored source-labelled block is a chunk-level proxy; it does not expose hidden model attention or prove which text drove the answer.",
+    "The 40% abstention share and 64% overall result remain limited to the stratified 50-question sample."
+  ],
+  "integrity_validation": {
+    "validated_against": {
+      "qa_result_path": "audit/2026-09-05/longmemeval-qa-smriti-s50.json",
+      "qa_result_sha256": "ec192606fa89134004366d0eed30866b303d5103b9fb78c2a89dcf1676d80768",
+      "official_fixture_path": "/private/tmp/official_long_evidence.json",
+      "official_fixture_sha256": "8275d6f1d3351e487cb045fc778730460120966481e0dfe4845c17386ff08546"
+    },
+    "checks": {
+      "all_reader_context_block_slices_match": true,
+      "all_official_session_message_indices_content_and_roles_match": true,
+      "all_recorded_presence_flags_match_literal_content_search": true,
+      "block_count": 25,
+      "official_message_count": 14
+    },
+    "rows": [
+      {
+        "question_id": "0a995998",
+        "reader_context_length": 9000,
+        "selected_reader_context_length_matches": true,
+        "block_slices": [
+          {
+            "source_label": "source-0031",
+            "offset_start": 0,
+            "offset_end": 1039,
+            "text_length": 1039,
+            "slice_matches_reader_context": true
+          },
+          {
+            "source_label": "source-0012",
+            "offset_start": 2080,
+            "offset_end": 3119,
+            "text_length": 1039,
+            "slice_matches_reader_context": true
+          },
+          {
+            "source_label": "source-0031",
+            "offset_start": 3120,
+            "offset_end": 4159,
+            "text_length": 1039,
+            "slice_matches_reader_context": true
+          },
+          {
+            "source_label": "source-0020",
+            "offset_start": 4160,
+            "offset_end": 5199,
+            "text_length": 1039,
+            "slice_matches_reader_context": true
+          },
+          {
+            "source_label": "source-0012",
+            "offset_start": 5200,
+            "offset_end": 6239,
+            "text_length": 1039,
+            "slice_matches_reader_context": true
+          },
+          {
+            "source_label": "source-0020",
+            "offset_start": 7280,
+            "offset_end": 8319,
+            "text_length": 1039,
+            "slice_matches_reader_context": true
+          },
+          {
+            "source_label": "source-0012",
+            "offset_start": 8320,
+            "offset_end": 8999,
+            "text_length": 679,
+            "slice_matches_reader_context": true
+          }
+        ],
+        "all_block_slices_match": true,
+        "official_messages": [
+          {
+            "session_id": "answer_afa9873b_2",
+            "session_index": 11,
+            "message_index": 0,
+            "source_session_index_matches": true,
+            "source_content_matches": true,
+            "source_role_matches": true,
+            "recorded_exact_full_message_in_selected_context": true,
+            "computed_exact_content_presence": true,
+            "presence_flag_matches": true
+          },
+          {
+            "session_id": "answer_afa9873b_2",
+            "session_index": 11,
+            "message_index": 10,
+            "source_session_index_matches": true,
+            "source_content_matches": true,
+            "source_role_matches": true,
+            "recorded_exact_full_message_in_selected_context": false,
+            "computed_exact_content_presence": false,
+            "presence_flag_matches": true
+          },
+          {
+            "session_id": "answer_afa9873b_3",
+            "session_index": 19,
+            "message_index": 2,
+            "source_session_index_matches": true,
+            "source_content_matches": true,
+            "source_role_matches": true,
+            "recorded_exact_full_message_in_selected_context": false,
+            "computed_exact_content_presence": false,
+            "presence_flag_matches": true
+          },
+          {
+            "session_id": "answer_afa9873b_3",
+            "session_index": 19,
+            "message_index": 6,
+            "source_session_index_matches": true,
+            "source_content_matches": true,
+            "source_role_matches": true,
+            "recorded_exact_full_message_in_selected_context": false,
+            "computed_exact_content_presence": false,
+            "presence_flag_matches": true
+          },
+          {
+            "session_id": "answer_afa9873b_1",
+            "session_index": 30,
+            "message_index": 4,
+            "source_session_index_matches": true,
+            "source_content_matches": true,
+            "source_role_matches": true,
+            "recorded_exact_full_message_in_selected_context": false,
+            "computed_exact_content_presence": false,
+            "presence_flag_matches": true
+          }
+        ],
+        "all_official_source_lookups_match": true,
+        "all_presence_flags_match": true
+      },
+      {
+        "question_id": "6a1eabeb",
+        "reader_context_length": 9000,
+        "selected_reader_context_length_matches": true,
+        "block_slices": [
+          {
+            "source_label": "source-0040",
+            "offset_start": 0,
+            "offset_end": 1039,
+            "text_length": 1039,
+            "slice_matches_reader_context": true
+          },
+          {
+            "source_label": "source-0040",
+            "offset_start": 1040,
+            "offset_end": 2079,
+            "text_length": 1039,
+            "slice_matches_reader_context": true
+          },
+          {
+            "source_label": "source-0020",
+            "offset_start": 2080,
+            "offset_end": 3119,
+            "text_length": 1039,
+            "slice_matches_reader_context": true
+          },
+          {
+            "source_label": "source-0040",
+            "offset_start": 3120,
+            "offset_end": 4159,
+            "text_length": 1039,
+            "slice_matches_reader_context": true
+          }
+        ],
+        "all_block_slices_match": true,
+        "official_messages": [
+          {
+            "session_id": "answer_a25d4a91_1",
+            "session_index": 19,
+            "message_index": 4,
+            "source_session_index_matches": true,
+            "source_content_matches": true,
+            "source_role_matches": true,
+            "recorded_exact_full_message_in_selected_context": true,
+            "computed_exact_content_presence": true,
+            "presence_flag_matches": true
+          },
+          {
+            "session_id": "answer_a25d4a91_2",
+            "session_index": 39,
+            "message_index": 0,
+            "source_session_index_matches": true,
+            "source_content_matches": true,
+            "source_role_matches": true,
+            "recorded_exact_full_message_in_selected_context": true,
+            "computed_exact_content_presence": true,
+            "presence_flag_matches": true
+          }
+        ],
+        "all_official_source_lookups_match": true,
+        "all_presence_flags_match": true
+      },
+      {
+        "question_id": "118b2229",
+        "reader_context_length": 9000,
+        "selected_reader_context_length_matches": true,
+        "block_slices": [
+          {
+            "source_label": "source-0008",
+            "offset_start": 0,
+            "offset_end": 1039,
+            "text_length": 1039,
+            "slice_matches_reader_context": true
+          }
+        ],
+        "all_block_slices_match": true,
+        "official_messages": [
+          {
+            "session_id": "answer_40a90d51",
+            "session_index": 7,
+            "message_index": 8,
+            "source_session_index_matches": true,
+            "source_content_matches": true,
+            "source_role_matches": true,
+            "recorded_exact_full_message_in_selected_context": false,
+            "computed_exact_content_presence": false,
+            "presence_flag_matches": true
+          },
+          {
+            "session_id": "answer_40a90d51",
+            "session_index": 7,
+            "message_index": 9,
+            "source_session_index_matches": true,
+            "source_content_matches": true,
+            "source_role_matches": true,
+            "recorded_exact_full_message_in_selected_context": false,
+            "computed_exact_content_presence": false,
+            "presence_flag_matches": true
+          }
+        ],
+        "all_official_source_lookups_match": true,
+        "all_presence_flags_match": true
+      },
+      {
+        "question_id": "51a45a95",
+        "reader_context_length": 9000,
+        "selected_reader_context_length_matches": true,
+        "block_slices": [
+          {
+            "source_label": "source-0043",
+            "offset_start": 0,
+            "offset_end": 1038,
+            "text_length": 1038,
+            "slice_matches_reader_context": true
+          },
+          {
+            "source_label": "source-0043",
+            "offset_start": 1040,
+            "offset_end": 2079,
+            "text_length": 1039,
+            "slice_matches_reader_context": true
+          },
+          {
+            "source_label": "source-0043",
+            "offset_start": 2080,
+            "offset_end": 3118,
+            "text_length": 1038,
+            "slice_matches_reader_context": true
+          },
+          {
+            "source_label": "source-0043",
+            "offset_start": 5915,
+            "offset_end": 6954,
+            "text_length": 1039,
+            "slice_matches_reader_context": true
+          },
+          {
+            "source_label": "source-0043",
+            "offset_start": 6955,
+            "offset_end": 7993,
+            "text_length": 1038,
+            "slice_matches_reader_context": true
+          },
+          {
+            "source_label": "source-0043",
+            "offset_start": 7995,
+            "offset_end": 9000,
+            "text_length": 1005,
+            "slice_matches_reader_context": true
+          }
+        ],
+        "all_block_slices_match": true,
+        "official_messages": [
+          {
+            "session_id": "answer_d61669c7",
+            "session_index": 42,
+            "message_index": 2,
+            "source_session_index_matches": true,
+            "source_content_matches": true,
+            "source_role_matches": true,
+            "recorded_exact_full_message_in_selected_context": true,
+            "computed_exact_content_presence": true,
+            "presence_flag_matches": true
+          },
+          {
+            "session_id": "answer_d61669c7",
+            "session_index": 42,
+            "message_index": 4,
+            "source_session_index_matches": true,
+            "source_content_matches": true,
+            "source_role_matches": true,
+            "recorded_exact_full_message_in_selected_context": true,
+            "computed_exact_content_presence": true,
+            "presence_flag_matches": true
+          },
+          {
+            "session_id": "answer_d61669c7",
+            "session_index": 42,
+            "message_index": 6,
+            "source_session_index_matches": true,
+            "source_content_matches": true,
+            "source_role_matches": true,
+            "recorded_exact_full_message_in_selected_context": true,
+            "computed_exact_content_presence": true,
+            "presence_flag_matches": true
+          }
+        ],
+        "all_official_source_lookups_match": true,
+        "all_presence_flags_match": true
+      },
+      {
+        "question_id": "945e3d21",
+        "reader_context_length": 9000,
+        "selected_reader_context_length_matches": true,
+        "block_slices": [
+          {
+            "source_label": "source-0004",
+            "offset_start": 0,
+            "offset_end": 1039,
+            "text_length": 1039,
+            "slice_matches_reader_context": true
+          },
+          {
+            "source_label": "source-0004",
+            "offset_start": 1040,
+            "offset_end": 2079,
+            "text_length": 1039,
+            "slice_matches_reader_context": true
+          },
+          {
+            "source_label": "source-0004",
+            "offset_start": 2080,
+            "offset_end": 3119,
+            "text_length": 1039,
+            "slice_matches_reader_context": true
+          },
+          {
+            "source_label": "source-0020",
+            "offset_start": 3120,
+            "offset_end": 4159,
+            "text_length": 1039,
+            "slice_matches_reader_context": true
+          },
+          {
+            "source_label": "source-0004",
+            "offset_start": 4160,
+            "offset_end": 5198,
+            "text_length": 1038,
+            "slice_matches_reader_context": true
+          },
+          {
+            "source_label": "source-0004",
+            "offset_start": 6240,
+            "offset_end": 7279,
+            "text_length": 1039,
+            "slice_matches_reader_context": true
+          },
+          {
+            "source_label": "source-0020",
+            "offset_start": 8320,
+            "offset_end": 9000,
+            "text_length": 680,
+            "slice_matches_reader_context": true
+          }
+        ],
+        "all_block_slices_match": true,
+        "official_messages": [
+          {
+            "session_id": "answer_6a4f8626_1",
+            "session_index": 3,
+            "message_index": 4,
+            "source_session_index_matches": true,
+            "source_content_matches": true,
+            "source_role_matches": true,
+            "recorded_exact_full_message_in_selected_context": true,
+            "computed_exact_content_presence": true,
+            "presence_flag_matches": true
+          },
+          {
+            "session_id": "answer_6a4f8626_2",
+            "session_index": 19,
+            "message_index": 2,
+            "source_session_index_matches": true,
+            "source_content_matches": true,
+            "source_role_matches": true,
+            "recorded_exact_full_message_in_selected_context": false,
+            "computed_exact_content_presence": false,
+            "presence_flag_matches": true
+          }
+        ],
+        "all_official_source_lookups_match": true,
+        "all_presence_flags_match": true
+      }
+    ]
+  }
+}

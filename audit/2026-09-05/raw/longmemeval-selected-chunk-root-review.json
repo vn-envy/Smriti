@@ -1,0 +1,23 @@
+{
+  "status": "root_independent_bounded_evidence_review_passed",
+  "captured_at_utc": "2026-09-07T21:11:15.450862+00:00",
+  "review_artifact": "audit/2026-09-05/raw/longmemeval-smriti-s50-selected-chunk-review.json",
+  "review_sha256": "3cf97837856f8fffcdc3c9d29c0fee7f0da38977001b143b24faee0e41cd9dad",
+  "qa_source_sha256": "ec192606fa89134004366d0eed30866b303d5103b9fb78c2a89dcf1676d80768",
+  "dataset_sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
+  "verified_counts": {
+    "questions": 5,
+    "messages": 14,
+    "blocks": 25
+  },
+  "checks": [
+    "Official answer-session membership; order immaterial",
+    "Every quoted message and role at the official session/message indices",
+    "Every stored block matches the exact zero-based start/exclusive-end context slice",
+    "All literal full-message presence flags and claimed key-phrase hits",
+    "Clothing-count case explicitly marked gold/source ambiguity; omitted sweater does not establish cause"
+  ],
+  "model_calls": 0,
+  "scores_changed": false,
+  "scope": "Five selected failures only. Availability of text does not prove model attention or universal retrieval/reader causality."
+}

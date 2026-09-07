@@ -4,14 +4,14 @@
   "purpose": "Acceptance matrix for the original Smriti benchmark/cost/growth request and the current ROADMAP. This is an evidence audit, not a completion or release claim.",
   "source": {
     "checkout": "/Users/kshitijvatsa/Downloads/Smriti-main",
-    "head_commit": "b10774975243205a78bd52c344dd62542eb3f623",
+    "head_commit": "acb10761f0a90e18c0e8272c05450bc3876246f4",
     "roadmap": "audit/2026-09-05/ROADMAP.md",
-    "ci_receipt": "audit/2026-09-05/raw/ci-b107749.json"
+    "ci_receipt": "audit/2026-09-05/raw/ci-acb1076.json"
   },
   "overall": {
     "benchmark_cost_speed_scope": "complete_for_measured_local_tracks",
     "teaser_scope": "complete",
-    "installation_scope": "verified_candidate_but_phase_gate_open",
+    "installation_scope": "verified_current_installed_v7_candidate",
     "model_backed_quality_scope": "incomplete",
     "release_or_completion_status": "open",
     "reason": "Historical installed Mira v3/v4 reviews rejected parts of the scope/temporal quality pass; the current installed-v7 v5/generalization and corrected prior-tool reviews are bounded passes, with single-run and lexical/semantic limits recorded. Smriti LongMemEval-S50 is terminal-complete, while the paired frozen-v4 Mem0 run is active; GBrain held-out20 semantic retrieval QA and Hindsight comparative QA remain unfinished. A bounded frozen-v4 paired LoCoMo50 answer/judge baseline is complete for both adapters, but it is exploratory because of shared-conversation dependence and known judge/date errors."
@@ -22,22 +22,21 @@
       "requirement": "Harden the implementation and prove clean non-editable wheel/source installation, dependency consistency, and CI coverage.",
       "status": "complete_for_candidate",
       "evidence": [
-        "audit/2026-09-05/raw/benchmark-wheel-verification.json (202 tests, CLI help, packaged GBrain worker, source/wheel match)",
         "audit/2026-09-05/raw/installed-scope-candidate-261.json (historical 261-test candidate; pip check clean; offline scope checks), audit/2026-09-05/raw/installed-scope-candidate-276.json (current installed-v7 candidate; 276 tests, pip check clean)",
-        "audit/2026-09-05/raw/ci-b107749.json (enterprise and offline Python 3.9/3.12 checks all SUCCESS)",
+        "audit/2026-09-05/raw/ci-acb1076.json (enterprise and offline Python 3.9/3.12 checks all SUCCESS)",
         "audit/2026-09-05/VERIFIED-RESULTS.md"
       ],
-      "caveat": "ROADMAP Phase 1 is reopened because model-backed Mira quality and temporal follow-up are not accepted."
+      "caveat": "ROADMAP Phase 1 records the historical v3/v4 rejection and current installed-v7 bounded Mira/generalization passes; broader semantic quality remains open."
     },
     {
       "id": "temporal-identity-scope-quality",
       "requirement": "Pass the named-Mira temporal, identity, and applicability-scope contract with a fresh installed model-backed run.",
       "status": "complete_bounded",
       "evidence": [
-        "audit/2026-09-05/raw/smriti-mira-root-review.json (Berlin fact invalidated by unrelated same-date event; scope/transition probe issue)",
-        "audit/2026-09-05/raw/smriti-mira-contract-v3-independent-review.json (third party rewritten as user; Atlas scope leaked to light preference; event date encoded as scope)",
-        "audit/2026-09-05/raw/smriti-mira-full-scoped-contract-v3-corrected-review.json (recorded run rejected)",
-        "audit/2026-09-05/raw/installed-scope-candidate-261.json (historical offline checks accepted), audit/2026-09-05/raw/installed-scope-candidate-276.json (current installed-v7 offline scope candidate; 276 tests, pip check clean; model-backed gate remains open)",
+        "audit/2026-09-05/raw/smriti-mira-root-review.json (historical v3 review: Berlin fact invalidated by unrelated same-date event; scope/transition probe issue)",
+        "audit/2026-09-05/raw/smriti-mira-contract-v3-independent-review.json (historical v3 review: third party rewritten as user; Atlas scope leaked to light preference; event date encoded as scope)",
+        "audit/2026-09-05/raw/smriti-mira-full-scoped-contract-v3-corrected-review.json (historical v3 recorded run rejected)",
+        "audit/2026-09-05/raw/installed-scope-candidate-261.json (historical offline checks accepted), audit/2026-09-05/raw/installed-scope-candidate-276.json (current installed-v7 offline scope candidate; 276 tests, pip check clean)",
         "audit/2026-09-05/smriti-mira-full-scoped-contract-v4.json (terminal model-backed run; all extracted subjects are Mira, light-mode scope is unscoped, and current Rust/Atlas retrieval is correct, but brittle uses_tool/Aurora assertions fail and unsupported inferred primary Python remains)",
         "audit/2026-09-05/smriti-mira-full-scoped-contract-v5.json (bounded installed-v7 rerun; 26/26 assertions pass and 8 facts independently reviewed, but the single run does not establish a universal uses_tool policy, has no real-run scope-retry case, and inferred Aurora applicability remains a lexical/semantic limitation; offline installed-v7 correction behavior is covered)",
         "audit/2026-09-05/raw/smriti-mira-v5-independent-review.json",
@@ -215,7 +214,7 @@
         "audit/2026-09-05/VERIFIED-RESULTS.md",
         "audit/2026-09-05/cost-speed-projections.md"
       ],
-      "caveat": "ROADMAP still correctly marks Phase 1 reopened and Phase 2 in progress; this audit does not close either gate."
+      "caveat": "ROADMAP records bounded installed-v7 acceptance for Phase 1 and comparative evaluation in progress for Phase 2; the final social film remains pending. This audit does not close overall completion."
     },
     {
       "id": "final-social-launch-film",
@@ -230,10 +229,10 @@
   ],
   "real_pending_build_work": [
     {
-      "item": "Temporal/consolidation and extraction identity/scope correction followed by a fresh installed model-backed Mira rerun",
-      "type": "implementation_plus_acceptance",
-      "status": "required",
-      "evidence": "raw/smriti-mira-root-review.json and raw/smriti-mira-contract-v3-independent-review.json"
+      "item": "No additional Mira implementation build task is evidenced by the current installed-v7 bounded results; historical v3/v4 correction evidence remains preserved, while broader semantic-quality evaluation is still open.",
+      "type": "scope_boundary",
+      "status": "confirmed",
+      "evidence": "audit/2026-09-05/raw/smriti-mira-v5-independent-review.json, audit/2026-09-05/raw/extraction-tool-transition-v7-corrected-review.json"
     },
     {
       "item": "No additional benchmark adapter, cost report, chart, or teaser build task is evidenced by the current scope; remaining LoCoMo/LME/GBrain work is evaluation execution and validation.",

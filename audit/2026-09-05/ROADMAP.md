@@ -23,7 +23,7 @@ Graphify addresses code structure rather than replacing conversational temporal
 memory. Smriti's distinction is the focused combination of explicit validity
 history, provenance, and a portable core.
 
-## Phase 1 — Correctness and installation (P0, reopened pending temporal follow-up)
+## Phase 1 — Correctness and installation (P0, bounded v7 acceptance recorded; broader quality follow-up open)
 
 - [x] Fix historical fact insertion, including chronology and interval-chain
   consistency; preserve newer current state when older evidence arrives late.
@@ -51,17 +51,18 @@ passed, including core/enterprise Python 3.9 and 3.12 jobs.
 The temporal journal probes, extraction diagnostics, embedder identity checks,
 doctor command, and MCP protocol checks are recorded in
 [`VERIFIED-RESULTS.md`](VERIFIED-RESULTS.md) and [`core-hardening.md`](core-hardening.md).
-The newer installed-candidate-224 artifact is retained at
-[`raw/installed-candidate-224.json`](raw/installed-candidate-224.json), pending
-the temporal follow-up and fresh installed-wheel rerun.
+The historical installed-candidate-224 artifact is retained at
+[`raw/installed-candidate-224.json`](raw/installed-candidate-224.json); the later
+installed-v7 candidate and bounded Mira follow-ups are recorded below.
 The candidate is verified locally; it is not yet published to PyPI or deployed.
-The phase is reopened for the installed Mira review: the targeted probe reported
-success, but the independent root review rejected the quality pass after finding
+The historical v3/v4 installed Mira review reopened the phase: its targeted probe
+reported success, but the independent root review rejected that historical quality
+pass after finding
 an unrelated same-date event invalidated Berlin's `lives_in` fact and a probe
 substring assertion misread a structured Python/Rust preference. The original
 evidence is preserved in [`raw/smriti-mira-root-review.json`](raw/smriti-mira-root-review.json);
-the temporal/consolidation follow-up and a fresh installed-wheel rerun remain
-open.
+that historical temporal/consolidation follow-up remained open at the time; the
+later installed-v7 bounded results are recorded below.
 
 The historical installed scope candidate passed **261 tests** with `pip check` clean
 from v5 core and v3 enterprise wheels. Offline scope checks are accepted. The historical
@@ -71,12 +72,12 @@ named third party rewritten as `user`, a light-mode preference inheriting
 and reviews are preserved in [`raw/installed-scope-candidate-261.json`](raw/installed-scope-candidate-261.json),
 [`raw/smriti-mira-contract-v3-independent-review.json`](raw/smriti-mira-contract-v3-independent-review.json),
 and [`raw/smriti-mira-full-scoped-contract-v3-corrected-review.json`](raw/smriti-mira-full-scoped-contract-v3-corrected-review.json).
-The generic fix is installed offline. The subsequent v4 model-backed runtime is
+The generic fix is installed offline. The subsequent historical v4 model-backed runtime is
 terminal with failures: the direct facts preserve Mira as subject, leave the
 light-mode preference unscoped, and retrieve current Rust for Atlas correctly,
 but brittle `uses_tool`/Aurora assertions fail and an unsupported inferred
-primary-Python fact remains. The model-backed acceptance gate therefore remains
-open; this is installation evidence rather than phase completion.
+primary-Python fact remains. The historical model-backed acceptance gate therefore remained
+open at that point; this is installation evidence rather than phase completion.
 
 The latest installed v7 candidate passes **276 tests** across the core and
 enterprise suites offline, with `pip check` clean. Its scope guard checks
@@ -134,9 +135,10 @@ status. See [`raw/extraction-tool-transition-v7-corrected-review.json`](raw/extr
   results do not establish superiority.
 - [~] Measure targeted Smriti temporal correctness independently of answer-model
   skill, including stale facts and late arrivals. The targeted probes are
-  preserved, but the installed Mira root review rejected the quality pass after
-  finding temporal/consolidation errors; broader abstention and full multi-hop
-  quality still need representative evaluation.
+  preserved, but the historical v3/v4 installed Mira review rejected that quality
+  pass after finding temporal/consolidation errors; the current v7 bounded checks
+  pass, while broader abstention and full multi-hop quality still need
+  representative evaluation.
 - [x] Fix benchmark methodology: seeded corpus, accurate storage including WAL,
   correct CLI parsing, no label leakage, explicit error denominators, measured
   embedding parity, and process-boundary reporting are in the current harness.
@@ -259,12 +261,17 @@ accuracy or speed-superiority claim.
 
 1. **Evidence and abstention:** returned source IDs, provenance, uncertainty, and
    query-specific abstention. Measure false-positive evidence and answer
-   contamination before enabling defaults.
+   contamination before enabling defaults. The bounded LongMemEval source-utterance review
+   identifies omitted user facts and a newer update cut before its value,
+   alongside an ambiguous gold-label case. Prioritize statement-preserving
+   context selection and update-aware reading, then test on unseen questions;
+   do not tune against these five examples and call it generalization. See
+   [`raw/longmemeval-selected-chunk-root-review.json`](raw/longmemeval-selected-chunk-root-review.json).
 2. **Durable chronology:** normalized temporal types, same-time tie policy, late
    corrections, and precise system-known history; add migration tests from real
-   old database layouts. Some targeted temporal journal corrections pass, but the
-   installed Mira review keeps consolidation/extraction follow-up open; this
-   broader contract remains a priority.
+   old database layouts. The current installed-v7 Mira, generalization, and corrected
+   prior-tool checks pass their bounded contracts; broader chronology and
+   extraction quality remain priorities for representative workloads.
 3. **Selective retrieval:** session-start synthesis and on-demand recall with
    cache invalidation; compare against no memory and a simple text/wiki baseline.
    Avoid injecting unrelated memory on every turn.

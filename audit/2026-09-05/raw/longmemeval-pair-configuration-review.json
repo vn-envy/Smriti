@@ -1,0 +1,17 @@
+{
+  "status": "active_pair_configuration_verified",
+  "mem0_session_id": 68479,
+  "same_selected_ids_order": true,
+  "same_sample_ids_order": true,
+  "same_dataset_sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
+  "same_reader_judge_configuration": true,
+  "smriti_source_sha256": "ec192606fa89134004366d0eed30866b303d5103b9fb78c2a89dcf1676d80768",
+  "mem0_progress_at_check": {
+    "processed_questions": 1,
+    "requested_questions": 50,
+    "failed_questions": 0,
+    "cleanup_failures": 0,
+    "last_question_id": "e47becba"
+  },
+  "note": "Configuration identity only. Terminal Smriti selection has extra answerable/abstention partitions; shared selection IDs and order match. Mem0 is running, not final paired quality evidence."
+}
