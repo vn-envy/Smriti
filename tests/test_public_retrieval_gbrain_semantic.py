@@ -1,3 +1,5 @@
+import json
+
 from bench import public_retrieval_gbrain_semantic as semantic
 from pathlib import Path
 import pytest
@@ -166,3 +168,88 @@ def test_semantic_worker_partial_line_and_large_stderr_hit_deadline(tmp_path, mo
     monkeypatch.setenv("GBRAIN_ROOT", str(tmp_path))
     with pytest.raises(TimeoutError, match="timed out"):
         semantic.GbrainSemanticPersistent(_request_timeout_s=0.05)
+
+
+def _checkpoint_item(question_id, session_id):
+    return {
+        "question_id": question_id,
+        "question_type": "single-hop",
+        "question": f"What is in {session_id}?",
+        "haystack_sessions": [[{"role": "user", "content": f"Fact for {session_id}"}]],
+        "haystack_dates": ["2025-01-01T00:00:00Z"],
+        "haystack_session_ids": [session_id],
+        "answer_session_ids": [session_id],
+    }
+
+
+def _patch_fake_semantic_adapter(monkeypatch, *, fail_question=None,
+                                 cleanup_failure=False):
+    class FakeAdapter:
+        label = "fake semantic adapter"
+        instances = []
+
+        def __init__(self, **_kwargs):
+            self.ready_metadata = {"measured_embedding_dimensions": 768}
+            self.startup_ms = 1.5
+            self.last_import_stats = {"embedded_count": 1}
+            self.last_search_meta = {"vector": True}
+            self.session_id = None
+            type(self).instances.append(self)
+
+        def add(self, row):
+            self.session_id = row["session_id"]
+            if fail_question and self.session_id == fail_question:
+                raise RuntimeError("injected question failure")
+
+        def search(self, _query, _k):
+            return [{"document_slug": "bench/fake", "session_id": self.session_id, "score": 1.0}]
+
+        def close(self):
+            if cleanup_failure and self.session_id == fail_question:
+                raise RuntimeError("injected cleanup failure")
+
+    monkeypatch.setattr(semantic, "GBrainPublicAdapter", FakeAdapter)
+    monkeypatch.setattr(semantic, "_gbrain_snapshot", lambda _root: {
+        "commit": "fake-commit", "worker_path": "fake-worker", "file_sha256": {"fake": "hash"}
+    })
+    monkeypatch.setenv("GBRAIN_ROOT", "/tmp/fake-gbrain")
+    return FakeAdapter
+
+
+def test_semantic_progress_checkpoint_is_atomic_failure_inclusive_and_keeps_provenance(tmp_path, monkeypatch):
+    _patch_fake_semantic_adapter(monkeypatch, fail_question="s2", cleanup_failure=True)
+    data = [_checkpoint_item("q1", "s1"), _checkpoint_item("q2", "s2")]
+    progress = tmp_path / "progress.json"
+    snapshots = []
+    result = semantic.run(data, b"dataset-bytes", sample=2, k=1, verbose=False,
+                          progress_path=progress, progress_callback=snapshots.append)
+    assert result["status"] == "partial"
+    checkpoint = json.loads(progress.read_text())
+    assert checkpoint["status"] == "running"
+    assert "summary" not in checkpoint
+    assert checkpoint["dataset"]["selected_question_ids"] == ["q1", "q2"]
+    assert checkpoint["run"]["gbrain_source_snapshot"]["commit"] == "fake-commit"
+    assert checkpoint["progress"] == {
+        "requested_questions": 2,
+        "processed_questions": 2,
+        "successful_questions": 1,
+        "question_failures": 1,
+        "cleanup_failures": 1,
+        "last_question_id": "q2",
+    }
+    assert checkpoint["failure_records"][0]["question_id"] == "q2"
+    assert checkpoint["cleanup_failure_records"][0]["question_id"] == "q2"
+    assert len(snapshots) == 3  # initial + one checkpoint per question
+    assert len(snapshots[1]["results"]) == 1
+    assert len(snapshots[2]["results"]) == 1  # prior callback snapshot is stable
+
+
+def test_semantic_default_terminal_schema_is_unchanged(monkeypatch):
+    _patch_fake_semantic_adapter(monkeypatch)
+    data = [_checkpoint_item("q1", "s1")]
+    result = semantic.run(data, b"dataset-bytes", sample=1, k=1, verbose=False)
+    assert set(result) == {
+        "schema_version", "status", "track", "dataset", "configuration", "run",
+        "summary", "results", "failure_records", "cleanup_failure_records",
+    }
+    assert result["status"] == "complete"

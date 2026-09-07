@@ -8,6 +8,7 @@ memory; session ids and answer labels never enter imported document text.
 from __future__ import annotations
 
 import argparse
+import copy
 import hashlib
 import json
 import os
@@ -18,7 +19,7 @@ import time
 import tempfile
 import threading
 from pathlib import Path
-from typing import Any, Mapping, Sequence
+from typing import Any, Callable, Mapping, Sequence
 
 from .public_retrieval import (
     DEFAULT_CHUNK_CHAR_BUDGET,
@@ -43,6 +44,27 @@ SEMANTIC_DEGRADED_STAGES = frozenset({
     "embed_timeout", "embed_unavailable", "vector_arm_failed", "rescore_skipped",
     "expansion_partial",
 })
+
+
+def _write_atomic_json(path: str | Path, payload: Mapping[str, Any]) -> None:
+    """Atomically publish a JSON artifact."""
+    destination = Path(path)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    temporary = tempfile.NamedTemporaryFile(
+        mode="w", encoding="utf-8", dir=destination.parent,
+        prefix=f".{destination.name}.", suffix=".tmp", delete=False,
+    )
+    temporary_path = Path(temporary.name)
+    try:
+        with temporary:
+            json.dump(payload, temporary, indent=2, ensure_ascii=False)
+            temporary.write("\n")
+        os.replace(temporary_path, destination)
+    finally:
+        try:
+            temporary_path.unlink()
+        except FileNotFoundError:
+            pass
 
 
 def _score_hits(hits: Sequence[Mapping[str, Any]], relevant: Sequence[str],
@@ -313,7 +335,15 @@ def run(data: Sequence[Mapping[str, Any]], raw: bytes, *, sample: int,
         k: int = DEFAULT_K, session_char_budget: int = DEFAULT_SESSION_CHAR_BUDGET,
         chunk_char_budget: int = DEFAULT_CHUNK_CHAR_BUDGET,
         excluded_ids: set[str] | None = None,
-        exclusion_sources: Sequence[str] = (), verbose: bool = True) -> dict[str, Any]:
+        exclusion_sources: Sequence[str] = (), verbose: bool = True,
+        progress_path: str | Path | None = None,
+        progress_callback: Callable[[dict[str, Any]], None] | None = None) -> dict[str, Any]:
+    """Run the selected questions, optionally publishing running checkpoints.
+
+    ``progress_path`` is an operational artifact and intentionally remains
+    ``status=running`` without a final summary; the returned value and CLI
+    ``--out`` file are the authoritative terminal schema.
+    """
     excluded_ids = excluded_ids or set()
     if k < 1 or session_char_budget < 1 or chunk_char_budget < 1:
         raise ValueError("k and session/chunk budgets must be positive")
@@ -331,6 +361,61 @@ def run(data: Sequence[Mapping[str, Any]], raw: bytes, *, sample: int,
     cleanup_failures: list[dict[str, Any]] = []
     worker_metadata: dict[str, Any] | None = None
     worker_startup_ms: float | None = None
+
+    def configuration_snapshot() -> dict[str, Any]:
+        return {
+            "engine": GBrainPublicAdapter.label,
+            "embedding": {"provider": DEFAULT_EMBED_MODEL,
+                           "dimensions": DEFAULT_EMBED_DIMENSIONS,
+                           "ollama_base_url": DEFAULT_OLLAMA_BASE_URL,
+                           "measured_dimensions": (worker_metadata or {}).get(
+                               "measured_embedding_dimensions")},
+            "budgets": {"sample": sample, "k": k,
+                        "session_char_budget": session_char_budget,
+                        "chunk_char_budget": chunk_char_budget},
+            "worker_startup_ms": worker_startup_ms,
+            "semantic_fail_closed": True,
+            "input_contract": "rendered role/content only; opaque document mapping; labels read after retrieval",
+            "latency_policy": "timings are diagnostic only and are not ranked against semantic adapters",
+        }
+
+    def emit_progress(processed: int, last_question_id: str | None) -> None:
+        if progress_path is None and progress_callback is None:
+            return
+        checkpoint = {
+            "schema_version": SCHEMA_VERSION,
+            "status": "running",
+            "track": "official LongMemEval-S full-haystack raw-session retrieval; GBrain semantic/hybrid separate track",
+            "dataset": {"source": "official LongMemEval-S input",
+                        "sha256": hashlib.sha256(raw).hexdigest(),
+                        "total_items": len(data),
+                        "selected_question_ids": [item["question_id"] for item in selected],
+                        "excluded_question_ids": sorted(excluded_ids),
+                        "exclusion_sources": list(exclusion_sources)},
+            "configuration": configuration_snapshot(),
+            "run": {"started_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(started)),
+                    "elapsed_s": round(time.time() - started, 3),
+                    "gbrain_source_snapshot": source_snapshot},
+            "progress": {"requested_questions": len(selected),
+                         "processed_questions": processed,
+                         "successful_questions": len(results),
+                         "question_failures": len(failures),
+                         "cleanup_failures": len(cleanup_failures),
+                         "last_question_id": last_question_id},
+            "results": list(results),
+            "failure_records": list(failures),
+            "cleanup_failure_records": list(cleanup_failures),
+        }
+        if progress_path is not None:
+            _write_atomic_json(progress_path, checkpoint)
+        if progress_callback is not None:
+            # Give callbacks a fully independent snapshot so nested hit/error
+            # lists cannot change when later questions mutate the run state.
+            progress_callback(copy.deepcopy(checkpoint))
+
+    # Make the selected IDs, source snapshot, and budgets durable before the
+    # first worker startup or expensive embedding request.
+    emit_progress(0, None)
     for index, item in enumerate(selected):
         adapter = None
         try:
@@ -384,6 +469,7 @@ def run(data: Sequence[Mapping[str, Any]], raw: bytes, *, sample: int,
                     cleanup_failures.append({"question_id": item.get("question_id", str(index)),
                                              "question_type": item.get("question_type", "unknown"),
                                              "error": {"type": type(exc).__name__, "message": str(exc)}})
+        emit_progress(index + 1, str(item.get("question_id", index)))
     answerable = [item for item in selected
                   if not str(item["question_id"]).lower().endswith("_abs")]
     scored = [row for row in results if not row["unanswerable"]]
@@ -400,19 +486,7 @@ def run(data: Sequence[Mapping[str, Any]], raw: bytes, *, sample: int,
         "dataset": {"source": "official LongMemEval-S input", "sha256": hashlib.sha256(raw).hexdigest(),
                     "total_items": len(data), "selected_question_ids": [item["question_id"] for item in selected],
                     "excluded_question_ids": sorted(excluded_ids), "exclusion_sources": list(exclusion_sources)},
-        "configuration": {"engine": GBrainPublicAdapter.label,
-                          "embedding": {"provider": DEFAULT_EMBED_MODEL,
-                                        "dimensions": DEFAULT_EMBED_DIMENSIONS,
-                                        "ollama_base_url": DEFAULT_OLLAMA_BASE_URL,
-                                        "measured_dimensions": (worker_metadata or {}).get(
-                                            "measured_embedding_dimensions")},
-                          "budgets": {"sample": sample, "k": k,
-                                      "session_char_budget": session_char_budget,
-                                      "chunk_char_budget": chunk_char_budget},
-                          "worker_startup_ms": worker_startup_ms,
-                          "semantic_fail_closed": True,
-                          "input_contract": "rendered role/content only; opaque document mapping; labels read after retrieval",
-                          "latency_policy": "timings are diagnostic only and are not ranked against semantic adapters"},
+        "configuration": configuration_snapshot(),
         "run": {"started_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(started)),
                 "elapsed_s": round(time.time() - started, 3),
                 "gbrain_source_snapshot": source_snapshot},
@@ -438,6 +512,8 @@ def main() -> None:
     parser.add_argument("--exclude-id", action="append", default=[])
     parser.add_argument("--exclusion-root", default=None)
     parser.add_argument("--quiet", action="store_true")
+    parser.add_argument("--progress", default=None,
+                        help="optional atomic running checkpoint path; --out is the final authoritative artifact")
     args = parser.parse_args()
     path = Path(args.data)
     data, raw = load_dataset(str(path))
@@ -447,10 +523,10 @@ def main() -> None:
                  session_char_budget=args.session_char_budget,
                  chunk_char_budget=args.chunk_char_budget,
                  excluded_ids=excluded, exclusion_sources=sources,
-                 verbose=not args.quiet)
+                 verbose=not args.quiet, progress_path=args.progress)
     output = Path(args.out)
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n")
+    _write_atomic_json(output, result)
     print(json.dumps(result["summary"], indent=2))
     if result["status"] != "complete":
         raise SystemExit(2)
