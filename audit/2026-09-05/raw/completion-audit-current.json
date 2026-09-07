@@ -1,0 +1,203 @@
+{
+  "schema_version": 1,
+  "audit_date": "2026-09-08",
+  "purpose": "Acceptance matrix for the original Smriti benchmark/cost/growth request and the current ROADMAP. This is an evidence audit, not a completion or release claim.",
+  "source": {
+    "checkout": "/Users/kshitijvatsa/Downloads/Smriti-main",
+    "head_commit": "b10774975243205a78bd52c344dd62542eb3f623",
+    "roadmap": "audit/2026-09-05/ROADMAP.md",
+    "ci_receipt": "audit/2026-09-05/raw/ci-b107749.json"
+  },
+  "overall": {
+    "benchmark_cost_speed_scope": "complete_for_measured_local_tracks",
+    "teaser_scope": "complete",
+    "installation_scope": "verified_candidate_but_phase_gate_open",
+    "model_backed_quality_scope": "incomplete",
+    "release_or_completion_status": "open",
+    "reason": "The installed Mira scope/temporal review rejected the quality pass, LoCoMo50 is still running, and full-history LongMemEval/LoCoMo QA plus larger LME and GBrain semantic QA remain unfinished."
+  },
+  "acceptance_matrix": [
+    {
+      "id": "implementation-and-installation",
+      "requirement": "Harden the implementation and prove clean non-editable wheel/source installation, dependency consistency, and CI coverage.",
+      "status": "complete_for_candidate",
+      "evidence": [
+        "audit/2026-09-05/raw/benchmark-wheel-verification.json (202 tests, CLI help, packaged GBrain worker, source/wheel match)",
+        "audit/2026-09-05/raw/installed-scope-candidate-261.json (261 tests, pip check clean; offline scope checks)",
+        "audit/2026-09-05/raw/ci-b107749.json (enterprise and offline Python 3.9/3.12 checks all SUCCESS)",
+        "audit/2026-09-05/VERIFIED-RESULTS.md"
+      ],
+      "caveat": "ROADMAP Phase 1 is reopened because model-backed Mira quality and temporal follow-up are not accepted."
+    },
+    {
+      "id": "temporal-identity-scope-quality",
+      "requirement": "Pass the named-Mira temporal, identity, and applicability-scope contract with a fresh installed model-backed run.",
+      "status": "incomplete_rejected",
+      "evidence": [
+        "audit/2026-09-05/raw/smriti-mira-root-review.json (Berlin fact invalidated by unrelated same-date event; scope/transition probe issue)",
+        "audit/2026-09-05/raw/smriti-mira-contract-v3-independent-review.json (third party rewritten as user; Atlas scope leaked to light preference; event date encoded as scope)",
+        "audit/2026-09-05/raw/smriti-mira-full-scoped-contract-v3-corrected-review.json (recorded run rejected)",
+        "audit/2026-09-05/raw/installed-scope-candidate-261.json (offline checks accepted; model-backed gate remains open)"
+      ],
+      "remaining": "Correct the temporal/consolidation and extraction identity/scope behavior, then rerun from a fresh installed wheel."
+    },
+    {
+      "id": "matched-semantic-growth",
+      "requirement": "Measure Smriti and local Mem0 over the same nomic 768-dimensional route at 100, 1,000, 3,000, 9,000, and 36,500 documents with durable timing, storage, restart/reopen, resubmission, and relevance evidence.",
+      "status": "complete",
+      "evidence": [
+        "audit/2026-09-05/growth-smriti-nomic-schema2.json",
+        "audit/2026-09-05/growth-mem0-nomic-schema2.json",
+        "audit/2026-09-05/growth-matched-final-report.json",
+        "audit/2026-09-05/raw/growth-independent-final-validation.json (100 warm queries and 500 independently topic-relevant hits per track)",
+        "audit/2026-09-05/raw/growth-environment.json"
+      ],
+      "caveat": "These are bounded corpus-growth simulations; 30/90/365-day labels are 100-adds/day corpus equivalents, not elapsed longitudinal observations."
+    },
+    {
+      "id": "gbrain-lexical-maintained",
+      "requirement": "Benchmark persistent official-engine GBrain import/search without per-document CLI startup, and keep default untuned and ANALYZE-maintained observations separate.",
+      "status": "complete",
+      "evidence": [
+        "audit/2026-09-05/growth-gbrain-analyze-overtime-schema2.json",
+        "audit/2026-09-05/raw/independent-gbrain-growth.json",
+        "audit/2026-09-05/raw/independent-gbrain-5000.json (separate untuned observation)",
+        "audit/2026-09-05/raw/independent-gbrain-analyze.json",
+        "audit/2026-09-05/raw/independent-gbrain-analyze-restart.json"
+      ],
+      "caveat": "GBrain lexical has no embedding API cost and is not a semantic parity result."
+    },
+    {
+      "id": "gbrain-semantic-growth",
+      "requirement": "Provide a separate real nomic GBrain semantic route with measured 768-dimensional vectors, metadata/vector-count validation, process-restart cold timing, and the same growth checkpoints.",
+      "status": "complete_as_retrieval_storage_diagnostic",
+      "evidence": [
+        "audit/2026-09-05/growth-gbrain-nomic-schema2.json",
+        "audit/2026-09-05/growth-semantic-final-report.json (three-track effective-config parity verified)",
+        "audit/2026-09-05/raw/gbrain-semantic-growth-independent-review.json (100 queries, 500 relevant hits, passed)",
+        "bench/gbrain_public_semantic_worker.ts"
+      ],
+      "caveat": "This does not close model-backed answer-quality evaluation; larger GBrain semantic QA remains pending."
+    },
+    {
+      "id": "cost-and-time-over-period",
+      "requirement": "Report measured cumulative ingest/query/storage observations and explicit 30/90/365-day cost scenarios, with local API $0 separated from unmeasured hardware cost and managed Mem0 pricing.",
+      "status": "complete_bounded",
+      "evidence": [
+        "audit/2026-09-05/cost-speed-projections.md",
+        "audit/2026-09-05/raw/independent-cost-over-time.json",
+        "audit/2026-09-05/raw/cost-source-snapshot.json",
+        "audit/2026-09-05/raw/growth-independent-final-validation.json"
+      ],
+      "caveat": "The report explicitly says local model/API cost is shared by all tested local routes and hardware/electricity/operator costs were not measured."
+    },
+    {
+      "id": "charts",
+      "requirement": "Render readable standard-matplotlib latency and storage curves for the matched/semantic tracks without inventing missing checkpoints.",
+      "status": "complete",
+      "evidence": [
+        "audit/2026-09-05/charts/growth-query-latency.svg",
+        "audit/2026-09-05/charts/growth-storage.svg",
+        "audit/2026-09-05/charts/semantic/growth-semantic-query-latency.svg",
+        "audit/2026-09-05/charts/semantic/growth-semantic-storage.svg",
+        "bench/growth_charts.py"
+      ],
+      "caveat": "p50/p95 labels identify the empirical nearest-rank method; semantic GBrain and lexical GBrain remain distinct."
+    },
+    {
+      "id": "benchmark-instrumentation",
+      "requirement": "Record first query after ingest, cold reopen/restart boundary, warm p50/p95 sample counts, update/resubmit time, storage sidecars/cache, returned IDs/relevance, and model call/token/failure accounting without mocks.",
+      "status": "complete_for_growth_harness",
+      "evidence": [
+        "bench/growth.py",
+        "audit/2026-09-05/raw/growth-harness-installed-review.json",
+        "audit/2026-09-05/raw/growth-independent-final-validation.json",
+        "audit/2026-09-05/raw/http-retry-installed-verification.json",
+        "audit/2026-09-05/growth-matched-final-report.json"
+      ],
+      "caveat": "Smriti/Mem0 cold timing is a same-process client/database reopen; GBrain cold timing is a worker process restart."
+    },
+    {
+      "id": "paired-public-retrieval",
+      "requirement": "Run a same-ID, same-dataset, same-embedder paired public retrieval comparison with failure-inclusive denominators.",
+      "status": "complete_exploratory",
+      "evidence": [
+        "audit/2026-09-05/public-retrieval-s50-paired-analysis.md",
+        "audit/2026-09-05/raw/multi-session-gap-review.json"
+      ],
+      "caveat": "Smriti and Mem0 each completed 48/50; the result is explicitly exploratory and does not support superiority."
+    },
+    {
+      "id": "longmemeval-preflight",
+      "requirement": "Run a bounded same-reader/judge LongMemEval answer/judge preflight.",
+      "status": "complete_preflight_only",
+      "evidence": [
+        "audit/2026-09-05/public-qa-s6-paired-diagnostic.md",
+        "audit/2026-09-05/public-qa-smriti-s6.json",
+        "audit/2026-09-05/public-qa-mem0-s6.json"
+      ],
+      "caveat": "Six questions only; Smriti 4/6 and Mem0 3/6, with heuristic abstention scoring."
+    },
+    {
+      "id": "full-model-backed-qa",
+      "requirement": "Run full-history LongMemEval and LoCoMo with one shared answer/judge configuration, plus the requested larger LME and GBrain semantic QA.",
+      "status": "incomplete_running",
+      "evidence": [
+        "audit/2026-09-05/ROADMAP.md (Phase 2 full QA checkbox remains open)",
+        "audit/2026-09-05/locomo-qa-smriti-s50.json (status running; current saved progress 27/50, zero failures at capture)",
+        "audit/2026-09-05/raw/locomo-qa-smriti-s50-provenance.json (installed v4 provenance; status running)",
+        "audit/2026-09-05/raw/locomo-date-judge-integrity-review.json (partial review; headline not allowed)",
+        "audit/2026-09-05/benchmark-longmemeval-oracle-smriti.json (500-question oracle retrieval only; not full-haystack QA)",
+        "audit/2026-09-05/benchmark-longmemeval-oracle-mem0-pilot.json (10-question oracle pilot only)"
+      ],
+      "remaining": "Finish LoCoMo50, larger LongMemEval QA, and GBrain semantic QA; retain failure-inclusive raw outputs and do not substitute oracle runs."
+    },
+    {
+      "id": "launch-teaser",
+      "requirement": "Deliver and verify the exact 30-second launch teaser.",
+      "status": "complete",
+      "evidence": [
+        "audit/2026-09-05/video.md",
+        "launch-video/out/smriti-launch-teaser-30s-exact.mp4"
+      ],
+      "caveat": "The film is explicitly free of accuracy or speed-superiority claims."
+    },
+    {
+      "id": "roadmap-and-claim-discipline",
+      "requirement": "Keep ROADMAP and reports aligned with measured evidence, explicit caveats, and open quality gates.",
+      "status": "complete_current_sync",
+      "evidence": [
+        "audit/2026-09-05/ROADMAP.md",
+        "audit/2026-09-05/VERIFIED-RESULTS.md",
+        "audit/2026-09-05/cost-speed-projections.md"
+      ],
+      "caveat": "ROADMAP still correctly marks Phase 1 reopened and Phase 2 in progress; this audit does not close either gate."
+    }
+  ],
+  "real_pending_build_work": [
+    {
+      "item": "Temporal/consolidation and extraction identity/scope correction followed by a fresh installed model-backed Mira rerun",
+      "type": "implementation_plus_acceptance",
+      "status": "required",
+      "evidence": "raw/smriti-mira-root-review.json and raw/smriti-mira-contract-v3-independent-review.json"
+    },
+    {
+      "item": "No additional benchmark adapter, cost report, chart, or teaser build task is evidenced by the current scope; remaining LoCoMo/LME/GBrain work is evaluation execution and validation.",
+      "type": "scope_boundary",
+      "status": "confirmed"
+    }
+  ],
+  "running_or_pending_evaluations": [
+    "LoCoMo50 installed-v4 Smriti answer/judge run: saved artifact status running at 27/50; session/provenance recorded separately.",
+    "Larger LongMemEval answer/judge QA: pending.",
+    "GBrain semantic 20-question QA: pending.",
+    "Fresh installed model-backed Mira scope/temporal acceptance: pending after rejected review."
+  ],
+  "explicit_nonclaims": [
+    "The oracle LongMemEval retrieval files are not full-haystack answer quality.",
+    "The six-question preflight is not a leaderboard or significance result.",
+    "Local API cost $0 is shared across tested local routes and is not hardware cost $0.",
+    "Growth day labels are corpus equivalents at 100 adds/day, not calendar observations.",
+    "No universal Smriti superiority, zero-defect, or live-deployment claim is supported."
+  ]
+}
