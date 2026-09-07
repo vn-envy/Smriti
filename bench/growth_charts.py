@@ -96,6 +96,12 @@ def _annotate(fig, reports: list[dict[str, Any]]) -> None:
     )
 
 
+def _normalize_svg(path: Path) -> None:
+    """Keep generated vector artifacts clean for repository whitespace checks."""
+    text = path.read_text(encoding="utf-8")
+    path.write_text("\n".join(line.rstrip() for line in text.splitlines()) + "\n", encoding="utf-8")
+
+
 def render(summary: dict[str, Any], output_dir: str) -> list[str]:
     _validate_summary(summary)
     plt = _load_plotting()
@@ -132,6 +138,8 @@ def render(summary: dict[str, Any], output_dir: str) -> list[str]:
     for extension in ("svg", "png"):
         path = out / f"growth-query-latency.{extension}"
         latency_fig.savefig(path, dpi=160, bbox_inches="tight")
+        if extension == "svg":
+            _normalize_svg(path)
         paths.append(str(path))
     plt.close(latency_fig)
 
@@ -158,6 +166,8 @@ def render(summary: dict[str, Any], output_dir: str) -> list[str]:
     for extension in ("svg", "png"):
         path = out / f"growth-storage.{extension}"
         storage_fig.savefig(path, dpi=160, bbox_inches="tight")
+        if extension == "svg":
+            _normalize_svg(path)
         paths.append(str(path))
     plt.close(storage_fig)
     return paths
