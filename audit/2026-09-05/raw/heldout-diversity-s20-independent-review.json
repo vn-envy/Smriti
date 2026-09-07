@@ -1,0 +1,69 @@
+{
+  "status": "independently_verified",
+  "requested": 20,
+  "completed": 20,
+  "overlap_with_excluded_ids": 0,
+  "metrics": {
+    "recall_at_k": {
+      "default": 0.8458333333333333,
+      "session_diverse": 0.9333333333333333,
+      "delta": 0.0875,
+      "improved": 3,
+      "regressed": 0,
+      "unchanged": 17,
+      "paired_bootstrap_95_interval": [
+        0.0,
+        0.2125
+      ],
+      "bootstrap_seed": 20260907,
+      "bootstrap_samples": 20000
+    },
+    "reciprocal_rank": {
+      "default": 0.8875,
+      "session_diverse": 0.9041666666666667,
+      "delta": 0.016666666666666666,
+      "improved": 1,
+      "regressed": 0,
+      "unchanged": 19,
+      "paired_bootstrap_95_interval": [
+        0.0,
+        0.05
+      ],
+      "bootstrap_seed": 20260907,
+      "bootstrap_samples": 20000
+    }
+  },
+  "per_type": {
+    "knowledge-update": {
+      "n": 3,
+      "default": 0.8333333333333334,
+      "session_diverse": 1.0
+    },
+    "multi-session": {
+      "n": 4,
+      "default": 0.6041666666666666,
+      "session_diverse": 0.6666666666666666
+    },
+    "single-session-assistant": {
+      "n": 3,
+      "default": 1.0,
+      "session_diverse": 1.0
+    },
+    "single-session-preference": {
+      "n": 3,
+      "default": 0.6666666666666666,
+      "session_diverse": 1.0
+    },
+    "single-session-user": {
+      "n": 4,
+      "default": 1.0,
+      "session_diverse": 1.0
+    },
+    "temporal-reasoning": {
+      "n": 3,
+      "default": 1.0,
+      "session_diverse": 1.0
+    }
+  },
+  "limitations": "20 held-out answerable questions; retrieval session coverage, not answer accuracy. MRR uses unique-session rank. No abstention questions selected. Default queried first; no speed comparison. Scope-aware core changes not in this loaded run."
+}

@@ -13,13 +13,14 @@
       "finding": "Berlin lives_in fact incorrectly invalidated by unrelated joined Atlas event on same date."
     },
     {
-      "severity": "high",
+      "severity": "medium",
       "fact_ids": [
         5,
         6
       ],
-      "finding": "Python remains active; Rust is present only in event statement, with switched_from object Python. Probe substring assertion falsely treats this as a structured current Rust preference."
+      "finding": "Rust is present only in a transition statement, with switched_from object Python. Probe substring assertion incorrectly labels this a structured current Rust preference. The prior generic Python preference is not itself proven stale: the Rust switch is specific to Atlas.",
+      "scope_correction": "Do not require ending a global preference solely because of a project-specific switch. Validate explicit applicability scope and same-scope replacement separately."
     }
   ],
-  "required_followup": "Correct consolidation/extraction with general regression coverage; tighten probe and rerun fresh installed wheel. Original evidence preserved unchanged."
+  "required_followup": "Fix unrelated-fact supersession and represent explicit state scope with general regression coverage; tighten probe without assuming Atlas-specific Rust invalidates global Python; rerun fresh installed wheel. Original run preserved unchanged."
 }

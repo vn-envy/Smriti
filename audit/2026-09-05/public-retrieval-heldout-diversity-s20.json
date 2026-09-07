@@ -1,0 +1,2990 @@
+{
+  "schema_version": 1,
+  "status": "complete",
+  "track": "held-out LongMemEval-S raw-session retrieval selector ablation",
+  "dataset": {
+    "sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
+    "total_items": 500,
+    "selected_question_ids": [
+      "f8c5f88b",
+      "dd2973ad",
+      "caf03d32",
+      "gpt4_b5700ca9",
+      "ce6d2d27",
+      "ceb54acb",
+      "5d3d2817",
+      "c4a1ceb8",
+      "54026fce",
+      "9a707b81",
+      "9ea5eabc",
+      "f523d9fe",
+      "7527f7e2",
+      "gpt4_a56e767c",
+      "06f04340",
+      "gpt4_1d4ab0c9",
+      "07741c44",
+      "0e5e2d1a",
+      "c960da58",
+      "6cb6f249"
+    ],
+    "excluded_question_ids": [
+      "06878be2",
+      "0862e8bf_abs",
+      "0a995998",
+      "0bc8ad92",
+      "0edc2aef",
+      "118b2229",
+      "1903aded",
+      "195a1a1b",
+      "1e043500",
+      "32260d93",
+      "35a27287",
+      "3a704032",
+      "4c36ccef",
+      "51a45a95",
+      "58bf7951",
+      "58ef2f1c",
+      "6a1eabeb",
+      "6ade9755",
+      "6ae235be",
+      "6aeb4375",
+      "6d550036",
+      "6f9b354f",
+      "71017276",
+      "71315a70",
+      "7161e7e2",
+      "75832dbd",
+      "7e00a6cb",
+      "830ce83f",
+      "852ce960",
+      "88432d0a_abs",
+      "89527b6b",
+      "89941a93",
+      "8a2466db",
+      "945e3d21",
+      "aae3761f",
+      "af082822",
+      "afdc33df",
+      "b46e15ed",
+      "b5ef892d",
+      "c4f10528",
+      "c5e8278d",
+      "d7c942c3",
+      "e47becba",
+      "e831120c",
+      "e9327a54",
+      "gpt4_4929293a",
+      "gpt4_59149c77",
+      "gpt4_59c863d7",
+      "gpt4_d84a3211",
+      "gpt4_f2262a51",
+      "gpt4_f49edff3",
+      "gpt4_fa19884c"
+    ],
+    "exclusion_sources": [
+      "/Users/kshitijvatsa/Downloads/Smriti-main/audit/2026-09-05/public-retrieval-smriti-s50.json",
+      "/Users/kshitijvatsa/Downloads/Smriti-main/audit/2026-09-05/public-retrieval-mem0-s50.json",
+      "/Users/kshitijvatsa/Downloads/Smriti-main/audit/2026-09-05/public-qa-smriti-s6.json",
+      "/Users/kshitijvatsa/Downloads/Smriti-main/audit/2026-09-05/public-qa-mem0-s6.json"
+    ]
+  },
+  "configuration": {
+    "embedding": {
+      "provider": "Ollama",
+      "model": "nomic-embed-text:v1.5",
+      "dimensions": 768,
+      "base_url": "http://127.0.0.1:11436"
+    },
+    "budgets": {
+      "sample": 20,
+      "k": 5,
+      "session_char_budget": 16000,
+      "chunk_char_budget": 1000
+    },
+    "variants": {
+      "default": {
+        "session_diverse": false
+      },
+      "session_diverse": {
+        "session_diverse": true,
+        "session_overfetch": 3
+      }
+    }
+  },
+  "run": {
+    "started_utc": "2026-09-07T15:44:43Z",
+    "elapsed_s": 493.246,
+    "platform": "macOS-26.5.1-arm64-arm-64bit",
+    "python": "3.11.15 (main, Jun 11 2026, 04:04:09) [Clang 22.1.3 ]",
+    "input_contract": "answer labels are excluded from index/query inputs; labels are read only after retrieval",
+    "latency_policy": "query timings are diagnostic only; default is always queried first and no latency ranking is performed",
+    "source_snapshot": {
+      "captured_at_utc": "2026-09-07T15:44:43Z",
+      "commit": "1874a010ccb1121f08cdb192e4b69474b2a0f54a",
+      "imported_module_paths": {
+        "ablation_module": "/Users/kshitijvatsa/Downloads/Smriti-main/bench/public_retrieval_ablation.py",
+        "public_retrieval_module": "/Users/kshitijvatsa/Downloads/Smriti-main/bench/public_retrieval.py",
+        "smriti_retrieval_module": "/Users/kshitijvatsa/Downloads/Smriti-main/smriti/retrieval.py",
+        "smriti_class": "/Users/kshitijvatsa/Downloads/Smriti-main/smriti/memory.py",
+        "ollama_embedder_class": "/Users/kshitijvatsa/Downloads/Smriti-main/smriti/embedder.py"
+      },
+      "imported_file_sha256": {
+        "/Users/kshitijvatsa/Downloads/Smriti-main/bench/public_retrieval_ablation.py": "0c8b6d9b97d99ee96815e270966ff32450827c21ee7d6fd5b829bf463f78ae64",
+        "/Users/kshitijvatsa/Downloads/Smriti-main/bench/public_retrieval.py": "8ef79434d8e0171c014ad1f72d742d883dd266b2a02e4a2dac45ac65a032ab2f",
+        "/Users/kshitijvatsa/Downloads/Smriti-main/smriti/retrieval.py": "1f594fb5b150198f651e96f44455b2088333c476f256f764926adf10d615ffc4",
+        "/Users/kshitijvatsa/Downloads/Smriti-main/smriti/memory.py": "5ec11da6b13a9058157207044407ff73f8e3ceccc3973086ff80998bae91d80d",
+        "/Users/kshitijvatsa/Downloads/Smriti-main/smriti/embedder.py": "3e94ba2b36f4f58935ab2e9581ea78a73859c5106d9b5ad87d32e4463e052550"
+      }
+    },
+    "embedding_dimension_probe": {
+      "input_chars": 15,
+      "measured_dimensions": 768,
+      "elapsed_ms": 267.213,
+      "outside_timed_question_runs": true
+    }
+  },
+  "summary": {
+    "requested": 20,
+    "completed": 20,
+    "failures": 0,
+    "cleanup_failures": 0,
+    "failure_inclusive_denominator": 20,
+    "unanswerable_requested": 0,
+    "default": {
+      "mean_recall_at_k": 0.8458,
+      "mean_reciprocal_rank": 0.8875,
+      "answerable_completed": 20,
+      "answerable_requested": 20
+    },
+    "session_diverse": {
+      "mean_recall_at_k": 0.9333,
+      "mean_reciprocal_rank": 0.9042,
+      "answerable_completed": 20,
+      "answerable_requested": 20
+    },
+    "truncation": {
+      "sessions": 991,
+      "chunks": 10047,
+      "original_chars": 9867725,
+      "indexed_chars": 9614420,
+      "truncated_session_chars": 253305,
+      "truncated_chunk_chars": 0
+    }
+  },
+  "results": [
+    {
+      "question_id": "f8c5f88b",
+      "question_type": "single-session-user",
+      "question": "Where did I buy my new tennis racket from?",
+      "unanswerable": false,
+      "session_count": 46,
+      "chunk_count": 511,
+      "ingest_s": 55.0466,
+      "variants": {
+        "default": {
+          "query_s": 0.0302,
+          "returned_episode_ids": [
+            306,
+            301,
+            299,
+            300,
+            304
+          ],
+          "returned_session_ids": [
+            "answer_c3567066"
+          ],
+          "returned_session_count": 1,
+          "relevant_session_ids": [
+            "answer_c3567066"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_c3567066"
+          ],
+          "recall_at_k": 1.0,
+          "relevant_coverage": 1.0,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 306,
+              "kind": "episode",
+              "episode_id": 306,
+              "session_id": "answer_c3567066",
+              "score": 0.03067916
+            },
+            {
+              "result_id": 301,
+              "kind": "episode",
+              "episode_id": 301,
+              "session_id": "answer_c3567066",
+              "score": 0.03064516
+            },
+            {
+              "result_id": 299,
+              "kind": "episode",
+              "episode_id": 299,
+              "session_id": "answer_c3567066",
+              "score": 0.03062711
+            },
+            {
+              "result_id": 300,
+              "kind": "episode",
+              "episode_id": 300,
+              "session_id": "answer_c3567066",
+              "score": 0.02921402
+            },
+            {
+              "result_id": 304,
+              "kind": "episode",
+              "episode_id": 304,
+              "session_id": "answer_c3567066",
+              "score": 0.02848214
+            }
+          ]
+        },
+        "session_diverse": {
+          "query_s": 0.0271,
+          "session_overfetch": 3,
+          "returned_episode_ids": [
+            306,
+            304,
+            497,
+            401,
+            164
+          ],
+          "returned_session_ids": [
+            "answer_c3567066",
+            "sharegpt_TKj3yO8_0",
+            "15232887_1",
+            "68ace657_1"
+          ],
+          "returned_session_count": 4,
+          "relevant_session_ids": [
+            "answer_c3567066"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_c3567066"
+          ],
+          "recall_at_k": 1.0,
+          "relevant_coverage": 1.0,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 306,
+              "kind": "episode",
+              "episode_id": 306,
+              "session_id": "answer_c3567066",
+              "score": 0.03067916
+            },
+            {
+              "result_id": 304,
+              "kind": "episode",
+              "episode_id": 304,
+              "session_id": "answer_c3567066",
+              "score": 0.02848214
+            },
+            {
+              "result_id": 497,
+              "kind": "episode",
+              "episode_id": 497,
+              "session_id": "sharegpt_TKj3yO8_0",
+              "score": 0.02735967
+            },
+            {
+              "result_id": 401,
+              "kind": "episode",
+              "episode_id": 401,
+              "session_id": "15232887_1",
+              "score": 0.02641327
+            },
+            {
+              "result_id": 164,
+              "kind": "episode",
+              "episode_id": 164,
+              "session_id": "68ace657_1",
+              "score": 0.02515789
+            }
+          ]
+        }
+      }
+    },
+    {
+      "question_id": "dd2973ad",
+      "question_type": "multi-session",
+      "question": "What time did I go to bed on the day before I had a doctor's appointment?",
+      "unanswerable": false,
+      "session_count": 49,
+      "chunk_count": 497,
+      "ingest_s": 27.3154,
+      "variants": {
+        "default": {
+          "query_s": 0.0236,
+          "returned_episode_ids": [
+            248,
+            247,
+            242,
+            146,
+            335
+          ],
+          "returned_session_ids": [
+            "answer_f9de4602_2",
+            "56266c38_1",
+            "sharegpt_O6NO7Vo_9"
+          ],
+          "returned_session_count": 3,
+          "relevant_session_ids": [
+            "answer_f9de4602_2",
+            "answer_f9de4602_1"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_f9de4602_2"
+          ],
+          "recall_at_k": 0.5,
+          "relevant_coverage": 0.5,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 248,
+              "kind": "episode",
+              "episode_id": 248,
+              "session_id": "answer_f9de4602_2",
+              "score": 0.03045594
+            },
+            {
+              "result_id": 247,
+              "kind": "episode",
+              "episode_id": 247,
+              "session_id": "answer_f9de4602_2",
+              "score": 0.02903981
+            },
+            {
+              "result_id": 242,
+              "kind": "episode",
+              "episode_id": 242,
+              "session_id": "answer_f9de4602_2",
+              "score": 0.02837022
+            },
+            {
+              "result_id": 146,
+              "kind": "episode",
+              "episode_id": 146,
+              "session_id": "56266c38_1",
+              "score": 0.02670588
+            },
+            {
+              "result_id": 335,
+              "kind": "episode",
+              "episode_id": 335,
+              "session_id": "sharegpt_O6NO7Vo_9",
+              "score": 0.02374687
+            }
+          ]
+        },
+        "session_diverse": {
+          "query_s": 0.0206,
+          "session_overfetch": 3,
+          "returned_episode_ids": [
+            248,
+            146,
+            335,
+            363,
+            434
+          ],
+          "returned_session_ids": [
+            "answer_f9de4602_2",
+            "56266c38_1",
+            "sharegpt_O6NO7Vo_9",
+            "bc542ef7_2",
+            "266ba230"
+          ],
+          "returned_session_count": 5,
+          "relevant_session_ids": [
+            "answer_f9de4602_2",
+            "answer_f9de4602_1"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_f9de4602_2"
+          ],
+          "recall_at_k": 0.5,
+          "relevant_coverage": 0.5,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 248,
+              "kind": "episode",
+              "episode_id": 248,
+              "session_id": "answer_f9de4602_2",
+              "score": 0.03045594
+            },
+            {
+              "result_id": 146,
+              "kind": "episode",
+              "episode_id": 146,
+              "session_id": "56266c38_1",
+              "score": 0.02670588
+            },
+            {
+              "result_id": 335,
+              "kind": "episode",
+              "episode_id": 335,
+              "session_id": "sharegpt_O6NO7Vo_9",
+              "score": 0.02374687
+            },
+            {
+              "result_id": 363,
+              "kind": "episode",
+              "episode_id": 363,
+              "session_id": "bc542ef7_2",
+              "score": 0.01538462
+            },
+            {
+              "result_id": 434,
+              "kind": "episode",
+              "episode_id": 434,
+              "session_id": "266ba230",
+              "score": 0.01515152
+            }
+          ]
+        }
+      }
+    },
+    {
+      "question_id": "caf03d32",
+      "question_type": "single-session-preference",
+      "question": "I've been struggling with my slow cooker recipes. Any advice on getting better results?",
+      "unanswerable": false,
+      "session_count": 51,
+      "chunk_count": 505,
+      "ingest_s": 22.1705,
+      "variants": {
+        "default": {
+          "query_s": 0.0181,
+          "returned_episode_ids": [
+            490,
+            502,
+            492,
+            497,
+            498
+          ],
+          "returned_session_ids": [
+            "answer_2fc6aabb"
+          ],
+          "returned_session_count": 1,
+          "relevant_session_ids": [
+            "answer_2fc6aabb"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_2fc6aabb"
+          ],
+          "recall_at_k": 1.0,
+          "relevant_coverage": 1.0,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 490,
+              "kind": "episode",
+              "episode_id": 490,
+              "session_id": "answer_2fc6aabb",
+              "score": 0.03114754
+            },
+            {
+              "result_id": 502,
+              "kind": "episode",
+              "episode_id": 502,
+              "session_id": "answer_2fc6aabb",
+              "score": 0.03019153
+            },
+            {
+              "result_id": 492,
+              "kind": "episode",
+              "episode_id": 492,
+              "session_id": "answer_2fc6aabb",
+              "score": 0.03015873
+            },
+            {
+              "result_id": 497,
+              "kind": "episode",
+              "episode_id": 497,
+              "session_id": "answer_2fc6aabb",
+              "score": 0.02990074
+            },
+            {
+              "result_id": 498,
+              "kind": "episode",
+              "episode_id": 498,
+              "session_id": "answer_2fc6aabb",
+              "score": 0.02947115
+            }
+          ]
+        },
+        "session_diverse": {
+          "query_s": 0.0167,
+          "session_overfetch": 3,
+          "returned_episode_ids": [
+            490,
+            497,
+            498,
+            376,
+            164
+          ],
+          "returned_session_ids": [
+            "answer_2fc6aabb",
+            "sharegpt_3D7Qpuq_14",
+            "8567068d_4"
+          ],
+          "returned_session_count": 3,
+          "relevant_session_ids": [
+            "answer_2fc6aabb"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_2fc6aabb"
+          ],
+          "recall_at_k": 1.0,
+          "relevant_coverage": 1.0,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 490,
+              "kind": "episode",
+              "episode_id": 490,
+              "session_id": "answer_2fc6aabb",
+              "score": 0.03114754
+            },
+            {
+              "result_id": 497,
+              "kind": "episode",
+              "episode_id": 497,
+              "session_id": "answer_2fc6aabb",
+              "score": 0.02990074
+            },
+            {
+              "result_id": 498,
+              "kind": "episode",
+              "episode_id": 498,
+              "session_id": "answer_2fc6aabb",
+              "score": 0.02947115
+            },
+            {
+              "result_id": 376,
+              "kind": "episode",
+              "episode_id": 376,
+              "session_id": "sharegpt_3D7Qpuq_14",
+              "score": 0.02713147
+            },
+            {
+              "result_id": 164,
+              "kind": "episode",
+              "episode_id": 164,
+              "session_id": "8567068d_4",
+              "score": 0.01333333
+            }
+          ]
+        }
+      }
+    },
+    {
+      "question_id": "gpt4_b5700ca9",
+      "question_type": "temporal-reasoning",
+      "question": "How many days ago did I attend the Maundy Thursday service at the Episcopal Church?",
+      "unanswerable": false,
+      "session_count": 52,
+      "chunk_count": 507,
+      "ingest_s": 20.9237,
+      "variants": {
+        "default": {
+          "query_s": 0.0276,
+          "returned_episode_ids": [
+            220,
+            218,
+            222,
+            99,
+            221
+          ],
+          "returned_session_ids": [
+            "answer_a17423e7_1",
+            "44c62f26"
+          ],
+          "returned_session_count": 2,
+          "relevant_session_ids": [
+            "answer_a17423e7_1"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_a17423e7_1"
+          ],
+          "recall_at_k": 1.0,
+          "relevant_coverage": 1.0,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 220,
+              "kind": "episode",
+              "episode_id": 220,
+              "session_id": "answer_a17423e7_1",
+              "score": 0.03090957
+            },
+            {
+              "result_id": 218,
+              "kind": "episode",
+              "episode_id": 218,
+              "session_id": "answer_a17423e7_1",
+              "score": 0.03013871
+            },
+            {
+              "result_id": 222,
+              "kind": "episode",
+              "episode_id": 222,
+              "session_id": "answer_a17423e7_1",
+              "score": 0.02655577
+            },
+            {
+              "result_id": 99,
+              "kind": "episode",
+              "episode_id": 99,
+              "session_id": "44c62f26",
+              "score": 0.02622231
+            },
+            {
+              "result_id": 221,
+              "kind": "episode",
+              "episode_id": 221,
+              "session_id": "answer_a17423e7_1",
+              "score": 0.02618957
+            }
+          ]
+        },
+        "session_diverse": {
+          "query_s": 0.0206,
+          "session_overfetch": 3,
+          "returned_episode_ids": [
+            220,
+            99,
+            28,
+            79,
+            250
+          ],
+          "returned_session_ids": [
+            "answer_a17423e7_1",
+            "44c62f26",
+            "d743153b_1",
+            "ultrachat_142856",
+            "c81aa33c_2"
+          ],
+          "returned_session_count": 5,
+          "relevant_session_ids": [
+            "answer_a17423e7_1"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_a17423e7_1"
+          ],
+          "recall_at_k": 1.0,
+          "relevant_coverage": 1.0,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 220,
+              "kind": "episode",
+              "episode_id": 220,
+              "session_id": "answer_a17423e7_1",
+              "score": 0.03090957
+            },
+            {
+              "result_id": 99,
+              "kind": "episode",
+              "episode_id": 99,
+              "session_id": "44c62f26",
+              "score": 0.02622231
+            },
+            {
+              "result_id": 28,
+              "kind": "episode",
+              "episode_id": 28,
+              "session_id": "d743153b_1",
+              "score": 0.02546836
+            },
+            {
+              "result_id": 79,
+              "kind": "episode",
+              "episode_id": 79,
+              "session_id": "ultrachat_142856",
+              "score": 0.01612903
+            },
+            {
+              "result_id": 250,
+              "kind": "episode",
+              "episode_id": 250,
+              "session_id": "c81aa33c_2",
+              "score": 0.01587302
+            }
+          ]
+        }
+      }
+    },
+    {
+      "question_id": "ce6d2d27",
+      "question_type": "knowledge-update",
+      "question": "What day of the week do I take a cocktail-making class?",
+      "unanswerable": false,
+      "session_count": 51,
+      "chunk_count": 512,
+      "ingest_s": 20.0017,
+      "variants": {
+        "default": {
+          "query_s": 0.0158,
+          "returned_episode_ids": [
+            172,
+            173,
+            175,
+            165,
+            68
+          ],
+          "returned_session_ids": [
+            "answer_73540165_2",
+            "0e250059_1"
+          ],
+          "returned_session_count": 2,
+          "relevant_session_ids": [
+            "answer_73540165_1",
+            "answer_73540165_2"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_73540165_2"
+          ],
+          "recall_at_k": 0.5,
+          "relevant_coverage": 0.5,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 172,
+              "kind": "episode",
+              "episode_id": 172,
+              "session_id": "answer_73540165_2",
+              "score": 0.03013871
+            },
+            {
+              "result_id": 173,
+              "kind": "episode",
+              "episode_id": 173,
+              "session_id": "answer_73540165_2",
+              "score": 0.02950938
+            },
+            {
+              "result_id": 175,
+              "kind": "episode",
+              "episode_id": 175,
+              "session_id": "answer_73540165_2",
+              "score": 0.02835821
+            },
+            {
+              "result_id": 165,
+              "kind": "episode",
+              "episode_id": 165,
+              "session_id": "answer_73540165_2",
+              "score": 0.02834821
+            },
+            {
+              "result_id": 68,
+              "kind": "episode",
+              "episode_id": 68,
+              "session_id": "0e250059_1",
+              "score": 0.02778585
+            }
+          ]
+        },
+        "session_diverse": {
+          "query_s": 0.0142,
+          "session_overfetch": 3,
+          "returned_episode_ids": [
+            172,
+            68,
+            8,
+            125,
+            337
+          ],
+          "returned_session_ids": [
+            "answer_73540165_2",
+            "0e250059_1",
+            "answer_73540165_1",
+            "48ad2a93",
+            "9f6bec4f"
+          ],
+          "returned_session_count": 5,
+          "relevant_session_ids": [
+            "answer_73540165_1",
+            "answer_73540165_2"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_73540165_1",
+            "answer_73540165_2"
+          ],
+          "recall_at_k": 1.0,
+          "relevant_coverage": 1.0,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 172,
+              "kind": "episode",
+              "episode_id": 172,
+              "session_id": "answer_73540165_2",
+              "score": 0.03013871
+            },
+            {
+              "result_id": 68,
+              "kind": "episode",
+              "episode_id": 68,
+              "session_id": "0e250059_1",
+              "score": 0.02778585
+            },
+            {
+              "result_id": 8,
+              "kind": "episode",
+              "episode_id": 8,
+              "session_id": "answer_73540165_1",
+              "score": 0.02773504
+            },
+            {
+              "result_id": 125,
+              "kind": "episode",
+              "episode_id": 125,
+              "session_id": "48ad2a93",
+              "score": 0.01428571
+            },
+            {
+              "result_id": 337,
+              "kind": "episode",
+              "episode_id": 337,
+              "session_id": "9f6bec4f",
+              "score": 0.01408451
+            }
+          ]
+        }
+      }
+    },
+    {
+      "question_id": "ceb54acb",
+      "question_type": "single-session-assistant",
+      "question": "In our previous chat, you suggested 'sexual compulsions' and a few other options for alternative terms for certain behaviors. Can you remind me what the other four options were?",
+      "unanswerable": false,
+      "session_count": 50,
+      "chunk_count": 503,
+      "ingest_s": 20.3406,
+      "variants": {
+        "default": {
+          "query_s": 0.0247,
+          "returned_episode_ids": [
+            270,
+            271,
+            410,
+            112,
+            110
+          ],
+          "returned_session_ids": [
+            "answer_sharegpt_cGdjmYo_0",
+            "f6fd00cf",
+            "de293134_1"
+          ],
+          "returned_session_count": 3,
+          "relevant_session_ids": [
+            "answer_sharegpt_cGdjmYo_0"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_sharegpt_cGdjmYo_0"
+          ],
+          "recall_at_k": 1.0,
+          "relevant_coverage": 1.0,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 270,
+              "kind": "episode",
+              "episode_id": 270,
+              "session_id": "answer_sharegpt_cGdjmYo_0",
+              "score": 0.03114754
+            },
+            {
+              "result_id": 271,
+              "kind": "episode",
+              "episode_id": 271,
+              "session_id": "answer_sharegpt_cGdjmYo_0",
+              "score": 0.03064516
+            },
+            {
+              "result_id": 410,
+              "kind": "episode",
+              "episode_id": 410,
+              "session_id": "f6fd00cf",
+              "score": 0.02842809
+            },
+            {
+              "result_id": 112,
+              "kind": "episode",
+              "episode_id": 112,
+              "session_id": "de293134_1",
+              "score": 0.0258658
+            },
+            {
+              "result_id": 110,
+              "kind": "episode",
+              "episode_id": 110,
+              "session_id": "de293134_1",
+              "score": 0.02558097
+            }
+          ]
+        },
+        "session_diverse": {
+          "query_s": 0.0231,
+          "session_overfetch": 3,
+          "returned_episode_ids": [
+            270,
+            410,
+            112,
+            424,
+            438
+          ],
+          "returned_session_ids": [
+            "answer_sharegpt_cGdjmYo_0",
+            "f6fd00cf",
+            "de293134_1",
+            "dddce60a_1",
+            "0bbd7094_1"
+          ],
+          "returned_session_count": 5,
+          "relevant_session_ids": [
+            "answer_sharegpt_cGdjmYo_0"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_sharegpt_cGdjmYo_0"
+          ],
+          "recall_at_k": 1.0,
+          "relevant_coverage": 1.0,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 270,
+              "kind": "episode",
+              "episode_id": 270,
+              "session_id": "answer_sharegpt_cGdjmYo_0",
+              "score": 0.03114754
+            },
+            {
+              "result_id": 410,
+              "kind": "episode",
+              "episode_id": 410,
+              "session_id": "f6fd00cf",
+              "score": 0.02842809
+            },
+            {
+              "result_id": 112,
+              "kind": "episode",
+              "episode_id": 112,
+              "session_id": "de293134_1",
+              "score": 0.0258658
+            },
+            {
+              "result_id": 424,
+              "kind": "episode",
+              "episode_id": 424,
+              "session_id": "dddce60a_1",
+              "score": 0.01587302
+            },
+            {
+              "result_id": 438,
+              "kind": "episode",
+              "episode_id": 438,
+              "session_id": "0bbd7094_1",
+              "score": 0.015625
+            }
+          ]
+        }
+      }
+    },
+    {
+      "question_id": "5d3d2817",
+      "question_type": "single-session-user",
+      "question": "What was my previous occupation?",
+      "unanswerable": false,
+      "session_count": 53,
+      "chunk_count": 503,
+      "ingest_s": 24.463,
+      "variants": {
+        "default": {
+          "query_s": 0.0147,
+          "returned_episode_ids": [
+            177,
+            268,
+            1,
+            265,
+            256
+          ],
+          "returned_session_ids": [
+            "e93efd9a_1",
+            "sharegpt_BKl952A_23",
+            "ultrachat_106114",
+            "answer_235eb6fb"
+          ],
+          "returned_session_count": 4,
+          "relevant_session_ids": [
+            "answer_235eb6fb"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_235eb6fb"
+          ],
+          "recall_at_k": 1.0,
+          "relevant_coverage": 1.0,
+          "reciprocal_rank": 0.25,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 177,
+              "kind": "episode",
+              "episode_id": 177,
+              "session_id": "e93efd9a_1",
+              "score": 0.02899767
+            },
+            {
+              "result_id": 268,
+              "kind": "episode",
+              "episode_id": 268,
+              "session_id": "sharegpt_BKl952A_23",
+              "score": 0.01639344
+            },
+            {
+              "result_id": 1,
+              "kind": "episode",
+              "episode_id": 1,
+              "session_id": "ultrachat_106114",
+              "score": 0.01612903
+            },
+            {
+              "result_id": 265,
+              "kind": "episode",
+              "episode_id": 265,
+              "session_id": "sharegpt_BKl952A_23",
+              "score": 0.01587302
+            },
+            {
+              "result_id": 256,
+              "kind": "episode",
+              "episode_id": 256,
+              "session_id": "answer_235eb6fb",
+              "score": 0.015625
+            }
+          ]
+        },
+        "session_diverse": {
+          "query_s": 0.0125,
+          "session_overfetch": 3,
+          "returned_episode_ids": [
+            177,
+            268,
+            1,
+            256,
+            398
+          ],
+          "returned_session_ids": [
+            "e93efd9a_1",
+            "sharegpt_BKl952A_23",
+            "ultrachat_106114",
+            "answer_235eb6fb",
+            "sharegpt_ebWP6Hz_0"
+          ],
+          "returned_session_count": 5,
+          "relevant_session_ids": [
+            "answer_235eb6fb"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_235eb6fb"
+          ],
+          "recall_at_k": 1.0,
+          "relevant_coverage": 1.0,
+          "reciprocal_rank": 0.25,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 177,
+              "kind": "episode",
+              "episode_id": 177,
+              "session_id": "e93efd9a_1",
+              "score": 0.02899767
+            },
+            {
+              "result_id": 268,
+              "kind": "episode",
+              "episode_id": 268,
+              "session_id": "sharegpt_BKl952A_23",
+              "score": 0.01639344
+            },
+            {
+              "result_id": 1,
+              "kind": "episode",
+              "episode_id": 1,
+              "session_id": "ultrachat_106114",
+              "score": 0.01612903
+            },
+            {
+              "result_id": 256,
+              "kind": "episode",
+              "episode_id": 256,
+              "session_id": "answer_235eb6fb",
+              "score": 0.015625
+            },
+            {
+              "result_id": 398,
+              "kind": "episode",
+              "episode_id": 398,
+              "session_id": "sharegpt_ebWP6Hz_0",
+              "score": 0.01492537
+            }
+          ]
+        }
+      }
+    },
+    {
+      "question_id": "c4a1ceb8",
+      "question_type": "multi-session",
+      "question": "How many different types of citrus fruits have I used in my cocktail recipes?",
+      "unanswerable": false,
+      "session_count": 49,
+      "chunk_count": 513,
+      "ingest_s": 23.1444,
+      "variants": {
+        "default": {
+          "query_s": 0.0204,
+          "returned_episode_ids": [
+            40,
+            324,
+            327,
+            42,
+            216
+          ],
+          "returned_session_ids": [
+            "answer_56d02cab_3",
+            "answer_56d02cab_2",
+            "answer_56d02cab_4"
+          ],
+          "returned_session_count": 3,
+          "relevant_session_ids": [
+            "answer_56d02cab_3",
+            "answer_56d02cab_4",
+            "answer_56d02cab_2",
+            "answer_56d02cab_1"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_56d02cab_3",
+            "answer_56d02cab_4",
+            "answer_56d02cab_2"
+          ],
+          "recall_at_k": 0.75,
+          "relevant_coverage": 0.75,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 40,
+              "kind": "episode",
+              "episode_id": 40,
+              "session_id": "answer_56d02cab_3",
+              "score": 0.03045594
+            },
+            {
+              "result_id": 324,
+              "kind": "episode",
+              "episode_id": 324,
+              "session_id": "answer_56d02cab_2",
+              "score": 0.02936433
+            },
+            {
+              "result_id": 327,
+              "kind": "episode",
+              "episode_id": 327,
+              "session_id": "answer_56d02cab_2",
+              "score": 0.02891649
+            },
+            {
+              "result_id": 42,
+              "kind": "episode",
+              "episode_id": 42,
+              "session_id": "answer_56d02cab_3",
+              "score": 0.02808743
+            },
+            {
+              "result_id": 216,
+              "kind": "episode",
+              "episode_id": 216,
+              "session_id": "answer_56d02cab_4",
+              "score": 0.02778716
+            }
+          ]
+        },
+        "session_diverse": {
+          "query_s": 0.0185,
+          "session_overfetch": 3,
+          "returned_episode_ids": [
+            40,
+            324,
+            42,
+            216,
+            500
+          ],
+          "returned_session_ids": [
+            "answer_56d02cab_3",
+            "answer_56d02cab_2",
+            "answer_56d02cab_4",
+            "answer_56d02cab_1"
+          ],
+          "returned_session_count": 4,
+          "relevant_session_ids": [
+            "answer_56d02cab_3",
+            "answer_56d02cab_4",
+            "answer_56d02cab_2",
+            "answer_56d02cab_1"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_56d02cab_3",
+            "answer_56d02cab_4",
+            "answer_56d02cab_2",
+            "answer_56d02cab_1"
+          ],
+          "recall_at_k": 1.0,
+          "relevant_coverage": 1.0,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 40,
+              "kind": "episode",
+              "episode_id": 40,
+              "session_id": "answer_56d02cab_3",
+              "score": 0.03045594
+            },
+            {
+              "result_id": 324,
+              "kind": "episode",
+              "episode_id": 324,
+              "session_id": "answer_56d02cab_2",
+              "score": 0.02936433
+            },
+            {
+              "result_id": 42,
+              "kind": "episode",
+              "episode_id": 42,
+              "session_id": "answer_56d02cab_3",
+              "score": 0.02808743
+            },
+            {
+              "result_id": 216,
+              "kind": "episode",
+              "episode_id": 216,
+              "session_id": "answer_56d02cab_4",
+              "score": 0.02778716
+            },
+            {
+              "result_id": 500,
+              "kind": "episode",
+              "episode_id": 500,
+              "session_id": "answer_56d02cab_1",
+              "score": 0.02727273
+            }
+          ]
+        }
+      }
+    },
+    {
+      "question_id": "54026fce",
+      "question_type": "single-session-preference",
+      "question": "I've been thinking about ways to stay connected with my colleagues. Any suggestions?",
+      "unanswerable": false,
+      "session_count": 49,
+      "chunk_count": 505,
+      "ingest_s": 20.5281,
+      "variants": {
+        "default": {
+          "query_s": 0.0174,
+          "returned_episode_ids": [
+            265,
+            271,
+            270,
+            268,
+            110
+          ],
+          "returned_session_ids": [
+            "answer_f7b22c66",
+            "670c49e6"
+          ],
+          "returned_session_count": 2,
+          "relevant_session_ids": [
+            "answer_f7b22c66"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_f7b22c66"
+          ],
+          "recall_at_k": 1.0,
+          "relevant_coverage": 1.0,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 265,
+              "kind": "episode",
+              "episode_id": 265,
+              "session_id": "answer_f7b22c66",
+              "score": 0.03090957
+            },
+            {
+              "result_id": 271,
+              "kind": "episode",
+              "episode_id": 271,
+              "session_id": "answer_f7b22c66",
+              "score": 0.0303791
+            },
+            {
+              "result_id": 270,
+              "kind": "episode",
+              "episode_id": 270,
+              "session_id": "answer_f7b22c66",
+              "score": 0.03015873
+            },
+            {
+              "result_id": 268,
+              "kind": "episode",
+              "episode_id": 268,
+              "session_id": "answer_f7b22c66",
+              "score": 0.02567568
+            },
+            {
+              "result_id": 110,
+              "kind": "episode",
+              "episode_id": 110,
+              "session_id": "670c49e6",
+              "score": 0.02482877
+            }
+          ]
+        },
+        "session_diverse": {
+          "query_s": 0.0165,
+          "session_overfetch": 3,
+          "returned_episode_ids": [
+            265,
+            268,
+            110,
+            355,
+            313
+          ],
+          "returned_session_ids": [
+            "answer_f7b22c66",
+            "670c49e6",
+            "ultrachat_166270",
+            "fab585c2_1"
+          ],
+          "returned_session_count": 4,
+          "relevant_session_ids": [
+            "answer_f7b22c66"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_f7b22c66"
+          ],
+          "recall_at_k": 1.0,
+          "relevant_coverage": 1.0,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 265,
+              "kind": "episode",
+              "episode_id": 265,
+              "session_id": "answer_f7b22c66",
+              "score": 0.03090957
+            },
+            {
+              "result_id": 268,
+              "kind": "episode",
+              "episode_id": 268,
+              "session_id": "answer_f7b22c66",
+              "score": 0.02567568
+            },
+            {
+              "result_id": 110,
+              "kind": "episode",
+              "episode_id": 110,
+              "session_id": "670c49e6",
+              "score": 0.02482877
+            },
+            {
+              "result_id": 355,
+              "kind": "episode",
+              "episode_id": 355,
+              "session_id": "ultrachat_166270",
+              "score": 0.02466262
+            },
+            {
+              "result_id": 313,
+              "kind": "episode",
+              "episode_id": 313,
+              "session_id": "fab585c2_1",
+              "score": 0.0140625
+            }
+          ]
+        }
+      }
+    },
+    {
+      "question_id": "9a707b81",
+      "question_type": "temporal-reasoning",
+      "question": "How many days ago did I attend a baking class at a local culinary school when I made my friend's birthday cake?",
+      "unanswerable": false,
+      "session_count": 54,
+      "chunk_count": 510,
+      "ingest_s": 23.202,
+      "variants": {
+        "default": {
+          "query_s": 0.017,
+          "returned_episode_ids": [
+            187,
+            186,
+            447,
+            431,
+            315
+          ],
+          "returned_session_ids": [
+            "answer_dba89487_2",
+            "4abbeb2a_2",
+            "answer_dba89487_1",
+            "ultrachat_233519"
+          ],
+          "returned_session_count": 4,
+          "relevant_session_ids": [
+            "answer_dba89487_2",
+            "answer_dba89487_1"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_dba89487_2",
+            "answer_dba89487_1"
+          ],
+          "recall_at_k": 1.0,
+          "relevant_coverage": 1.0,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 187,
+              "kind": "episode",
+              "episode_id": 187,
+              "session_id": "answer_dba89487_2",
+              "score": 0.03114754
+            },
+            {
+              "result_id": 186,
+              "kind": "episode",
+              "episode_id": 186,
+              "session_id": "answer_dba89487_2",
+              "score": 0.0297654
+            },
+            {
+              "result_id": 447,
+              "kind": "episode",
+              "episode_id": 447,
+              "session_id": "4abbeb2a_2",
+              "score": 0.02891649
+            },
+            {
+              "result_id": 431,
+              "kind": "episode",
+              "episode_id": 431,
+              "session_id": "answer_dba89487_1",
+              "score": 0.02837022
+            },
+            {
+              "result_id": 315,
+              "kind": "episode",
+              "episode_id": 315,
+              "session_id": "ultrachat_233519",
+              "score": 0.02771855
+            }
+          ]
+        },
+        "session_diverse": {
+          "query_s": 0.0156,
+          "session_overfetch": 3,
+          "returned_episode_ids": [
+            187,
+            447,
+            431,
+            315,
+            145
+          ],
+          "returned_session_ids": [
+            "answer_dba89487_2",
+            "4abbeb2a_2",
+            "answer_dba89487_1",
+            "ultrachat_233519",
+            "59510ab6"
+          ],
+          "returned_session_count": 5,
+          "relevant_session_ids": [
+            "answer_dba89487_2",
+            "answer_dba89487_1"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_dba89487_2",
+            "answer_dba89487_1"
+          ],
+          "recall_at_k": 1.0,
+          "relevant_coverage": 1.0,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 187,
+              "kind": "episode",
+              "episode_id": 187,
+              "session_id": "answer_dba89487_2",
+              "score": 0.03114754
+            },
+            {
+              "result_id": 447,
+              "kind": "episode",
+              "episode_id": 447,
+              "session_id": "4abbeb2a_2",
+              "score": 0.02891649
+            },
+            {
+              "result_id": 431,
+              "kind": "episode",
+              "episode_id": 431,
+              "session_id": "answer_dba89487_1",
+              "score": 0.02837022
+            },
+            {
+              "result_id": 315,
+              "kind": "episode",
+              "episode_id": 315,
+              "session_id": "ultrachat_233519",
+              "score": 0.02771855
+            },
+            {
+              "result_id": 145,
+              "kind": "episode",
+              "episode_id": 145,
+              "session_id": "59510ab6",
+              "score": 0.02754478
+            }
+          ]
+        }
+      }
+    },
+    {
+      "question_id": "9ea5eabc",
+      "question_type": "knowledge-update",
+      "question": "Where did I go on my most recent family trip?",
+      "unanswerable": false,
+      "session_count": 53,
+      "chunk_count": 490,
+      "ingest_s": 22.5455,
+      "variants": {
+        "default": {
+          "query_s": 0.0184,
+          "returned_episode_ids": [
+            56,
+            61,
+            394,
+            58,
+            60
+          ],
+          "returned_session_ids": [
+            "answer_02e66dec_1",
+            "answer_02e66dec_2"
+          ],
+          "returned_session_count": 2,
+          "relevant_session_ids": [
+            "answer_02e66dec_1",
+            "answer_02e66dec_2"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_02e66dec_1",
+            "answer_02e66dec_2"
+          ],
+          "recall_at_k": 1.0,
+          "relevant_coverage": 1.0,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 56,
+              "kind": "episode",
+              "episode_id": 56,
+              "session_id": "answer_02e66dec_1",
+              "score": 0.03013871
+            },
+            {
+              "result_id": 61,
+              "kind": "episode",
+              "episode_id": 61,
+              "session_id": "answer_02e66dec_1",
+              "score": 0.02910831
+            },
+            {
+              "result_id": 394,
+              "kind": "episode",
+              "episode_id": 394,
+              "session_id": "answer_02e66dec_2",
+              "score": 0.0290695
+            },
+            {
+              "result_id": 58,
+              "kind": "episode",
+              "episode_id": 58,
+              "session_id": "answer_02e66dec_1",
+              "score": 0.0289916
+            },
+            {
+              "result_id": 60,
+              "kind": "episode",
+              "episode_id": 60,
+              "session_id": "answer_02e66dec_1",
+              "score": 0.02797114
+            }
+          ]
+        },
+        "session_diverse": {
+          "query_s": 0.017,
+          "session_overfetch": 3,
+          "returned_episode_ids": [
+            56,
+            394,
+            175,
+            223,
+            466
+          ],
+          "returned_session_ids": [
+            "answer_02e66dec_1",
+            "answer_02e66dec_2",
+            "8c8b180e",
+            "418c27fa",
+            "9bf5da2d"
+          ],
+          "returned_session_count": 5,
+          "relevant_session_ids": [
+            "answer_02e66dec_1",
+            "answer_02e66dec_2"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_02e66dec_1",
+            "answer_02e66dec_2"
+          ],
+          "recall_at_k": 1.0,
+          "relevant_coverage": 1.0,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 56,
+              "kind": "episode",
+              "episode_id": 56,
+              "session_id": "answer_02e66dec_1",
+              "score": 0.03013871
+            },
+            {
+              "result_id": 394,
+              "kind": "episode",
+              "episode_id": 394,
+              "session_id": "answer_02e66dec_2",
+              "score": 0.0290695
+            },
+            {
+              "result_id": 175,
+              "kind": "episode",
+              "episode_id": 175,
+              "session_id": "8c8b180e",
+              "score": 0.02772087
+            },
+            {
+              "result_id": 223,
+              "kind": "episode",
+              "episode_id": 223,
+              "session_id": "418c27fa",
+              "score": 0.02671125
+            },
+            {
+              "result_id": 466,
+              "kind": "episode",
+              "episode_id": 466,
+              "session_id": "9bf5da2d",
+              "score": 0.025
+            }
+          ]
+        }
+      }
+    },
+    {
+      "question_id": "f523d9fe",
+      "question_type": "single-session-assistant",
+      "question": "I wanted to check back on our previous conversation about Netflix. I mentioned that I wanted to be able to access all seasons of old shows? Do you remember what show I used as an example, the one that only had the last season available?",
+      "unanswerable": false,
+      "session_count": 50,
+      "chunk_count": 506,
+      "ingest_s": 22.0231,
+      "variants": {
+        "default": {
+          "query_s": 0.0228,
+          "returned_episode_ids": [
+            293,
+            294,
+            300,
+            291,
+            112
+          ],
+          "returned_session_ids": [
+            "answer_sharegpt_m2xJfjo_0",
+            "debc34d7_1",
+            "22aa7cca_4"
+          ],
+          "returned_session_count": 3,
+          "relevant_session_ids": [
+            "answer_sharegpt_m2xJfjo_0"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_sharegpt_m2xJfjo_0"
+          ],
+          "recall_at_k": 1.0,
+          "relevant_coverage": 1.0,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 293,
+              "kind": "episode",
+              "episode_id": 293,
+              "session_id": "answer_sharegpt_m2xJfjo_0",
+              "score": 0.03114754
+            },
+            {
+              "result_id": 294,
+              "kind": "episode",
+              "episode_id": 294,
+              "session_id": "answer_sharegpt_m2xJfjo_0",
+              "score": 0.03038914
+            },
+            {
+              "result_id": 300,
+              "kind": "episode",
+              "episode_id": 300,
+              "session_id": "debc34d7_1",
+              "score": 0.0297654
+            },
+            {
+              "result_id": 291,
+              "kind": "episode",
+              "episode_id": 291,
+              "session_id": "answer_sharegpt_m2xJfjo_0",
+              "score": 0.02943723
+            },
+            {
+              "result_id": 112,
+              "kind": "episode",
+              "episode_id": 112,
+              "session_id": "22aa7cca_4",
+              "score": 0.02618107
+            }
+          ]
+        },
+        "session_diverse": {
+          "query_s": 0.0212,
+          "session_overfetch": 3,
+          "returned_episode_ids": [
+            293,
+            300,
+            112,
+            411,
+            493
+          ],
+          "returned_session_ids": [
+            "answer_sharegpt_m2xJfjo_0",
+            "debc34d7_1",
+            "22aa7cca_4",
+            "a07f9d5c_1",
+            "44165708"
+          ],
+          "returned_session_count": 5,
+          "relevant_session_ids": [
+            "answer_sharegpt_m2xJfjo_0"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_sharegpt_m2xJfjo_0"
+          ],
+          "recall_at_k": 1.0,
+          "relevant_coverage": 1.0,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 293,
+              "kind": "episode",
+              "episode_id": 293,
+              "session_id": "answer_sharegpt_m2xJfjo_0",
+              "score": 0.03114754
+            },
+            {
+              "result_id": 300,
+              "kind": "episode",
+              "episode_id": 300,
+              "session_id": "debc34d7_1",
+              "score": 0.0297654
+            },
+            {
+              "result_id": 112,
+              "kind": "episode",
+              "episode_id": 112,
+              "session_id": "22aa7cca_4",
+              "score": 0.02618107
+            },
+            {
+              "result_id": 411,
+              "kind": "episode",
+              "episode_id": 411,
+              "session_id": "a07f9d5c_1",
+              "score": 0.015625
+            },
+            {
+              "result_id": 493,
+              "kind": "episode",
+              "episode_id": 493,
+              "session_id": "44165708",
+              "score": 0.01538462
+            }
+          ]
+        }
+      }
+    },
+    {
+      "question_id": "7527f7e2",
+      "question_type": "single-session-user",
+      "question": "How much did I spend on a designer handbag?",
+      "unanswerable": false,
+      "session_count": 45,
+      "chunk_count": 497,
+      "ingest_s": 22.3504,
+      "variants": {
+        "default": {
+          "query_s": 0.0164,
+          "returned_episode_ids": [
+            173,
+            172,
+            171,
+            175,
+            487
+          ],
+          "returned_session_ids": [
+            "answer_7cb94507",
+            "44bbd8cd_2"
+          ],
+          "returned_session_count": 2,
+          "relevant_session_ids": [
+            "answer_7cb94507"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_7cb94507"
+          ],
+          "recall_at_k": 1.0,
+          "relevant_coverage": 1.0,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 173,
+              "kind": "episode",
+              "episode_id": 173,
+              "session_id": "answer_7cb94507",
+              "score": 0.03067916
+            },
+            {
+              "result_id": 172,
+              "kind": "episode",
+              "episode_id": 172,
+              "session_id": "answer_7cb94507",
+              "score": 0.03062711
+            },
+            {
+              "result_id": 171,
+              "kind": "episode",
+              "episode_id": 171,
+              "session_id": "answer_7cb94507",
+              "score": 0.03014113
+            },
+            {
+              "result_id": 175,
+              "kind": "episode",
+              "episode_id": 175,
+              "session_id": "answer_7cb94507",
+              "score": 0.02855525
+            },
+            {
+              "result_id": 487,
+              "kind": "episode",
+              "episode_id": 487,
+              "session_id": "44bbd8cd_2",
+              "score": 0.02774936
+            }
+          ]
+        },
+        "session_diverse": {
+          "query_s": 0.0153,
+          "session_overfetch": 3,
+          "returned_episode_ids": [
+            173,
+            487,
+            307,
+            267,
+            373
+          ],
+          "returned_session_ids": [
+            "answer_7cb94507",
+            "44bbd8cd_2",
+            "sharegpt_0yC9gyQ_0",
+            "864a563d_3",
+            "4e2acecc"
+          ],
+          "returned_session_count": 5,
+          "relevant_session_ids": [
+            "answer_7cb94507"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_7cb94507"
+          ],
+          "recall_at_k": 1.0,
+          "relevant_coverage": 1.0,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 173,
+              "kind": "episode",
+              "episode_id": 173,
+              "session_id": "answer_7cb94507",
+              "score": 0.03067916
+            },
+            {
+              "result_id": 487,
+              "kind": "episode",
+              "episode_id": 487,
+              "session_id": "44bbd8cd_2",
+              "score": 0.02774936
+            },
+            {
+              "result_id": 307,
+              "kind": "episode",
+              "episode_id": 307,
+              "session_id": "sharegpt_0yC9gyQ_0",
+              "score": 0.01492537
+            },
+            {
+              "result_id": 267,
+              "kind": "episode",
+              "episode_id": 267,
+              "session_id": "864a563d_3",
+              "score": 0.01384615
+            },
+            {
+              "result_id": 373,
+              "kind": "episode",
+              "episode_id": 373,
+              "session_id": "4e2acecc",
+              "score": 0.01369863
+            }
+          ]
+        }
+      }
+    },
+    {
+      "question_id": "gpt4_a56e767c",
+      "question_type": "multi-session",
+      "question": "How many movie festivals that I attended?",
+      "unanswerable": false,
+      "session_count": 48,
+      "chunk_count": 500,
+      "ingest_s": 20.1338,
+      "variants": {
+        "default": {
+          "query_s": 0.0175,
+          "returned_episode_ids": [
+            324,
+            176,
+            299,
+            186,
+            304
+          ],
+          "returned_session_ids": [
+            "answer_cf9e3940_3",
+            "d75245ea",
+            "answer_cf9e3940_1"
+          ],
+          "returned_session_count": 3,
+          "relevant_session_ids": [
+            "answer_cf9e3940_2",
+            "answer_cf9e3940_1",
+            "answer_cf9e3940_3"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_cf9e3940_1",
+            "answer_cf9e3940_3"
+          ],
+          "recall_at_k": 0.6666666666666666,
+          "relevant_coverage": 0.6666666666666666,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 324,
+              "kind": "episode",
+              "episode_id": 324,
+              "session_id": "answer_cf9e3940_3",
+              "score": 0.02855525
+            },
+            {
+              "result_id": 176,
+              "kind": "episode",
+              "episode_id": 176,
+              "session_id": "d75245ea",
+              "score": 0.0281746
+            },
+            {
+              "result_id": 299,
+              "kind": "episode",
+              "episode_id": 299,
+              "session_id": "answer_cf9e3940_1",
+              "score": 0.02693392
+            },
+            {
+              "result_id": 186,
+              "kind": "episode",
+              "episode_id": 186,
+              "session_id": "d75245ea",
+              "score": 0.01639344
+            },
+            {
+              "result_id": 304,
+              "kind": "episode",
+              "episode_id": 304,
+              "session_id": "answer_cf9e3940_1",
+              "score": 0.01612903
+            }
+          ]
+        },
+        "session_diverse": {
+          "query_s": 0.0161,
+          "session_overfetch": 3,
+          "returned_episode_ids": [
+            324,
+            176,
+            299,
+            490,
+            308
+          ],
+          "returned_session_ids": [
+            "answer_cf9e3940_3",
+            "d75245ea",
+            "answer_cf9e3940_1",
+            "e1616c77",
+            "dac54d1e_1"
+          ],
+          "returned_session_count": 5,
+          "relevant_session_ids": [
+            "answer_cf9e3940_2",
+            "answer_cf9e3940_1",
+            "answer_cf9e3940_3"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_cf9e3940_1",
+            "answer_cf9e3940_3"
+          ],
+          "recall_at_k": 0.6666666666666666,
+          "relevant_coverage": 0.6666666666666666,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 324,
+              "kind": "episode",
+              "episode_id": 324,
+              "session_id": "answer_cf9e3940_3",
+              "score": 0.02855525
+            },
+            {
+              "result_id": 176,
+              "kind": "episode",
+              "episode_id": 176,
+              "session_id": "d75245ea",
+              "score": 0.0281746
+            },
+            {
+              "result_id": 299,
+              "kind": "episode",
+              "episode_id": 299,
+              "session_id": "answer_cf9e3940_1",
+              "score": 0.02693392
+            },
+            {
+              "result_id": 490,
+              "kind": "episode",
+              "episode_id": 490,
+              "session_id": "e1616c77",
+              "score": 0.01587302
+            },
+            {
+              "result_id": 308,
+              "kind": "episode",
+              "episode_id": 308,
+              "session_id": "dac54d1e_1",
+              "score": 0.01538462
+            }
+          ]
+        }
+      }
+    },
+    {
+      "question_id": "06f04340",
+      "question_type": "single-session-preference",
+      "question": "What should I serve for dinner this weekend with my homegrown ingredients?",
+      "unanswerable": false,
+      "session_count": 55,
+      "chunk_count": 503,
+      "ingest_s": 19.3067,
+      "variants": {
+        "default": {
+          "query_s": 0.0169,
+          "returned_episode_ids": [
+            329,
+            209,
+            210,
+            341,
+            326
+          ],
+          "returned_session_ids": [
+            "6e6fbb6b",
+            "91223fd5_1"
+          ],
+          "returned_session_count": 2,
+          "relevant_session_ids": [
+            "answer_92d5f7cd"
+          ],
+          "covered_relevant_session_ids": [],
+          "recall_at_k": 0.0,
+          "relevant_coverage": 0.0,
+          "reciprocal_rank": 0.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 329,
+              "kind": "episode",
+              "episode_id": 329,
+              "session_id": "6e6fbb6b",
+              "score": 0.02967947
+            },
+            {
+              "result_id": 209,
+              "kind": "episode",
+              "episode_id": 209,
+              "session_id": "91223fd5_1",
+              "score": 0.02802964
+            },
+            {
+              "result_id": 210,
+              "kind": "episode",
+              "episode_id": 210,
+              "session_id": "91223fd5_1",
+              "score": 0.02756133
+            },
+            {
+              "result_id": 341,
+              "kind": "episode",
+              "episode_id": 341,
+              "session_id": "6e6fbb6b",
+              "score": 0.02752144
+            },
+            {
+              "result_id": 326,
+              "kind": "episode",
+              "episode_id": 326,
+              "session_id": "6e6fbb6b",
+              "score": 0.02586399
+            }
+          ]
+        },
+        "session_diverse": {
+          "query_s": 0.0159,
+          "session_overfetch": 3,
+          "returned_episode_ids": [
+            329,
+            209,
+            129,
+            7,
+            243
+          ],
+          "returned_session_ids": [
+            "6e6fbb6b",
+            "91223fd5_1",
+            "answer_92d5f7cd",
+            "66bfa1db",
+            "8b156015_2"
+          ],
+          "returned_session_count": 5,
+          "relevant_session_ids": [
+            "answer_92d5f7cd"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_92d5f7cd"
+          ],
+          "recall_at_k": 1.0,
+          "relevant_coverage": 1.0,
+          "reciprocal_rank": 0.3333333333333333,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 329,
+              "kind": "episode",
+              "episode_id": 329,
+              "session_id": "6e6fbb6b",
+              "score": 0.02967947
+            },
+            {
+              "result_id": 209,
+              "kind": "episode",
+              "episode_id": 209,
+              "session_id": "91223fd5_1",
+              "score": 0.02802964
+            },
+            {
+              "result_id": 129,
+              "kind": "episode",
+              "episode_id": 129,
+              "session_id": "answer_92d5f7cd",
+              "score": 0.01538462
+            },
+            {
+              "result_id": 7,
+              "kind": "episode",
+              "episode_id": 7,
+              "session_id": "66bfa1db",
+              "score": 0.01515152
+            },
+            {
+              "result_id": 243,
+              "kind": "episode",
+              "episode_id": 243,
+              "session_id": "8b156015_2",
+              "score": 0.01470588
+            }
+          ]
+        }
+      }
+    },
+    {
+      "question_id": "gpt4_1d4ab0c9",
+      "question_type": "temporal-reasoning",
+      "question": "How many days passed between the day I started watering my herb garden and the day I harvested my first batch of fresh herbs?",
+      "unanswerable": false,
+      "session_count": 53,
+      "chunk_count": 500,
+      "ingest_s": 19.9307,
+      "variants": {
+        "default": {
+          "query_s": 0.0179,
+          "returned_episode_ids": [
+            116,
+            273,
+            117,
+            280,
+            275
+          ],
+          "returned_session_ids": [
+            "answer_febde667_1",
+            "answer_febde667_2"
+          ],
+          "returned_session_count": 2,
+          "relevant_session_ids": [
+            "answer_febde667_1",
+            "answer_febde667_2"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_febde667_1",
+            "answer_febde667_2"
+          ],
+          "recall_at_k": 1.0,
+          "relevant_coverage": 1.0,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 116,
+              "kind": "episode",
+              "episode_id": 116,
+              "session_id": "answer_febde667_1",
+              "score": 0.03114754
+            },
+            {
+              "result_id": 273,
+              "kind": "episode",
+              "episode_id": 273,
+              "session_id": "answer_febde667_2",
+              "score": 0.03064516
+            },
+            {
+              "result_id": 117,
+              "kind": "episode",
+              "episode_id": 117,
+              "session_id": "answer_febde667_1",
+              "score": 0.02950938
+            },
+            {
+              "result_id": 280,
+              "kind": "episode",
+              "episode_id": 280,
+              "session_id": "answer_febde667_2",
+              "score": 0.02899767
+            },
+            {
+              "result_id": 275,
+              "kind": "episode",
+              "episode_id": 275,
+              "session_id": "answer_febde667_2",
+              "score": 0.02898787
+            }
+          ]
+        },
+        "session_diverse": {
+          "query_s": 0.0166,
+          "session_overfetch": 3,
+          "returned_episode_ids": [
+            116,
+            273,
+            275,
+            139,
+            411
+          ],
+          "returned_session_ids": [
+            "answer_febde667_1",
+            "answer_febde667_2",
+            "ultrachat_125013",
+            "feb9e0c3_2"
+          ],
+          "returned_session_count": 4,
+          "relevant_session_ids": [
+            "answer_febde667_1",
+            "answer_febde667_2"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_febde667_1",
+            "answer_febde667_2"
+          ],
+          "recall_at_k": 1.0,
+          "relevant_coverage": 1.0,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 116,
+              "kind": "episode",
+              "episode_id": 116,
+              "session_id": "answer_febde667_1",
+              "score": 0.03114754
+            },
+            {
+              "result_id": 273,
+              "kind": "episode",
+              "episode_id": 273,
+              "session_id": "answer_febde667_2",
+              "score": 0.03064516
+            },
+            {
+              "result_id": 275,
+              "kind": "episode",
+              "episode_id": 275,
+              "session_id": "answer_febde667_2",
+              "score": 0.02898787
+            },
+            {
+              "result_id": 139,
+              "kind": "episode",
+              "episode_id": 139,
+              "session_id": "ultrachat_125013",
+              "score": 0.01449275
+            },
+            {
+              "result_id": 411,
+              "kind": "episode",
+              "episode_id": 411,
+              "session_id": "feb9e0c3_2",
+              "score": 0.01428571
+            }
+          ]
+        }
+      }
+    },
+    {
+      "question_id": "07741c44",
+      "question_type": "knowledge-update",
+      "question": "Where do I initially keep my old sneakers?",
+      "unanswerable": false,
+      "session_count": 50,
+      "chunk_count": 515,
+      "ingest_s": 21.7411,
+      "variants": {
+        "default": {
+          "query_s": 0.0195,
+          "returned_episode_ids": [
+            78,
+            76,
+            306,
+            305,
+            304
+          ],
+          "returned_session_ids": [
+            "answer_7e9ad7b4_1",
+            "answer_7e9ad7b4_2"
+          ],
+          "returned_session_count": 2,
+          "relevant_session_ids": [
+            "answer_7e9ad7b4_1",
+            "answer_7e9ad7b4_2"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_7e9ad7b4_1",
+            "answer_7e9ad7b4_2"
+          ],
+          "recall_at_k": 1.0,
+          "relevant_coverage": 1.0,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 78,
+              "kind": "episode",
+              "episode_id": 78,
+              "session_id": "answer_7e9ad7b4_1",
+              "score": 0.03114754
+            },
+            {
+              "result_id": 76,
+              "kind": "episode",
+              "episode_id": 76,
+              "session_id": "answer_7e9ad7b4_1",
+              "score": 0.02990074
+            },
+            {
+              "result_id": 306,
+              "kind": "episode",
+              "episode_id": 306,
+              "session_id": "answer_7e9ad7b4_2",
+              "score": 0.02950938
+            },
+            {
+              "result_id": 305,
+              "kind": "episode",
+              "episode_id": 305,
+              "session_id": "answer_7e9ad7b4_2",
+              "score": 0.02880509
+            },
+            {
+              "result_id": 304,
+              "kind": "episode",
+              "episode_id": 304,
+              "session_id": "answer_7e9ad7b4_2",
+              "score": 0.02876838
+            }
+          ]
+        },
+        "session_diverse": {
+          "query_s": 0.0188,
+          "session_overfetch": 3,
+          "returned_episode_ids": [
+            78,
+            306,
+            305,
+            304,
+            42
+          ],
+          "returned_session_ids": [
+            "answer_7e9ad7b4_1",
+            "answer_7e9ad7b4_2",
+            "d1d6b55b_1"
+          ],
+          "returned_session_count": 3,
+          "relevant_session_ids": [
+            "answer_7e9ad7b4_1",
+            "answer_7e9ad7b4_2"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_7e9ad7b4_1",
+            "answer_7e9ad7b4_2"
+          ],
+          "recall_at_k": 1.0,
+          "relevant_coverage": 1.0,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 78,
+              "kind": "episode",
+              "episode_id": 78,
+              "session_id": "answer_7e9ad7b4_1",
+              "score": 0.03114754
+            },
+            {
+              "result_id": 306,
+              "kind": "episode",
+              "episode_id": 306,
+              "session_id": "answer_7e9ad7b4_2",
+              "score": 0.02950938
+            },
+            {
+              "result_id": 305,
+              "kind": "episode",
+              "episode_id": 305,
+              "session_id": "answer_7e9ad7b4_2",
+              "score": 0.02880509
+            },
+            {
+              "result_id": 304,
+              "kind": "episode",
+              "episode_id": 304,
+              "session_id": "answer_7e9ad7b4_2",
+              "score": 0.02876838
+            },
+            {
+              "result_id": 42,
+              "kind": "episode",
+              "episode_id": 42,
+              "session_id": "d1d6b55b_1",
+              "score": 0.02509167
+            }
+          ]
+        }
+      }
+    },
+    {
+      "question_id": "0e5e2d1a",
+      "question_type": "single-session-assistant",
+      "question": "I wanted to follow up on our previous conversation about binaural beats for anxiety and depression. Can you remind me how many subjects were in the study published in the journal Music and Medicine that found significant reductions in symptoms of depression, anxiety, and stress?",
+      "unanswerable": false,
+      "session_count": 46,
+      "chunk_count": 497,
+      "ingest_s": 21.4069,
+      "variants": {
+        "default": {
+          "query_s": 0.029,
+          "returned_episode_ids": [
+            245,
+            244,
+            246,
+            444,
+            457
+          ],
+          "returned_session_ids": [
+            "answer_ultrachat_113156",
+            "ultrachat_180166",
+            "c756c34e"
+          ],
+          "returned_session_count": 3,
+          "relevant_session_ids": [
+            "answer_ultrachat_113156"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_ultrachat_113156"
+          ],
+          "recall_at_k": 1.0,
+          "relevant_coverage": 1.0,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 245,
+              "kind": "episode",
+              "episode_id": 245,
+              "session_id": "answer_ultrachat_113156",
+              "score": 0.03114754
+            },
+            {
+              "result_id": 244,
+              "kind": "episode",
+              "episode_id": 244,
+              "session_id": "answer_ultrachat_113156",
+              "score": 0.03064516
+            },
+            {
+              "result_id": 246,
+              "kind": "episode",
+              "episode_id": 246,
+              "session_id": "answer_ultrachat_113156",
+              "score": 0.03015873
+            },
+            {
+              "result_id": 444,
+              "kind": "episode",
+              "episode_id": 444,
+              "session_id": "ultrachat_180166",
+              "score": 0.02793066
+            },
+            {
+              "result_id": 457,
+              "kind": "episode",
+              "episode_id": 457,
+              "session_id": "c756c34e",
+              "score": 0.02609106
+            }
+          ]
+        },
+        "session_diverse": {
+          "query_s": 0.0283,
+          "session_overfetch": 3,
+          "returned_episode_ids": [
+            245,
+            444,
+            457,
+            262,
+            192
+          ],
+          "returned_session_ids": [
+            "answer_ultrachat_113156",
+            "ultrachat_180166",
+            "c756c34e",
+            "f84b4266",
+            "a803f50b_2"
+          ],
+          "returned_session_count": 5,
+          "relevant_session_ids": [
+            "answer_ultrachat_113156"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_ultrachat_113156"
+          ],
+          "recall_at_k": 1.0,
+          "relevant_coverage": 1.0,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 245,
+              "kind": "episode",
+              "episode_id": 245,
+              "session_id": "answer_ultrachat_113156",
+              "score": 0.03114754
+            },
+            {
+              "result_id": 444,
+              "kind": "episode",
+              "episode_id": 444,
+              "session_id": "ultrachat_180166",
+              "score": 0.02793066
+            },
+            {
+              "result_id": 457,
+              "kind": "episode",
+              "episode_id": 457,
+              "session_id": "c756c34e",
+              "score": 0.02609106
+            },
+            {
+              "result_id": 262,
+              "kind": "episode",
+              "episode_id": 262,
+              "session_id": "f84b4266",
+              "score": 0.0140625
+            },
+            {
+              "result_id": 192,
+              "kind": "episode",
+              "episode_id": 192,
+              "session_id": "a803f50b_2",
+              "score": 0.01369863
+            }
+          ]
+        }
+      }
+    },
+    {
+      "question_id": "c960da58",
+      "question_type": "single-session-user",
+      "question": "How many playlists do I have on Spotify?",
+      "unanswerable": false,
+      "session_count": 46,
+      "chunk_count": 490,
+      "ingest_s": 29.4117,
+      "variants": {
+        "default": {
+          "query_s": 0.0174,
+          "returned_episode_ids": [
+            38,
+            36,
+            35,
+            33,
+            37
+          ],
+          "returned_session_ids": [
+            "answer_e05e4612"
+          ],
+          "returned_session_count": 1,
+          "relevant_session_ids": [
+            "answer_e05e4612"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_e05e4612"
+          ],
+          "recall_at_k": 1.0,
+          "relevant_coverage": 1.0,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 38,
+              "kind": "episode",
+              "episode_id": 38,
+              "session_id": "answer_e05e4612",
+              "score": 0.03114754
+            },
+            {
+              "result_id": 36,
+              "kind": "episode",
+              "episode_id": 36,
+              "session_id": "answer_e05e4612",
+              "score": 0.03038914
+            },
+            {
+              "result_id": 35,
+              "kind": "episode",
+              "episode_id": 35,
+              "session_id": "answer_e05e4612",
+              "score": 0.02997519
+            },
+            {
+              "result_id": 33,
+              "kind": "episode",
+              "episode_id": 33,
+              "session_id": "answer_e05e4612",
+              "score": 0.02944712
+            },
+            {
+              "result_id": 37,
+              "kind": "episode",
+              "episode_id": 37,
+              "session_id": "answer_e05e4612",
+              "score": 0.02926136
+            }
+          ]
+        },
+        "session_diverse": {
+          "query_s": 0.0154,
+          "session_overfetch": 3,
+          "returned_episode_ids": [
+            38,
+            33,
+            37,
+            159,
+            115
+          ],
+          "returned_session_ids": [
+            "answer_e05e4612",
+            "89d3053f",
+            "sharegpt_9iUZNsL_0"
+          ],
+          "returned_session_count": 3,
+          "relevant_session_ids": [
+            "answer_e05e4612"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_e05e4612"
+          ],
+          "recall_at_k": 1.0,
+          "relevant_coverage": 1.0,
+          "reciprocal_rank": 1.0,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 38,
+              "kind": "episode",
+              "episode_id": 38,
+              "session_id": "answer_e05e4612",
+              "score": 0.03114754
+            },
+            {
+              "result_id": 33,
+              "kind": "episode",
+              "episode_id": 33,
+              "session_id": "answer_e05e4612",
+              "score": 0.02944712
+            },
+            {
+              "result_id": 37,
+              "kind": "episode",
+              "episode_id": 37,
+              "session_id": "answer_e05e4612",
+              "score": 0.02926136
+            },
+            {
+              "result_id": 159,
+              "kind": "episode",
+              "episode_id": 159,
+              "session_id": "89d3053f",
+              "score": 0.02619863
+            },
+            {
+              "result_id": 115,
+              "kind": "episode",
+              "episode_id": 115,
+              "session_id": "sharegpt_9iUZNsL_0",
+              "score": 0.01333333
+            }
+          ]
+        }
+      }
+    },
+    {
+      "question_id": "6cb6f249",
+      "question_type": "multi-session",
+      "question": "How many days did I take social media breaks in total?",
+      "unanswerable": false,
+      "session_count": 41,
+      "chunk_count": 483,
+      "ingest_s": 35.9766,
+      "variants": {
+        "default": {
+          "query_s": 0.0355,
+          "returned_episode_ids": [
+            312,
+            258,
+            259,
+            320,
+            318
+          ],
+          "returned_session_ids": [
+            "ultrachat_404221",
+            "answer_a4204937_1"
+          ],
+          "returned_session_count": 2,
+          "relevant_session_ids": [
+            "answer_a4204937_2",
+            "answer_a4204937_1"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_a4204937_1"
+          ],
+          "recall_at_k": 0.5,
+          "relevant_coverage": 0.5,
+          "reciprocal_rank": 0.5,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 312,
+              "kind": "episode",
+              "episode_id": 312,
+              "session_id": "ultrachat_404221",
+              "score": 0.0303791
+            },
+            {
+              "result_id": 258,
+              "kind": "episode",
+              "episode_id": 258,
+              "session_id": "answer_a4204937_1",
+              "score": 0.02966764
+            },
+            {
+              "result_id": 259,
+              "kind": "episode",
+              "episode_id": 259,
+              "session_id": "answer_a4204937_1",
+              "score": 0.02962874
+            },
+            {
+              "result_id": 320,
+              "kind": "episode",
+              "episode_id": 320,
+              "session_id": "ultrachat_404221",
+              "score": 0.02902098
+            },
+            {
+              "result_id": 318,
+              "kind": "episode",
+              "episode_id": 318,
+              "session_id": "ultrachat_404221",
+              "score": 0.02798434
+            }
+          ]
+        },
+        "session_diverse": {
+          "query_s": 0.0287,
+          "session_overfetch": 3,
+          "returned_episode_ids": [
+            312,
+            258,
+            259,
+            320,
+            318
+          ],
+          "returned_session_ids": [
+            "ultrachat_404221",
+            "answer_a4204937_1"
+          ],
+          "returned_session_count": 2,
+          "relevant_session_ids": [
+            "answer_a4204937_2",
+            "answer_a4204937_1"
+          ],
+          "covered_relevant_session_ids": [
+            "answer_a4204937_1"
+          ],
+          "recall_at_k": 0.5,
+          "relevant_coverage": 0.5,
+          "reciprocal_rank": 0.5,
+          "empty_retrieval": false,
+          "hits": [
+            {
+              "result_id": 312,
+              "kind": "episode",
+              "episode_id": 312,
+              "session_id": "ultrachat_404221",
+              "score": 0.0303791
+            },
+            {
+              "result_id": 258,
+              "kind": "episode",
+              "episode_id": 258,
+              "session_id": "answer_a4204937_1",
+              "score": 0.02966764
+            },
+            {
+              "result_id": 259,
+              "kind": "episode",
+              "episode_id": 259,
+              "session_id": "answer_a4204937_1",
+              "score": 0.02962874
+            },
+            {
+              "result_id": 320,
+              "kind": "episode",
+              "episode_id": 320,
+              "session_id": "ultrachat_404221",
+              "score": 0.02902098
+            },
+            {
+              "result_id": 318,
+              "kind": "episode",
+              "episode_id": 318,
+              "session_id": "ultrachat_404221",
+              "score": 0.02798434
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "failure_records": [],
+  "cleanup_failure_records": []
+}
