@@ -26,9 +26,28 @@
       },
       "failure_count": 0,
       "warnings": [],
+      "observed_config": {
+        "config": {
+          "llm_provider": "ollama",
+          "llm_model": "qwen3:8b",
+          "llm_base_url": "http://127.0.0.1:11436/v1",
+          "retain_llm_model": "qwen3:8b",
+          "embeddings_provider": "ollama",
+          "retain_extraction_mode": "guided",
+          "retain_chunk_size": 800,
+          "retain_structured_chunk_size": 1200,
+          "enable_observations": false,
+          "enable_temporal_retrieval": true,
+          "enable_graph_retrieval": true,
+          "enable_reranking": false
+        },
+        "overrides": {
+          "retain_chunk_size": 900
+        }
+      },
       "delete_calls": 1,
       "closed": true,
-      "artifact": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/hindsight-comparative-harness-qa-fervxzi9/success.json"
+      "artifact": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/hindsight-comparative-harness-qa-r1p33f1n/success.json"
     },
     {
       "case": "create-failure",
@@ -51,9 +70,10 @@
       },
       "failure_count": 32,
       "warnings": [],
+      "observed_config": null,
       "delete_calls": 0,
       "closed": true,
-      "artifact": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/hindsight-comparative-harness-qa-fervxzi9/create-failure.json"
+      "artifact": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/hindsight-comparative-harness-qa-r1p33f1n/create-failure.json"
     },
     {
       "case": "midretain-failure",
@@ -76,9 +96,28 @@
       },
       "failure_count": 2,
       "warnings": [],
+      "observed_config": {
+        "config": {
+          "llm_provider": "ollama",
+          "llm_model": "qwen3:8b",
+          "llm_base_url": "http://127.0.0.1:11436/v1",
+          "retain_llm_model": "qwen3:8b",
+          "embeddings_provider": "ollama",
+          "retain_extraction_mode": "guided",
+          "retain_chunk_size": 800,
+          "retain_structured_chunk_size": 1200,
+          "enable_observations": false,
+          "enable_temporal_retrieval": true,
+          "enable_graph_retrieval": true,
+          "enable_reranking": false
+        },
+        "overrides": {
+          "retain_chunk_size": 900
+        }
+      },
       "delete_calls": 1,
       "closed": true,
-      "artifact": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/hindsight-comparative-harness-qa-fervxzi9/midretain-failure.json"
+      "artifact": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/hindsight-comparative-harness-qa-r1p33f1n/midretain-failure.json"
     },
     {
       "case": "malformed-document",
@@ -101,9 +140,28 @@
       },
       "failure_count": 3,
       "warnings": [],
+      "observed_config": {
+        "config": {
+          "llm_provider": "ollama",
+          "llm_model": "qwen3:8b",
+          "llm_base_url": "http://127.0.0.1:11436/v1",
+          "retain_llm_model": "qwen3:8b",
+          "embeddings_provider": "ollama",
+          "retain_extraction_mode": "guided",
+          "retain_chunk_size": 800,
+          "retain_structured_chunk_size": 1200,
+          "enable_observations": false,
+          "enable_temporal_retrieval": true,
+          "enable_graph_retrieval": true,
+          "enable_reranking": false
+        },
+        "overrides": {
+          "retain_chunk_size": 900
+        }
+      },
       "delete_calls": 1,
       "closed": true,
-      "artifact": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/hindsight-comparative-harness-qa-fervxzi9/malformed-document.json"
+      "artifact": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/hindsight-comparative-harness-qa-r1p33f1n/malformed-document.json"
     },
     {
       "case": "close-failure",
@@ -126,9 +184,28 @@
       },
       "failure_count": 1,
       "warnings": [],
+      "observed_config": {
+        "config": {
+          "llm_provider": "ollama",
+          "llm_model": "qwen3:8b",
+          "llm_base_url": "http://127.0.0.1:11436/v1",
+          "retain_llm_model": "qwen3:8b",
+          "embeddings_provider": "ollama",
+          "retain_extraction_mode": "guided",
+          "retain_chunk_size": 800,
+          "retain_structured_chunk_size": 1200,
+          "enable_observations": false,
+          "enable_temporal_retrieval": true,
+          "enable_graph_retrieval": true,
+          "enable_reranking": false
+        },
+        "overrides": {
+          "retain_chunk_size": 900
+        }
+      },
       "delete_calls": 1,
       "closed": true,
-      "artifact": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/hindsight-comparative-harness-qa-fervxzi9/close-failure.json"
+      "artifact": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/hindsight-comparative-harness-qa-r1p33f1n/close-failure.json"
     },
     {
       "case": "cleanup-failure",
@@ -151,9 +228,28 @@
       },
       "failure_count": 1,
       "warnings": [],
+      "observed_config": {
+        "config": {
+          "llm_provider": "ollama",
+          "llm_model": "qwen3:8b",
+          "llm_base_url": "http://127.0.0.1:11436/v1",
+          "retain_llm_model": "qwen3:8b",
+          "embeddings_provider": "ollama",
+          "retain_extraction_mode": "guided",
+          "retain_chunk_size": 800,
+          "retain_structured_chunk_size": 1200,
+          "enable_observations": false,
+          "enable_temporal_retrieval": true,
+          "enable_graph_retrieval": true,
+          "enable_reranking": false
+        },
+        "overrides": {
+          "retain_chunk_size": 900
+        }
+      },
       "delete_calls": 1,
       "closed": true,
-      "artifact": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/hindsight-comparative-harness-qa-fervxzi9/cleanup-failure.json"
+      "artifact": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/hindsight-comparative-harness-qa-r1p33f1n/cleanup-failure.json"
     },
     {
       "case": "none-retain-response",
@@ -176,9 +272,28 @@
       },
       "failure_count": 1,
       "warnings": [],
+      "observed_config": {
+        "config": {
+          "llm_provider": "ollama",
+          "llm_model": "qwen3:8b",
+          "llm_base_url": "http://127.0.0.1:11436/v1",
+          "retain_llm_model": "qwen3:8b",
+          "embeddings_provider": "ollama",
+          "retain_extraction_mode": "guided",
+          "retain_chunk_size": 800,
+          "retain_structured_chunk_size": 1200,
+          "enable_observations": false,
+          "enable_temporal_retrieval": true,
+          "enable_graph_retrieval": true,
+          "enable_reranking": false
+        },
+        "overrides": {
+          "retain_chunk_size": 900
+        }
+      },
       "delete_calls": 1,
       "closed": true,
-      "artifact": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/hindsight-comparative-harness-qa-fervxzi9/none-retain-response.json"
+      "artifact": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/hindsight-comparative-harness-qa-r1p33f1n/none-retain-response.json"
     },
     {
       "case": "version-404-warning",
@@ -203,9 +318,84 @@
       "warnings": [
         "version endpoint unavailable; service version remains unknown"
       ],
+      "observed_config": {
+        "config": {
+          "llm_provider": "ollama",
+          "llm_model": "qwen3:8b",
+          "llm_base_url": "http://127.0.0.1:11436/v1",
+          "retain_llm_model": "qwen3:8b",
+          "embeddings_provider": "ollama",
+          "retain_extraction_mode": "guided",
+          "retain_chunk_size": 800,
+          "retain_structured_chunk_size": 1200,
+          "enable_observations": false,
+          "enable_temporal_retrieval": true,
+          "enable_graph_retrieval": true,
+          "enable_reranking": false
+        },
+        "overrides": {
+          "retain_chunk_size": 900
+        }
+      },
       "delete_calls": 1,
       "closed": true,
-      "artifact": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/hindsight-comparative-harness-qa-fervxzi9/version-404-warning.json"
+      "artifact": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/hindsight-comparative-harness-qa-r1p33f1n/version-404-warning.json"
+    },
+    {
+      "case": "bank-config-missing",
+      "exit_code": 0,
+      "status": "ok",
+      "progress": {
+        "retains_attempted": 20,
+        "retains_completed": 20,
+        "recalls_attempted": 12,
+        "recalls_completed": 12
+      },
+      "completeness": {
+        "expected_retains": 20,
+        "observed_retain_rows": 20,
+        "completed_retains": 20,
+        "expected_recalls": 12,
+        "observed_recall_rows": 12,
+        "completed_recalls": 12,
+        "complete": true
+      },
+      "failure_count": 0,
+      "warnings": [
+        "bank config endpoint unavailable; server configuration remains unknown"
+      ],
+      "observed_config": null,
+      "delete_calls": 1,
+      "closed": true,
+      "artifact": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/hindsight-comparative-harness-qa-r1p33f1n/bank-config-missing.json"
+    },
+    {
+      "case": "bank-config-failure",
+      "exit_code": 0,
+      "status": "ok",
+      "progress": {
+        "retains_attempted": 20,
+        "retains_completed": 20,
+        "recalls_attempted": 12,
+        "recalls_completed": 12
+      },
+      "completeness": {
+        "expected_retains": 20,
+        "observed_retain_rows": 20,
+        "completed_retains": 20,
+        "expected_recalls": 12,
+        "observed_recall_rows": 12,
+        "completed_recalls": 12,
+        "complete": true
+      },
+      "failure_count": 0,
+      "warnings": [
+        "bank config endpoint unavailable; server configuration remains unknown"
+      ],
+      "observed_config": null,
+      "delete_calls": 1,
+      "closed": true,
+      "artifact": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/hindsight-comparative-harness-qa-r1p33f1n/bank-config-failure.json"
     }
   ],
   "notes": [

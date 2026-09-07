@@ -34,6 +34,8 @@ class FakeHindsight:
         self.deletes = 0
         self.closed = False
         type(self).instances.append(self)
+        if type(self).scenario == "config_missing":
+            self.get_bank_config = None
 
     def create_bank(self, **kwargs):
         if type(self).scenario == "create_failure":
@@ -51,6 +53,31 @@ class FakeHindsight:
     def recall(self, **_kwargs):
         self.recalls += 1
         return {"results": [{"text": "[SOURCE_DOCUMENT_ID=d01] diagnostic only"}]}
+
+    def get_bank_config(self, _bank_id):
+        if type(self).scenario == "config_failure":
+            raise RuntimeError("injected bank config failure")
+        return {
+            "bank_id": _bank_id,
+            "config": {
+                # This mirrors HindsightConfig's v0.9.2 flat response shape.
+                "llm_provider": "ollama",
+                "llm_model": "qwen3:8b",
+                "llm_base_url": "http://user:secret@127.0.0.1:11436/v1?token=hidden",
+                "retain_llm_model": "qwen3:8b",
+                "embeddings_provider": "ollama",
+                "retain_extraction_mode": "guided",
+                "retain_chunk_size": 800,
+                "retain_structured_chunk_size": 1200,
+                "enable_observations": False,
+                "enable_temporal_retrieval": True,
+                "enable_graph_retrieval": True,
+                "enable_reranking": False,
+                "llm_api_key": "never persist",
+                "database_url": "postgres://user:secret@example/db?password=hidden",
+            },
+            "overrides": {"retain_chunk_size": 900},
+        }
 
     def delete_bank(self, bank_id):
         self.deletes += 1
@@ -113,6 +140,7 @@ def main() -> int:
             "completeness": report.get("completeness"),
             "failure_count": report.get("failure_count"),
             "warnings": report.get("warnings", []),
+            "observed_config": report.get("config", {}).get("observed_server_configuration"),
             "delete_calls": instance.deletes,
             "closed": instance.closed,
             "artifact": str(runner.OUTPUT),
@@ -123,6 +151,15 @@ def main() -> int:
     report, instance = run_case("success", "success")
     assert report["status"] == "ok" and report["completeness"]["complete"]
     assert instance.deletes == 1
+    observed = report["config"]["observed_server_configuration"]
+    assert observed["config"]["llm_provider"] == "ollama"
+    assert observed["config"]["llm_model"] == "qwen3:8b"
+    assert observed["config"]["llm_base_url"] == "http://127.0.0.1:11436/v1"
+    assert observed["config"]["retain_chunk_size"] == 800
+    assert observed["config"]["enable_temporal_retrieval"] is True
+    assert observed["overrides"]["retain_chunk_size"] == 900
+    assert "secret" not in json.dumps(observed).casefold()
+    assert "api_key" not in json.dumps(observed).casefold()
 
     report, instance = run_case("create-failure", "create_failure")
     assert report["status"] == "blocked_create_bank" and instance.deletes == 0
@@ -158,6 +195,16 @@ def main() -> int:
     report, instance = run_case("version-404-warning", "success", version_ok=False)
     assert report["status"] == "ok"
     assert any("version endpoint unavailable" in item for item in report["warnings"])
+    assert instance.deletes == 1
+
+    report, instance = run_case("bank-config-missing", "config_missing")
+    assert report["status"] == "ok" and report["config"]["observed_server_configuration"] is None
+    assert any("bank config endpoint unavailable" in item for item in report["warnings"])
+    assert instance.deletes == 1
+
+    report, instance = run_case("bank-config-failure", "config_failure")
+    assert report["status"] == "ok" and report["config"]["observed_server_configuration"] is None
+    assert any("bank config endpoint unavailable" in item for item in report["warnings"])
     assert instance.deletes == 1
 
     qa = {

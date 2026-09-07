@@ -51,6 +51,46 @@ QUERY_TIMESTAMP = os.environ.get(
 TIMEOUT = float(os.environ.get("HINDSIGHT_COMPARATIVE_TIMEOUT", "300"))
 MARKER_RE = re.compile(r"SOURCE_DOCUMENT_ID=(d\d{2})")
 
+# The bank-config endpoint returns a fully resolved configuration, which may
+# include credentials and unrelated implementation details.  Keep this
+# allowlist deliberately narrow; absent fields remain unknown.
+_OBSERVED_CONFIG_KEYS = frozenset({
+    # Flat HindsightConfig fields (v0.9.2); credentials and headers are
+    # intentionally absent from this list.
+    "llm_provider", "llm_model", "llm_base_url",
+    "retain_llm_provider", "retain_llm_model", "retain_llm_base_url",
+    "reflect_llm_provider", "reflect_llm_model", "reflect_llm_base_url",
+    "consolidation_llm_provider", "consolidation_llm_model",
+    "consolidation_llm_base_url", "embeddings_provider", "reranker_provider",
+    "embeddings_local_model", "embeddings_onnx_model_id",
+    "embeddings_openai_model", "embeddings_openai_base_url",
+    "embeddings_cohere_model", "embeddings_cohere_base_url",
+    "embeddings_openrouter_model", "embeddings_litellm_model",
+    "embeddings_litellm_api_base", "embeddings_litellm_sdk_model",
+    "embeddings_litellm_sdk_api_base", "embeddings_gemini_model",
+    "embeddings_zeroentropy_model", "embeddings_zeroentropy_base_url",
+    "embeddings_tei_url", "reranker_local_model", "reranker_tei_url",
+    "reranker_cohere_model", "reranker_cohere_base_url",
+    "reranker_openrouter_model", "reranker_openrouter_base_url",
+    "reranker_litellm_model", "reranker_litellm_api_base",
+    "reranker_litellm_sdk_model", "reranker_litellm_sdk_api_base",
+    "retain_extraction_mode", "retain_chunk_size", "retain_structured_chunk_size",
+    "enable_observations", "enable_temporal_retrieval", "enable_graph_retrieval",
+    "enable_reranking", "enable_auto_consolidation", "enable_observation_history",
+    "enable_mental_model_history", "retain_extract_causal_links",
+    "retain_batch_enabled", "retain_entity_lookup",
+})
+_OBSERVED_CONFIG_CONTAINERS = frozenset({"config", "overrides"})
+_OBSERVED_CONFIG_URL_KEYS = frozenset({
+    "llm_base_url", "retain_llm_base_url", "reflect_llm_base_url",
+    "consolidation_llm_base_url", "embeddings_openai_base_url",
+    "embeddings_cohere_base_url", "embeddings_litellm_api_base",
+    "embeddings_litellm_sdk_api_base", "embeddings_zeroentropy_base_url",
+    "embeddings_tei_url", "reranker_tei_url", "reranker_cohere_base_url",
+    "reranker_openrouter_base_url", "reranker_litellm_api_base",
+    "reranker_litellm_sdk_api_base",
+})
+
 
 def pkg(name: str) -> str | None:
     try:
@@ -82,6 +122,33 @@ def safe_url(value: str | None) -> str | None:
     if parsed.port is not None:
         host = f"{host}:{parsed.port}"
     return urlunsplit((parsed.scheme, host, parsed.path, "", ""))
+
+
+def sanitize_observed_bank_config(value: Any) -> dict[str, Any]:
+    """Extract only safe, allowlisted fields from a bank-config response."""
+    value = jsonable(value)
+
+    def walk(node: Any) -> Any:
+        if not isinstance(node, dict):
+            return None
+        output: dict[str, Any] = {}
+        for raw_key, raw_value in node.items():
+            key = str(raw_key)
+            normalized = key.casefold().replace("-", "_")
+            if normalized in _OBSERVED_CONFIG_KEYS:
+                if normalized in _OBSERVED_CONFIG_URL_KEYS:
+                    if isinstance(raw_value, str):
+                        output[key] = safe_url(raw_value)
+                elif isinstance(raw_value, (str, int, float, bool)) or raw_value is None:
+                    output[key] = raw_value
+            elif normalized in _OBSERVED_CONFIG_CONTAINERS:
+                child = walk(raw_value)
+                if child:
+                    output[key] = child
+        return output
+
+    sanitized = walk(value)
+    return sanitized if isinstance(sanitized, dict) else {}
 
 
 def atomic_write(path: Path, report: dict[str, Any]) -> None:
@@ -258,6 +325,23 @@ def main() -> int:
             report["status"] = "blocked_create_bank"
         else:
             created = True
+            def read_bank_config() -> dict[str, Any]:
+                getter = getattr(client, "get_bank_config", None)
+                if not callable(getter):
+                    raise RuntimeError("Hindsight client does not expose get_bank_config")
+                # Sanitize before step() records the result: the raw response
+                # is never written to steps or any other artifact field.
+                return sanitize_observed_bank_config(getter(bank_id))
+
+            observed_config = step("get_bank_config", read_bank_config, steps, required=False)
+            if observed_config is None:
+                report.setdefault("warnings", []).append(
+                    "bank config endpoint unavailable; server configuration remains unknown")
+            else:
+                report["config"]["observed_server_configuration"] = observed_config
+                if not observed_config:
+                    report.setdefault("warnings", []).append(
+                        "bank config returned no allowlisted fields; server configuration remains partially unknown")
             for document in dataset["documents"]:
                 source_id = str(document["id"])
                 content = f"[SOURCE_DOCUMENT_ID={source_id}] {document['text']}"
