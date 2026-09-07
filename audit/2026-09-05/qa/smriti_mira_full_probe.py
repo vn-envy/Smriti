@@ -51,12 +51,13 @@ UPDATES = [
 NOW = "2025-03-01T12:00:00Z"
 QUERIES = {
     "current_rust_atlas": "What programming language does Mira currently prefer for the Atlas project?",
-    "history_mumbai_python": "What programming language did Mira prefer before switching to Rust, and where did she work?",
+    "history_mumbai_python": "In January 2024, where did Mira work and what programming language did she prefer?",
 }
 GOLDS = {
     "current_rust_atlas": "Mira currently prefers Rust for the Atlas project.",
-    "history_mumbai_python": "Before switching to Rust, Mira preferred Python and worked in Mumbai.",
+    "history_mumbai_python": "In January 2024, Mira preferred Python and worked in Mumbai.",
 }
+HISTORY_POINT = "2024-01-10T12:00:00Z"
 
 
 def jsonable(value: Any) -> Any:
@@ -198,11 +199,50 @@ def has_terms(value: Any, terms: Iterable[str]) -> bool:
     return all(term.lower() in haystack for term in terms)
 
 
+def interval_contains(fact: Dict[str, Any], point: str) -> bool:
+    """Evaluate a fact's structured validity interval at an ISO timestamp."""
+    start = fact.get("valid_from")
+    end = fact.get("invalid_at")
+    return (start is None or str(start) <= point) and (end is None or point < str(end))
+
+
+def structured_fact_matches(fact: Dict[str, Any], terms: Iterable[str], point: Optional[str] = None) -> bool:
+    structured = " ".join(str(fact.get(key, "")) for key in ("subject", "predicate", "object"))
+    searchable = structured + " " + str(fact.get("statement", ""))
+    if not has_terms(searchable, terms):
+        return False
+    return point is None or interval_contains(fact, point)
+
+
+def active_preference_facts(facts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    return [fact for fact in facts if fact.get("invalid_at") is None and
+            "prefer" in (str(fact.get("predicate", "")) + " " + str(fact.get("statement", ""))).lower()]
+
+
+def active_language_preference_facts(facts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Limit ambiguity checking to the programming-language preference."""
+    return [fact for fact in active_preference_facts(facts) if any(
+        language in (str(fact.get("object", "")) + " " + str(fact.get("statement", ""))).lower()
+        for language in ("python", "rust")
+    )]
+
+
+def language_preference_value(fact: Dict[str, Any]) -> Optional[str]:
+    value = str(fact.get("object", "")).strip().lower()
+    if value:
+        return value
+    statement = str(fact.get("statement", "")).lower()
+    for language in ("python", "rust"):
+        if language in statement:
+            return language
+    return None
+
+
 def judge_verdict(text: Optional[str]) -> Optional[str]:
     if not text:
         return None
-    match = re.match(r"^\s*(YES|NO)\b", text, re.IGNORECASE)
-    return match.group(1).upper() if match else None
+    normalized = text.strip().upper()
+    return normalized if normalized in ("YES", "NO") else None
 
 
 def relation_review(facts: List[Dict[str, Any]]) -> Dict[str, Any]:
@@ -288,9 +328,26 @@ def main(argv: Optional[List[str]] = None) -> int:
     attach_usage(steps, before, judge_llm)
     report["judge_sanity"] = {"raw": sanity, "verdict": judge_verdict(sanity)}
     write_report(out, report)
-    if judge_verdict(sanity) != "YES":
+    before = usage_snapshot(judge_llm)
+    negative_sanity = run_step(
+        "judge_sanity_negative_control",
+        lambda: judge_llm.complete([
+            {"role": "system", "content": "Answer exactly YES or NO. Do not explain."},
+            {"role": "user", "content": "Does Python appear in this text? Text: Mira uses Rust."},
+        ], max_tokens=32),
+        steps,
+    )
+    attach_usage(steps, before, judge_llm)
+    report["judge_sanity_negative_control"] = {
+        "raw": negative_sanity, "verdict": judge_verdict(negative_sanity),
+    }
+    write_report(out, report)
+    if judge_verdict(sanity) != "YES" or judge_verdict(negative_sanity) != "NO":
         report["status"] = "judge_sanity_failed"
-        report["failures"].append({"step": "judge_sanity", "reason": "requested no-thinking judge did not return a leading YES"})
+        report["failures"].append({
+            "step": "judge_sanity", "reason": "positive/negative no-thinking judge controls did not return YES/NO",
+            "positive_verdict": judge_verdict(sanity), "negative_verdict": judge_verdict(negative_sanity),
+        })
         report["usage"] = {"extract": usage_snapshot(extract_llm), "answer": usage_snapshot(answer_llm), "judge": usage_snapshot(judge_llm)}
         write_report(out, report)
         return 2
@@ -353,7 +410,7 @@ def main(argv: Optional[List[str]] = None) -> int:
             ], max_tokens=256), steps)
             attach_usage(steps, before, answer_llm)
             report.setdefault("answers", {})[label] = {"question": question, "gold": GOLDS[label], "context": source, "answer": answer}
-            judge_prompt = "Question: %s\nGold answer: %s\nHypothesis: %s\nAnswer YES if the hypothesis is supported by the evidence, otherwise NO. Output only YES or NO." % (question, GOLDS[label], answer or "")
+            judge_prompt = "Question: %s\nGold answer: %s\nHypothesis: %s\nEvidence:\n%s\nAnswer YES only if the hypothesis matches the gold answer and is supported by the evidence; otherwise answer NO. Output only YES or NO." % (question, GOLDS[label], answer or "", source)
             before = usage_snapshot(judge_llm)
             verdict_raw = run_step("judge_%s" % label, lambda judge_prompt=judge_prompt: judge_llm.complete([
                 {"role": "system", "content": "Evaluate the hypothesis against the gold answer. Output exactly YES or NO."},
@@ -366,16 +423,38 @@ def main(argv: Optional[List[str]] = None) -> int:
         current_facts = [fact.get("statement", "") for fact in facts if fact.get("invalid_at") is None]
         current_source = evidence.get("current_rust_atlas", {})
         history_source = evidence.get("history_mumbai_python", {})
+        active_preferences = active_preference_facts(facts)
+        active_language_preferences = active_language_preference_facts(facts)
+        current_rust_facts = [fact for fact in facts if structured_fact_matches(fact, ("rust", "atlas")) and interval_contains(fact, NOW)]
+        january_python_facts = [fact for fact in facts if structured_fact_matches(fact, ("python",)) and interval_contains(fact, HISTORY_POINT)]
+        report["temporal_fact_review"] = {
+            "current_rust_atlas_facts": current_rust_facts,
+            "january_python_facts": january_python_facts,
+            "active_preference_facts": active_preferences,
+            "active_language_preference_facts": active_language_preferences,
+            "competing_active_preference_objects": sorted({value for value in (language_preference_value(fact) for fact in active_language_preferences) if value}),
+            "ambiguity_note": "Active preference values are reported from structured intervals. Any competing active values remain unresolved and prevent an OK status.",
+        }
+        judge_verdicts = {
+            label: report.get("answers", {}).get(label, {}).get("judge_verdict")
+            for label in QUERIES
+        }
         report["assertions"] = {
             "current_fact_contains_rust": has_terms(current_facts, ("rust",)),
             "current_fact_contains_atlas": has_terms(current_facts, ("atlas",)),
             "history_fact_contains_mumbai": has_terms(facts, ("mumbai",)),
             "history_fact_contains_python": has_terms(facts, ("python",)),
+            "current_rust_atlas_structured_interval": bool(current_rust_facts),
+            "january_python_structured_interval": bool(january_python_facts),
+            "no_competing_active_preferences": len(report["temporal_fact_review"]["competing_active_preference_objects"]) <= 1,
             "current_source_contains_rust": has_terms(current_source, ("rust",)),
             "current_source_contains_atlas": has_terms(current_source, ("atlas",)),
             "history_source_contains_mumbai": has_terms(history_source, ("mumbai",)),
             "history_source_contains_python": has_terms(history_source, ("python",)),
             "judge_sanity_yes": report["judge_sanity"]["verdict"] == "YES",
+            "judge_sanity_negative_no": report["judge_sanity_negative_control"]["verdict"] == "NO",
+            "current_answer_judge_yes": judge_verdicts.get("current_rust_atlas") == "YES",
+            "history_answer_judge_yes": judge_verdicts.get("history_mumbai_python") == "YES",
         }
     except Exception as exc:
         report["failures"].append({"step": "workflow", "error_type": type(exc).__name__, "error": str(exc), "traceback": traceback.format_exc()})

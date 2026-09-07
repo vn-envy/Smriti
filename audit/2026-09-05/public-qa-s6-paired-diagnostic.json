@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "status": "exploratory_preflight",
+  "scope": "paired six-question LongMemEval-S answer/judge preflight; no significance claim",
+  "inputs": {
+    "smriti_artifact": "/Users/kshitijvatsa/Downloads/Smriti-main/audit/2026-09-05/public-qa-smriti-s6.json",
+    "mem0_artifact": "/Users/kshitijvatsa/Downloads/Smriti-main/audit/2026-09-05/public-qa-mem0-s6.json",
+    "same_question_ids": true,
+    "question_ids": [
+      "e47becba",
+      "0862e8bf_abs",
+      "0a995998",
+      "88432d0a_abs",
+      "8a2466db",
+      "gpt4_59149c77"
+    ],
+    "same_budgets": true,
+    "budgets": {
+      "sample": 6,
+      "k": 5,
+      "session_char_budget": 16000,
+      "chunk_char_budget": 1000,
+      "context_char_budget": 9000,
+      "answer_max_tokens": 256,
+      "judge_max_tokens": 8
+    },
+    "models": {
+      "answer": {
+        "class": "LLM",
+        "model": "qwen3:8b",
+        "provider": null,
+        "endpoint": "http://127.0.0.1:11436/v1",
+        "temperature": 0.0,
+        "max_tokens": 2048,
+        "extra_body": {
+          "reasoning_effort": "none",
+          "think": false
+        }
+      },
+      "judge": {
+        "class": "LLM",
+        "model": "qwen3:8b",
+        "provider": null,
+        "endpoint": "http://127.0.0.1:11436/v1",
+        "temperature": 0.0,
+        "max_tokens": 2048,
+        "extra_body": {
+          "reasoning_effort": "none",
+          "think": false
+        }
+      }
+    },
+    "embedding": {
+      "provider": "ollama",
+      "model": "nomic-embed-text:v1.5",
+      "dimensions": 768,
+      "base_url": "http://127.0.0.1:11436"
+    }
+  },
+  "denominators": {
+    "requested": 6,
+    "answerable": 4,
+    "unanswerable": 2,
+    "smriti_failures": 0,
+    "mem0_failures": 0,
+    "unanswerable_scoring": "heuristic is_abstention marker check; not Qwen judge"
+  },
+  "quality": {
+    "smriti_accuracy_failure_inclusive": 0.6667,
+    "mem0_accuracy_failure_inclusive": 0.5,
+    "smriti_answerable_accuracy": 0.5,
+    "mem0_answerable_accuracy": 0.25,
+    "smriti_heuristic_abstention_accuracy": 1.0,
+    "mem0_heuristic_abstention_accuracy": 1.0
+  },
+  "paired_rows": [
+    {
+      "question_id": "e47becba",
+      "question_type": "single-session-user",
+      "unanswerable": false,
+      "smriti_correct": true,
+      "mem0_correct": true,
+      "smriti_hypothesis": "Business Administration",
+      "mem0_hypothesis": "Business Administration",
+      "smriti_errors": [],
+      "mem0_errors": []
+    },
+    {
+      "question_id": "0862e8bf_abs",
+      "question_type": "single-session-user",
+      "unanswerable": true,
+      "smriti_correct": true,
+      "mem0_correct": true,
+      "smriti_hypothesis": "I don't have enough information to answer that.",
+      "mem0_hypothesis": "I don't have enough information to answer that.",
+      "smriti_errors": [],
+      "mem0_errors": []
+    },
+    {
+      "question_id": "0a995998",
+      "question_type": "multi-session",
+      "unanswerable": false,
+      "smriti_correct": false,
+      "mem0_correct": false,
+      "smriti_hypothesis": "I don't have enough information to answer that.",
+      "mem0_hypothesis": "I don't have enough information to answer that.",
+      "smriti_errors": [],
+      "mem0_errors": []
+    },
+    {
+      "question_id": "88432d0a_abs",
+      "question_type": "multi-session",
+      "unanswerable": true,
+      "smriti_correct": true,
+      "mem0_correct": true,
+      "smriti_hypothesis": "I don't have enough information to answer that.",
+      "mem0_hypothesis": "I don't have enough information to answer that.",
+      "smriti_errors": [],
+      "mem0_errors": []
+    },
+    {
+      "question_id": "8a2466db",
+      "question_type": "single-session-preference",
+      "unanswerable": false,
+      "smriti_correct": false,
+      "mem0_correct": false,
+      "smriti_hypothesis": "Sure! Here are some resources where you can learn more about video editing:\n\n1. **Adobe Premiere Pro's official documentation and tutorials**\n2. **YouTube Channels**:\n   - **The Darkroom**\n   - **Film Photography 101**\n   - **Justin Guitar**\n   - **Guitar Tricks**\n   - **Marty Music**\n   - **GuitarLessons365**\n   - **Andy Guitar**\n3. **Online Courses**:\n   - **Fender Play** (app)\n   - **The Planted Tank** (for aquarium plant care, though not video editing)\n   - **Aquatic Plant Central** (for aquarium plant care, though not video editing)",
+      "mem0_hypothesis": "Sure! Here are some resources where you can learn more about video editing:\n\n1. **Adobe Premiere Pro's official documentation and tutorials**.\n2. **YouTube Channels**:\n   - **The Darkroom** for film photography and darkroom techniques.\n   - **Film Photography 101** for photography techniques and camera maintenance.\n   - **Justin Guitar** for comprehensive lessons on guitar, which can be helpful for understanding music in video editing.\n   - **Guitar Tricks**, **Marty Music**, **GuitarLessons365**, and **Andy Guitar** for guitar tutorials.\n3. **Online Courses**:\n   - **Fender Play** for beginner-friendly guitar lessons.\n   - **Adobe Premiere Pro's official courses** for advanced settings and techniques.",
+      "smriti_errors": [],
+      "mem0_errors": []
+    },
+    {
+      "question_id": "gpt4_59149c77",
+      "question_type": "temporal-reasoning",
+      "unanswerable": false,
+      "smriti_correct": true,
+      "mem0_correct": false,
+      "smriti_hypothesis": "The visit to the Museum of Modern Art (MoMA) occurred on 2023-01-08, and the 'Ancient Civilizations' exhibit at the Metropolitan Museum of Art was attended on 2023-01-15. Therefore, 7 days passed between the two visits.",
+      "mem0_hypothesis": "I don't have enough information to answer that.",
+      "smriti_errors": [],
+      "mem0_errors": []
+    }
+  ],
+  "caveats": [
+    "n=6 is a preflight only; no statistical significance or leaderboard interpretation.",
+    "Two _abs outcomes use the repository is_abstention heuristic, while four answerable outcomes use Qwen judge.",
+    "Latency is omitted from comparison; the run is a shared-host preflight."
+  ]
+}

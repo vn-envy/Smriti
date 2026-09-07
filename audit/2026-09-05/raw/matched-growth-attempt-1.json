@@ -1,0 +1,76 @@
+{
+  "started_utc": "2026-09-07T15:09:28.257157+00:00",
+  "source": {
+    "base_commit": "d5062a6",
+    "changes": "Optional measured GBrain ANALYZE variant only",
+    "files": {
+      "bench/growth.py": "e4da5573d8db320f8465e3dc4e6ec936470209d79b2d25937112a58788436b64",
+      "bench/gbrain_growth_worker.ts": "1791fc7f0f87d8e51fe30a1ad86c9ca2bafcf72647b32b6d64f6518885d11a0b",
+      "smriti/retrieval.py": "33a9117366a6a3ab047b15b60ae2878539086f1abd3c0782cf731cecb094d874",
+      "smriti/memory.py": "5d994d7cb8ff42a34fb34b2dedd92b9369b41bf2ce242b5903925f3566f82cd9"
+    }
+  },
+  "isolation": "sequential child processes; no intentional concurrent benchmark; ordinary host background work not controlled",
+  "run_directory": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/smriti-matched-growth-vqjt47h9",
+  "jobs": [
+    {
+      "adapter": "smriti-nomic",
+      "command": [
+        "/private/tmp/smriti-candidate-qa-20260906/bin/python",
+        "-m",
+        "bench.growth",
+        "--adapter",
+        "smriti-nomic",
+        "--checkpoints",
+        "100",
+        "1000",
+        "3000",
+        "9000",
+        "36500",
+        "--repeats",
+        "20",
+        "--out",
+        "/Users/kshitijvatsa/Downloads/Smriti-main/audit/2026-09-05/growth-smriti-nomic-schema2.json"
+      ],
+      "log": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/smriti-matched-growth-vqjt47h9/smriti-nomic.log",
+      "status": "complete",
+      "started_utc": "2026-09-07T15:10:10.392173+00:00",
+      "pid": 96618,
+      "exit_code": 0,
+      "finished_utc": "2026-09-07T15:21:47.177351+00:00"
+    },
+    {
+      "adapter": "mem0",
+      "command": [
+        "/private/tmp/mem0-bench-venv/bin/python",
+        "-m",
+        "bench.growth",
+        "--adapter",
+        "mem0",
+        "--checkpoints",
+        "100",
+        "1000",
+        "3000",
+        "9000",
+        "36500",
+        "--repeats",
+        "20",
+        "--out",
+        "/Users/kshitijvatsa/Downloads/Smriti-main/audit/2026-09-05/growth-mem0-nomic-schema2.json"
+      ],
+      "log": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/smriti-matched-growth-vqjt47h9/mem0.log",
+      "status": "failed",
+      "started_utc": "2026-09-07T15:21:47.178155+00:00",
+      "pid": 99169,
+      "exit_code": 1,
+      "finished_utc": "2026-09-07T15:21:47.891835+00:00"
+    }
+  ],
+  "qwen_unload": {
+    "model": "qwen3:8b",
+    "created_at": "2026-09-07T15:10:10.391324Z",
+    "response": "",
+    "done": true,
+    "done_reason": "unload"
+  }
+}

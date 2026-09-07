@@ -1,0 +1,29 @@
+{
+  "schema_version": 2,
+  "status": "blocked",
+  "adapter": "mem0",
+  "configuration": "mem0",
+  "measurement": "growing-corpus simulation in one run; checkpoints are not elapsed-day longitudinal observations",
+  "timing_scope": "in-process operations; cold query follows same-process client/database reopen (not a new OS process)",
+  "model_cost": {
+    "observed_paid_api_usd": 0,
+    "hardware_electricity_cost_usd": null,
+    "note": "Local/API charge is $0 only for the verified local route; otherwise paid API cost is unknown. Electricity, hardware purchase/rental, and depreciation were not measured. Shared model cache is excluded."
+  },
+  "verification": {
+    "synthetic_queries": [
+      "passport renewal appointment",
+      "doctor knee recommendation",
+      "project launch date",
+      "invoice due date",
+      "emergency contact"
+    ],
+    "nonempty_and_relevant_definition": "A result is relevant when its synthetic document bucket matches the query topic."
+  },
+  "checkpoints": [],
+  "gbrain_analyze": false,
+  "error": {
+    "type": "JSONDecodeError",
+    "message": "Expecting value: line 1 column 1 (char 0)"
+  }
+}
