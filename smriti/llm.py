@@ -40,8 +40,13 @@ class LLM:
             self.extra_body = {"thinking": {"type": "disabled"}}
         self.tokens_in = 0
         self.tokens_out = 0
+        # Successful responses only; failed requests have unknown usage.
         self.calls = 0
+        # ``attempts`` remains the public logical-provider-attempt counter
+        # (including an explicit JSON fallback, excluding transport retries).
+        # The separate counter reports every HTTP request, including retries.
         self.attempts = 0
+        self.http_attempts = 0
         self.usage_missing = 0
 
     def complete(self, messages: List[dict], json_mode: bool = False,
@@ -57,13 +62,23 @@ class LLM:
             payload["response_format"] = {"type": "json_object"}
         headers = {"Authorization": f"Bearer {self.api_key}"} if self.api_key else {}
         self.attempts += 1
+
+        def count_http_attempt() -> None:
+            self.http_attempts += 1
+
         try:
-            resp = _post_json(f"{self.base_url}/chat/completions", payload, headers)
+            resp = _post_json(
+                f"{self.base_url}/chat/completions", payload, headers,
+                on_attempt=count_http_attempt,
+            )
         except urllib.error.HTTPError as exc:
             if json_mode and exc.code in (400, 422):
                 payload.pop("response_format", None)  # some servers reject it
                 self.attempts += 1
-                resp = _post_json(f"{self.base_url}/chat/completions", payload, headers)
+                resp = _post_json(
+                    f"{self.base_url}/chat/completions", payload, headers,
+                    on_attempt=count_http_attempt,
+                )
             else:
                 raise
         usage = resp.get("usage") or {}

@@ -1,0 +1,32 @@
+{
+  "track": "Independent fault-injection of installed HTTP retry policy; no network requests",
+  "observations": [
+    {
+      "http_status": 400,
+      "actual_request_attempts": 3
+    },
+    {
+      "http_status": 401,
+      "actual_request_attempts": 3
+    },
+    {
+      "http_status": 403,
+      "actual_request_attempts": 3
+    },
+    {
+      "http_status": 429,
+      "actual_request_attempts": 3
+    },
+    {
+      "http_status": 500,
+      "actual_request_attempts": 3
+    }
+  ],
+  "llm_counter_probe": {
+    "actual_http_requests": 3,
+    "reported_llm_attempts": 1,
+    "successful_calls": 0,
+    "tokens_in": 0,
+    "tokens_out": 0
+  }
+}

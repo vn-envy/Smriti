@@ -1,0 +1,18 @@
+{
+  "track": "Smriti installed full-mode synthetic quality smoke; not comparative timing",
+  "model": "qwen3:8b",
+  "embedder": "nomic-embed-text:v1.5",
+  "steps": [
+    {
+      "timestamp": "2024-01-10T12:00:00Z",
+      "error": "timed out",
+      "type": "TimeoutError"
+    }
+  ],
+  "status": "interrupted_after_first_ingest_timeout",
+  "requested_updates": 3,
+  "completed_updates": 0,
+  "base_url": "http://127.0.0.1:11436",
+  "process_exit_code": 130,
+  "interpretation": "The first ingestion timed out during overlapping local model workloads. Root interrupted the remaining probe to avoid further contention. This is not a completed quality score or an uncontended latency measurement."
+}

@@ -1,0 +1,13 @@
+{
+  "scope": "HEAD4f3b231 plus HTTP retry fix only; excludes unfinished public benchmark tests",
+  "installed_tests_passed": 185,
+  "final_rebuild_change": "comment only, followed by focused installed retry tests",
+  "pip_check": "passed",
+  "outside_checkout": true,
+  "wheel_sha256": "4f7893ad264e30bc93f6a58a87fa17ea92d8c8038954b73175b975a2010ee9f0",
+  "source_sha256": {
+    "smriti/embedder.py": "f8ce656da43fd54de954dbb0596fc4afb3165c998265fba7cc265a8e881e4e5f",
+    "smriti/llm.py": "c56c76e1c92f0a32bf408b441be2c6973c5a9cab524a872ab0c10925a54e05ea",
+    "tests/test_http_retry.py": "c4956b0c2a474e914a5a8d6b63a32b6d26c542ca03d7228d79d693b98bb997dd"
+  }
+}
