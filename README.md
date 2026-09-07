@@ -11,7 +11,7 @@
   <a href="LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-4c9?style=flat-square"></a>
   <img alt="Python 3.9+" src="https://img.shields.io/badge/python-3.9%2B-3776AB?style=flat-square&logo=python&logoColor=white">
   <img alt="Dependencies: stdlib + numpy" src="https://img.shields.io/badge/deps-stdlib%20%2B%20numpy-F4A43C?style=flat-square">
-  <img alt="Tests: 85 offline, no keys" src="https://img.shields.io/badge/tests-85%20offline%2C%20no%20keys-success?style=flat-square">
+  <img alt="Tests: 169 package tests" src="https://img.shields.io/badge/tests-169%20package%20tests-success?style=flat-square">
   <img alt="Storage: one SQLite file" src="https://img.shields.io/badge/storage-one%20SQLite%20file-blue?style=flat-square">
   <img alt="MCP: ready" src="https://img.shields.io/badge/MCP-ready-B794E0?style=flat-square">
   <a href="https://github.com/vn-envy/Smriti/pulls"><img alt="PRs welcome" src="https://img.shields.io/badge/PRs-welcome-E08AA0?style=flat-square"></a>
@@ -21,7 +21,7 @@
   <a href="https://vn-envy.github.io/Smriti/"><b>smriti.agents.io</b></a> — the four rivers, live
 </p>
 
-A zero-infrastructure, local-first, Apache-2.0 memory layer for AI agents. One SQLite file. No Neo4j, no Postgres, no Docker, no cloud account, no paywalled tiers. Stdlib HTTP + numpy is the entire dependency surface.
+The core is a zero-infrastructure, local-first, Apache-2.0 memory layer for AI agents. It uses one SQLite file: no Neo4j, Postgres, Docker, cloud account, or paid tier is required. Stdlib HTTP + numpy is the core dependency surface. The optional enterprise package adds governance metadata and can write a separate audit sink or verified pack.
 
 ```python
 from smriti import Smriti, LLM, OllamaEmbedder
@@ -45,15 +45,15 @@ print(mem.context("where do I live?"))
 
 A memory layer you can run today, on your own machine, and verify on your own data — no infrastructure, no cloud account, no leaderboard to take on faith. Everything below is something we've tested, not marketing copy.
 
-**1. One line to run. Nothing to stand up.** `pip install -e .` gives you a working memory layer in a single SQLite file — no Postgres, Neo4j, Qdrant, Redis, Docker, or cloud account. The dependency surface is the Python standard library plus numpy. The full offline test suite and the quickstart run with no network and no API keys; lite mode is fully offline.
+**1. One line to run. Nothing to stand up.** `pip install -e .` gives you a working core memory layer in a single SQLite file — no Postgres, Neo4j, Qdrant, Redis, Docker, or cloud account. The dependency surface is the Python standard library plus numpy. The offline core suite and quickstart run with no network and no API keys; lite mode is fully offline.
 
-**2. No external services to break — and hardened for real runs.** Memory is one file: no cluster to keep alive or version-match. It's provider-agnostic — point it at any OpenAI-compatible endpoint (Ollama, DeepSeek, Groq, OpenAI, vLLM…) and any embedder. It survives production conditions: automatic retry on transient network errors, fault-tolerant ingest (one bad turn never aborts a run), and progress checkpointing — all added after, and tested against, real network failures.
+**2. No external services to break — and clear failure boundaries.** Memory is one file: no cluster to keep alive or version-match. It is provider-agnostic — point it at any OpenAI-compatible endpoint (Ollama, DeepSeek, Groq, OpenAI, vLLM…) and any embedder. Direct writes and session ingestion are transactional, identical session replays can be deduplicated, malformed extraction output is diagnosed, and LLM attempt/usage metadata is exposed for inspection.
 
-**3. Cheap to run, by design.** Lite mode does zero LLM calls at write time; full mode does one extraction call per session. Retrieval packs a fixed, budget-capped context (~1,600 tokens per answer in our runs), so per-query cost stays in fractions of a cent — even a frontier reader+judge over 500 questions is ~$2.50. It runs well on small, inexpensive models. Apache-2.0, every feature included — no paid tier for graph, temporal, or scale.
+**3. Cost follows the mode and provider.** Lite mode does zero LLM calls at write time. Full mode makes an extraction call per session and may make additional arbitration calls for semantic conflicts. Provider pricing, model output, retries, and workload determine the bill, so we do not publish a fixed per-question dollar claim. Apache-2.0 includes the graph, temporal, and retrieval-profile features; there is no paid core tier.
 
-**4. Predictable at scale, and your history never rots.** Measured on the included scaling harness (256-dim): ~3ms warm queries at 12.5k memories, ~29ms at 125k, ~78ms at 312k; ~42–50k rows/sec sustained ingest; correct needle retrieval at every scale tested. The honest envelope: **excellent** for personal, desktop, and coding agents into the tens of thousands of memories; **acceptable** into the low hundreds of thousands; **not yet suited** to multi-million-row, high-concurrency multi-tenant serving (the vector channel is an exact numpy scan — the quantization/ANN tier is roadmap item #2). Updates *supersede* rather than delete — the old fact is marked past and kept, never destroyed — so accuracy doesn't silently decay as sessions accumulate (the failure mode that degrades delete-on-write systems over time). You can always answer both "what's true now" and "what was true then."
+**4. A measured local scale envelope, with a clear boundary.** A 256-dim single-run probe reported ~3 ms warm queries at 12.5k rows, ~31 ms at 125k, ~81 ms at 312k, and roughly 50k rows/sec ingest; needle retrieval was correct at each tested checkpoint. These are workload- and hardware-specific observations. The vector channel is an exact numpy scan, so multi-million-row, high-concurrency serving and larger embedding dimensions need further measurement and optional quantization/ANN work. Updates *supersede* rather than delete: prior facts remain queryable with validity metadata, so the store can answer both “what's true now?” and “what was true then?”
 
-**5. Small enough to read, honest enough to verify yourself.** ~2k readable lines, Apache-2.0. The benchmark harness ships with it, so you measure SMRITI on *your* data, with *your* judge, on *your* hardware — `bench/ab.sh` runs a fixed-judge A/B and prints the delta. We'd rather hand you the tools to prove it than ask you to trust a number we graded ourselves.
+**5. Small enough to inspect, honest enough to verify yourself.** The benchmark harness ships with it, so you measure SMRITI on *your* data, with *your* judge, on *your* hardware — `bench/ab.sh` runs a fixed-judge A/B and prints the delta. The audit records the exact configurations and open limits instead of turning a small diagnostic into a leaderboard claim.
 
 ## Agile retrieval (*drishti*) — new in 0.2.0
 
@@ -90,7 +90,7 @@ The same selection is exposed to agents through the MCP tools (`profile` and `ch
 flowchart LR
     subgraph WRITE ["WRITE PATH — consolidation (anubhava → samskara)"]
         S[session] --> E["episodic log · anubhava अनुभव<br/>append-only · embedded · FTS-indexed"]
-        S --> X["fact extraction · grahana ग्रहण<br/>1 LLM call / session (full mode)"]
+        S --> X["fact extraction · grahana ग्रहण<br/>1+ LLM calls / session (full mode)"]
         X --> B{"conflict? · badha बाध"}
         B -->|"(subject, predicate) collision"| SUP["supersede · 0 tokens"]
         B -->|semantic collision| ARB["1 tiny arbitration call"]
@@ -121,8 +121,8 @@ Two design decisions worth defending:
 
 ### Modes
 
-- **`lite`** (alias `laghu`, लघु — "light") — no LLM at write time at all. Episodic ingest + 4-channel hybrid retrieval. Near-zero cost, fully offline-capable, and retrieval-only hybrids are known to recover most of the benchmark value. Ideal default for high-volume agents.
-- **`full`** (alias `purna`, पूर्ण — "complete") — adds fact extraction + write-time consolidation. One extraction call per session, arbitration calls only on semantic collisions. This is where knowledge-update and temporal-reasoning accuracy comes from.
+- **`lite`** (alias `laghu`, लघु — "light") — no LLM at write time at all. Episodic ingest + 4-channel hybrid retrieval. Fully offline-capable and useful when write-time cost or model access is constrained.
+- **`full`** (alias `purna`, पूर्ण — "complete") — adds fact extraction + write-time consolidation. It makes one extraction call per session in the ordinary path, with extra arbitration calls only for semantic collisions. Full-mode quality depends on the configured model and predicate normalization.
 
 ## Ancient wisdom, load-bearing
 
@@ -164,38 +164,38 @@ The rules that keep this honest (full lexicon and reasoning: [`NOMENCLATURE.md`]
 
 Every recent open framework made a bet, and each bet carries a real operational cost:
 
-| Framework | Their strength | The gap SMRITI closes |
-|---|---|---|
-| **GBrain** (Garry Tan, Apr 2026) | Self-wiring typed knowledge graph with **zero LLM calls** for extraction; production-proven at 146k+ pages | Requires Postgres + pgvector; you hand-author the markdown skills; no *as-of-date* validity model; coupled to OpenClaw / Hermes |
-| **Supermemory** (local build) | Claims #1 on LongMemEval / LoCoMo / ConvoMem; one-binary local mode, RAG + connectors + embedded agent; the mature full-stack option | A large system you trust rather than read; "forgetting" and temporal handling are internal — you can't audit *why* a fact was dropped or which window applied |
-| **Mnemosyne** (Hermes ecosystem) | One SQLite file too; binary MIB vectors; encrypted sync; excellent distribution (23 Hermes tools) | Temporal KG is a separate, manual API; `forget`-style ops; knowledge-update is its published weak spot (KU 50.0% on its own BEAM report) — supersession is automatic here, in the main write path |
-| mem0 | Mature extraction pipeline, broad SDK, 90k+ devs | Flat fact store loses time; graph features sit behind the $249/mo Pro tier; local self-host wants Docker + Postgres + Qdrant; knowledge updates leave stale facts competing with fresh ones |
-| Zep / Graphiti | Bi-temporal knowledge graph — the right *model* for "what was true when" | Heavy graph-database infrastructure; community edition deprecated; advanced features cloud-only |
-| Letta / MemGPT | Self-managing memory tiers | You adopt a whole agent runtime, not a library; every memory op costs LLM inference |
+| Framework | Their strength | What Smriti should learn | Defensible distinction |
+|---|---|---|---|
+| **GBrain** | Typed graph, synthesis and gap analysis, with a local PGLite default and optional Postgres deployments | Operational doctor surfaces, degraded-mode reporting, and query-level evidence | A smaller Python/SQLite kernel focused on inspectable temporal fact history rather than a broad personal/company brain |
+| **Graphify** | Deterministic local AST graphs for code, with explicit versus inferred edges | Preserve source locations and make code graphs an optional evidence source | Conversational temporal memory is a different job from code structure |
+| **Mem0** | Mature extraction pipeline, broad SDK, managed platform, and multiple local storage options | Mature integrations and fixed-budget, same-judge comparisons | Explicit validity intervals and inspectable history are the focus here; no cross-system superiority is established |
+| **Hindsight** | Retain/recall/reflect, observations and Knowledge Pages, with embedded or server deployment | Session synthesis, stale-view refresh, and evidence-delivery checks | A smaller kernel with customer-visible history and optional evidence controls |
 
-SMRITI's synthesis: **keep Zep's temporal model and GBrain's entity graph, drop the database tax; keep mem0's extraction discipline, add supersession; race the leaderboard claims on transparency instead.** One SQLite file, ~2k lines you can read in a sitting, validity windows printed into the context the model sees.
+SMRITI's position is narrower: preserve explicit temporal history and provenance in a portable SQLite core, while leaving broader graph, synthesis, hosting, and connector surfaces to systems designed for them. Validity windows are printed into the context the model sees, and the comparison harness stays available for workload-specific verification.
 
 ### Bring your own benchmark
 
-SMRITI's stance is **ship-and-verify**. Instead of publishing a self-graded headline, it ships the harness and invites you to generate the only number that matters — on your own conversations, with the model and judge you actually use. Hosted leaders post strong leaderboard scores; those are produced with frontier readers grading their own systems, and (by their own production data) some degrade sharply once stale data and contradictions accumulate at scale. SMRITI's bet is the production reality around the number: run it anywhere, trust what it does, keep your full history, pay almost nothing — and check the accuracy yourself in one command. In our own within-system A/Bs, the per-type router lifts multi-session aggregation ~10 points (p<0.05) with no regression on knowledge-update; whether that holds on your workload is something you confirm, not something we ask you to believe.
+SMRITI's stance is **ship-and-verify**. The harness lets you measure on your own conversations, with the model and judge you actually use. Within-system oracle A/B evidence reports a +10.3-point multi-session lift for the per-type router (McNemar p=0.046) with no knowledge-update regression in that run; it is not a cross-system result and should be checked on your workload.
 
 ## Install & try it in 60 seconds
 
 ```bash
 git clone https://github.com/vn-envy/Smriti && cd Smriti
-pip install -e .              # install from source
-python -m pytest tests/       # 85 offline tests — no network, no API keys
+python -m pip install -e '.[dev]' # install the core and test tools from source
+python -m pytest tests/ -q    # core tests — no network, no API keys
 python examples/quickstart.py # see supersession live
 ```
 
 > [!WARNING]
-> SMRITI publishes to PyPI as **`smriti-agents`** (the `smriti-memory` name there belongs to an unrelated project — `pip install smriti-memory` installs something else). Until the first PyPI release lands, install from source as above. The import name is `smriti` either way.
+> The package metadata uses **`smriti-agents`** (the `smriti-memory` name belongs to an unrelated project). No PyPI release was verified for this snapshot, so install from the repository as above. The import name is `smriti`.
 
 The quickstart runs fully **offline** using `MockLLM` to demonstrate full-mode extraction and supersession. For real LLM-backed extraction, point SMRITI at any OpenAI-compatible endpoint (Ollama, vLLM, LM Studio, Groq, DeepSeek, OpenRouter, hosted) and any embedder — nothing else to install.
 
-For an existing database, `smriti-doctor --db memory.db` performs read-only SQLite integrity, schema, count, and embedding-dimension checks.
+For an existing database, `smriti-doctor --db memory.db` performs read-only SQLite integrity, schema, count, WAL, and embedding-dimension checks. The command reports whether embedder identity is tracked, legacy-untracked, or empty-untracked.
 
 SMRITI records the embedder identity in each new database and rejects a reopen with an incompatible model, endpoint, or dimension. Databases created before this metadata existed require a one-time explicit `Smriti(..., adopt_legacy_embedder=True)` after you verify that the configured embedder matches the one originally used. For MCP-managed databases, use `smriti-mcp --adopt-legacy-embedder --db memory.db` for that one-time adoption.
+
+Core `export_json()` / `import_json()` is lossless for the core schema, including embeddings and supersession chains. Enterprise governance metadata is outside that format: use `enterprise_mem.snapshot(path)` for a consistent database backup, or `enterprise_mem.build_pack(path, name=...)` followed by `verify_pack()` / `open_pack()` for a checksummed, optionally signed, read-only knowledge pack. Do not use core JSON export as an enterprise governance backup.
 
 ### Drop it into your agent (MCP)
 
@@ -230,7 +230,7 @@ The harness ships in `bench/` for **LongMemEval** (ICLR 2025 — the de-facto st
 python -m bench.download            # oracle + locomo (small, fast)
 python -m bench.download --all      # every split, or name one: longmemeval_s
 
-# 2. fast sanity pass on the oracle split, fully local
+# 2. evidence-only sanity pass on the oracle split, fully local
 python -m bench.run --bench longmemeval --data data/longmemeval_oracle.json \
     --mode lite --limit 50 --answer-model qwen3:14b --judge-model qwen3:14b
 
@@ -247,7 +247,7 @@ python -m bench.run --bench locomo --data data/locomo10.json --mode full --limit
 Output: overall accuracy, **per-question-type accuracy** (the honest view — temporal-reasoning and knowledge-update are where flat stores die), ingest/answer latency, and token counts, plus a full per-question JSONL for error analysis.
 
 > [!IMPORTANT]
-> **Honesty section.** SMRITI has not yet been run on the full benchmarks — the harness exists precisely so the numbers come from your hardware, not from marketing. Published reference points to beat or match: Zep ~63.8% and Hindsight ~91.4% on LongMemEval vs. mem0's ~49%; mem0 reports J≈66.9 on LoCoMo. Vendor numbers use different judges, answer models, and splits, so the only comparison that counts is the one you run yourself with a fixed judge. Run lite and full modes side by side; report both. Full results and caveats (including near-significant deltas we refuse to round up): [`BENCHMARKS.md`](BENCHMARKS.md).
+> **Honesty section.** The current evidence includes a 500-question LongMemEval **oracle, evidence-only retrieval** run (extraction and answer generation bypassed), plus a 20-document/12-query diagnostic across Smriti, Mem0, GBrain, and a lexical control. These are useful checks, not full-haystack answer quality or a universal ranking. A separate persistent GBrain lexical growth run covers 100 and 1,000 documents, but uses no embeddings and does not establish parity with Smriti or Mem0 ([raw run](audit/2026-09-05/raw/independent-gbrain-growth.json)). Full `longmemeval_s` / LoCoMo runs with one shared answer and judge configuration, and a matched cost/speed growth comparison, remain unfinished. See [`BENCHMARKS.md`](BENCHMARKS.md), the [benchmark methodology audit](audit/2026-09-05/benchmark-methodology.md), and the [verified results](audit/2026-09-05/VERIFIED-RESULTS.md).
 
 ## Repo layout
 
@@ -263,7 +263,7 @@ smriti/             core library
   llm.py            OpenAI-compatible client + mock
   mcp_server.py     stdlib-only MCP server (6 typed tools, stdio JSON-RPC)
 bench/              pariksha: LongMemEval + LoCoMo runners, nyaya judge, CLI, A/B
-tests/              offline test suite (mock LLM, hash embedder) — 85 tests
+tests/              core offline test suite (mock LLM, hash embedder)
 examples/           runnable quickstart
 NOMENCLATURE.md     the full lexicon and why each term is load-bearing
 enterprise/         optional enterprise modules (separate package, zero core edits):
@@ -275,34 +275,23 @@ site/               the landing page — live at smriti-memory.netlify.app
 
 ## Roadmap
 
-### Shipped
+### Current candidate (verified 2026-09-07)
 
-Research-driven (Hindsight observation paradigm; StructMem / MemGAS multi-granularity; mem0 entity linking; multi-hop RAG literature), each validated by a fixed-judge A/B:
+- [x] Core and enterprise package installs pass **169 tests** across non-editable wheels on macOS Python 3.11 and Linux Python 3.12, plus an isolated Linux Python 3.9 source-distribution install. See [`audit/2026-09-05/VERIFIED-RESULTS.md`](audit/2026-09-05/VERIFIED-RESULTS.md).
+- [x] Temporal hardening: late-arriving facts rebuild validity chains in event-time order; enterprise world-time and system-known-time queries preserve the expected boundary.
+- [x] Extraction diagnostics and embedder identity metadata: malformed or rejected extraction output is reported, and incompatible vector spaces fail before reads or writes mix. Legacy databases require explicit adoption after operator verification.
+- [x] Read-only `smriti-doctor`, atomic export/restore for the core schema, MCP structured results, and lifecycle support.
+- [x] Exactly 30 seconds of rendered launch video plus a browser preview that reported `WEBGPU · ACTIVE` in Chrome; see [`audit/2026-09-05/video.md`](audit/2026-09-05/video.md).
 
-- [x] Observation/summary layer + additive injection + enumerate-don't-assert
-- [x] Multi-granularity digests (per-entity and per-`(subject, predicate)`) + numeric/sum totals
-- [x] Recall track — fact-augmented key expansion + aggregation tally path
-- [x] **Per-type router** — recall profile for aggregation, precision profile for current-state. Lifts multi-session **+10 pts (p<0.05)** with **no** knowledge-update regression
-- [x] mem0-inspired levers — FTS Porter stemmer, semantic entity linking (both opt-in)
-- [x] 2-hop entity traversal · cross-encoder reranking · iterative retrieval
-- [x] **MCP server** — `smriti-mcp`: stdlib-only stdio JSON-RPC, 6 typed tools, lite-by-default, security-hardened (ATTACH/DETACH authorizer, fixed db path, input caps, crash-proof loop)
-- [x] Benchmark harness — stratified `--sample`, `--question-type`, one-command A/B (`bench/ab.sh`)
-- [x] **0.2.0 — Agile retrieval (drishti)**: switchable channels, named evidence-carrying profiles (`facts`/`relations`/`timeline`/`deep`), zero-token v2 router, profile-aware MCP tools. Legacy default path byte-identical.
-- [x] **0.3.0 — Hardening**: WAL + busy-timeout durability; **idempotent ingestion** (session replay = no-op); **owner-initiated erasure** (`erase_session`/`erase_entity`, full cascade — distinct from supersession, and deliberately *not* exposed via MCP so untrusted content can't trigger it); **entity aliases** (write-time canonicalization + read-time resolution); **lossless export/import** (embeddings included, supersession chains preserved); **opt-in secret redaction** at ingest; unicode lexical search (Devanagari/CJK now reach FTS5); regression suite → 74 offline tests.
-- [x] **0.3.1 — Audit fixes** (external agent-run review): **atomic ingestion** — hash claim + all writes in one `BEGIN IMMEDIATE` transaction (no partial sessions on crash, no double sessions under concurrency; the LLM extraction call happens *before* the write lock); **CURRENT-first context packing** — validity annotation now comes with validity ordering, so a superseded value is never the first fact the model reads; **erasure purges derived observations** — digests touching erased facts are dropped (over-deleting in the safe direction; regenerable); **export/import now includes search-key indexes and the ingest log** — deep retrieval and replay-dedupe behave identically after restore; versioned HTTP user-agent; scale envelope documented honestly (see below). 80 offline tests.
-
-### Next priorities (post-ship)
+### Next priorities
 
 Ordered by impact:
 
-1. **Profile matrix in the harness** — `--profile` flag on `bench/run.py` + per-type × per-profile table; gate any change to the `auto` default on this run.
-2. **Numpy vector quantization (int8 / binary + Hamming)** — pure-numpy lift of the O(N) scan ceiling (~10–30× headroom), zero new dependencies; `sqlite-vec` remains the optional ANN tier beyond that. *(Mnemosyne's MIB result, re-derived on our principles)*
-3. **LLM-assisted entity canonicalization** — confidence-scored alias *suggestion* on top of 0.3.0's explicit alias layer ("my cousin Rachel" → "rachel"); suggestions only, owner confirms. *(Codebase-Memory resolution cascade + mem0 entity linking)*
-4. **`valid_until` at write time** — user-declared expiry as a pre-declared avadhi window; supersession machinery already handles the rest.
-5. **Namespaces** — `user_id`/`agent_id` scoping for shared stores. Today's zero-infra answer: one file per agent *is* the namespace (`memory-alice.db`); this item is for teams that outgrow it.
-6. **Full `longmemeval_s` + LoCoMo numbers** — publish on the hard (full-haystack) split with a fixed judge; plus a Mnemosyne adapter in `bench/` so the comparison runs same-judge, same-split, same-reader.
-7. **Hermes / platform adapters** — `smriti-hermes` + per-platform guides (Claude Code, Cursor, OpenClaw, OpenWebUI).
-8. **Further hardening** — embedding-dimension guard, async ingest queue + batched embeddings, schema-version migrations.
+1. **Finish reproducibility documentation and measurements** — complete the full-history LongMemEval/LoCoMo track with pinned data, identical reader/judge settings, failure-inclusive denominators, and raw per-question outputs. Keep the existing oracle and 20-document diagnostic clearly labeled as such.
+2. **Finish matched growth and cost reporting** — rerun multiple corpus checkpoints with effective embedding parity and explicit process boundaries. Do not publish speed ratios from the current artifacts: the GBrain run has one checkpoint and CLI startup, and the Mem0/Smriti filenames do not establish parity.
+3. **Finish operator documentation** — exercise source and non-editable installs, `smriti-doctor`, embedder legacy adoption, core JSON export, and the enterprise snapshot/knowledge-pack boundary in a clean environment.
+4. **Validate full-mode extraction on representative models** — keep extraction status, accepted/skipped counts, predicate normalization, and semantic-arbitration outcomes visible in the evidence; do not treat the scripted quickstart as model-quality proof.
+5. **Only then evaluate architecture work** — profile matrices, higher-dimensional/concurrent scaling, optional quantization/ANN, richer graph edges, namespaces, and platform adapters should each follow workload evidence and retain an exact-search regression oracle.
 
 ### The boundary (how we avoid becoming a 50k-line platform)
 

@@ -1,58 +1,136 @@
 # Smriti: evidence-led build roadmap
 
-Audit started 2026-09-05; implementation continued 2026-09-06.
-Baseline: GitHub main a2afb3d5f7d2b896585c91abb8bcce2f7c4a9585, core 0.3.2, enterprise 0.1.0.
-User authorized continuing the build, with Sol implementing and the parent independently testing. New scope includes a 30-second Three.js/WebGPU launch video. This document is a plan, not proof of completion.
+Status checked 2026-09-07. Baseline: GitHub main `a2afb3d` (core 0.3.2,
+enterprise 0.1.0). The current candidate has completed the hardening and launch
+film work described below. This document remains a build plan and status record,
+not a release certificate or benchmark leaderboard.
 
 ## Product decision
 
-Build a small, inspectable temporal-memory kernel for local agents: explicit history, evidence provenance, predictable operation, and portable storage. Make correctness and verifiability its reason to exist. Do not claim universal superiority, zero bugs, or benchmark leadership without matching evidence.
+Build a small, inspectable temporal-memory kernel for local agents: explicit
+history, evidence provenance, predictable operation, and portable storage. Make
+correctness and verifiability its reason to exist. Do not claim universal
+superiority, zero bugs, or benchmark leadership without matching evidence.
 
-The strongest current positioning is: **“Local agent memory that preserves what changed—and lets you inspect the evidence.”** A single SQLite file and a small Python dependency surface remain useful, but zero external database setup is no longer unique: GBrain now has PGLite, Hindsight has embedded PostgreSQL, and Mem0 supports local stores. Graphify addresses code structure rather than replacing conversational temporal memory.
+The strongest current positioning is:
 
-## Phase 1 — Correctness and installation (P0, in progress)
+> **Local agent memory that preserves what changed—and lets you inspect the evidence.**
 
-- Fix historical fact insertion, including chronology and interval-chain consistency; preserve newer current state when older evidence arrives late.
-- Refresh semantic caches after writes through another connection; test concurrent readers/writers and rollback.
-- Apply redaction to all direct fact fields before embedding/persistence; validate configuration before side effects.
-- Make direct writes atomic and reject invalid model/vector configurations clearly.
-- Preserve MCP profiles and validate actual stdio behavior with a real SDK client; expose machine-readable results honestly.
-- Close enterprise fail-open policy, hold, signed-receipt, and pack-verification gaps. Test core/enterprise integration together.
-- Verify clean wheel and source installs outside checkout, examples, dependency consistency, and persisted restart.
+A single SQLite file and a small Python dependency surface remain useful, but
+zero external database setup is no longer unique: GBrain has a local PGLite
+default, Hindsight has embedded deployment, and Mem0 supports local stores.
+Graphify addresses code structure rather than replacing conversational temporal
+memory. Smriti's distinction is the focused combination of explicit validity
+history, provenance, and a portable core.
 
-Exit: all original and new regression tests pass on the combined source and non-editable package installs; independently reproduce original defects against baseline and verify fixes. No result inferred solely from an editable install or a mocked protocol handler.
+## Phase 1 — Correctness and installation (P0, complete for current candidate)
+
+- [x] Fix historical fact insertion, including chronology and interval-chain
+  consistency; preserve newer current state when older evidence arrives late.
+- [x] Refresh semantic caches after writes through another connection; test
+  concurrent readers/writers and rollback.
+- [x] Apply redaction to all direct fact fields before embedding/persistence and
+  validate configuration before side effects.
+- [x] Make direct writes atomic and reject invalid model/vector configurations.
+- [x] Preserve MCP profiles and validate stdio behavior with a real SDK client;
+  return machine-readable structured results honestly.
+- [x] Close the enterprise policy, hold, signed-receipt, and verified-pack
+  checks exercised by the candidate; test core/enterprise integration together.
+- [x] Verify clean wheel and source installs outside checkout, examples,
+  dependency consistency, and persisted restart.
+
+Exit evidence: the combined core/enterprise candidate passes **169 tests** after
+non-editable wheel installation on macOS Python 3.11 and Linux Python 3.12, and
+after an isolated Linux Python 3.9 source-distribution install. The temporal
+journal probes, extraction diagnostics, embedder identity checks, doctor command,
+and MCP protocol checks are recorded in [`VERIFIED-RESULTS.md`](VERIFIED-RESULTS.md)
+and [`core-hardening.md`](core-hardening.md). The candidate is verified locally;
+it is not yet published to PyPI or deployed.
 
 ## Phase 2 — Reproducible evaluation (P0, in progress)
 
-- Pin versions, data hashes, runtime and retrieval configuration, report raw per-query results and errors.
-- Run a matched raw-document retrieval track against simple lexical retrieval and real local Mem0; attempt real GBrain keyless setup and Graphify code extraction in their proper task categories.
-- Measure Smriti temporal correctness independently of answer-model skill; include stale facts, late arrivals, abstention and multi-hop evidence.
-- Fix benchmark methodology: seeded corpus, accurate storage including WAL, correct CLI parsing, no label leakage, explicit error denominators.
-- Run LongMemEval full-history and LoCoMo with one shared answer/judge configuration once a suitable local or authorized paid runtime is available. Oracle split results and vendor headlines are not head-to-head results.
+- [x] Pin versions, data hashes, runtime and retrieval configuration for the
+  completed synthetic and oracle tracks; retain raw per-query results and errors.
+- [x] Run a matched raw-document diagnostic against simple lexical retrieval,
+  local Mem0, and keyless GBrain. Results use different embedding/search
+  configurations and remain diagnostic rather than a quality ranking.
+- [x] Measure targeted Smriti temporal correctness independently of answer-model
+  skill, including stale facts and late arrivals. Broad abstention and full
+  multi-hop quality still need representative evaluation.
+- [~] Fix benchmark methodology: seeded corpus, accurate storage including WAL,
+  correct CLI parsing, no label leakage, and explicit error denominators are in
+  the current harness; embedding parity and process-boundary reporting still
+  need to be completed for growth comparisons.
+- [ ] Run LongMemEval full-history and LoCoMo with one shared answer/judge
+  configuration. The 500-question oracle run bypasses extraction and answer
+  generation, so it is evidence-only and not full-haystack QA.
 
-Exit: reproducible local results for executable tracks; missing services/models explicitly marked blocked or not measured, never scored as zero or replaced by mocks. Full model-backed comparison remains unfinished until actually executed.
+The independent GBrain persistent run now covers 100 and 1,000 documents with
+process-restart timing and a lexical, no-embedding configuration; see
+[`raw/independent-gbrain-growth.json`](raw/independent-gbrain-growth.json).
+This improves the measurement boundary over the earlier single-checkpoint CLI
+run, but it still does not establish embedding-parity speed or cost. The current
+Smriti/Mem0 growth artifacts also use different effective embedding setups.
 
-## Phase 3 — Maintainable operator experience (P1)
+Exit: reproducible local results for executable tracks; missing services/models
+are marked unmeasured, never scored as zero or replaced by mocks. Full
+model-backed comparison remains unfinished until actually executed with a fixed
+reader and judge.
 
-- Public resource lifecycle (close/context manager), read-only doctor command, actionable errors.
-- Embedder compatibility metadata and clear migration/re-embedding boundaries.
-- Separate policy, storage, retrieval and formatting responsibilities with small interfaces; refactor only with coverage and measurable reason.
-- Update installation and competitive claims to match live reality; distinguish source version, GitHub release, package availability and website deployment.
-- Keep evidence receipts tied to actual returned context; distinguish operational controls from compliance guarantees.
+## Phase 3 — Maintainable operator experience (P1, complete for current candidate; documentation kept current)
 
-Exit: fresh user can install, diagnose, write, query, restart, export and restore without hidden setup or unsupported promises. Documentation commands exercised verbatim.
+- [x] Public resource lifecycle (`close` and context manager), read-only doctor
+  command, and actionable errors.
+- [x] Embedder compatibility metadata and clear migration/re-embedding boundary,
+  including explicit legacy adoption for pre-metadata databases.
+- [x] Keep policy, storage, retrieval, and formatting behind small interfaces;
+  refactor only with coverage and a measurable reason.
+- [x] Align installation and competitive claims with live reality; distinguish
+  source version, GitHub release, package availability, and website deployment.
+- [x] Keep evidence receipts tied to returned context and distinguish operational
+  controls from compliance guarantees.
 
-## Phase 4 — Thirty-second launch film (P1, parallel)
+Operator boundary: core JSON export/import is lossless for the core schema.
+Enterprise governance metadata requires `enterprise_mem.snapshot()` or
+`enterprise_mem.build_pack()` plus verification; core JSON is not an enterprise
+governance backup format. Documentation commands and this boundary are kept in
+the main README and competitive research record.
 
-Deliver an exactly 30-second 3D teaser and runnable preview using the existing site's design language, improved typography, motion and composition. Story: conversations accumulate → an old fact becomes history → four retrieval channels converge → portable, inspectable memory. Use real Three.js WebGPU support with explicit feature detection/fallback and report which renderer was tested. Produce a playable MP4, check duration/resolution and inspect representative frames. Avoid unverified accuracy or speed superiority claims in the film.
+Exit: the installed candidate can be diagnosed, written, queried, restarted,
+exported, and restored without hidden setup. A PyPI release and deployment are
+separate distribution steps and are not implied by this phase.
+
+## Phase 4 — Thirty-second launch film (P1, complete)
+
+The teaser is exactly 30 seconds at 1920×1080, 30 fps, and 900 frames, with the
+story conversations accumulate → an old fact becomes history → four retrieval
+channels converge → portable, inspectable memory. The browser preview uses
+Three.js `WebGPURenderer` with explicit WebGPU detection and a WebGL2 fallback;
+Chrome reported `WEBGPU · ACTIVE`. See [`video.md`](video.md). The film makes no
+accuracy or speed-superiority claim.
 
 ## Next architecture investments, gated by results
 
-1. **Evidence and abstention:** returned source IDs, provenance, uncertainty and query-specific abstention. Measure false-positive evidence and answer contamination before enabling defaults.
-2. **Durable chronology:** normalized temporal types, same-time tie policy, late corrections and precise system-known history; migration tests from real old database layouts.
-3. **Selective retrieval:** session-start synthesis and on-demand recall with cache invalidation; compare against no memory and a simple text/wiki baseline. Avoid injecting unrelated memory on every turn.
-4. **Useful graph edges:** typed explicit/inferred relationships and provenance; only add richer graph traversal if it improves multi-hop workload accuracy.
-5. **Scaling:** evaluate 768/1536-dimension embeddings, interleaved writes and concurrency before adding optional ANN/quantization. Preserve an exact-search oracle for recall regression checks.
-6. **Distribution:** reliable agent integration and import/export first; hosted multi-tenant service, broad connectors and a proprietary runtime are separate product decisions.
+1. **Evidence and abstention:** returned source IDs, provenance, uncertainty, and
+   query-specific abstention. Measure false-positive evidence and answer
+   contamination before enabling defaults.
+2. **Durable chronology:** normalized temporal types, same-time tie policy, late
+   corrections, and precise system-known history; add migration tests from real
+   old database layouts. Targeted temporal journal corrections pass; this broader
+   contract remains a priority.
+3. **Selective retrieval:** session-start synthesis and on-demand recall with
+   cache invalidation; compare against no memory and a simple text/wiki baseline.
+   Avoid injecting unrelated memory on every turn.
+4. **Useful graph edges:** typed explicit/inferred relationships and provenance;
+   add richer graph traversal only if it improves multi-hop workload accuracy.
+5. **Scaling:** evaluate 768/1536-dimension embeddings, interleaved writes, and
+   concurrency before adding optional ANN/quantization. Preserve an exact-search
+   oracle for recall regression checks. The new persistent GBrain run is useful
+   context, but matched Smriti/Mem0/GBrain growth and cost evidence is still open.
+6. **Distribution:** reliable agent integration and import/export first; hosted
+   multi-tenant service, broad connectors, and a proprietary runtime are separate
+   product decisions.
 
-Do not treat this list as permission to ship every speculative feature without evaluation. “Perfect” is an aspiration; completion requires concrete verified behavior, not a universal defect-free claim.
+The current documentation records completed evidence without closing these
+engineering priorities. Each future feature requires workload evidence, tests,
+and a stated migration boundary before it is described as shipped.
