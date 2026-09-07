@@ -39,13 +39,19 @@ history, provenance, and a portable core.
 - [x] Verify clean wheel and source installs outside checkout, examples,
   dependency consistency, and persisted restart.
 
-Exit evidence: the combined core/enterprise candidate passes **169 tests** after
-non-editable wheel installation on macOS Python 3.11 and Linux Python 3.12, and
-after an isolated Linux Python 3.9 source-distribution install. The temporal
-journal probes, extraction diagnostics, embedder identity checks, doctor command,
-and MCP protocol checks are recorded in [`VERIFIED-RESULTS.md`](VERIFIED-RESULTS.md)
-and [`core-hardening.md`](core-hardening.md). The candidate is verified locally;
-it is not yet published to PyPI or deployed.
+Exit evidence: the historical combined core/enterprise candidate passed **169
+tests** after non-editable wheel installation on macOS Python 3.11 and Linux
+Python 3.12, and after an isolated Linux Python 3.9 source-distribution install.
+That count is retained for its original snapshot. A later working-tree
+benchmark candidate passed **203 tests** in an installed-outside-checkout
+verification with `pip check` clean; see
+[`raw/benchmark-wheel-verification-203.json`](raw/benchmark-wheel-verification-203.json).
+PR `9072c85` carries the portable temporary-path fix and all four CI checks
+passed, including core/enterprise Python 3.9 and 3.12 jobs.
+The temporal journal probes, extraction diagnostics, embedder identity checks,
+doctor command, and MCP protocol checks are recorded in
+[`VERIFIED-RESULTS.md`](VERIFIED-RESULTS.md) and [`core-hardening.md`](core-hardening.md).
+The candidate is verified locally; it is not yet published to PyPI or deployed.
 
 ## Phase 2 — Reproducible evaluation (P0, in progress)
 
@@ -54,6 +60,10 @@ it is not yet published to PyPI or deployed.
 - [x] Run a matched raw-document diagnostic against simple lexical retrieval,
   local Mem0, and keyless GBrain. Results use different embedding/search
   configurations and remain diagnostic rather than a quality ranking.
+- [x] Run the bounded paired LongMemEval-S public50 retrieval route with the
+  same selected IDs, dataset hash, nomic embedding, retrieval budgets, and
+  failure-inclusive denominator. Smriti and Mem0 each completed 48/50; the
+  results do not establish superiority.
 - [x] Measure targeted Smriti temporal correctness independently of answer-model
   skill, including stale facts and late arrivals. Broad abstention and full
   multi-hop quality still need representative evaluation.
@@ -76,6 +86,12 @@ Exit: reproducible local results for executable tracks; missing services/models
 are marked unmeasured, never scored as zero or replaced by mocks. Full
 model-backed comparison remains unfinished until actually executed with a fixed
 reader and judge.
+
+The paired public50 review found a multi-session recall gap (Smriti 0.6111,
+Mem0 0.7407 across nine questions) and seven questions with fewer than five
+unique returned sessions. This is a follow-up hypothesis about session
+diversity, chunk allocation, and truncation, not an accepted superiority claim;
+the raw review is [`raw/multi-session-gap-review.json`](raw/multi-session-gap-review.json).
 
 ## Phase 3 — Maintainable operator experience (P1, complete for current candidate; documentation kept current)
 

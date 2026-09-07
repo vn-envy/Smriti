@@ -1,0 +1,741 @@
+{
+  "schema_version": 1,
+  "status": "exploratory_partial_pairwise_analysis",
+  "title": "Paired analysis of preserved LongMemEval-S full-haystack s50 runs",
+  "interpretation": "Exploratory small-sample analysis; not a leaderboard result.",
+  "inputs": {
+    "smriti_artifact": "/Users/kshitijvatsa/Downloads/Smriti-main/audit/2026-09-05/public-retrieval-smriti-s50.json",
+    "mem0_artifact": "/Users/kshitijvatsa/Downloads/Smriti-main/audit/2026-09-05/public-retrieval-mem0-s50.json",
+    "artifact_sha256": {
+      "smriti": "c86ccbd45fe9f583379c6b7560c871af131d1c8bc9c1d6fb3d19a69e04fd4ee8",
+      "mem0": "6ef8ac0e436b23c23433d79600a8df41a296f6829eae93a16dfc46c254588c3f"
+    },
+    "same_selected_question_ids": true,
+    "selected_count": 50,
+    "same_dataset_sha256": true,
+    "dataset_sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
+    "dataset_source": "https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned/resolve/main/longmemeval_s_cleaned.json",
+    "same_embedding_config": true,
+    "embedding": {
+      "provider": "Ollama",
+      "model": "nomic-embed-text:v1.5",
+      "dimensions": 768,
+      "base_url": "http://127.0.0.1:11436"
+    },
+    "same_budgets": true,
+    "budgets": {
+      "sample": 50,
+      "k": 5,
+      "session_char_budget": 16000,
+      "chunk_char_budget": 4000
+    }
+  },
+  "denominator_policy": {
+    "recall_and_mrr": "Failure-inclusive: every selected question is in the denominator; failed attempts contribute zero.",
+    "smriti_completed": 48,
+    "smriti_failures": 2,
+    "mem0_completed": 48,
+    "mem0_failures": 2,
+    "unanswerable_questions_sampled": 0,
+    "empty_retrieval_rate": null,
+    "abstention_note": "No _abs questions were selected, so no abstention or empty-retrieval claim is made."
+  },
+  "overall_failure_inclusive": {
+    "requested": 50,
+    "smriti_mean_recall_at_k": 0.838333,
+    "mem0_mean_recall_at_k": 0.83,
+    "recall_difference_smriti_minus_mem0": 0.008333,
+    "smriti_mean_mrr": 0.83,
+    "mem0_mean_mrr": 0.833333,
+    "mrr_difference_smriti_minus_mem0": -0.003333
+  },
+  "per_question_type_failure_inclusive": {
+    "knowledge-update": {
+      "requested": 8,
+      "smriti_failures": 0,
+      "mem0_failures": 0,
+      "smriti_mean_recall_at_k": 0.9375,
+      "mem0_mean_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": -0.0625,
+      "smriti_mean_mrr": 0.9375,
+      "mem0_mean_mrr": 1.0
+    },
+    "multi-session": {
+      "requested": 9,
+      "smriti_failures": 0,
+      "mem0_failures": 0,
+      "smriti_mean_recall_at_k": 0.611111,
+      "mem0_mean_recall_at_k": 0.740741,
+      "recall_difference_smriti_minus_mem0": -0.12963,
+      "smriti_mean_mrr": 0.722222,
+      "mem0_mean_mrr": 0.814815
+    },
+    "single-session-assistant": {
+      "requested": 8,
+      "smriti_failures": 1,
+      "mem0_failures": 1,
+      "smriti_mean_recall_at_k": 0.875,
+      "mem0_mean_recall_at_k": 0.875,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mean_mrr": 0.875,
+      "mem0_mean_mrr": 0.875
+    },
+    "single-session-preference": {
+      "requested": 8,
+      "smriti_failures": 0,
+      "mem0_failures": 0,
+      "smriti_mean_recall_at_k": 0.875,
+      "mem0_mean_recall_at_k": 0.75,
+      "recall_difference_smriti_minus_mem0": 0.125,
+      "smriti_mean_mrr": 0.625,
+      "mem0_mean_mrr": 0.541667
+    },
+    "single-session-user": {
+      "requested": 9,
+      "smriti_failures": 0,
+      "mem0_failures": 0,
+      "smriti_mean_recall_at_k": 1.0,
+      "mem0_mean_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mean_mrr": 0.944444,
+      "mem0_mean_mrr": 1.0
+    },
+    "temporal-reasoning": {
+      "requested": 8,
+      "smriti_failures": 1,
+      "mem0_failures": 1,
+      "smriti_mean_recall_at_k": 0.739583,
+      "mem0_mean_recall_at_k": 0.604167,
+      "recall_difference_smriti_minus_mem0": 0.135417,
+      "smriti_mean_mrr": 0.875,
+      "mem0_mean_mrr": 0.75
+    }
+  },
+  "paired_bootstrap_recall_difference": {
+    "estimand": "mean per-question recall@5 difference (Smriti - Mem0)",
+    "resampling_unit": "selected question id",
+    "replicates": 20000,
+    "seed": 20260907,
+    "interval": "percentile 95% interval using nearest-rank endpoints",
+    "point_estimate": 0.008333,
+    "ci95": [
+      -0.05,
+      0.08
+    ]
+  },
+  "raw_timing_provenance_excluded_from_speed_ranking": {
+    "smriti_latency_ms_p50": 20.58,
+    "smriti_latency_ms_p95": 119.38,
+    "mem0_latency_ms_p50": 20.14,
+    "mem0_latency_ms_p95": 58.015,
+    "reason": "Runs used a shared, non-isolated host; timing is retained for provenance and excluded from speed comparisons."
+  },
+  "truncation_provenance": {
+    "same_truncation_counters": true,
+    "counters": {
+      "sessions": 2395,
+      "chunks": 6928,
+      "original_chars": 24683240,
+      "indexed_chars": 23857787,
+      "truncated_session_chars": 825453,
+      "truncated_chunk_chars": 0
+    }
+  },
+  "failure_provenance": {
+    "smriti": [
+      {
+        "question_id": "gpt4_59149c77",
+        "question_type": "temporal-reasoning",
+        "error": {
+          "type": "HTTPError",
+          "message": "HTTP Error 500: Internal Server Error"
+        }
+      },
+      {
+        "question_id": "89527b6b",
+        "question_type": "single-session-assistant",
+        "error": {
+          "type": "HTTPError",
+          "message": "HTTP Error 500: Internal Server Error"
+        }
+      }
+    ],
+    "mem0": [
+      {
+        "question_id": "gpt4_59149c77",
+        "question_type": "temporal-reasoning",
+        "error": {
+          "type": "ResponseError",
+          "message": "the input length exceeds the context length (status code: 400)"
+        }
+      },
+      {
+        "question_id": "89527b6b",
+        "question_type": "single-session-assistant",
+        "error": {
+          "type": "ResponseError",
+          "message": "the input length exceeds the context length (status code: 400)"
+        }
+      }
+    ],
+    "same_failure_question_ids": true,
+    "context_note": "The repeated failures occurred with the 4,000-character exploratory budget. A conservative 1,000-character default is now in the frozen harness; these raw artifacts were not overwritten."
+  },
+  "hypotheses_for_follow_up": [
+    "The multi-session gap (Smriti 0.6111 vs Mem0 0.7407 recall@5) may reflect adapter-specific cross-session or chunk-candidate handling; this is a hypothesis requiring a token-safe rerun.",
+    "The temporal-reasoning difference may be sensitive to one failed question per adapter and the eight-question stratum size; it is not evidence of a general advantage.",
+    "The preference difference may likewise reflect small-stratum sampling and should be tested on a larger matched run."
+  ],
+  "paired_questions": [
+    {
+      "question_id": "e47becba",
+      "question_type": "single-session-user",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 0.5,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "0a995998",
+      "question_type": "multi-session",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "8a2466db",
+      "question_type": "single-session-preference",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "gpt4_59149c77",
+      "question_type": "temporal-reasoning",
+      "smriti_recall_at_k": 0.0,
+      "mem0_recall_at_k": 0.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 0.0,
+      "mem0_mrr": 0.0,
+      "smriti_failed": true,
+      "mem0_failed": true
+    },
+    {
+      "question_id": "6a1eabeb",
+      "question_type": "knowledge-update",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "7161e7e2",
+      "question_type": "single-session-assistant",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "118b2229",
+      "question_type": "single-session-user",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "6d550036",
+      "question_type": "multi-session",
+      "smriti_recall_at_k": 0.25,
+      "mem0_recall_at_k": 0.5,
+      "recall_difference_smriti_minus_mem0": -0.25,
+      "smriti_mrr": 0.5,
+      "mem0_mrr": 0.5,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "06878be2",
+      "question_type": "single-session-preference",
+      "smriti_recall_at_k": 0.0,
+      "mem0_recall_at_k": 0.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 0.0,
+      "mem0_mrr": 0.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "gpt4_f49edff3",
+      "question_type": "temporal-reasoning",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "6aeb4375",
+      "question_type": "knowledge-update",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "c4f10528",
+      "question_type": "single-session-assistant",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "51a45a95",
+      "question_type": "single-session-user",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "gpt4_59c863d7",
+      "question_type": "multi-session",
+      "smriti_recall_at_k": 0.5,
+      "mem0_recall_at_k": 0.75,
+      "recall_difference_smriti_minus_mem0": -0.25,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "75832dbd",
+      "question_type": "single-session-preference",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 0.0,
+      "recall_difference_smriti_minus_mem0": 1.0,
+      "smriti_mrr": 0.3333333333333333,
+      "mem0_mrr": 0.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "71017276",
+      "question_type": "temporal-reasoning",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "830ce83f",
+      "question_type": "knowledge-update",
+      "smriti_recall_at_k": 0.5,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": -0.5,
+      "smriti_mrr": 0.5,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "89527b6b",
+      "question_type": "single-session-assistant",
+      "smriti_recall_at_k": 0.0,
+      "mem0_recall_at_k": 0.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 0.0,
+      "mem0_mrr": 0.0,
+      "smriti_failed": true,
+      "mem0_failed": true
+    },
+    {
+      "question_id": "58bf7951",
+      "question_type": "single-session-user",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "b5ef892d",
+      "question_type": "multi-session",
+      "smriti_recall_at_k": 0.6666666666666666,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": -0.33333333333333337,
+      "smriti_mrr": 0.5,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "0edc2aef",
+      "question_type": "single-session-preference",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 0.3333333333333333,
+      "mem0_mrr": 0.5,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "b46e15ed",
+      "question_type": "temporal-reasoning",
+      "smriti_recall_at_k": 0.25,
+      "mem0_recall_at_k": 0.5,
+      "recall_difference_smriti_minus_mem0": -0.25,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "852ce960",
+      "question_type": "knowledge-update",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "e9327a54",
+      "question_type": "single-session-assistant",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "1e043500",
+      "question_type": "single-session-user",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "e831120c",
+      "question_type": "multi-session",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "35a27287",
+      "question_type": "single-session-preference",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "gpt4_fa19884c",
+      "question_type": "temporal-reasoning",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "945e3d21",
+      "question_type": "knowledge-update",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "4c36ccef",
+      "question_type": "single-session-assistant",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "c5e8278d",
+      "question_type": "single-session-user",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "3a704032",
+      "question_type": "multi-session",
+      "smriti_recall_at_k": 0.6666666666666666,
+      "mem0_recall_at_k": 0.6666666666666666,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "32260d93",
+      "question_type": "single-session-preference",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 0.3333333333333333,
+      "mem0_mrr": 0.3333333333333333,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "0bc8ad92",
+      "question_type": "temporal-reasoning",
+      "smriti_recall_at_k": 0.6666666666666666,
+      "mem0_recall_at_k": 0.3333333333333333,
+      "recall_difference_smriti_minus_mem0": 0.3333333333333333,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "d7c942c3",
+      "question_type": "knowledge-update",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "6ae235be",
+      "question_type": "single-session-assistant",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "6ade9755",
+      "question_type": "single-session-user",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "gpt4_d84a3211",
+      "question_type": "multi-session",
+      "smriti_recall_at_k": 0.75,
+      "mem0_recall_at_k": 0.75,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 0.5,
+      "mem0_mrr": 0.5,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "195a1a1b",
+      "question_type": "single-session-preference",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 0.5,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "af082822",
+      "question_type": "temporal-reasoning",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 0.0,
+      "recall_difference_smriti_minus_mem0": 1.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 0.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "71315a70",
+      "question_type": "knowledge-update",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "7e00a6cb",
+      "question_type": "single-session-assistant",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "6f9b354f",
+      "question_type": "single-session-user",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "aae3761f",
+      "question_type": "multi-session",
+      "smriti_recall_at_k": 0.6666666666666666,
+      "mem0_recall_at_k": 0.6666666666666666,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "afdc33df",
+      "question_type": "single-session-preference",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "gpt4_4929293a",
+      "question_type": "temporal-reasoning",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "89941a93",
+      "question_type": "knowledge-update",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "1903aded",
+      "question_type": "single-session-assistant",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "58ef2f1c",
+      "question_type": "single-session-user",
+      "smriti_recall_at_k": 1.0,
+      "mem0_recall_at_k": 1.0,
+      "recall_difference_smriti_minus_mem0": 0.0,
+      "smriti_mrr": 1.0,
+      "mem0_mrr": 1.0,
+      "smriti_failed": false,
+      "mem0_failed": false
+    },
+    {
+      "question_id": "gpt4_f2262a51",
+      "question_type": "multi-session",
+      "smriti_recall_at_k": 0.0,
+      "mem0_recall_at_k": 0.3333333333333333,
+      "recall_difference_smriti_minus_mem0": -0.3333333333333333,
+      "smriti_mrr": 0.0,
+      "mem0_mrr": 0.3333333333333333,
+      "smriti_failed": false,
+      "mem0_failed": false
+    }
+  ]
+}

@@ -1,0 +1,148 @@
+{
+  "schema_version": 2,
+  "status": "complete",
+  "track": "official LongMemEval-S full-haystack raw-session retrieval; extraction bypassed",
+  "adapter": "mem0",
+  "configuration": "mem0 OSS / infer=False / configured Ollama nomic-embed-text:v1.5",
+  "dataset": {
+    "source": "https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned/resolve/main/longmemeval_s_cleaned.json",
+    "sha256": "9ca349e686ff9a109df1c97d4970d928d954448dd1c57cd4b24e538f81bf0cf2",
+    "total_items": 2,
+    "selected_items": [
+      "gpt4_59149c77",
+      "89527b6b"
+    ]
+  },
+  "embedding": {
+    "provider": "Ollama",
+    "model": "nomic-embed-text:v1.5",
+    "dimensions": 768,
+    "base_url": "http://127.0.0.1:11436"
+  },
+  "budgets": {
+    "sample": 2,
+    "k": 5,
+    "session_char_budget": 16000,
+    "chunk_char_budget": 1000
+  },
+  "run": {
+    "started_utc": "2026-09-07T14:58:00Z",
+    "platform": "macOS-26.5.1-arm64-arm-64bit",
+    "python": "3.11.15 (main, Jun 11 2026, 04:04:09) [Clang 22.1.3 ]",
+    "clock": "time.perf_counter_ns",
+    "failure_policy": "raw failures remain in denominator as zero"
+  },
+  "summary": {
+    "requested": 2,
+    "completed": 2,
+    "failures": 0,
+    "cleanup_failures": 0,
+    "failure_inclusive_denominator": 2,
+    "answerable_requested": 2,
+    "answerable_completed": 2,
+    "mean_recall_at_k": 0.75,
+    "mrr": 0.75,
+    "empty_retrieval_requested": 0,
+    "empty_retrieval_completed": 0,
+    "empty_retrieval_successes": 0,
+    "empty_retrieval_rate": null,
+    "latency_ms_p50": 24.582,
+    "latency_ms_p95": 25.504,
+    "truncation": {
+      "sessions": 93,
+      "chunks": 1003,
+      "original_chars": 996890,
+      "indexed_chars": 964878,
+      "truncated_session_chars": 32012,
+      "truncated_chunk_chars": 0
+    },
+    "per_question_type": {
+      "single-session-assistant": {
+        "requested": 1,
+        "completed": 1,
+        "failures": 0,
+        "answerable_requested": 1,
+        "unanswerable_requested": 0,
+        "mean_recall_at_k": 1.0,
+        "mrr": 1.0
+      },
+      "temporal-reasoning": {
+        "requested": 1,
+        "completed": 1,
+        "failures": 0,
+        "answerable_requested": 1,
+        "unanswerable_requested": 0,
+        "mean_recall_at_k": 0.5,
+        "mrr": 0.5
+      }
+    }
+  },
+  "results": [
+    {
+      "question_id": "gpt4_59149c77",
+      "question_type": "temporal-reasoning",
+      "session_count": 48,
+      "chunk_count": 503,
+      "ingest_ms": 14518.395,
+      "latency_ms": 25.504,
+      "returned": [
+        "9e2c2a6c_2",
+        "answer_d00ba6d0_2"
+      ],
+      "relevant": [
+        "answer_d00ba6d0_1",
+        "answer_d00ba6d0_2"
+      ],
+      "recall_at_k": 0.5,
+      "reciprocal_rank": 0.5,
+      "unanswerable": false,
+      "empty_retrieval_success": false
+    },
+    {
+      "question_id": "89527b6b",
+      "question_type": "single-session-assistant",
+      "session_count": 45,
+      "chunk_count": 500,
+      "ingest_ms": 15479.078,
+      "latency_ms": 24.582,
+      "returned": [
+        "answer_sharegpt_YkWn1Ne_0",
+        "07f3f0e0_2",
+        "ultrachat_11001"
+      ],
+      "relevant": [
+        "answer_sharegpt_YkWn1Ne_0"
+      ],
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "unanswerable": false,
+      "empty_retrieval_success": false
+    }
+  ],
+  "failure_records": [],
+  "cleanup_failure_records": [],
+  "raw_sanity_scope": {
+    "purpose": "two-question context-recovery smoke; not a replacement for the preserved s50 quality run",
+    "selected_question_ids": [
+      "gpt4_59149c77",
+      "89527b6b"
+    ],
+    "chunk_char_budget": 1000,
+    "official_full_dataset_sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
+    "subset_input_sha256": "9ca349e686ff9a109df1c97d4970d928d954448dd1c57cd4b24e538f81bf0cf2",
+    "source_subset": "selected from official longmemeval_s_cleaned.json; subset hash is recorded in dataset.sha256",
+    "model_runtime": {
+      "endpoint": "http://127.0.0.1:11436",
+      "model": "nomic-embed-text:v1.5",
+      "digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+      "context_length": 2048,
+      "family": "nomic-bert",
+      "format": "gguf",
+      "quantization_level": "F16",
+      "observed_at_utc": "2026-09-07T14:58:54Z"
+    },
+    "generation_calls": "none; retrieval-only, Mem0 infer=False",
+    "mem0_llm_config": "nomic-embed-text:v1.5 placeholder only; no LLM generation call"
+  },
+  "source_artifact_sha256_before_enrichment": "e185c8751bc2d46970732856c8cc5200fc2bc10905a8dc706ea6240f6cdb4b26"
+}
