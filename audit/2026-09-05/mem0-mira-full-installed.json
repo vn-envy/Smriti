@@ -1,0 +1,799 @@
+{
+  "schema_version": 1,
+  "status": "ok",
+  "track": "Mem0 OSS 2.0.20 full-mode three-update Mira smoke; no post-hoc answers",
+  "config": {
+    "mem0": {
+      "vector_store": {
+        "provider": "qdrant",
+        "config": {
+          "path": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/mem0-mira-full-krh04yd6/qdrant",
+          "collection_name": "mira_full_probe",
+          "embedding_model_dims": 768
+        }
+      },
+      "embedder": {
+        "provider": "ollama",
+        "config": {
+          "model": "nomic-embed-text:v1.5",
+          "embedding_dims": 768,
+          "ollama_base_url": "http://127.0.0.1:11436"
+        }
+      },
+      "llm": {
+        "provider": "ollama",
+        "config": {
+          "model": "qwen3:8b",
+          "temperature": 0.0,
+          "max_tokens": 2048,
+          "top_p": 0.1,
+          "ollama_base_url": "http://127.0.0.1:11436"
+        }
+      },
+      "history_db_path": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/mem0-mira-full-krh04yd6/history.db"
+    },
+    "mode": "infer=True",
+    "database_scope": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/mem0-mira-full-krh04yd6",
+    "embedding_model": "nomic-embed-text:v1.5",
+    "embedding_dimensions_configured": 768,
+    "llm_model": "qwen3:8b",
+    "base_url": "http://127.0.0.1:11436",
+    "client_timeout_s": 120.0,
+    "thinking_control": {
+      "parameter": "think",
+      "value": false,
+      "mechanism": "explicit ThinkingOffOllamaLLM -> official ollama.Client.chat(think=False)",
+      "Mem0_OllamaConfig_field": "unsupported; omitted from config"
+    }
+  },
+  "updates": [
+    {
+      "timestamp": "2024-01-10T12:00:00Z",
+      "content": "On January 10, 2024, Mira worked on the Aurora project in Mumbai and preferred Python."
+    },
+    {
+      "timestamp": "2024-06-15T12:00:00Z",
+      "content": "On June 15, 2024, Mira moved to Berlin and joined the Atlas project. She still preferred Python."
+    },
+    {
+      "timestamp": "2025-02-20T12:00:00Z",
+      "content": "On February 20, 2025, Mira switched from Python to Rust for the Atlas project and preferred light mode."
+    }
+  ],
+  "queries": {
+    "current_rust_atlas": "What programming language does Mira currently prefer for the Atlas project?",
+    "history_mumbai_python": "In January 2024, where did Mira work and what programming language did she prefer?"
+  },
+  "steps": [
+    {
+      "name": "provider_snapshot",
+      "ok": true,
+      "elapsed_s": 0.0073,
+      "result": {
+        "endpoint": "http://127.0.0.1:11436",
+        "runtime_endpoint": "http://127.0.0.1:11436",
+        "version": {
+          "version": "0.24.0"
+        },
+        "tags": {
+          "models": [
+            {
+              "name": "nomic-embed-text:v1.5",
+              "model": "nomic-embed-text:v1.5",
+              "modified_at": "2026-09-06T01:27:59.961284792+05:30",
+              "size": 274302450,
+              "digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+              "details": {
+                "parent_model": "",
+                "format": "gguf",
+                "family": "nomic-bert",
+                "families": [
+                  "nomic-bert"
+                ],
+                "parameter_size": "137M",
+                "quantization_level": "F16"
+              }
+            },
+            {
+              "name": "qwen3:8b",
+              "model": "qwen3:8b",
+              "modified_at": "2026-09-06T01:27:36.039328439+05:30",
+              "size": 5225388164,
+              "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+              "details": {
+                "parent_model": "",
+                "format": "gguf",
+                "family": "qwen3",
+                "families": [
+                  "qwen3"
+                ],
+                "parameter_size": "8.2B",
+                "quantization_level": "Q4_K_M"
+              }
+            }
+          ]
+        },
+        "processes": {
+          "models": [
+            {
+              "name": "nomic-embed-text:v1.5",
+              "model": "nomic-embed-text:v1.5",
+              "size": 578373632,
+              "digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+              "details": {
+                "parent_model": "",
+                "format": "gguf",
+                "family": "nomic-bert",
+                "families": [
+                  "nomic-bert"
+                ],
+                "parameter_size": "137M",
+                "quantization_level": "F16"
+              },
+              "expires_at": "2026-09-07T21:30:11.118674+05:30",
+              "size_vram": 578373632,
+              "context_length": 2048
+            }
+          ]
+        },
+        "errors": []
+      }
+    },
+    {
+      "name": "construct_memory",
+      "ok": true,
+      "elapsed_s": 0.0386,
+      "result": "<mem0.memory.main.Memory object at 0x1091ce610>"
+    },
+    {
+      "name": "read_full_memory",
+      "ok": true,
+      "elapsed_s": 0.0007,
+      "result": {
+        "results": [
+          {
+            "id": "33c3eb51-f64e-4cdc-86d4-6789d0e49114",
+            "memory": "Mira worked on the Aurora project in Mumbai on January 10, 2024, and preferred Python",
+            "hash": "4d3e3dbf62e7cdcb5077369380cc3a76",
+            "metadata": {
+              "source": "mira-full-probe",
+              "event_timestamp": "2024-01-10T12:00:00Z"
+            },
+            "created_at": "2026-09-07T15:56:43.698176+00:00",
+            "updated_at": "2026-09-07T15:56:43.698176+00:00",
+            "user_id": "mira-full-probe",
+            "attributed_to": "user"
+          },
+          {
+            "id": "6b257281-c5b5-4ca3-a726-756269a207f8",
+            "memory": "Mira switched from Python to Rust for the Atlas project on February 20, 2025, and preferred light mode",
+            "hash": "57d4bb1a88758830784bc04987121685",
+            "metadata": {
+              "source": "mira-full-probe",
+              "event_timestamp": "2025-02-20T12:00:00Z"
+            },
+            "created_at": "2026-09-07T15:58:09.701574+00:00",
+            "updated_at": "2026-09-07T15:58:09.701574+00:00",
+            "user_id": "mira-full-probe",
+            "attributed_to": "user"
+          },
+          {
+            "id": "d0d61ced-f58e-4669-8751-d4c2c19fefc1",
+            "memory": "Mira moved to Berlin and joined the Atlas project on June 15, 2024, and still preferred Python",
+            "hash": "57b57809001ab17165d35bde6191918e",
+            "metadata": {
+              "source": "mira-full-probe",
+              "event_timestamp": "2024-06-15T12:00:00Z"
+            },
+            "created_at": "2026-09-07T15:57:25.814166+00:00",
+            "updated_at": "2026-09-07T15:57:25.814166+00:00",
+            "user_id": "mira-full-probe"
+          }
+        ]
+      }
+    }
+  ],
+  "retain_effects": [
+    {
+      "index": 1,
+      "timestamp": "2024-01-10T12:00:00Z",
+      "add_result": {
+        "results": [
+          {
+            "id": "33c3eb51-f64e-4cdc-86d4-6789d0e49114",
+            "memory": "Mira worked on the Aurora project in Mumbai on January 10, 2024, and preferred Python",
+            "event": "ADD"
+          }
+        ]
+      },
+      "stored_after_add": {
+        "results": [
+          {
+            "id": "33c3eb51-f64e-4cdc-86d4-6789d0e49114",
+            "memory": "Mira worked on the Aurora project in Mumbai on January 10, 2024, and preferred Python",
+            "hash": "4d3e3dbf62e7cdcb5077369380cc3a76",
+            "metadata": {
+              "source": "mira-full-probe",
+              "event_timestamp": "2024-01-10T12:00:00Z"
+            },
+            "created_at": "2026-09-07T15:56:43.698176+00:00",
+            "updated_at": "2026-09-07T15:56:43.698176+00:00",
+            "user_id": "mira-full-probe",
+            "attributed_to": "user"
+          }
+        ]
+      },
+      "stored_read_top_k_requested": 1000,
+      "stored_read_top_k_applied": true,
+      "ok": true,
+      "elapsed_s": 41.8322,
+      "usage_before": {
+        "calls": 0,
+        "tokens_in": 0,
+        "tokens_out": 0,
+        "usage_missing": 0,
+        "usage_observable": false
+      },
+      "usage_after": {
+        "calls": 1,
+        "tokens_in": 4096,
+        "tokens_out": 48,
+        "usage_missing": 0,
+        "usage_observable": true
+      }
+    },
+    {
+      "index": 2,
+      "timestamp": "2024-06-15T12:00:00Z",
+      "add_result": {
+        "results": [
+          {
+            "id": "d0d61ced-f58e-4669-8751-d4c2c19fefc1",
+            "memory": "Mira moved to Berlin and joined the Atlas project on June 15, 2024, and still preferred Python",
+            "event": "ADD"
+          }
+        ]
+      },
+      "stored_after_add": {
+        "results": [
+          {
+            "id": "33c3eb51-f64e-4cdc-86d4-6789d0e49114",
+            "memory": "Mira worked on the Aurora project in Mumbai on January 10, 2024, and preferred Python",
+            "hash": "4d3e3dbf62e7cdcb5077369380cc3a76",
+            "metadata": {
+              "source": "mira-full-probe",
+              "event_timestamp": "2024-01-10T12:00:00Z"
+            },
+            "created_at": "2026-09-07T15:56:43.698176+00:00",
+            "updated_at": "2026-09-07T15:56:43.698176+00:00",
+            "user_id": "mira-full-probe",
+            "attributed_to": "user"
+          },
+          {
+            "id": "d0d61ced-f58e-4669-8751-d4c2c19fefc1",
+            "memory": "Mira moved to Berlin and joined the Atlas project on June 15, 2024, and still preferred Python",
+            "hash": "57b57809001ab17165d35bde6191918e",
+            "metadata": {
+              "source": "mira-full-probe",
+              "event_timestamp": "2024-06-15T12:00:00Z"
+            },
+            "created_at": "2026-09-07T15:57:25.814166+00:00",
+            "updated_at": "2026-09-07T15:57:25.814166+00:00",
+            "user_id": "mira-full-probe"
+          }
+        ]
+      },
+      "stored_read_top_k_requested": 1000,
+      "stored_read_top_k_applied": true,
+      "ok": true,
+      "elapsed_s": 41.6756,
+      "usage_before": {
+        "calls": 1,
+        "tokens_in": 4096,
+        "tokens_out": 48,
+        "usage_missing": 0,
+        "usage_observable": true
+      },
+      "usage_after": {
+        "calls": 2,
+        "tokens_in": 8192,
+        "tokens_out": 98,
+        "usage_missing": 0,
+        "usage_observable": true
+      }
+    },
+    {
+      "index": 3,
+      "timestamp": "2025-02-20T12:00:00Z",
+      "add_result": {
+        "results": [
+          {
+            "id": "6b257281-c5b5-4ca3-a726-756269a207f8",
+            "memory": "Mira switched from Python to Rust for the Atlas project on February 20, 2025, and preferred light mode",
+            "event": "ADD"
+          }
+        ]
+      },
+      "stored_after_add": {
+        "results": [
+          {
+            "id": "33c3eb51-f64e-4cdc-86d4-6789d0e49114",
+            "memory": "Mira worked on the Aurora project in Mumbai on January 10, 2024, and preferred Python",
+            "hash": "4d3e3dbf62e7cdcb5077369380cc3a76",
+            "metadata": {
+              "source": "mira-full-probe",
+              "event_timestamp": "2024-01-10T12:00:00Z"
+            },
+            "created_at": "2026-09-07T15:56:43.698176+00:00",
+            "updated_at": "2026-09-07T15:56:43.698176+00:00",
+            "user_id": "mira-full-probe",
+            "attributed_to": "user"
+          },
+          {
+            "id": "6b257281-c5b5-4ca3-a726-756269a207f8",
+            "memory": "Mira switched from Python to Rust for the Atlas project on February 20, 2025, and preferred light mode",
+            "hash": "57d4bb1a88758830784bc04987121685",
+            "metadata": {
+              "source": "mira-full-probe",
+              "event_timestamp": "2025-02-20T12:00:00Z"
+            },
+            "created_at": "2026-09-07T15:58:09.701574+00:00",
+            "updated_at": "2026-09-07T15:58:09.701574+00:00",
+            "user_id": "mira-full-probe",
+            "attributed_to": "user"
+          },
+          {
+            "id": "d0d61ced-f58e-4669-8751-d4c2c19fefc1",
+            "memory": "Mira moved to Berlin and joined the Atlas project on June 15, 2024, and still preferred Python",
+            "hash": "57b57809001ab17165d35bde6191918e",
+            "metadata": {
+              "source": "mira-full-probe",
+              "event_timestamp": "2024-06-15T12:00:00Z"
+            },
+            "created_at": "2026-09-07T15:57:25.814166+00:00",
+            "updated_at": "2026-09-07T15:57:25.814166+00:00",
+            "user_id": "mira-full-probe"
+          }
+        ]
+      },
+      "stored_read_top_k_requested": 1000,
+      "stored_read_top_k_applied": true,
+      "ok": true,
+      "elapsed_s": 43.8858,
+      "usage_before": {
+        "calls": 2,
+        "tokens_in": 8192,
+        "tokens_out": 98,
+        "usage_missing": 0,
+        "usage_observable": true
+      },
+      "usage_after": {
+        "calls": 3,
+        "tokens_in": 12288,
+        "tokens_out": 160,
+        "usage_missing": 0,
+        "usage_observable": true
+      }
+    }
+  ],
+  "recall": {
+    "current_rust_atlas": {
+      "question": "What programming language does Mira currently prefer for the Atlas project?",
+      "top_k_requested": 12,
+      "top_k_applied": true,
+      "results": {
+        "results": [
+          {
+            "id": "33c3eb51-f64e-4cdc-86d4-6789d0e49114",
+            "memory": "Mira worked on the Aurora project in Mumbai on January 10, 2024, and preferred Python",
+            "hash": "4d3e3dbf62e7cdcb5077369380cc3a76",
+            "metadata": {
+              "source": "mira-full-probe",
+              "event_timestamp": "2024-01-10T12:00:00Z"
+            },
+            "score": 0.3969174340169276,
+            "created_at": "2026-09-07T15:56:43.698176+00:00",
+            "updated_at": "2026-09-07T15:56:43.698176+00:00",
+            "user_id": "mira-full-probe",
+            "attributed_to": "user"
+          },
+          {
+            "id": "d0d61ced-f58e-4669-8751-d4c2c19fefc1",
+            "memory": "Mira moved to Berlin and joined the Atlas project on June 15, 2024, and still preferred Python",
+            "hash": "57b57809001ab17165d35bde6191918e",
+            "metadata": {
+              "source": "mira-full-probe",
+              "event_timestamp": "2024-06-15T12:00:00Z"
+            },
+            "score": 0.39370175229455723,
+            "created_at": "2026-09-07T15:57:25.814166+00:00",
+            "updated_at": "2026-09-07T15:57:25.814166+00:00",
+            "user_id": "mira-full-probe"
+          },
+          {
+            "id": "6b257281-c5b5-4ca3-a726-756269a207f8",
+            "memory": "Mira switched from Python to Rust for the Atlas project on February 20, 2025, and preferred light mode",
+            "hash": "57d4bb1a88758830784bc04987121685",
+            "metadata": {
+              "source": "mira-full-probe",
+              "event_timestamp": "2025-02-20T12:00:00Z"
+            },
+            "score": 0.38206581176659904,
+            "created_at": "2026-09-07T15:58:09.701574+00:00",
+            "updated_at": "2026-09-07T15:58:09.701574+00:00",
+            "user_id": "mira-full-probe",
+            "attributed_to": "user"
+          }
+        ]
+      },
+      "ok": true,
+      "elapsed_s": 0.0405
+    },
+    "history_mumbai_python": {
+      "question": "In January 2024, where did Mira work and what programming language did she prefer?",
+      "top_k_requested": 12,
+      "top_k_applied": true,
+      "results": {
+        "results": [
+          {
+            "id": "33c3eb51-f64e-4cdc-86d4-6789d0e49114",
+            "memory": "Mira worked on the Aurora project in Mumbai on January 10, 2024, and preferred Python",
+            "hash": "4d3e3dbf62e7cdcb5077369380cc3a76",
+            "metadata": {
+              "source": "mira-full-probe",
+              "event_timestamp": "2024-01-10T12:00:00Z"
+            },
+            "score": 0.4958761304994506,
+            "created_at": "2026-09-07T15:56:43.698176+00:00",
+            "updated_at": "2026-09-07T15:56:43.698176+00:00",
+            "user_id": "mira-full-probe",
+            "attributed_to": "user"
+          },
+          {
+            "id": "d0d61ced-f58e-4669-8751-d4c2c19fefc1",
+            "memory": "Mira moved to Berlin and joined the Atlas project on June 15, 2024, and still preferred Python",
+            "hash": "57b57809001ab17165d35bde6191918e",
+            "metadata": {
+              "source": "mira-full-probe",
+              "event_timestamp": "2024-06-15T12:00:00Z"
+            },
+            "score": 0.37195109285938693,
+            "created_at": "2026-09-07T15:57:25.814166+00:00",
+            "updated_at": "2026-09-07T15:57:25.814166+00:00",
+            "user_id": "mira-full-probe"
+          },
+          {
+            "id": "6b257281-c5b5-4ca3-a726-756269a207f8",
+            "memory": "Mira switched from Python to Rust for the Atlas project on February 20, 2025, and preferred light mode",
+            "hash": "57d4bb1a88758830784bc04987121685",
+            "metadata": {
+              "source": "mira-full-probe",
+              "event_timestamp": "2025-02-20T12:00:00Z"
+            },
+            "score": 0.344508377465135,
+            "created_at": "2026-09-07T15:58:09.701574+00:00",
+            "updated_at": "2026-09-07T15:58:09.701574+00:00",
+            "user_id": "mira-full-probe",
+            "attributed_to": "user"
+          }
+        ]
+      },
+      "ok": true,
+      "history": {
+        "requested_memory_ids": [
+          "33c3eb51-f64e-4cdc-86d4-6789d0e49114",
+          "6b257281-c5b5-4ca3-a726-756269a207f8",
+          "d0d61ced-f58e-4669-8751-d4c2c19fefc1"
+        ],
+        "records": [
+          {
+            "id": "33c3eb51-f64e-4cdc-86d4-6789d0e49114",
+            "ok": true,
+            "history": [
+              {
+                "id": "96ae51a2-51ad-4638-8ec1-b2205f549388",
+                "memory_id": "33c3eb51-f64e-4cdc-86d4-6789d0e49114",
+                "old_memory": null,
+                "new_memory": "Mira worked on the Aurora project in Mumbai on January 10, 2024, and preferred Python",
+                "event": "ADD",
+                "created_at": "2026-09-07T15:56:43.698176+00:00",
+                "updated_at": null,
+                "is_deleted": false,
+                "actor_id": null,
+                "role": null
+              }
+            ]
+          },
+          {
+            "id": "6b257281-c5b5-4ca3-a726-756269a207f8",
+            "ok": true,
+            "history": [
+              {
+                "id": "49210892-84a9-4343-b7d6-c366dd437ff0",
+                "memory_id": "6b257281-c5b5-4ca3-a726-756269a207f8",
+                "old_memory": null,
+                "new_memory": "Mira switched from Python to Rust for the Atlas project on February 20, 2025, and preferred light mode",
+                "event": "ADD",
+                "created_at": "2026-09-07T15:58:09.701574+00:00",
+                "updated_at": null,
+                "is_deleted": false,
+                "actor_id": null,
+                "role": null
+              }
+            ]
+          },
+          {
+            "id": "d0d61ced-f58e-4669-8751-d4c2c19fefc1",
+            "ok": true,
+            "history": [
+              {
+                "id": "08fdf8ad-2b0d-4efb-8ec1-0791a58e9ac9",
+                "memory_id": "d0d61ced-f58e-4669-8751-d4c2c19fefc1",
+                "old_memory": null,
+                "new_memory": "Mira moved to Berlin and joined the Atlas project on June 15, 2024, and still preferred Python",
+                "event": "ADD",
+                "created_at": "2026-09-07T15:57:25.814166+00:00",
+                "updated_at": null,
+                "is_deleted": false,
+                "actor_id": null,
+                "role": null
+              }
+            ]
+          }
+        ]
+      },
+      "elapsed_s": 0.0293
+    }
+  },
+  "full_memory_facts": {
+    "results": [
+      {
+        "id": "33c3eb51-f64e-4cdc-86d4-6789d0e49114",
+        "memory": "Mira worked on the Aurora project in Mumbai on January 10, 2024, and preferred Python",
+        "hash": "4d3e3dbf62e7cdcb5077369380cc3a76",
+        "metadata": {
+          "source": "mira-full-probe",
+          "event_timestamp": "2024-01-10T12:00:00Z"
+        },
+        "created_at": "2026-09-07T15:56:43.698176+00:00",
+        "updated_at": "2026-09-07T15:56:43.698176+00:00",
+        "user_id": "mira-full-probe",
+        "attributed_to": "user"
+      },
+      {
+        "id": "6b257281-c5b5-4ca3-a726-756269a207f8",
+        "memory": "Mira switched from Python to Rust for the Atlas project on February 20, 2025, and preferred light mode",
+        "hash": "57d4bb1a88758830784bc04987121685",
+        "metadata": {
+          "source": "mira-full-probe",
+          "event_timestamp": "2025-02-20T12:00:00Z"
+        },
+        "created_at": "2026-09-07T15:58:09.701574+00:00",
+        "updated_at": "2026-09-07T15:58:09.701574+00:00",
+        "user_id": "mira-full-probe",
+        "attributed_to": "user"
+      },
+      {
+        "id": "d0d61ced-f58e-4669-8751-d4c2c19fefc1",
+        "memory": "Mira moved to Berlin and joined the Atlas project on June 15, 2024, and still preferred Python",
+        "hash": "57b57809001ab17165d35bde6191918e",
+        "metadata": {
+          "source": "mira-full-probe",
+          "event_timestamp": "2024-06-15T12:00:00Z"
+        },
+        "created_at": "2026-09-07T15:57:25.814166+00:00",
+        "updated_at": "2026-09-07T15:57:25.814166+00:00",
+        "user_id": "mira-full-probe"
+      }
+    ]
+  },
+  "errors": [],
+  "usage": {
+    "llm": {
+      "calls": 3,
+      "tokens_in": 12288,
+      "tokens_out": 160,
+      "usage_missing": 0,
+      "usage_observable": true
+    },
+    "call_timings": [
+      {
+        "call": 1,
+        "elapsed_s": 41.309,
+        "ok": true,
+        "prompt_eval_count": 4096,
+        "eval_count": 48
+      },
+      {
+        "call": 2,
+        "elapsed_s": 41.6,
+        "ok": true,
+        "prompt_eval_count": 4096,
+        "eval_count": 50
+      },
+      {
+        "call": 3,
+        "elapsed_s": 43.7911,
+        "ok": true,
+        "prompt_eval_count": 4096,
+        "eval_count": 62
+      }
+    ]
+  },
+  "metrics_scope": "Object-local call/timing counters and native Ollama prompt_eval_count/eval_count are recorded when returned; failed-call usage remains unknown.",
+  "provenance": {
+    "python": "3.11.15 (main, Jun 11 2026, 04:04:09) [Clang 22.1.3 ]",
+    "platform": "macOS-26.5.1-arm64-arm-64bit",
+    "mem0_version": "2.0.20",
+    "source_snapshot": {
+      "script_sha256": "aa337c3d4b71eb6ea169c25a5bd6261a39c5ae8d7e74149215166306480d59d8"
+    },
+    "memory_method_contract": {
+      "search_signature": "(query: str, *, top_k: int = 20, filters: Optional[Dict[str, Any]] = None, threshold: float = 0.1, rerank: bool = False, explain: bool = False, reference_date: Optional[Any] = None, show_expired: bool = False, **kwargs)",
+      "get_all_signature": "(*, filters: Optional[Dict[str, Any]] = None, top_k: int = 20, show_expired: bool = False, **kwargs)",
+      "history_signature": "(memory_id)",
+      "search_top_k_parameter": true,
+      "get_all_top_k_parameter": true
+    },
+    "thinking_control_runtime": {
+      "parameter": "think",
+      "value": false,
+      "route": "ollama.Client.chat",
+      "official": true,
+      "signature": "(self, model: str = '', messages: Optional[Sequence[Union[Mapping[str, Any], ollama._types.Message]]] = None, *, tools: Optional[Sequence[Union[Mapping[str, Any], ollama._types.Tool, Callable]]] = None, stream: bool = False, think: Union[bool, Literal['low', 'medium', 'high'], NoneType] = None, logprobs: Optional[bool] = None, top_logprobs: Optional[int] = None, format: Union[Literal['', 'json'], dict[str, Any], NoneType] = None, options: Union[Mapping[str, Any], ollama._types.Options, NoneType] = None, keep_alive: Union[float, str, NoneType] = None) -> Union[ollama._types.ChatResponse, collections.abc.Iterator[ollama._types.ChatResponse]]",
+      "timeout_s": 120.0
+    },
+    "wrapper_contract": {
+      "method": "generate_response",
+      "response_format_forwarded": true,
+      "tools_forwarded": true,
+      "tool_choice": "accepted but left at Ollama Client.chat default",
+      "think_false_forwarded": true
+    }
+  },
+  "provider": {
+    "endpoint": "http://127.0.0.1:11436",
+    "runtime_endpoint": "http://127.0.0.1:11436",
+    "version": {
+      "version": "0.24.0"
+    },
+    "tags": {
+      "models": [
+        {
+          "name": "nomic-embed-text:v1.5",
+          "model": "nomic-embed-text:v1.5",
+          "modified_at": "2026-09-06T01:27:59.961284792+05:30",
+          "size": 274302450,
+          "digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "nomic-bert",
+            "families": [
+              "nomic-bert"
+            ],
+            "parameter_size": "137M",
+            "quantization_level": "F16"
+          }
+        },
+        {
+          "name": "qwen3:8b",
+          "model": "qwen3:8b",
+          "modified_at": "2026-09-06T01:27:36.039328439+05:30",
+          "size": 5225388164,
+          "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen3",
+            "families": [
+              "qwen3"
+            ],
+            "parameter_size": "8.2B",
+            "quantization_level": "Q4_K_M"
+          }
+        }
+      ]
+    },
+    "processes": {
+      "models": [
+        {
+          "name": "nomic-embed-text:v1.5",
+          "model": "nomic-embed-text:v1.5",
+          "size": 578373632,
+          "digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "nomic-bert",
+            "families": [
+              "nomic-bert"
+            ],
+            "parameter_size": "137M",
+            "quantization_level": "F16"
+          },
+          "expires_at": "2026-09-07T21:30:11.118674+05:30",
+          "size_vram": 578373632,
+          "context_length": 2048
+        }
+      ]
+    },
+    "errors": []
+  },
+  "full_memory_read_contract": {
+    "top_k_requested": 1000,
+    "top_k_applied": true,
+    "returned_count": 3
+  },
+  "history": {
+    "requested_memory_ids": [
+      "33c3eb51-f64e-4cdc-86d4-6789d0e49114",
+      "6b257281-c5b5-4ca3-a726-756269a207f8",
+      "d0d61ced-f58e-4669-8751-d4c2c19fefc1"
+    ],
+    "records": [
+      {
+        "id": "33c3eb51-f64e-4cdc-86d4-6789d0e49114",
+        "ok": true,
+        "history": [
+          {
+            "id": "96ae51a2-51ad-4638-8ec1-b2205f549388",
+            "memory_id": "33c3eb51-f64e-4cdc-86d4-6789d0e49114",
+            "old_memory": null,
+            "new_memory": "Mira worked on the Aurora project in Mumbai on January 10, 2024, and preferred Python",
+            "event": "ADD",
+            "created_at": "2026-09-07T15:56:43.698176+00:00",
+            "updated_at": null,
+            "is_deleted": false,
+            "actor_id": null,
+            "role": null
+          }
+        ]
+      },
+      {
+        "id": "6b257281-c5b5-4ca3-a726-756269a207f8",
+        "ok": true,
+        "history": [
+          {
+            "id": "49210892-84a9-4343-b7d6-c366dd437ff0",
+            "memory_id": "6b257281-c5b5-4ca3-a726-756269a207f8",
+            "old_memory": null,
+            "new_memory": "Mira switched from Python to Rust for the Atlas project on February 20, 2025, and preferred light mode",
+            "event": "ADD",
+            "created_at": "2026-09-07T15:58:09.701574+00:00",
+            "updated_at": null,
+            "is_deleted": false,
+            "actor_id": null,
+            "role": null
+          }
+        ]
+      },
+      {
+        "id": "d0d61ced-f58e-4669-8751-d4c2c19fefc1",
+        "ok": true,
+        "history": [
+          {
+            "id": "08fdf8ad-2b0d-4efb-8ec1-0791a58e9ac9",
+            "memory_id": "d0d61ced-f58e-4669-8751-d4c2c19fefc1",
+            "old_memory": null,
+            "new_memory": "Mira moved to Berlin and joined the Atlas project on June 15, 2024, and still preferred Python",
+            "event": "ADD",
+            "created_at": "2026-09-07T15:57:25.814166+00:00",
+            "updated_at": null,
+            "is_deleted": false,
+            "actor_id": null,
+            "role": null
+          }
+        ]
+      }
+    ]
+  },
+  "quality_assertions": {
+    "current_rust_atlas_evidence": true,
+    "history_mumbai_python_search_evidence": true
+  },
+  "operational_assertions": {
+    "history_calls_completed": true
+  },
+  "elapsed_s": 128.1195
+}

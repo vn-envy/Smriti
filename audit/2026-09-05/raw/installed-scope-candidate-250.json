@@ -1,0 +1,18 @@
+{
+  "status": "installed_tests_passed_runtime_extraction_gate_open",
+  "installed_core_wheel": "/private/tmp/smriti-scope-reviewed-wheel/smriti_agents-0.3.2-py3-none-any.whl",
+  "installed_enterprise_wheel": "/private/tmp/smriti-scope-reviewed-wheel/smriti_enterprise-0.1.0-py3-none-any.whl",
+  "test_command": "/private/tmp/smriti-candidate-qa-20260906/bin/python -m pytest /Users/kshitijvatsa/Downloads/Smriti-main/tests /Users/kshitijvatsa/Downloads/Smriti-main/enterprise/tests --import-mode=importlib -q",
+  "test_cwd": "/private/tmp",
+  "tests_passed": 250,
+  "pip_check": "No broken requirements found.",
+  "source_verification": "scoped-wheel-source-verification.json",
+  "runtime_evidence": "../smriti-mira-full-scoped-installed.json",
+  "runtime_findings": {
+    "berlin_not_invalidated_by_unrelated_joined_fact": true,
+    "answer_model_current_and_history_correct": true,
+    "rust_target_state_and_project_scope_extracted": false,
+    "note": "The probe also narrowly rejected preferred_language for historical Python; this is a validator gap, not missing historical Python. Target-state/scope extraction remains a real gap."
+  },
+  "approval": "Overall build not accepted yet."
+}
