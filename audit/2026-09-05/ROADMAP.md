@@ -147,10 +147,16 @@ status. See [`raw/extraction-tool-transition-v7-corrected-review.json`](raw/extr
   (2/4 answerable; 2/2 `_abs` questions judged by the abstention heuristic) and
   Mem0 scored 3/6 (1/4 answerable; 2/2 `_abs` questions judged by the
   abstention heuristic); this is exploratory and does not close full QA.
+- [x] Run the bounded Smriti LongMemEval-S50 answer/judge track with the shared
+  frozen-v4 harness: 50/50 completed with zero operational and cleanup failures;
+  32/50 recorded correct (64%), 14/30 answerable (46.67%), and 18/20
+  abstention rows (90%). The selected sample is exploratory because 40% of its
+  rows are abstention questions. The paired frozen-v4 Mem0 run uses the same
+  harness, models, and budgets and is active.
 - [ ] Run LongMemEval full-history and LoCoMo with one shared answer/judge
   configuration. The bounded paired LoCoMo50 answer/judge baseline is complete
-  for frozen v4; shared paired LongMemEval-S50 full-history QA remains open. The
-  500-question oracle
+  for frozen v4; paired LongMemEval-S50 full-history QA remains open pending the
+  Mem0 side. The 500-question oracle
   run bypasses extraction and answer generation, so it is evidence-only and
   not full-haystack QA. Here “full-history” means that each selected question
   receives its complete haystack under the pinned retrieval/context budgets;
@@ -168,9 +174,14 @@ quality evaluation: questions share conversations, the bootstrap does not model
 that dependence, and the recorded judge labels contain known errors including
 `conv-30-q0`. Failure analysis classifies the Smriti failed answerable rows as 7
 retrieved-supported reader failures, 11 missing-evidence failures, and 1
-ambiguous case. Shared paired LongMemEval-S50 full-history QA remains open;
-GBrain held-out20 semantic retrieval QA and Hindsight comparative probes (20/12)
-are also pending.
+ambiguous case. Smriti's bounded LongMemEval-S50 side is also complete:
+32/50 recorded correct (64%), 14/30 answerable (46.67%), and 18/20 abstention
+rows (90%), with zero operational or cleanup failures. The 40% abstention share
+makes this an exploratory sample rather than a broad accuracy estimate. The
+paired frozen-v4 Mem0 run is active under the same harness, models, and budgets;
+Smriti's total elapsed time was 3994.4346 seconds, with extreme host load
+observed during the final question, so it is not a controlled speed comparison. GBrain held-out20
+semantic retrieval QA and Hindsight comparative probes (20/12) remain pending.
 
 The final matched growth report covers 100, 1,000, 3,000, 9,000, and 36,500
 documents for Smriti and Mem0 with the same local Ollama nomic model and for a
@@ -188,9 +199,10 @@ are marked unmeasured, never scored as zero or replaced by mocks. The bounded
 growth speed/storage comparison is complete for these routes; the separate
 GBrain nomic semantic growth artifact is complete as a retrieval/storage
 diagnostic but excluded from the matched three-track report. The six-question
-QA preflight is recorded, but full model-backed quality comparison remains
-unfinished until the complete LongMemEval-S and LoCoMo runs are executed with a
-fixed reader and judge.
+QA preflight and the bounded Smriti LongMemEval-S50 side are recorded, but full
+model-backed quality comparison remains unfinished while the paired frozen-v4
+Mem0 LongMemEval-S50 run is active and the remaining GBrain/Hindsight probes are
+pending.
 
 The paired public50 review found a multi-session recall gap (Smriti 0.6111,
 Mem0 0.7407 across nine questions) and seven questions with fewer than five

@@ -50,9 +50,18 @@ Mem0 was [-0.06, 0.10]. This is not a superiority result because questions share
 conversations, the bootstrap does not model that dependence, and the labels
 include known judge errors such as `conv-30-q0`.
 
-The remaining answer-quality evidence needs shared paired LongMemEval-S50
-full-history QA, GBrain held-out20 semantic retrieval QA, and Hindsight
-comparative probes (20/12). Each
+The bounded Smriti LongMemEval-S50 side is now terminal-complete: 50/50
+selected questions, zero operational/cleanup failures, 32/50 recorded correct,
+14/30 answerable correct, and 18/20 abstention rows correct. Forty percent of
+this selected sample is abstention, so the 64% headline is not a broad
+answerable-accuracy estimate. Late host load makes its 3994.4346-second elapsed
+time uncontrolled and unsuitable for speed comparison. The paired frozen-v4
+Mem0 run remains active under the same harness, reader/judge models, and
+budgets.
+
+The remaining answer-quality evidence needs the paired frozen-v4
+LongMemEval-S50 full-history QA, GBrain held-out20 semantic retrieval QA, and
+Hindsight comparative probes (20/12). Each
 full-history question must use its complete haystack under the pinned retrieval
 and context budgets; this does not require scoring every question in a source
 dataset. All runs need one pinned dataset file and hash, identical embedding and

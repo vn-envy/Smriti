@@ -1,0 +1,27 @@
+{
+  "status": "verified_terminal_completed",
+  "source": "audit/2026-09-05/longmemeval-qa-smriti-s50.json",
+  "sha256": "ec192606fa89134004366d0eed30866b303d5103b9fb78c2a89dcf1676d80768",
+  "process_exit_code": 0,
+  "summary_recomputed": {
+    "completed": 50,
+    "unique_questions": 50,
+    "recorded_correct": 32,
+    "recorded_accuracy": 0.64,
+    "answerable_correct": 14,
+    "answerable_count": 30,
+    "abstention_correct": 18,
+    "abstention_count": 20,
+    "operational_failures": 0,
+    "cleanup_failures": 0
+  },
+  "frozen_harness_provenance": "audit/2026-09-05/raw/longmemeval-smriti-s50-provenance.json",
+  "claims_limits": [
+    "Selected50 questions, not full500 dataset. Fullhistory input remains subject to disclosed per-session/chunk/context budgets.",
+    "40percent of this selected sample is abstention; headline64percent does not represent answerable accuracy.",
+    "Model judge and abstention heuristic are not independent human adjudication; failure analysis follows.",
+    "PairedMem0 result pending; no comparativequalityclaim.",
+    "Late extreme host load observed; elapsed3994.4346seconds is not a controlled speedcomparison."
+  ],
+  "host_load_evidence": "audit/2026-09-05/raw/longmemeval-smriti-late-host-load.json"
+}
