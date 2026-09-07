@@ -1,0 +1,25 @@
+{
+  "root_review_status": "rejected_quality_pass",
+  "artifact": "smriti-mira-full-installed.json",
+  "probe_reported_status": "ok",
+  "observed_answers_correct": true,
+  "findings": [
+    {
+      "severity": "high",
+      "fact_ids": [
+        3,
+        4
+      ],
+      "finding": "Berlin lives_in fact incorrectly invalidated by unrelated joined Atlas event on same date."
+    },
+    {
+      "severity": "high",
+      "fact_ids": [
+        5,
+        6
+      ],
+      "finding": "Python remains active; Rust is present only in event statement, with switched_from object Python. Probe substring assertion falsely treats this as a structured current Rust preference."
+    }
+  ],
+  "required_followup": "Correct consolidation/extraction with general regression coverage; tighten probe and rerun fresh installed wheel. Original evidence preserved unchanged."
+}
