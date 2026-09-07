@@ -1,0 +1,2028 @@
+{
+  "track": "Smriti installed full-mode synthetic Mira quality smoke; not a comparative benchmark",
+  "status": "ok",
+  "command": "/private/tmp/smriti-qa-20260905/bin/python /Users/kshitijvatsa/Downloads/Smriti-main/audit/2026-09-05/qa/smriti_mira_full_probe.py --out /Users/kshitijvatsa/Downloads/Smriti-main/audit/2026-09-05/smriti-mira-full-scoped-contract-v5.json",
+  "provenance": {
+    "smriti_version": "0.3.2",
+    "smriti_module": "/private/tmp/smriti-qa-20260905/lib/python3.11/site-packages/smriti/__init__.py",
+    "distribution_version": "0.3.2",
+    "python": "3.11.15 (main, Jun 11 2026, 04:04:09) [Clang 22.1.3 ]"
+  },
+  "config": {
+    "mode": "full",
+    "model": "qwen3:8b",
+    "embed_model": "nomic-embed-text:v1.5",
+    "llm_endpoint": "http://127.0.0.1:11436/v1",
+    "embed_endpoint": "http://127.0.0.1:11436",
+    "extra_body": {
+      "reasoning_effort": "none",
+      "think": false
+    },
+    "extract_max_tokens": 2048,
+    "answer_max_tokens": 256,
+    "judge_max_tokens": 64,
+    "now": "2025-03-01T12:00:00Z",
+    "database": ":memory:",
+    "embedding_dimensions_observed": 768
+  },
+  "updates": [
+    {
+      "timestamp": "2024-01-10T12:00:00Z",
+      "content": "On January 10, 2024, Mira worked on the Aurora project in Mumbai and preferred Python."
+    },
+    {
+      "timestamp": "2024-06-15T12:00:00Z",
+      "content": "On June 15, 2024, Mira moved to Berlin and joined the Atlas project. She still preferred Python."
+    },
+    {
+      "timestamp": "2025-02-20T12:00:00Z",
+      "content": "On February 20, 2025, Mira switched from Python to Rust for the Atlas project and preferred light mode."
+    }
+  ],
+  "steps": [
+    {
+      "name": "provider_snapshot",
+      "ok": true,
+      "elapsed_s": 0.0261,
+      "result": {
+        "endpoint": "http://127.0.0.1:11436/v1",
+        "runtime_endpoint": "http://127.0.0.1:11436",
+        "version": {
+          "version": "0.24.0"
+        },
+        "tags": {
+          "models": [
+            {
+              "name": "nomic-embed-text:v1.5",
+              "model": "nomic-embed-text:v1.5",
+              "modified_at": "2026-09-06T01:27:59.961284792+05:30",
+              "size": 274302450,
+              "digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+              "details": {
+                "parent_model": "",
+                "format": "gguf",
+                "family": "nomic-bert",
+                "families": [
+                  "nomic-bert"
+                ],
+                "parameter_size": "137M",
+                "quantization_level": "F16"
+              }
+            },
+            {
+              "name": "qwen3:8b",
+              "model": "qwen3:8b",
+              "modified_at": "2026-09-06T01:27:36.039328439+05:30",
+              "size": 5225388164,
+              "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+              "details": {
+                "parent_model": "",
+                "format": "gguf",
+                "family": "qwen3",
+                "families": [
+                  "qwen3"
+                ],
+                "parameter_size": "8.2B",
+                "quantization_level": "Q4_K_M"
+              }
+            }
+          ]
+        },
+        "models": {
+          "qwen3:8b": [
+            {
+              "name": "qwen3:8b",
+              "model": "qwen3:8b",
+              "modified_at": "2026-09-06T01:27:36.039328439+05:30",
+              "size": 5225388164,
+              "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+              "details": {
+                "parent_model": "",
+                "format": "gguf",
+                "family": "qwen3",
+                "families": [
+                  "qwen3"
+                ],
+                "parameter_size": "8.2B",
+                "quantization_level": "Q4_K_M"
+              }
+            }
+          ],
+          "nomic-embed-text:v1.5": [
+            {
+              "name": "nomic-embed-text:v1.5",
+              "model": "nomic-embed-text:v1.5",
+              "modified_at": "2026-09-06T01:27:59.961284792+05:30",
+              "size": 274302450,
+              "digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+              "details": {
+                "parent_model": "",
+                "format": "gguf",
+                "family": "nomic-bert",
+                "families": [
+                  "nomic-bert"
+                ],
+                "parameter_size": "137M",
+                "quantization_level": "F16"
+              }
+            }
+          ]
+        },
+        "errors": []
+      }
+    },
+    {
+      "name": "judge_sanity",
+      "ok": true,
+      "elapsed_s": 0.7843,
+      "result": "YES",
+      "usage_delta": {
+        "attempts": 1,
+        "http_attempts": 1,
+        "calls": 1,
+        "tokens_in": 45,
+        "tokens_out": 2,
+        "usage_missing": 0
+      },
+      "usage_after": {
+        "attempts": 1,
+        "http_attempts": 1,
+        "calls": 1,
+        "tokens_in": 45,
+        "tokens_out": 2,
+        "usage_missing": 0
+      }
+    },
+    {
+      "name": "judge_sanity_negative_control",
+      "ok": true,
+      "elapsed_s": 2.2954,
+      "result": "NO",
+      "usage_delta": {
+        "attempts": 1,
+        "http_attempts": 1,
+        "calls": 1,
+        "tokens_in": 45,
+        "tokens_out": 2,
+        "usage_missing": 0
+      },
+      "usage_after": {
+        "attempts": 2,
+        "http_attempts": 2,
+        "calls": 2,
+        "tokens_in": 90,
+        "tokens_out": 4,
+        "usage_missing": 0
+      }
+    },
+    {
+      "name": "embedding_probe",
+      "ok": true,
+      "elapsed_s": 0.0733,
+      "result": {
+        "vectors": 1,
+        "dimensions": 768
+      }
+    },
+    {
+      "name": "construct_full_memory",
+      "ok": true,
+      "elapsed_s": 0.0107,
+      "result": "<smriti.memory.Smriti object at 0x1074ae1d0>"
+    },
+    {
+      "name": "ingest_update_1",
+      "ok": true,
+      "elapsed_s": 56.6603,
+      "result": {
+        "add_result": {
+          "session_id": "mira-update-1",
+          "episodes": 1,
+          "facts": 2
+        },
+        "extraction_diagnostics": {
+          "raw_chars": 657,
+          "status": "ok",
+          "items": 2,
+          "accepted": 2,
+          "skipped": 0,
+          "normalized_predicates": 0,
+          "accepted_before_scope": 2,
+          "scope_validation": {
+            "attempts": 1,
+            "retry_used": false,
+            "accepted_before_scope": 2,
+            "first_invalid": [],
+            "second_invalid": [],
+            "rejected_candidates": [],
+            "facts_dropped_after_retry": [],
+            "unresolved_candidates": [],
+            "replacement_matches": [],
+            "retry_status": "not_needed",
+            "input_roles": [
+              "user"
+            ],
+            "semantic_scope_guarantee": false,
+            "limitation": "Lexical source/fact-statement evidence only; this guard does not prove cross-person, quotation, or adjacent-clause semantics.",
+            "accepted_final": 2
+          }
+        },
+        "stats": {
+          "episodes": 1,
+          "facts": 2,
+          "valid_facts": 2,
+          "entities": 4,
+          "mode": "full"
+        }
+      },
+      "usage_delta": {
+        "attempts": 1,
+        "http_attempts": 1,
+        "calls": 1,
+        "tokens_in": 1103,
+        "tokens_out": 218,
+        "usage_missing": 0
+      },
+      "usage_after": {
+        "attempts": 1,
+        "http_attempts": 1,
+        "calls": 1,
+        "tokens_in": 1103,
+        "tokens_out": 218,
+        "usage_missing": 0
+      }
+    },
+    {
+      "name": "ingest_update_2",
+      "ok": true,
+      "elapsed_s": 34.8554,
+      "result": {
+        "add_result": {
+          "session_id": "mira-update-2",
+          "episodes": 1,
+          "facts": 3
+        },
+        "extraction_diagnostics": {
+          "raw_chars": 812,
+          "status": "ok",
+          "items": 3,
+          "accepted": 3,
+          "skipped": 0,
+          "normalized_predicates": 1,
+          "accepted_before_scope": 3,
+          "scope_validation": {
+            "attempts": 1,
+            "retry_used": false,
+            "accepted_before_scope": 3,
+            "first_invalid": [],
+            "second_invalid": [],
+            "rejected_candidates": [],
+            "facts_dropped_after_retry": [],
+            "unresolved_candidates": [],
+            "replacement_matches": [],
+            "retry_status": "not_needed",
+            "input_roles": [
+              "user"
+            ],
+            "semantic_scope_guarantee": false,
+            "limitation": "Lexical source/fact-statement evidence only; this guard does not prove cross-person, quotation, or adjacent-clause semantics.",
+            "accepted_final": 3
+          }
+        },
+        "stats": {
+          "episodes": 2,
+          "facts": 5,
+          "valid_facts": 5,
+          "entities": 6,
+          "mode": "full"
+        }
+      },
+      "usage_delta": {
+        "attempts": 1,
+        "http_attempts": 1,
+        "calls": 1,
+        "tokens_in": 1106,
+        "tokens_out": 269,
+        "usage_missing": 0
+      },
+      "usage_after": {
+        "attempts": 2,
+        "http_attempts": 2,
+        "calls": 2,
+        "tokens_in": 2209,
+        "tokens_out": 487,
+        "usage_missing": 0
+      }
+    },
+    {
+      "name": "ingest_update_3",
+      "ok": true,
+      "elapsed_s": 28.0755,
+      "result": {
+        "add_result": {
+          "session_id": "mira-update-3",
+          "episodes": 1,
+          "facts": 3
+        },
+        "extraction_diagnostics": {
+          "raw_chars": 891,
+          "status": "ok",
+          "items": 3,
+          "accepted": 3,
+          "skipped": 0,
+          "normalized_predicates": 0,
+          "accepted_before_scope": 3,
+          "scope_validation": {
+            "attempts": 1,
+            "retry_used": false,
+            "accepted_before_scope": 3,
+            "first_invalid": [],
+            "second_invalid": [],
+            "rejected_candidates": [],
+            "facts_dropped_after_retry": [],
+            "unresolved_candidates": [],
+            "replacement_matches": [],
+            "retry_status": "not_needed",
+            "input_roles": [
+              "user"
+            ],
+            "semantic_scope_guarantee": false,
+            "limitation": "Lexical source/fact-statement evidence only; this guard does not prove cross-person, quotation, or adjacent-clause semantics.",
+            "accepted_final": 3
+          }
+        },
+        "stats": {
+          "episodes": 3,
+          "facts": 8,
+          "valid_facts": 8,
+          "entities": 8,
+          "mode": "full"
+        }
+      },
+      "usage_delta": {
+        "attempts": 1,
+        "http_attempts": 1,
+        "calls": 1,
+        "tokens_in": 1106,
+        "tokens_out": 261,
+        "usage_missing": 0
+      },
+      "usage_after": {
+        "attempts": 3,
+        "http_attempts": 3,
+        "calls": 3,
+        "tokens_in": 3315,
+        "tokens_out": 748,
+        "usage_missing": 0
+      }
+    },
+    {
+      "name": "read_actual_facts",
+      "ok": true,
+      "elapsed_s": 0.0001,
+      "result": [
+        {
+          "id": 1,
+          "statement": "Mira worked on the Aurora project in Mumbai on 2024-01-10",
+          "subject": "mira",
+          "predicate": "worked_on",
+          "object": "Aurora project",
+          "kind": "event",
+          "event_date": "2024-01-10",
+          "ingested_at": "2026-09-07T19:35:54Z",
+          "valid_from": "2024-01-10",
+          "invalid_at": null,
+          "superseded_by": null,
+          "episode_id": 1,
+          "session_id": "mira-update-1",
+          "scope": "location:Mumbai"
+        },
+        {
+          "id": 2,
+          "statement": "Mira preferred Python for the Aurora project",
+          "subject": "mira",
+          "predicate": "preferred_language",
+          "object": "Python",
+          "kind": "preference",
+          "event_date": "2024-01-10",
+          "ingested_at": "2026-09-07T19:35:54Z",
+          "valid_from": "2024-01-10",
+          "invalid_at": null,
+          "superseded_by": null,
+          "episode_id": 1,
+          "session_id": "mira-update-1",
+          "scope": "project:Aurora"
+        },
+        {
+          "id": 3,
+          "statement": "Mira moved to Berlin on June 15, 2024",
+          "subject": "mira",
+          "predicate": "lives_in",
+          "object": "Berlin",
+          "kind": "event",
+          "event_date": "2024-06-15",
+          "ingested_at": "2026-09-07T19:36:29Z",
+          "valid_from": "2024-06-15",
+          "invalid_at": null,
+          "superseded_by": null,
+          "episode_id": 2,
+          "session_id": "mira-update-2",
+          "scope": ""
+        },
+        {
+          "id": 4,
+          "statement": "Mira joined the Atlas project on June 15, 2024",
+          "subject": "mira",
+          "predicate": "joined_project",
+          "object": "Atlas",
+          "kind": "event",
+          "event_date": "2024-06-15",
+          "ingested_at": "2026-09-07T19:36:29Z",
+          "valid_from": "2024-06-15",
+          "invalid_at": null,
+          "superseded_by": null,
+          "episode_id": 2,
+          "session_id": "mira-update-2",
+          "scope": ""
+        },
+        {
+          "id": 5,
+          "statement": "Mira preferred Python",
+          "subject": "mira",
+          "predicate": "preferred_language",
+          "object": "Python",
+          "kind": "preference",
+          "event_date": null,
+          "ingested_at": "2026-09-07T19:36:29Z",
+          "valid_from": "2024-06-15T12:00:00Z",
+          "invalid_at": null,
+          "superseded_by": null,
+          "episode_id": 2,
+          "session_id": "mira-update-2",
+          "scope": ""
+        },
+        {
+          "id": 6,
+          "statement": "Mira currently uses Rust for the Atlas project",
+          "subject": "mira",
+          "predicate": "uses_language",
+          "object": "Rust",
+          "kind": "knowledge",
+          "event_date": null,
+          "ingested_at": "2026-09-07T19:36:57Z",
+          "valid_from": "2025-02-20T12:00:00Z",
+          "invalid_at": null,
+          "superseded_by": null,
+          "episode_id": 3,
+          "session_id": "mira-update-3",
+          "scope": "project:Atlas"
+        },
+        {
+          "id": 7,
+          "statement": "Mira switched from Python to Rust for the Atlas project",
+          "subject": "mira",
+          "predicate": "switched_from",
+          "object": "Python",
+          "kind": "event",
+          "event_date": null,
+          "ingested_at": "2026-09-07T19:36:57Z",
+          "valid_from": "2025-02-20T12:00:00Z",
+          "invalid_at": null,
+          "superseded_by": null,
+          "episode_id": 3,
+          "session_id": "mira-update-3",
+          "scope": "project:Atlas"
+        },
+        {
+          "id": 8,
+          "statement": "Mira prefers light mode",
+          "subject": "mira",
+          "predicate": "prefers",
+          "object": "light mode",
+          "kind": "preference",
+          "event_date": null,
+          "ingested_at": "2026-09-07T19:36:57Z",
+          "valid_from": "2025-02-20T12:00:00Z",
+          "invalid_at": null,
+          "superseded_by": null,
+          "episode_id": 3,
+          "session_id": "mira-update-3",
+          "scope": ""
+        }
+      ]
+    },
+    {
+      "name": "retrieve_current_rust_atlas",
+      "ok": true,
+      "elapsed_s": 0.0292,
+      "result": [
+        {
+          "kind": "fact",
+          "id": 6,
+          "text": "Mira currently uses Rust for the Atlas project",
+          "score": 0.040824960338445265,
+          "ts": null,
+          "valid_from": "2025-02-20T12:00:00Z",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": "project:Atlas"
+        },
+        {
+          "kind": "fact",
+          "id": 7,
+          "text": "Mira switched from Python to Rust for the Atlas project",
+          "score": 0.04048122686409307,
+          "ts": null,
+          "valid_from": "2025-02-20T12:00:00Z",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": "project:Atlas"
+        },
+        {
+          "kind": "fact",
+          "id": 4,
+          "text": "Mira joined the Atlas project on June 15, 2024",
+          "score": 0.03921130952380952,
+          "ts": null,
+          "valid_from": "2024-06-15",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": ""
+        },
+        {
+          "kind": "fact",
+          "id": 2,
+          "text": "Mira preferred Python for the Aurora project",
+          "score": 0.03911395403932717,
+          "ts": null,
+          "valid_from": "2024-01-10",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": "project:Aurora"
+        },
+        {
+          "kind": "fact",
+          "id": 1,
+          "text": "Mira worked on the Aurora project in Mumbai on 2024-01-10",
+          "score": 0.03805429864253394,
+          "ts": null,
+          "valid_from": "2024-01-10",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": "location:Mumbai"
+        },
+        {
+          "kind": "fact",
+          "id": 5,
+          "text": "Mira preferred Python",
+          "score": 0.037792506001461224,
+          "ts": null,
+          "valid_from": "2024-06-15T12:00:00Z",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": ""
+        },
+        {
+          "kind": "fact",
+          "id": 8,
+          "text": "Mira prefers light mode",
+          "score": 0.037513718173836696,
+          "ts": null,
+          "valid_from": "2025-02-20T12:00:00Z",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": ""
+        },
+        {
+          "kind": "fact",
+          "id": 3,
+          "text": "Mira moved to Berlin on June 15, 2024",
+          "score": 0.0374777183600713,
+          "ts": null,
+          "valid_from": "2024-06-15",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": ""
+        },
+        {
+          "kind": "episode",
+          "id": 1,
+          "text": "On January 10, 2024, Mira worked on the Aurora project in Mumbai and preferred Python.",
+          "score": 0.030679156908665108,
+          "ts": "2024-01-10T12:00:00Z",
+          "valid_from": null,
+          "invalid_at": null,
+          "role": "user",
+          "channels": [
+            "bm25_episode",
+            "vec_episode"
+          ],
+          "scope": ""
+        },
+        {
+          "kind": "episode",
+          "id": 2,
+          "text": "On June 15, 2024, Mira moved to Berlin and joined the Atlas project. She still preferred Python.",
+          "score": 0.030645161290322583,
+          "ts": "2024-06-15T12:00:00Z",
+          "valid_from": null,
+          "invalid_at": null,
+          "role": "user",
+          "channels": [
+            "bm25_episode",
+            "vec_episode"
+          ],
+          "scope": ""
+        },
+        {
+          "kind": "episode",
+          "id": 3,
+          "text": "On February 20, 2025, Mira switched from Python to Rust for the Atlas project and preferred light mode.",
+          "score": 0.03062711423367161,
+          "ts": "2025-02-20T12:00:00Z",
+          "valid_from": null,
+          "invalid_at": null,
+          "role": "user",
+          "channels": [
+            "bm25_episode",
+            "vec_episode"
+          ],
+          "scope": ""
+        }
+      ]
+    },
+    {
+      "name": "context_current_rust_atlas",
+      "ok": true,
+      "elapsed_s": 0.0285,
+      "result": "KNOWN FACTS (each with validity window; CURRENT means still true, SUPERSEDED means it was true then but later changed):\n- [2025-02-20 | CURRENT | scope=project:Atlas] Mira currently uses Rust for the Atlas project\n- [2025-02-20 | CURRENT | scope=project:Atlas] Mira switched from Python to Rust for the Atlas project\n- [2024-06-15 | CURRENT] Mira joined the Atlas project on June 15, 2024\n- [2024-01-10 | CURRENT | scope=project:Aurora] Mira preferred Python for the Aurora project\n- [2024-01-10 | CURRENT | scope=location:Mumbai] Mira worked on the Aurora project in Mumbai on 2024-01-10\n- [2024-06-15 | CURRENT] Mira preferred Python\n- [2025-02-20 | CURRENT] Mira prefers light mode\n- [2024-06-15 | CURRENT] Mira moved to Berlin on June 15, 2024\n\nRAW CONVERSATION EVIDENCE (timestamped):\n- [2024-01-10] user: On January 10, 2024, Mira worked on the Aurora project in Mumbai and preferred Python.\n- [2024-06-15] user: On June 15, 2024, Mira moved to Berlin and joined the Atlas project. She still preferred Python.\n- [2025-02-20] user: On February 20, 2025, Mira switched from Python to Rust for the Atlas project and preferred light mode."
+    },
+    {
+      "name": "retrieve_history_mumbai_python",
+      "ok": true,
+      "elapsed_s": 0.0291,
+      "result": [
+        {
+          "kind": "episode",
+          "id": 1,
+          "text": "On January 10, 2024, Mira worked on the Aurora project in Mumbai and preferred Python.",
+          "score": 0.04098360655737705,
+          "ts": "2024-01-10T12:00:00Z",
+          "valid_from": null,
+          "invalid_at": null,
+          "role": "user",
+          "channels": [
+            "bm25_episode",
+            "vec_episode",
+            "temporal"
+          ],
+          "scope": ""
+        },
+        {
+          "kind": "episode",
+          "id": 2,
+          "text": "On June 15, 2024, Mira moved to Berlin and joined the Atlas project. She still preferred Python.",
+          "score": 0.040322580645161296,
+          "ts": "2024-06-15T12:00:00Z",
+          "valid_from": null,
+          "invalid_at": null,
+          "role": "user",
+          "channels": [
+            "bm25_episode",
+            "vec_episode",
+            "temporal"
+          ],
+          "scope": ""
+        },
+        {
+          "kind": "fact",
+          "id": 1,
+          "text": "Mira worked on the Aurora project in Mumbai on 2024-01-10",
+          "score": 0.03997107039537126,
+          "ts": null,
+          "valid_from": "2024-01-10",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": "location:Mumbai"
+        },
+        {
+          "kind": "fact",
+          "id": 3,
+          "text": "Mira moved to Berlin on June 15, 2024",
+          "score": 0.03973607038123167,
+          "ts": null,
+          "valid_from": "2024-06-15",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": ""
+        },
+        {
+          "kind": "episode",
+          "id": 3,
+          "text": "On February 20, 2025, Mira switched from Python to Rust for the Atlas project and preferred light mode.",
+          "score": 0.03968253968253968,
+          "ts": "2025-02-20T12:00:00Z",
+          "valid_from": null,
+          "invalid_at": null,
+          "role": "user",
+          "channels": [
+            "bm25_episode",
+            "vec_episode",
+            "temporal"
+          ],
+          "scope": ""
+        },
+        {
+          "kind": "fact",
+          "id": 4,
+          "text": "Mira joined the Atlas project on June 15, 2024",
+          "score": 0.039389499389499386,
+          "ts": null,
+          "valid_from": "2024-06-15",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": ""
+        },
+        {
+          "kind": "fact",
+          "id": 7,
+          "text": "Mira switched from Python to Rust for the Atlas project",
+          "score": 0.038537713472485774,
+          "ts": null,
+          "valid_from": "2025-02-20T12:00:00Z",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": "project:Atlas"
+        },
+        {
+          "kind": "fact",
+          "id": 8,
+          "text": "Mira prefers light mode",
+          "score": 0.038388101772865516,
+          "ts": null,
+          "valid_from": "2025-02-20T12:00:00Z",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": ""
+        },
+        {
+          "kind": "fact",
+          "id": 5,
+          "text": "Mira preferred Python",
+          "score": 0.03836287313432836,
+          "ts": null,
+          "valid_from": "2024-06-15T12:00:00Z",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": ""
+        },
+        {
+          "kind": "fact",
+          "id": 6,
+          "text": "Mira currently uses Rust for the Atlas project",
+          "score": 0.03834126072932043,
+          "ts": null,
+          "valid_from": "2025-02-20T12:00:00Z",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": "project:Atlas"
+        },
+        {
+          "kind": "fact",
+          "id": 2,
+          "text": "Mira preferred Python for the Aurora project",
+          "score": 0.0377431026684758,
+          "ts": null,
+          "valid_from": "2024-01-10",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": "project:Aurora"
+        }
+      ]
+    },
+    {
+      "name": "context_history_mumbai_python",
+      "ok": true,
+      "elapsed_s": 0.0275,
+      "result": "KNOWN FACTS (each with validity window; CURRENT means still true, SUPERSEDED means it was true then but later changed):\n- [2024-01-10 | CURRENT | scope=location:Mumbai] Mira worked on the Aurora project in Mumbai on 2024-01-10\n- [2024-06-15 | CURRENT] Mira moved to Berlin on June 15, 2024\n- [2024-06-15 | CURRENT] Mira joined the Atlas project on June 15, 2024\n- [2025-02-20 | CURRENT | scope=project:Atlas] Mira switched from Python to Rust for the Atlas project\n- [2025-02-20 | CURRENT] Mira prefers light mode\n- [2024-06-15 | CURRENT] Mira preferred Python\n- [2025-02-20 | CURRENT | scope=project:Atlas] Mira currently uses Rust for the Atlas project\n- [2024-01-10 | CURRENT | scope=project:Aurora] Mira preferred Python for the Aurora project\n\nRAW CONVERSATION EVIDENCE (timestamped):\n- [2024-01-10] user: On January 10, 2024, Mira worked on the Aurora project in Mumbai and preferred Python.\n- [2024-06-15] user: On June 15, 2024, Mira moved to Berlin and joined the Atlas project. She still preferred Python.\n- [2025-02-20] user: On February 20, 2025, Mira switched from Python to Rust for the Atlas project and preferred light mode."
+    },
+    {
+      "name": "answer_current_rust_atlas",
+      "ok": true,
+      "elapsed_s": 4.582,
+      "result": "Rust.",
+      "usage_delta": {
+        "attempts": 1,
+        "http_attempts": 1,
+        "calls": 1,
+        "tokens_in": 455,
+        "tokens_out": 4,
+        "usage_missing": 0
+      },
+      "usage_after": {
+        "attempts": 1,
+        "http_attempts": 1,
+        "calls": 1,
+        "tokens_in": 455,
+        "tokens_out": 4,
+        "usage_missing": 0
+      }
+    },
+    {
+      "name": "judge_current_rust_atlas",
+      "ok": true,
+      "elapsed_s": 4.3322,
+      "result": "YES",
+      "usage_delta": {
+        "attempts": 1,
+        "http_attempts": 1,
+        "calls": 1,
+        "tokens_in": 505,
+        "tokens_out": 2,
+        "usage_missing": 0
+      },
+      "usage_after": {
+        "attempts": 3,
+        "http_attempts": 3,
+        "calls": 3,
+        "tokens_in": 595,
+        "tokens_out": 6,
+        "usage_missing": 0
+      }
+    },
+    {
+      "name": "answer_history_mumbai_python",
+      "ok": true,
+      "elapsed_s": 5.6125,
+      "result": "In January 2024, Mira worked in Mumbai on the Aurora project and preferred Python.",
+      "usage_delta": {
+        "attempts": 1,
+        "http_attempts": 1,
+        "calls": 1,
+        "tokens_in": 463,
+        "tokens_out": 22,
+        "usage_missing": 0
+      },
+      "usage_after": {
+        "attempts": 2,
+        "http_attempts": 2,
+        "calls": 2,
+        "tokens_in": 918,
+        "tokens_out": 26,
+        "usage_missing": 0
+      }
+    },
+    {
+      "name": "judge_history_mumbai_python",
+      "ok": true,
+      "elapsed_s": 4.7133,
+      "result": "YES",
+      "usage_delta": {
+        "attempts": 1,
+        "http_attempts": 1,
+        "calls": 1,
+        "tokens_in": 539,
+        "tokens_out": 2,
+        "usage_missing": 0
+      },
+      "usage_after": {
+        "attempts": 4,
+        "http_attempts": 4,
+        "calls": 4,
+        "tokens_in": 1134,
+        "tokens_out": 8,
+        "usage_missing": 0
+      }
+    },
+    {
+      "name": "cleanup_close",
+      "ok": true,
+      "elapsed_s": 0.0001,
+      "result": null
+    }
+  ],
+  "assertions": {
+    "current_fact_contains_rust": true,
+    "current_fact_contains_atlas": true,
+    "history_fact_contains_mumbai": true,
+    "history_fact_contains_python": true,
+    "current_rust_preference_object_interval": true,
+    "prior_python_preference_ended_before_now": true,
+    "current_rust_atlas_structured_interval": true,
+    "january_python_structured_interval": true,
+    "current_berlin_structured_interval": true,
+    "no_competing_active_preferences": true,
+    "current_source_contains_rust": true,
+    "current_source_contains_atlas": true,
+    "history_source_contains_mumbai": true,
+    "history_source_contains_python": true,
+    "judge_sanity_yes": true,
+    "judge_sanity_negative_no": true,
+    "current_answer_judge_yes": true,
+    "history_answer_judge_yes": true,
+    "no_primary_language_inferred_from_preference": true,
+    "aurora_event_keeps_mira_subject": true,
+    "aurora_date_is_not_applicability_scope": true,
+    "berlin_event_keeps_mira_subject": true,
+    "atlas_project_event_keeps_mira_subject": true,
+    "atlas_language_state_keeps_mira_subject": true,
+    "atlas_transition_keeps_mira_subject": true,
+    "adjacent_theme_does_not_inherit_atlas_scope": true
+  },
+  "failures": [],
+  "usage": {
+    "extract": {
+      "attempts": 3,
+      "http_attempts": 3,
+      "calls": 3,
+      "tokens_in": 3315,
+      "tokens_out": 748,
+      "usage_missing": 0
+    },
+    "answer": {
+      "attempts": 2,
+      "http_attempts": 2,
+      "calls": 2,
+      "tokens_in": 918,
+      "tokens_out": 26,
+      "usage_missing": 0
+    },
+    "judge": {
+      "attempts": 4,
+      "http_attempts": 4,
+      "calls": 4,
+      "tokens_in": 1134,
+      "tokens_out": 8,
+      "usage_missing": 0
+    }
+  },
+  "metrics_scope": "This artifact reports this probe's object-local counters; failed-call usage is unknown and not counted as successful usage.",
+  "provider": {
+    "endpoint": "http://127.0.0.1:11436/v1",
+    "runtime_endpoint": "http://127.0.0.1:11436",
+    "version": {
+      "version": "0.24.0"
+    },
+    "tags": {
+      "models": [
+        {
+          "name": "nomic-embed-text:v1.5",
+          "model": "nomic-embed-text:v1.5",
+          "modified_at": "2026-09-06T01:27:59.961284792+05:30",
+          "size": 274302450,
+          "digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "nomic-bert",
+            "families": [
+              "nomic-bert"
+            ],
+            "parameter_size": "137M",
+            "quantization_level": "F16"
+          }
+        },
+        {
+          "name": "qwen3:8b",
+          "model": "qwen3:8b",
+          "modified_at": "2026-09-06T01:27:36.039328439+05:30",
+          "size": 5225388164,
+          "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen3",
+            "families": [
+              "qwen3"
+            ],
+            "parameter_size": "8.2B",
+            "quantization_level": "Q4_K_M"
+          }
+        }
+      ]
+    },
+    "models": {
+      "qwen3:8b": [
+        {
+          "name": "qwen3:8b",
+          "model": "qwen3:8b",
+          "modified_at": "2026-09-06T01:27:36.039328439+05:30",
+          "size": 5225388164,
+          "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen3",
+            "families": [
+              "qwen3"
+            ],
+            "parameter_size": "8.2B",
+            "quantization_level": "Q4_K_M"
+          }
+        }
+      ],
+      "nomic-embed-text:v1.5": [
+        {
+          "name": "nomic-embed-text:v1.5",
+          "model": "nomic-embed-text:v1.5",
+          "modified_at": "2026-09-06T01:27:59.961284792+05:30",
+          "size": 274302450,
+          "digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "nomic-bert",
+            "families": [
+              "nomic-bert"
+            ],
+            "parameter_size": "137M",
+            "quantization_level": "F16"
+          }
+        }
+      ]
+    },
+    "errors": []
+  },
+  "judge_sanity": {
+    "raw": "YES",
+    "verdict": "YES"
+  },
+  "judge_sanity_negative_control": {
+    "raw": "NO",
+    "verdict": "NO"
+  },
+  "facts": [
+    {
+      "id": 1,
+      "statement": "Mira worked on the Aurora project in Mumbai on 2024-01-10",
+      "subject": "mira",
+      "predicate": "worked_on",
+      "object": "Aurora project",
+      "kind": "event",
+      "event_date": "2024-01-10",
+      "ingested_at": "2026-09-07T19:35:54Z",
+      "valid_from": "2024-01-10",
+      "invalid_at": null,
+      "superseded_by": null,
+      "episode_id": 1,
+      "session_id": "mira-update-1",
+      "scope": "location:Mumbai"
+    },
+    {
+      "id": 2,
+      "statement": "Mira preferred Python for the Aurora project",
+      "subject": "mira",
+      "predicate": "preferred_language",
+      "object": "Python",
+      "kind": "preference",
+      "event_date": "2024-01-10",
+      "ingested_at": "2026-09-07T19:35:54Z",
+      "valid_from": "2024-01-10",
+      "invalid_at": null,
+      "superseded_by": null,
+      "episode_id": 1,
+      "session_id": "mira-update-1",
+      "scope": "project:Aurora"
+    },
+    {
+      "id": 3,
+      "statement": "Mira moved to Berlin on June 15, 2024",
+      "subject": "mira",
+      "predicate": "lives_in",
+      "object": "Berlin",
+      "kind": "event",
+      "event_date": "2024-06-15",
+      "ingested_at": "2026-09-07T19:36:29Z",
+      "valid_from": "2024-06-15",
+      "invalid_at": null,
+      "superseded_by": null,
+      "episode_id": 2,
+      "session_id": "mira-update-2",
+      "scope": ""
+    },
+    {
+      "id": 4,
+      "statement": "Mira joined the Atlas project on June 15, 2024",
+      "subject": "mira",
+      "predicate": "joined_project",
+      "object": "Atlas",
+      "kind": "event",
+      "event_date": "2024-06-15",
+      "ingested_at": "2026-09-07T19:36:29Z",
+      "valid_from": "2024-06-15",
+      "invalid_at": null,
+      "superseded_by": null,
+      "episode_id": 2,
+      "session_id": "mira-update-2",
+      "scope": ""
+    },
+    {
+      "id": 5,
+      "statement": "Mira preferred Python",
+      "subject": "mira",
+      "predicate": "preferred_language",
+      "object": "Python",
+      "kind": "preference",
+      "event_date": null,
+      "ingested_at": "2026-09-07T19:36:29Z",
+      "valid_from": "2024-06-15T12:00:00Z",
+      "invalid_at": null,
+      "superseded_by": null,
+      "episode_id": 2,
+      "session_id": "mira-update-2",
+      "scope": ""
+    },
+    {
+      "id": 6,
+      "statement": "Mira currently uses Rust for the Atlas project",
+      "subject": "mira",
+      "predicate": "uses_language",
+      "object": "Rust",
+      "kind": "knowledge",
+      "event_date": null,
+      "ingested_at": "2026-09-07T19:36:57Z",
+      "valid_from": "2025-02-20T12:00:00Z",
+      "invalid_at": null,
+      "superseded_by": null,
+      "episode_id": 3,
+      "session_id": "mira-update-3",
+      "scope": "project:Atlas"
+    },
+    {
+      "id": 7,
+      "statement": "Mira switched from Python to Rust for the Atlas project",
+      "subject": "mira",
+      "predicate": "switched_from",
+      "object": "Python",
+      "kind": "event",
+      "event_date": null,
+      "ingested_at": "2026-09-07T19:36:57Z",
+      "valid_from": "2025-02-20T12:00:00Z",
+      "invalid_at": null,
+      "superseded_by": null,
+      "episode_id": 3,
+      "session_id": "mira-update-3",
+      "scope": "project:Atlas"
+    },
+    {
+      "id": 8,
+      "statement": "Mira prefers light mode",
+      "subject": "mira",
+      "predicate": "prefers",
+      "object": "light mode",
+      "kind": "preference",
+      "event_date": null,
+      "ingested_at": "2026-09-07T19:36:57Z",
+      "valid_from": "2025-02-20T12:00:00Z",
+      "invalid_at": null,
+      "superseded_by": null,
+      "episode_id": 3,
+      "session_id": "mira-update-3",
+      "scope": ""
+    }
+  ],
+  "extraction_audit": {
+    "normalized_predicates": [
+      {
+        "id": 3,
+        "statement": "Mira moved to Berlin on June 15, 2024",
+        "subject": "mira",
+        "predicate": "lives_in",
+        "object": "Berlin",
+        "kind": "event",
+        "event_date": "2024-06-15",
+        "ingested_at": "2026-09-07T19:36:29Z",
+        "valid_from": "2024-06-15",
+        "invalid_at": null,
+        "superseded_by": null,
+        "episode_id": 2,
+        "session_id": "mira-update-2",
+        "scope": ""
+      }
+    ],
+    "relation_review": {
+      "candidate_relation_facts": [
+        {
+          "id": 1,
+          "statement": "Mira worked on the Aurora project in Mumbai on 2024-01-10",
+          "subject": "mira",
+          "predicate": "worked_on",
+          "object": "Aurora project",
+          "kind": "event",
+          "event_date": "2024-01-10",
+          "ingested_at": "2026-09-07T19:35:54Z",
+          "valid_from": "2024-01-10",
+          "invalid_at": null,
+          "superseded_by": null,
+          "episode_id": 1,
+          "session_id": "mira-update-1",
+          "scope": "location:Mumbai"
+        },
+        {
+          "id": 2,
+          "statement": "Mira preferred Python for the Aurora project",
+          "subject": "mira",
+          "predicate": "preferred_language",
+          "object": "Python",
+          "kind": "preference",
+          "event_date": "2024-01-10",
+          "ingested_at": "2026-09-07T19:35:54Z",
+          "valid_from": "2024-01-10",
+          "invalid_at": null,
+          "superseded_by": null,
+          "episode_id": 1,
+          "session_id": "mira-update-1",
+          "scope": "project:Aurora"
+        },
+        {
+          "id": 3,
+          "statement": "Mira moved to Berlin on June 15, 2024",
+          "subject": "mira",
+          "predicate": "lives_in",
+          "object": "Berlin",
+          "kind": "event",
+          "event_date": "2024-06-15",
+          "ingested_at": "2026-09-07T19:36:29Z",
+          "valid_from": "2024-06-15",
+          "invalid_at": null,
+          "superseded_by": null,
+          "episode_id": 2,
+          "session_id": "mira-update-2",
+          "scope": ""
+        },
+        {
+          "id": 4,
+          "statement": "Mira joined the Atlas project on June 15, 2024",
+          "subject": "mira",
+          "predicate": "joined_project",
+          "object": "Atlas",
+          "kind": "event",
+          "event_date": "2024-06-15",
+          "ingested_at": "2026-09-07T19:36:29Z",
+          "valid_from": "2024-06-15",
+          "invalid_at": null,
+          "superseded_by": null,
+          "episode_id": 2,
+          "session_id": "mira-update-2",
+          "scope": ""
+        },
+        {
+          "id": 5,
+          "statement": "Mira preferred Python",
+          "subject": "mira",
+          "predicate": "preferred_language",
+          "object": "Python",
+          "kind": "preference",
+          "event_date": null,
+          "ingested_at": "2026-09-07T19:36:29Z",
+          "valid_from": "2024-06-15T12:00:00Z",
+          "invalid_at": null,
+          "superseded_by": null,
+          "episode_id": 2,
+          "session_id": "mira-update-2",
+          "scope": ""
+        },
+        {
+          "id": 6,
+          "statement": "Mira currently uses Rust for the Atlas project",
+          "subject": "mira",
+          "predicate": "uses_language",
+          "object": "Rust",
+          "kind": "knowledge",
+          "event_date": null,
+          "ingested_at": "2026-09-07T19:36:57Z",
+          "valid_from": "2025-02-20T12:00:00Z",
+          "invalid_at": null,
+          "superseded_by": null,
+          "episode_id": 3,
+          "session_id": "mira-update-3",
+          "scope": "project:Atlas"
+        },
+        {
+          "id": 7,
+          "statement": "Mira switched from Python to Rust for the Atlas project",
+          "subject": "mira",
+          "predicate": "switched_from",
+          "object": "Python",
+          "kind": "event",
+          "event_date": null,
+          "ingested_at": "2026-09-07T19:36:57Z",
+          "valid_from": "2025-02-20T12:00:00Z",
+          "invalid_at": null,
+          "superseded_by": null,
+          "episode_id": 3,
+          "session_id": "mira-update-3",
+          "scope": "project:Atlas"
+        },
+        {
+          "id": 8,
+          "statement": "Mira prefers light mode",
+          "subject": "mira",
+          "predicate": "prefers",
+          "object": "light mode",
+          "kind": "preference",
+          "event_date": null,
+          "ingested_at": "2026-09-07T19:36:57Z",
+          "valid_from": "2025-02-20T12:00:00Z",
+          "invalid_at": null,
+          "superseded_by": null,
+          "episode_id": 3,
+          "session_id": "mira-update-3",
+          "scope": ""
+        }
+      ],
+      "note": "Candidate relation facts and parser aliases are reported for review; no relation or alias correction was applied post hoc."
+    }
+  },
+  "evidence": {
+    "current_rust_atlas": {
+      "question": "What programming language does Mira currently use for the Atlas project?",
+      "search": [
+        {
+          "kind": "fact",
+          "id": 6,
+          "text": "Mira currently uses Rust for the Atlas project",
+          "score": 0.040824960338445265,
+          "ts": null,
+          "valid_from": "2025-02-20T12:00:00Z",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": "project:Atlas"
+        },
+        {
+          "kind": "fact",
+          "id": 7,
+          "text": "Mira switched from Python to Rust for the Atlas project",
+          "score": 0.04048122686409307,
+          "ts": null,
+          "valid_from": "2025-02-20T12:00:00Z",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": "project:Atlas"
+        },
+        {
+          "kind": "fact",
+          "id": 4,
+          "text": "Mira joined the Atlas project on June 15, 2024",
+          "score": 0.03921130952380952,
+          "ts": null,
+          "valid_from": "2024-06-15",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": ""
+        },
+        {
+          "kind": "fact",
+          "id": 2,
+          "text": "Mira preferred Python for the Aurora project",
+          "score": 0.03911395403932717,
+          "ts": null,
+          "valid_from": "2024-01-10",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": "project:Aurora"
+        },
+        {
+          "kind": "fact",
+          "id": 1,
+          "text": "Mira worked on the Aurora project in Mumbai on 2024-01-10",
+          "score": 0.03805429864253394,
+          "ts": null,
+          "valid_from": "2024-01-10",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": "location:Mumbai"
+        },
+        {
+          "kind": "fact",
+          "id": 5,
+          "text": "Mira preferred Python",
+          "score": 0.037792506001461224,
+          "ts": null,
+          "valid_from": "2024-06-15T12:00:00Z",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": ""
+        },
+        {
+          "kind": "fact",
+          "id": 8,
+          "text": "Mira prefers light mode",
+          "score": 0.037513718173836696,
+          "ts": null,
+          "valid_from": "2025-02-20T12:00:00Z",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": ""
+        },
+        {
+          "kind": "fact",
+          "id": 3,
+          "text": "Mira moved to Berlin on June 15, 2024",
+          "score": 0.0374777183600713,
+          "ts": null,
+          "valid_from": "2024-06-15",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": ""
+        },
+        {
+          "kind": "episode",
+          "id": 1,
+          "text": "On January 10, 2024, Mira worked on the Aurora project in Mumbai and preferred Python.",
+          "score": 0.030679156908665108,
+          "ts": "2024-01-10T12:00:00Z",
+          "valid_from": null,
+          "invalid_at": null,
+          "role": "user",
+          "channels": [
+            "bm25_episode",
+            "vec_episode"
+          ],
+          "scope": ""
+        },
+        {
+          "kind": "episode",
+          "id": 2,
+          "text": "On June 15, 2024, Mira moved to Berlin and joined the Atlas project. She still preferred Python.",
+          "score": 0.030645161290322583,
+          "ts": "2024-06-15T12:00:00Z",
+          "valid_from": null,
+          "invalid_at": null,
+          "role": "user",
+          "channels": [
+            "bm25_episode",
+            "vec_episode"
+          ],
+          "scope": ""
+        },
+        {
+          "kind": "episode",
+          "id": 3,
+          "text": "On February 20, 2025, Mira switched from Python to Rust for the Atlas project and preferred light mode.",
+          "score": 0.03062711423367161,
+          "ts": "2025-02-20T12:00:00Z",
+          "valid_from": null,
+          "invalid_at": null,
+          "role": "user",
+          "channels": [
+            "bm25_episode",
+            "vec_episode"
+          ],
+          "scope": ""
+        }
+      ],
+      "context": "KNOWN FACTS (each with validity window; CURRENT means still true, SUPERSEDED means it was true then but later changed):\n- [2025-02-20 | CURRENT | scope=project:Atlas] Mira currently uses Rust for the Atlas project\n- [2025-02-20 | CURRENT | scope=project:Atlas] Mira switched from Python to Rust for the Atlas project\n- [2024-06-15 | CURRENT] Mira joined the Atlas project on June 15, 2024\n- [2024-01-10 | CURRENT | scope=project:Aurora] Mira preferred Python for the Aurora project\n- [2024-01-10 | CURRENT | scope=location:Mumbai] Mira worked on the Aurora project in Mumbai on 2024-01-10\n- [2024-06-15 | CURRENT] Mira preferred Python\n- [2025-02-20 | CURRENT] Mira prefers light mode\n- [2024-06-15 | CURRENT] Mira moved to Berlin on June 15, 2024\n\nRAW CONVERSATION EVIDENCE (timestamped):\n- [2024-01-10] user: On January 10, 2024, Mira worked on the Aurora project in Mumbai and preferred Python.\n- [2024-06-15] user: On June 15, 2024, Mira moved to Berlin and joined the Atlas project. She still preferred Python.\n- [2025-02-20] user: On February 20, 2025, Mira switched from Python to Rust for the Atlas project and preferred light mode."
+    },
+    "history_mumbai_python": {
+      "question": "In January 2024, where did Mira work and what programming language did she prefer?",
+      "search": [
+        {
+          "kind": "episode",
+          "id": 1,
+          "text": "On January 10, 2024, Mira worked on the Aurora project in Mumbai and preferred Python.",
+          "score": 0.04098360655737705,
+          "ts": "2024-01-10T12:00:00Z",
+          "valid_from": null,
+          "invalid_at": null,
+          "role": "user",
+          "channels": [
+            "bm25_episode",
+            "vec_episode",
+            "temporal"
+          ],
+          "scope": ""
+        },
+        {
+          "kind": "episode",
+          "id": 2,
+          "text": "On June 15, 2024, Mira moved to Berlin and joined the Atlas project. She still preferred Python.",
+          "score": 0.040322580645161296,
+          "ts": "2024-06-15T12:00:00Z",
+          "valid_from": null,
+          "invalid_at": null,
+          "role": "user",
+          "channels": [
+            "bm25_episode",
+            "vec_episode",
+            "temporal"
+          ],
+          "scope": ""
+        },
+        {
+          "kind": "fact",
+          "id": 1,
+          "text": "Mira worked on the Aurora project in Mumbai on 2024-01-10",
+          "score": 0.03997107039537126,
+          "ts": null,
+          "valid_from": "2024-01-10",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": "location:Mumbai"
+        },
+        {
+          "kind": "fact",
+          "id": 3,
+          "text": "Mira moved to Berlin on June 15, 2024",
+          "score": 0.03973607038123167,
+          "ts": null,
+          "valid_from": "2024-06-15",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": ""
+        },
+        {
+          "kind": "episode",
+          "id": 3,
+          "text": "On February 20, 2025, Mira switched from Python to Rust for the Atlas project and preferred light mode.",
+          "score": 0.03968253968253968,
+          "ts": "2025-02-20T12:00:00Z",
+          "valid_from": null,
+          "invalid_at": null,
+          "role": "user",
+          "channels": [
+            "bm25_episode",
+            "vec_episode",
+            "temporal"
+          ],
+          "scope": ""
+        },
+        {
+          "kind": "fact",
+          "id": 4,
+          "text": "Mira joined the Atlas project on June 15, 2024",
+          "score": 0.039389499389499386,
+          "ts": null,
+          "valid_from": "2024-06-15",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": ""
+        },
+        {
+          "kind": "fact",
+          "id": 7,
+          "text": "Mira switched from Python to Rust for the Atlas project",
+          "score": 0.038537713472485774,
+          "ts": null,
+          "valid_from": "2025-02-20T12:00:00Z",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": "project:Atlas"
+        },
+        {
+          "kind": "fact",
+          "id": 8,
+          "text": "Mira prefers light mode",
+          "score": 0.038388101772865516,
+          "ts": null,
+          "valid_from": "2025-02-20T12:00:00Z",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": ""
+        },
+        {
+          "kind": "fact",
+          "id": 5,
+          "text": "Mira preferred Python",
+          "score": 0.03836287313432836,
+          "ts": null,
+          "valid_from": "2024-06-15T12:00:00Z",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": ""
+        },
+        {
+          "kind": "fact",
+          "id": 6,
+          "text": "Mira currently uses Rust for the Atlas project",
+          "score": 0.03834126072932043,
+          "ts": null,
+          "valid_from": "2025-02-20T12:00:00Z",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": "project:Atlas"
+        },
+        {
+          "kind": "fact",
+          "id": 2,
+          "text": "Mira preferred Python for the Aurora project",
+          "score": 0.0377431026684758,
+          "ts": null,
+          "valid_from": "2024-01-10",
+          "invalid_at": null,
+          "role": null,
+          "channels": [
+            "bm25_fact",
+            "vec_fact",
+            "entity"
+          ],
+          "scope": "project:Aurora"
+        }
+      ],
+      "context": "KNOWN FACTS (each with validity window; CURRENT means still true, SUPERSEDED means it was true then but later changed):\n- [2024-01-10 | CURRENT | scope=location:Mumbai] Mira worked on the Aurora project in Mumbai on 2024-01-10\n- [2024-06-15 | CURRENT] Mira moved to Berlin on June 15, 2024\n- [2024-06-15 | CURRENT] Mira joined the Atlas project on June 15, 2024\n- [2025-02-20 | CURRENT | scope=project:Atlas] Mira switched from Python to Rust for the Atlas project\n- [2025-02-20 | CURRENT] Mira prefers light mode\n- [2024-06-15 | CURRENT] Mira preferred Python\n- [2025-02-20 | CURRENT | scope=project:Atlas] Mira currently uses Rust for the Atlas project\n- [2024-01-10 | CURRENT | scope=project:Aurora] Mira preferred Python for the Aurora project\n\nRAW CONVERSATION EVIDENCE (timestamped):\n- [2024-01-10] user: On January 10, 2024, Mira worked on the Aurora project in Mumbai and preferred Python.\n- [2024-06-15] user: On June 15, 2024, Mira moved to Berlin and joined the Atlas project. She still preferred Python.\n- [2025-02-20] user: On February 20, 2025, Mira switched from Python to Rust for the Atlas project and preferred light mode."
+    }
+  },
+  "answers": {
+    "current_rust_atlas": {
+      "question": "What programming language does Mira currently use for the Atlas project?",
+      "gold": "Mira currently uses Rust for the Atlas project.",
+      "context": "KNOWN FACTS (each with validity window; CURRENT means still true, SUPERSEDED means it was true then but later changed):\n- [2025-02-20 | CURRENT | scope=project:Atlas] Mira currently uses Rust for the Atlas project\n- [2025-02-20 | CURRENT | scope=project:Atlas] Mira switched from Python to Rust for the Atlas project\n- [2024-06-15 | CURRENT] Mira joined the Atlas project on June 15, 2024\n- [2024-01-10 | CURRENT | scope=project:Aurora] Mira preferred Python for the Aurora project\n- [2024-01-10 | CURRENT | scope=location:Mumbai] Mira worked on the Aurora project in Mumbai on 2024-01-10\n- [2024-06-15 | CURRENT] Mira preferred Python\n- [2025-02-20 | CURRENT] Mira prefers light mode\n- [2024-06-15 | CURRENT] Mira moved to Berlin on June 15, 2024\n\nRAW CONVERSATION EVIDENCE (timestamped):\n- [2024-01-10] user: On January 10, 2024, Mira worked on the Aurora project in Mumbai and preferred Python.\n- [2024-06-15] user: On June 15, 2024, Mira moved to Berlin and joined the Atlas project. She still preferred Python.\n- [2025-02-20] user: On February 20, 2025, Mira switched from Python to Rust for the Atlas project and preferred light mode.",
+      "answer": "Rust.",
+      "judge_raw": "YES",
+      "judge_verdict": "YES"
+    },
+    "history_mumbai_python": {
+      "question": "In January 2024, where did Mira work and what programming language did she prefer?",
+      "gold": "In January 2024, Mira preferred Python and worked in Mumbai.",
+      "context": "KNOWN FACTS (each with validity window; CURRENT means still true, SUPERSEDED means it was true then but later changed):\n- [2024-01-10 | CURRENT | scope=location:Mumbai] Mira worked on the Aurora project in Mumbai on 2024-01-10\n- [2024-06-15 | CURRENT] Mira moved to Berlin on June 15, 2024\n- [2024-06-15 | CURRENT] Mira joined the Atlas project on June 15, 2024\n- [2025-02-20 | CURRENT | scope=project:Atlas] Mira switched from Python to Rust for the Atlas project\n- [2025-02-20 | CURRENT] Mira prefers light mode\n- [2024-06-15 | CURRENT] Mira preferred Python\n- [2025-02-20 | CURRENT | scope=project:Atlas] Mira currently uses Rust for the Atlas project\n- [2024-01-10 | CURRENT | scope=project:Aurora] Mira preferred Python for the Aurora project\n\nRAW CONVERSATION EVIDENCE (timestamped):\n- [2024-01-10] user: On January 10, 2024, Mira worked on the Aurora project in Mumbai and preferred Python.\n- [2024-06-15] user: On June 15, 2024, Mira moved to Berlin and joined the Atlas project. She still preferred Python.\n- [2025-02-20] user: On February 20, 2025, Mira switched from Python to Rust for the Atlas project and preferred light mode.",
+      "answer": "In January 2024, Mira worked in Mumbai on the Aurora project and preferred Python.",
+      "judge_raw": "YES",
+      "judge_verdict": "YES"
+    }
+  },
+  "temporal_fact_review": {
+    "current_rust_state_facts": [
+      {
+        "id": 6,
+        "statement": "Mira currently uses Rust for the Atlas project",
+        "subject": "mira",
+        "predicate": "uses_language",
+        "object": "Rust",
+        "kind": "knowledge",
+        "event_date": null,
+        "ingested_at": "2026-09-07T19:36:57Z",
+        "valid_from": "2025-02-20T12:00:00Z",
+        "invalid_at": null,
+        "superseded_by": null,
+        "episode_id": 3,
+        "session_id": "mira-update-3",
+        "scope": "project:Atlas"
+      }
+    ],
+    "current_atlas_facts": [
+      {
+        "id": 4,
+        "statement": "Mira joined the Atlas project on June 15, 2024",
+        "subject": "mira",
+        "predicate": "joined_project",
+        "object": "Atlas",
+        "kind": "event",
+        "event_date": "2024-06-15",
+        "ingested_at": "2026-09-07T19:36:29Z",
+        "valid_from": "2024-06-15",
+        "invalid_at": null,
+        "superseded_by": null,
+        "episode_id": 2,
+        "session_id": "mira-update-2",
+        "scope": ""
+      },
+      {
+        "id": 6,
+        "statement": "Mira currently uses Rust for the Atlas project",
+        "subject": "mira",
+        "predicate": "uses_language",
+        "object": "Rust",
+        "kind": "knowledge",
+        "event_date": null,
+        "ingested_at": "2026-09-07T19:36:57Z",
+        "valid_from": "2025-02-20T12:00:00Z",
+        "invalid_at": null,
+        "superseded_by": null,
+        "episode_id": 3,
+        "session_id": "mira-update-3",
+        "scope": "project:Atlas"
+      },
+      {
+        "id": 7,
+        "statement": "Mira switched from Python to Rust for the Atlas project",
+        "subject": "mira",
+        "predicate": "switched_from",
+        "object": "Python",
+        "kind": "event",
+        "event_date": null,
+        "ingested_at": "2026-09-07T19:36:57Z",
+        "valid_from": "2025-02-20T12:00:00Z",
+        "invalid_at": null,
+        "superseded_by": null,
+        "episode_id": 3,
+        "session_id": "mira-update-3",
+        "scope": "project:Atlas"
+      }
+    ],
+    "current_berlin_facts": [
+      {
+        "id": 3,
+        "statement": "Mira moved to Berlin on June 15, 2024",
+        "subject": "mira",
+        "predicate": "lives_in",
+        "object": "Berlin",
+        "kind": "event",
+        "event_date": "2024-06-15",
+        "ingested_at": "2026-09-07T19:36:29Z",
+        "valid_from": "2024-06-15",
+        "invalid_at": null,
+        "superseded_by": null,
+        "episode_id": 2,
+        "session_id": "mira-update-2",
+        "scope": ""
+      }
+    ],
+    "january_python_facts": [
+      {
+        "id": 2,
+        "statement": "Mira preferred Python for the Aurora project",
+        "subject": "mira",
+        "predicate": "preferred_language",
+        "object": "Python",
+        "kind": "preference",
+        "event_date": "2024-01-10",
+        "ingested_at": "2026-09-07T19:35:54Z",
+        "valid_from": "2024-01-10",
+        "invalid_at": null,
+        "superseded_by": null,
+        "episode_id": 1,
+        "session_id": "mira-update-1",
+        "scope": "project:Aurora"
+      }
+    ],
+    "atlas_python_preference_facts": [],
+    "inferred_primary_python_facts": [],
+    "prior_python_preference_ended_before_now": true,
+    "python_preference_end_dates": [],
+    "latest_python_preference": null,
+    "active_preference_facts": [
+      {
+        "id": 2,
+        "statement": "Mira preferred Python for the Aurora project",
+        "subject": "mira",
+        "predicate": "preferred_language",
+        "object": "Python",
+        "kind": "preference",
+        "event_date": "2024-01-10",
+        "ingested_at": "2026-09-07T19:35:54Z",
+        "valid_from": "2024-01-10",
+        "invalid_at": null,
+        "superseded_by": null,
+        "episode_id": 1,
+        "session_id": "mira-update-1",
+        "scope": "project:Aurora"
+      },
+      {
+        "id": 5,
+        "statement": "Mira preferred Python",
+        "subject": "mira",
+        "predicate": "preferred_language",
+        "object": "Python",
+        "kind": "preference",
+        "event_date": null,
+        "ingested_at": "2026-09-07T19:36:29Z",
+        "valid_from": "2024-06-15T12:00:00Z",
+        "invalid_at": null,
+        "superseded_by": null,
+        "episode_id": 2,
+        "session_id": "mira-update-2",
+        "scope": ""
+      },
+      {
+        "id": 8,
+        "statement": "Mira prefers light mode",
+        "subject": "mira",
+        "predicate": "prefers",
+        "object": "light mode",
+        "kind": "preference",
+        "event_date": null,
+        "ingested_at": "2026-09-07T19:36:57Z",
+        "valid_from": "2025-02-20T12:00:00Z",
+        "invalid_at": null,
+        "superseded_by": null,
+        "episode_id": 3,
+        "session_id": "mira-update-3",
+        "scope": ""
+      }
+    ],
+    "active_language_preference_facts": [
+      {
+        "id": 2,
+        "statement": "Mira preferred Python for the Aurora project",
+        "subject": "mira",
+        "predicate": "preferred_language",
+        "object": "Python",
+        "kind": "preference",
+        "event_date": "2024-01-10",
+        "ingested_at": "2026-09-07T19:35:54Z",
+        "valid_from": "2024-01-10",
+        "invalid_at": null,
+        "superseded_by": null,
+        "episode_id": 1,
+        "session_id": "mira-update-1",
+        "scope": "project:Aurora"
+      },
+      {
+        "id": 5,
+        "statement": "Mira preferred Python",
+        "subject": "mira",
+        "predicate": "preferred_language",
+        "object": "Python",
+        "kind": "preference",
+        "event_date": null,
+        "ingested_at": "2026-09-07T19:36:29Z",
+        "valid_from": "2024-06-15T12:00:00Z",
+        "invalid_at": null,
+        "superseded_by": null,
+        "episode_id": 2,
+        "session_id": "mira-update-2",
+        "scope": ""
+      },
+      {
+        "id": 6,
+        "statement": "Mira currently uses Rust for the Atlas project",
+        "subject": "mira",
+        "predicate": "uses_language",
+        "object": "Rust",
+        "kind": "knowledge",
+        "event_date": null,
+        "ingested_at": "2026-09-07T19:36:57Z",
+        "valid_from": "2025-02-20T12:00:00Z",
+        "invalid_at": null,
+        "superseded_by": null,
+        "episode_id": 3,
+        "session_id": "mira-update-3",
+        "scope": "project:Atlas"
+      }
+    ],
+    "competing_active_preference_objects": [
+      "rust"
+    ],
+    "ambiguity_note": "Preference replacement is evaluated only within the explicit project:Atlas scope. Global Python may remain valid alongside Atlas-scoped Rust; competing values within that scope remain unresolved and prevent an OK status."
+  },
+  "identity_scope_review": {
+    "expected_named_subject": "Mira",
+    "observed_subjects": [
+      "mira"
+    ],
+    "assertions": {
+      "aurora_event_keeps_mira_subject": true,
+      "aurora_date_is_not_applicability_scope": true,
+      "berlin_event_keeps_mira_subject": true,
+      "atlas_project_event_keeps_mira_subject": true,
+      "atlas_language_state_keeps_mira_subject": true,
+      "atlas_transition_keeps_mira_subject": true,
+      "adjacent_theme_does_not_inherit_atlas_scope": true
+    }
+  }
+}

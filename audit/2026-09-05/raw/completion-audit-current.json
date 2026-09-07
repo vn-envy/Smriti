@@ -14,7 +14,7 @@
     "installation_scope": "verified_candidate_but_phase_gate_open",
     "model_backed_quality_scope": "incomplete",
     "release_or_completion_status": "open",
-    "reason": "The installed Mira scope/temporal review rejected the quality pass, and full-history LongMemEval/LoCoMo QA plus larger LME and GBrain semantic QA remain unfinished. The bounded Smriti LoCoMo50 preflight is complete but exploratory and has a known judge/date caveat."
+    "reason": "Historical installed Mira v3/v4 reviews rejected parts of the scope/temporal quality pass; the current installed-v7 v5/generalization and corrected prior-tool reviews are bounded passes, with single-run and lexical/semantic limits recorded. Full-history LongMemEval-S50 QA, GBrain held-out20 semantic retrieval QA, and Hindsight comparative QA remain unfinished. A bounded frozen-v4 paired LoCoMo50 answer/judge baseline is complete for both adapters, but it is exploratory because of shared-conversation dependence and known judge/date errors."
   },
   "acceptance_matrix": [
     {
@@ -23,7 +23,7 @@
       "status": "complete_for_candidate",
       "evidence": [
         "audit/2026-09-05/raw/benchmark-wheel-verification.json (202 tests, CLI help, packaged GBrain worker, source/wheel match)",
-        "audit/2026-09-05/raw/installed-scope-candidate-261.json (261 tests, pip check clean; offline scope checks)",
+        "audit/2026-09-05/raw/installed-scope-candidate-261.json (historical 261-test candidate; pip check clean; offline scope checks), audit/2026-09-05/raw/installed-scope-candidate-276.json (current installed-v7 candidate; 276 tests, pip check clean)",
         "audit/2026-09-05/raw/ci-b107749.json (enterprise and offline Python 3.9/3.12 checks all SUCCESS)",
         "audit/2026-09-05/VERIFIED-RESULTS.md"
       ],
@@ -32,15 +32,20 @@
     {
       "id": "temporal-identity-scope-quality",
       "requirement": "Pass the named-Mira temporal, identity, and applicability-scope contract with a fresh installed model-backed run.",
-      "status": "incomplete_rejected",
+      "status": "complete_bounded",
       "evidence": [
         "audit/2026-09-05/raw/smriti-mira-root-review.json (Berlin fact invalidated by unrelated same-date event; scope/transition probe issue)",
         "audit/2026-09-05/raw/smriti-mira-contract-v3-independent-review.json (third party rewritten as user; Atlas scope leaked to light preference; event date encoded as scope)",
         "audit/2026-09-05/raw/smriti-mira-full-scoped-contract-v3-corrected-review.json (recorded run rejected)",
-        "audit/2026-09-05/raw/installed-scope-candidate-261.json (offline checks accepted; model-backed gate remains open)",
-        "audit/2026-09-05/smriti-mira-full-scoped-contract-v4.json (terminal model-backed run; all extracted subjects are Mira, light-mode scope is unscoped, and current Rust/Atlas retrieval is correct, but brittle uses_tool/Aurora assertions fail and unsupported inferred primary Python remains)"
+        "audit/2026-09-05/raw/installed-scope-candidate-261.json (historical offline checks accepted), audit/2026-09-05/raw/installed-scope-candidate-276.json (current installed-v7 offline scope candidate; 276 tests, pip check clean; model-backed gate remains open)",
+        "audit/2026-09-05/smriti-mira-full-scoped-contract-v4.json (terminal model-backed run; all extracted subjects are Mira, light-mode scope is unscoped, and current Rust/Atlas retrieval is correct, but brittle uses_tool/Aurora assertions fail and unsupported inferred primary Python remains)",
+        "audit/2026-09-05/smriti-mira-full-scoped-contract-v5.json (bounded installed-v7 rerun; 26/26 assertions pass and 8 facts independently reviewed, but the single run does not establish a universal uses_tool policy, has no real-run scope-retry case, and inferred Aurora applicability remains a lexical/semantic limitation; offline installed-v7 correction behavior is covered)",
+        "audit/2026-09-05/raw/smriti-mira-v5-independent-review.json",
+        "audit/2026-09-05/extraction-generalization-installed-v7.json (bounded installed-v7 generalization; 8/8 boolean checks pass across distinct subjects/cities, Figma usage and Sketch transition with project:Cedar, global dark preference, and self-scope handling)",
+        "audit/2026-09-05/raw/extraction-generalization-v7-independent-review.json",
+        "audit/2026-09-05/raw/extraction-tool-transition-v7-corrected-review.json (corrected as-of assertions and negative controls verify Sketch Jan 10\u2013Mar 10 retirement, retained transition, and active Figma after switch; original raw failure was a stale historical assertion)"
       ],
-      "remaining": "The v4 runtime is terminal but not accepted. Correct the temporal/consolidation and extraction identity/scope behavior, then rerun from a fresh installed wheel with assertions aligned to supported predicates."
+      "remaining": "The bounded installed-v7 checks and corrected Sketch-to-Figma retirement review pass. Preserve the single-model-run and lexical/semantic limitations: the generalization run made no real correction retry, this fixture does not establish a universal uses_tool retirement policy, and inferred Aurora applicability is not semantically proven."
     },
     {
       "id": "matched-semantic-growth",
@@ -150,20 +155,33 @@
         "audit/2026-09-05/raw/locomo-smriti-s50-failure-analysis.json (7 retrieved-supported reader failures, 11 missing-evidence failures, 1 ambiguous; official results unmodified)",
         "audit/2026-09-05/raw/locomo-qa-smriti-s50-provenance.json"
       ],
-      "caveat": "The recorded 54%/52.5%/60% figures are exploratory, not a quality headline: the independent review preserves a known judge false-positive date case (conv-30-q0), and the paired Mem0 run is pending."
+      "caveat": "This is the Smriti half of a frozen-v4 paired baseline; the paired result is recorded separately. The recorded figures are exploratory, not a quality headline, because the independent review preserves a known judge false-positive date case (conv-30-q0) and shared conversations create dependence between questions."
+    },
+    {
+      "id": "locomo-paired-answer-judge",
+      "requirement": "Complete a bounded paired 50-question LoCoMo answer/judge baseline with identical selected IDs, dataset, reader/judge models, and failure-inclusive accounting for Smriti and local Mem0.",
+      "status": "complete_exploratory",
+      "evidence": [
+        "audit/2026-09-05/locomo-qa-smriti-s50.json (frozen installed v4; 50/50, 27/50 recorded correct, 0 operational or cleanup failures)",
+        "audit/2026-09-05/locomo-qa-mem0-s50.json (frozen installed v4; 50/50, 26/50 recorded correct, 0 operational or cleanup failures)",
+        "audit/2026-09-05/raw/locomo-pair-final-independent-review.json (same selected IDs, gold, models, and dataset; pair counts and bootstrap interval verified)",
+        "audit/2026-09-05/raw/locomo-pair-configuration-review.json"
+      ],
+      "result": "Smriti 27/50 (54%) and Mem0 26/50 (52%); 24 questions were correct for both, 21 for neither, 3 Smriti-only, and 2 Mem0-only. Exploratory paired question bootstrap for Smriti minus Mem0 was [-0.06, 0.10].",
+      "caveat": "The frozen-v4 pair does not establish superiority: questions share conversations, the bootstrap does not model that dependence, and the recorded judge labels include known errors including conv-30-q0."
     },
     {
       "id": "full-model-backed-qa",
-      "requirement": "Run full-history LongMemEval and LoCoMo with one shared answer/judge configuration, plus the requested larger LME and GBrain semantic QA.",
+      "requirement": "Run full-history LongMemEval and LoCoMo with one shared answer/judge configuration, plus the requested GBrain held-out20 semantic retrieval QA.",
       "status": "incomplete_pending",
       "evidence": [
         "audit/2026-09-05/ROADMAP.md (Phase 2 full QA checkbox remains open)",
-        "audit/2026-09-05/locomo-qa-smriti-s50.json (bounded Smriti50 complete; not full-haystack comparative QA)",
-        "audit/2026-09-05/raw/locomo-smriti-s50-independent-review.json (counts verified; comparison limit says matched Mem0 pending)",
+        "audit/2026-09-05/locomo-qa-smriti-s50.json and audit/2026-09-05/locomo-qa-mem0-s50.json (bounded frozen-v4 pair complete; not the remaining full-history QA)",
+        "audit/2026-09-05/raw/locomo-pair-final-independent-review.json (paired counts and configuration identity verified; exploratory result)",
         "audit/2026-09-05/benchmark-longmemeval-oracle-smriti.json (500-question oracle retrieval only; not full-haystack QA)",
         "audit/2026-09-05/benchmark-longmemeval-oracle-mem0-pilot.json (10-question oracle pilot only)"
       ],
-      "remaining": "Finish the paired Mem0 LoCoMo preflight, larger LongMemEval QA, GBrain semantic QA, and full-history model-backed QA; retain failure-inclusive raw outputs and do not substitute oracle runs."
+      "remaining": "Finish shared paired LongMemEval-S50 full-haystack answer/judge QA, GBrain held-out20 semantic retrieval QA, and Hindsight comparative probes (20/12); retain failure-inclusive raw outputs and do not substitute oracle runs."
     },
     {
       "id": "launch-teaser",
@@ -201,11 +219,11 @@
     }
   ],
   "running_or_pending_evaluations": [
-    "LoCoMo50 installed-v4 Smriti answer/judge run: complete 50/50, 0 operational failures; exploratory result only because of the preserved judge/date caveat and pending paired Mem0 run.",
-    "Larger LongMemEval answer/judge QA: pending.",
-    "GBrain semantic 20-question QA: pending.",
-    "Installed v6 extraction-generalization probe: terminal with failures; distinct subjects/cities and scope checks pass, but the historical scoped-transition assertion is false, so no acceptance claim is made (audit/2026-09-05/extraction-generalization-installed-v6.json).",
-    "Fresh installed model-backed Mira scope/temporal acceptance: v4 runtime terminal with failures; all extracted subjects are Mira and Rust/Atlas plus unscoped light mode are present, but brittle uses_tool/Aurora assertions fail and inferred primary Python remains unsupported; acceptance is open."
+    "Paired frozen-v4 LoCoMo50 answer/judge baseline: complete 50/50 for both adapters with 0 operational/cleanup failures; Smriti 27/50 and Mem0 26/50. Same IDs/gold/models/dataset and pair counts were independently verified; exploratory only because of shared-conversation dependence and known judge/date errors.",
+    "Shared paired LongMemEval-S50 full-history answer/judge QA: pending.",
+    "GBrain held-out20 semantic retrieval QA: pending.",
+    "Installed v7 extraction-generalization probe: complete 8/8 boolean checks with independent review; Leila/Omar remain distinct active cities, Figma usage and the Sketch transition both carry project:Cedar, global dark preference is unscoped, and user self-scope is empty. One bounded run made 4 calls/4 updates, so scope-retry coverage remains unexercised (audit/2026-09-05/extraction-generalization-installed-v7.json).",
+    "Fresh installed model-backed Mira scope/temporal acceptance: bounded v5 installed-v7 run passes 26/26 assertions and v7 generalization passes 8/8; corrected prior-tool review verifies retained Sketch history and active Figma with negative controls. Single-model and lexical/semantic limitations remain; no real correction retry occurred, and no universal retirement policy is claimed."
   ],
   "explicit_nonclaims": [
     "The oracle LongMemEval retrieval files are not full-haystack answer quality.",

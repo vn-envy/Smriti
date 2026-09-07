@@ -63,9 +63,9 @@ evidence is preserved in [`raw/smriti-mira-root-review.json`](raw/smriti-mira-ro
 the temporal/consolidation follow-up and a fresh installed-wheel rerun remain
 open.
 
-The latest installed scope candidate passed **261 tests** with `pip check` clean
-from v5 core and v3 enterprise wheels. Offline scope checks are accepted. The
-named-Mira model-backed contract remains rejected: independent review found the
+The historical installed scope candidate passed **261 tests** with `pip check` clean
+from v5 core and v3 enterprise wheels. Offline scope checks are accepted. The historical
+v3 named-Mira model-backed contract was rejected: independent review found the
 named third party rewritten as `user`, a light-mode preference inheriting
 `project:Atlas`, and an event date encoded as applicability scope. The raw run
 and reviews are preserved in [`raw/installed-scope-candidate-261.json`](raw/installed-scope-candidate-261.json),
@@ -84,9 +84,35 @@ model-generated applicability scopes against the source and fact statement,
 allows one bounded correction call, preserves the raw episode, and reports
 unresolved candidates through the `add()`/MCP result plus detailed diagnostics.
 This is an operational extraction safeguard, not a semantic quality claim;
-explicit `add_fact()` writes remain trusted caller input. The model-backed
-quality gate remains pending while the coordinated Mem0 run is still in
-progress.
+explicit `add_fact()` writes remain trusted caller input. The bounded paired
+LoCoMo50 answer/judge baseline is now complete on the frozen installed v4
+candidate for both adapters: 50/50 questions and zero operational or cleanup
+failures each; Smriti recorded 27/50 correct and Mem0 26/50. Independent review
+verified the same selected IDs, gold labels, reader/judge models, and dataset,
+with 24 questions correct for both, 21 for neither, 3 Smriti-only, and 2
+Mem0-only; the exploratory question bootstrap for Smriti minus Mem0 was
+[-0.06, 0.10]. This does not establish superiority because questions share
+conversations, the bootstrap does not model that dependence, and the judge
+labels include known errors such as `conv-30-q0`. The v7 operational safeguard is bounded-verified; remaining comparative QA
+remains open.
+
+A bounded installed-v7 Mira v5 rerun passes all 26 recorded assertions, and
+independent review checked 8 extracted facts. This remains a bounded result rather
+than a universal semantic claim: inferred Aurora applicability remains a
+lexical/semantic limitation, and the single model-backed run is not a general
+quality estimate. The installed-v7 scope guard and offline tests cover bounded
+correction behavior; the v5 run itself made no real correction retry. The raw run
+and review are preserved in
+[`smriti-mira-full-scoped-contract-v5.json`](smriti-mira-full-scoped-contract-v5.json)
+and [`raw/smriti-mira-v5-independent-review.json`](raw/smriti-mira-v5-independent-review.json).
+The installed-v7 extraction generalization independently passes 8/8 checks:
+Leila/Omar remain distinct active cities, Figma usage and the Sketch transition
+both carry `project:Cedar`, global dark is unscoped, and user self-scope is empty.
+A corrected offline review of the persisted v7 transition rows verifies Sketch
+valid Jan 10 through Mar 10, superseded by active Figma from Mar 10, with the
+historical transition retained; negative controls pass. The original raw v7
+artifact remains unchanged and retains its obsolete historical-assertion failure
+status. See [`raw/extraction-tool-transition-v7-corrected-review.json`](raw/extraction-tool-transition-v7-corrected-review.json).
 
 ## Phase 2 — Reproducible evaluation (P0, in progress)
 
@@ -122,19 +148,29 @@ progress.
   Mem0 scored 3/6 (1/4 answerable; 2/2 `_abs` questions judged by the
   abstention heuristic); this is exploratory and does not close full QA.
 - [ ] Run LongMemEval full-history and LoCoMo with one shared answer/judge
-  configuration. The 500-question oracle run bypasses extraction and answer
-  generation, so it is evidence-only and not full-haystack QA.
+  configuration. The bounded paired LoCoMo50 answer/judge baseline is complete
+  for frozen v4; shared paired LongMemEval-S50 full-history QA remains open. The
+  500-question oracle
+  run bypasses extraction and answer generation, so it is evidence-only and
+  not full-haystack QA. Here “full-history” means that each selected question
+  receives its complete haystack under the pinned retrieval/context budgets;
+  it does not mean scoring every question in the source dataset.
 
-A bounded LoCoMo50 answer/judge preflight completed from the immutable installed
-v4 candidate: 50/50 questions completed with zero operational or cleanup
-failures, 27/50 recorded correct (54%), 21/40 answerable correct (52.5%), and
-6/10 abstention rows correct (60%) across all 10 selected sources. The
-independent operational review matches the final artifact hash. These figures
-are exploratory and do not close quality evaluation: the recorded score
-contains a known judge false-positive date case (`conv-30-q0`), and the paired
-Mem0 run remains pending. Failure analysis classifies the 19 failed answerable
-rows as 7 retrieved-supported reader failures, 11 missing-evidence failures,
-and 1 ambiguous case. Full-history LongMemEval/LoCoMo QA remains open.
+A bounded paired LoCoMo50 answer/judge baseline completed from the immutable
+installed v4 candidate: both adapters completed 50/50 questions with zero
+operational or cleanup failures; Smriti recorded 27/50 correct (54%), 21/40
+answerable correct (52.5%), and 6/10 abstention rows correct (60%), while Mem0
+recorded 26/50 correct (52%). Independent review verified the same selected IDs,
+gold labels, reader/judge models, and dataset: 24 questions were correct for
+both, 21 for neither, 3 Smriti-only, and 2 Mem0-only. The exploratory question
+bootstrap for Smriti minus Mem0 was [-0.06, 0.10]. These figures do not close
+quality evaluation: questions share conversations, the bootstrap does not model
+that dependence, and the recorded judge labels contain known errors including
+`conv-30-q0`. Failure analysis classifies the Smriti failed answerable rows as 7
+retrieved-supported reader failures, 11 missing-evidence failures, and 1
+ambiguous case. Shared paired LongMemEval-S50 full-history QA remains open;
+GBrain held-out20 semantic retrieval QA and Hindsight comparative probes (20/12)
+are also pending.
 
 The final matched growth report covers 100, 1,000, 3,000, 9,000, and 36,500
 documents for Smriti and Mem0 with the same local Ollama nomic model and for a

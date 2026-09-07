@@ -1,0 +1,215 @@
+{
+  "probe": "hindsight_comparative_harness_control_flow_qa",
+  "runner": "/Users/kshitijvatsa/Downloads/Smriti-main/bench/hindsight_comparative.py",
+  "network_calls": 0,
+  "model_calls": 0,
+  "benchmark_evidence": false,
+  "cases": [
+    {
+      "case": "success",
+      "exit_code": 0,
+      "status": "ok",
+      "progress": {
+        "retains_attempted": 20,
+        "retains_completed": 20,
+        "recalls_attempted": 12,
+        "recalls_completed": 12
+      },
+      "completeness": {
+        "expected_retains": 20,
+        "observed_retain_rows": 20,
+        "completed_retains": 20,
+        "expected_recalls": 12,
+        "observed_recall_rows": 12,
+        "completed_recalls": 12,
+        "complete": true
+      },
+      "failure_count": 0,
+      "warnings": [],
+      "delete_calls": 1,
+      "closed": true,
+      "artifact": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/hindsight-comparative-harness-qa-fervxzi9/success.json"
+    },
+    {
+      "case": "create-failure",
+      "exit_code": 1,
+      "status": "blocked_create_bank",
+      "progress": {
+        "retains_attempted": 0,
+        "retains_completed": 0,
+        "recalls_attempted": 0,
+        "recalls_completed": 0
+      },
+      "completeness": {
+        "expected_retains": 20,
+        "observed_retain_rows": 0,
+        "completed_retains": 0,
+        "expected_recalls": 12,
+        "observed_recall_rows": 0,
+        "completed_recalls": 0,
+        "complete": false
+      },
+      "failure_count": 32,
+      "warnings": [],
+      "delete_calls": 0,
+      "closed": true,
+      "artifact": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/hindsight-comparative-harness-qa-fervxzi9/create-failure.json"
+    },
+    {
+      "case": "midretain-failure",
+      "exit_code": 1,
+      "status": "completed_with_failures",
+      "progress": {
+        "retains_attempted": 20,
+        "retains_completed": 19,
+        "recalls_attempted": 12,
+        "recalls_completed": 12
+      },
+      "completeness": {
+        "expected_retains": 20,
+        "observed_retain_rows": 20,
+        "completed_retains": 19,
+        "expected_recalls": 12,
+        "observed_recall_rows": 12,
+        "completed_recalls": 12,
+        "complete": false
+      },
+      "failure_count": 2,
+      "warnings": [],
+      "delete_calls": 1,
+      "closed": true,
+      "artifact": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/hindsight-comparative-harness-qa-fervxzi9/midretain-failure.json"
+    },
+    {
+      "case": "malformed-document",
+      "exit_code": 1,
+      "status": "completed_with_failures",
+      "progress": {
+        "retains_attempted": 0,
+        "retains_completed": 0,
+        "recalls_attempted": 0,
+        "recalls_completed": 0
+      },
+      "completeness": {
+        "expected_retains": 1,
+        "observed_retain_rows": 0,
+        "completed_retains": 0,
+        "expected_recalls": 1,
+        "observed_recall_rows": 0,
+        "completed_recalls": 0,
+        "complete": false
+      },
+      "failure_count": 3,
+      "warnings": [],
+      "delete_calls": 1,
+      "closed": true,
+      "artifact": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/hindsight-comparative-harness-qa-fervxzi9/malformed-document.json"
+    },
+    {
+      "case": "close-failure",
+      "exit_code": 1,
+      "status": "completed_with_failures",
+      "progress": {
+        "retains_attempted": 20,
+        "retains_completed": 20,
+        "recalls_attempted": 12,
+        "recalls_completed": 12
+      },
+      "completeness": {
+        "expected_retains": 20,
+        "observed_retain_rows": 20,
+        "completed_retains": 20,
+        "expected_recalls": 12,
+        "observed_recall_rows": 12,
+        "completed_recalls": 12,
+        "complete": true
+      },
+      "failure_count": 1,
+      "warnings": [],
+      "delete_calls": 1,
+      "closed": true,
+      "artifact": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/hindsight-comparative-harness-qa-fervxzi9/close-failure.json"
+    },
+    {
+      "case": "cleanup-failure",
+      "exit_code": 1,
+      "status": "completed_with_failures",
+      "progress": {
+        "retains_attempted": 20,
+        "retains_completed": 20,
+        "recalls_attempted": 12,
+        "recalls_completed": 12
+      },
+      "completeness": {
+        "expected_retains": 20,
+        "observed_retain_rows": 20,
+        "completed_retains": 20,
+        "expected_recalls": 12,
+        "observed_recall_rows": 12,
+        "completed_recalls": 12,
+        "complete": true
+      },
+      "failure_count": 1,
+      "warnings": [],
+      "delete_calls": 1,
+      "closed": true,
+      "artifact": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/hindsight-comparative-harness-qa-fervxzi9/cleanup-failure.json"
+    },
+    {
+      "case": "none-retain-response",
+      "exit_code": 1,
+      "status": "completed_with_failures",
+      "progress": {
+        "retains_attempted": 20,
+        "retains_completed": 19,
+        "recalls_attempted": 12,
+        "recalls_completed": 12
+      },
+      "completeness": {
+        "expected_retains": 20,
+        "observed_retain_rows": 20,
+        "completed_retains": 19,
+        "expected_recalls": 12,
+        "observed_recall_rows": 12,
+        "completed_recalls": 12,
+        "complete": false
+      },
+      "failure_count": 1,
+      "warnings": [],
+      "delete_calls": 1,
+      "closed": true,
+      "artifact": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/hindsight-comparative-harness-qa-fervxzi9/none-retain-response.json"
+    },
+    {
+      "case": "version-404-warning",
+      "exit_code": 0,
+      "status": "ok",
+      "progress": {
+        "retains_attempted": 20,
+        "retains_completed": 20,
+        "recalls_attempted": 12,
+        "recalls_completed": 12
+      },
+      "completeness": {
+        "expected_retains": 20,
+        "observed_retain_rows": 20,
+        "completed_retains": 20,
+        "expected_recalls": 12,
+        "observed_recall_rows": 12,
+        "completed_recalls": 12,
+        "complete": true
+      },
+      "failure_count": 0,
+      "warnings": [
+        "version endpoint unavailable; service version remains unknown"
+      ],
+      "delete_calls": 1,
+      "closed": true,
+      "artifact": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/hindsight-comparative-harness-qa-fervxzi9/version-404-warning.json"
+    }
+  ],
+  "notes": [
+    "Hindsight client and HTTP helper were isolated fakes in this process.",
+    "The records test control flow and artifact handling only; they are not benchmark evidence."
+  ]
+}

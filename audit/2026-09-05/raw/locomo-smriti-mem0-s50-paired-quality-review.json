@@ -1,0 +1,569 @@
+{
+  "schema_version": 1,
+  "status": "completed_bounded_paired_quality_review",
+  "review_type": "LoCoMo50_Smriti_vs_Mem0_question_level_evidence_review",
+  "captured_at_utc": "2026-09-07T19:38:10.154809+00:00",
+  "model_calls": false,
+  "official_results_modified": false,
+  "dataset": {
+    "path": "/private/tmp/smriti-public-data/locomo10.json",
+    "sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+    "rows": 10
+  },
+  "source_artifacts": {
+    "smriti": {
+      "path": "audit/2026-09-05/locomo-qa-smriti-s50.json",
+      "sha256": "e0f6417f0180d5c5756483d3f8ed6a5f2f1b79f119fcc3cc4db24369935194dc",
+      "status": "complete"
+    },
+    "mem0": {
+      "path": "audit/2026-09-05/locomo-qa-mem0-s50.json",
+      "sha256": "311d65f7d6a3247194a4bc1c686ac9535ad4a4a94c184b812035dd1d01d23add",
+      "status": "complete"
+    },
+    "pair_configuration_review": {
+      "path": "audit/2026-09-05/raw/locomo-pair-configuration-review.json",
+      "sha256": "e0eb448fd8ef2ead2f1662e668fcb27eb95887f819d78d5d2589c0fd422945e1"
+    }
+  },
+  "paired_configuration_invariants": {
+    "same_question_ids": true,
+    "same_question_id_order": true,
+    "same_dataset_sha256": true,
+    "same_answer_and_judge_configuration": true,
+    "same_question_count": true,
+    "failure_inclusive_denominator": {
+      "smriti": 50,
+      "mem0": 50
+    }
+  },
+  "official_run_summary_snapshot": {
+    "smriti": {
+      "correct": 27,
+      "accuracy": 0.54,
+      "answerable_correct": 21,
+      "answerable_accuracy": 0.525,
+      "abstention_correct": 6,
+      "abstention_accuracy": 0.6,
+      "failures": 0,
+      "cleanup_failures": 0
+    },
+    "mem0": {
+      "correct": 26,
+      "accuracy": 0.52,
+      "answerable_correct": 20,
+      "answerable_accuracy": 0.5,
+      "abstention_correct": 6,
+      "abstention_accuracy": 0.6,
+      "failures": 0,
+      "cleanup_failures": 0
+    },
+    "difference_mem0_minus_smriti": {
+      "correct": -1,
+      "accuracy": -0.020000000000000018,
+      "answerable_correct": -1
+    },
+    "interpretation": "At this sample size, the one-question overall difference is descriptive only; it is not a leaderboard or significance claim."
+  },
+  "by_question_type": {
+    "1": {
+      "n": 10,
+      "smriti_correct": 4,
+      "mem0_correct": 5,
+      "delta_mem0_minus_smriti": 1
+    },
+    "2": {
+      "n": 10,
+      "smriti_correct": 3,
+      "mem0_correct": 3,
+      "delta_mem0_minus_smriti": 0
+    },
+    "3": {
+      "n": 10,
+      "smriti_correct": 5,
+      "mem0_correct": 3,
+      "delta_mem0_minus_smriti": -2
+    },
+    "4": {
+      "n": 10,
+      "smriti_correct": 9,
+      "mem0_correct": 9,
+      "delta_mem0_minus_smriti": 0
+    },
+    "5": {
+      "n": 10,
+      "smriti_correct": 6,
+      "mem0_correct": 6,
+      "delta_mem0_minus_smriti": 0
+    }
+  },
+  "paired_correctness": {
+    "both_correct": 24,
+    "both_incorrect": 21,
+    "smriti_only_correct_question_ids": [
+      "conv-42-q2",
+      "conv-43-q3",
+      "conv-50-q4"
+    ],
+    "mem0_only_correct_question_ids": [
+      "conv-41-q0",
+      "conv-48-q1"
+    ],
+    "disagreement_count": 5
+  },
+  "disagreements": [
+    {
+      "question_id": "conv-41-q0",
+      "sample_id": "conv-41",
+      "question_type": "2",
+      "question": "Who did Maria have dinner with on May 3, 2023?",
+      "gold": "her mother",
+      "unanswerable": false,
+      "official_evidence_ids": [
+        "D13:16"
+      ],
+      "official_evidence": [
+        {
+          "dia_id": "D13:16",
+          "source_label": "source-0013",
+          "session_key": "session_13",
+          "session_date_time": "3:18 pm on 4 May, 2023",
+          "speaker": "Maria",
+          "text": "Wow, John! It's great when you have that kind of support. My mom and I made some dinner together last night!",
+          "dataset_row_found": true
+        }
+      ],
+      "smriti": {
+        "correct": false,
+        "hypothesis": "I don't have enough information to answer that.",
+        "errors": [],
+        "retrieved_evidence_source_labels": [
+          "source-0013"
+        ],
+        "retrieval_contains_all_official_evidence_sources": true,
+        "reader_evidence_source_headers": [
+          "source-0013"
+        ],
+        "reader_context_contains_all_official_evidence_sources": true,
+        "reader_context": "[source-0013 @ 2023-05-04T00:00:00Z] supporting each other during boot camp - cheering each other on during workouts and providing emotional support outside them. It's been amazing witnessing us come together and be there for each other.\nMaria: Wow, John! It's great when you have that kind of support. My mom and I made some dinner together last night! [shared an image: a photo of a table with a variety of food on it]\nJohn: Thanks, Maria. Having good support is key. Appreciate you being there for me. What do you have in this spread? Looks delicious! I made this apple pie for the kids yesterday too! [shared an image: a photo of a person holding a plate with a banana split ice cream sundae]\nMaria: Thanks, John! It had lots of great things like salads, sandwiches, and homemade desserts. My favorite is the amazing banana split sundae - I enjoy it after a day of volunteering. It's a little moment of joy in life - balance is key!\nJohn: Mm, yum! A bit of joy is definitely important. How do you find balance in your life?\nMaria: Ta\n[source-0002 @ 2022-12-22T00:00:00Z] e spend time together. Here's a pic of us at dinner. [shared an image: a photo of a group of people standing around a kitchen table]\nMaria: Woah, that's a nice pic, John! You all obviously had a blast at dinner. Nothing beats getting together with loved ones for a good meal - it makes some awesome memories!\nJohn: Thanks, Maria! Meal times are always fun. Good food, laughs, and chats help us stay close.\nMaria: Yeah, John! It definitely builds a strong bond. Those shared meals really make life enjoyable and meaningful. What did you make? [shared an image: a photo of a table with pizzas and salads on it]\nJohn: We made pizza! We had so much fun making them together. It was great picking out toppings and sharing a tasty meal with family. Have you made anything lately?\nMaria: I can picture you all laughing and having a blast making your own pizzas - a great way to bond! I made some peach cobbler recently, it was great.\nJohn: Yeah Maria, it's awesome! We get our creative on and have a blast t\n[source-0023 @ 2023-07-07T00:00:00Z]  can keep doing great stuff and making a difference. Well, I'm off to have dinner with some friends from the gym. Talk to you later!\n[source-0006 @ 2023-02-05T00:00:00Z] Maria: Hey John! Long time no talk. I just wanted to let you know I challenged myself last Friday and did a charity event. It was great! I truly felt the power of our collective effort to help people in need, so heartwarming.\nJohn: Wow, Maria! Truly inspiring! It's so cool to see how our community can make a difference. How did it feel to be part of that event? [shared an image: a photo of a woman handing a plate of food to a man]\nMaria: Thanks, John! It was such a rewarding experience. Just the act of serving meals and seeing the gratitude on their faces was truly heartwarming. It reminded me of how powerful compassion can be. So, tell me, what made you get into politics?\nJohn: I feel a strong urge to serve my country and community. Running for office was my chance to make an impact. But anyway, tell me more about your charity event. Did something special happen that made it meaningful for you?\nMaria: Yeah, at the event, I had a conversation with someone named David. Hearing his story\n[source-0013 @ 2023-05-04T00:00:00Z] John: Hey Maria! Long time no see! Tons has gone down since then!\nMaria: Hey John! Nice to hear from you. What's new with you?\nJohn: I just started going to boot camps with my fam last month. It's good for bonding and getting fit.\nMaria: Sounds awesome, John! Working out together is a great way of bonding as a family. Have you noticed any changes in your fitness since you started?\nJohn: Yeah Maria! We've had lots more energy and noticed some gains in strength and endurance. We're pushing ourselves and supporting each other which is super motivating. Best of all, my kids are getting excited about staying active! [shared an image: a photo of a white board with a list of workouts on it]\nMaria: Great news John! It's important to teach them good habits early. How often do you all workout together? [shared an image: a photo of a group of people standing around a table filled with food]\nJohn: Thanks, Maria! Three times a week; it keeps us on track.\nMaria: Wow, John! You and your family are aw\n[source-0004 @ 2023-01-09T00:00:00Z] Maria: Hey John, great news - I'm now friends with one of my fellow volunteers! We both love helping others. How have you been since we last chatted?\nJohn: Hey Maria, I've been busy with work and family, but last week I had an unexpected incident on my way home. It reminded me how life can throw unexpected troubles our way. [shared an image: a photo of a car with a broken windshield and a broken windshield]\nMaria: Oh John, that sounds tough. I'm glad you're alright. Life does throw us some surprises, doesn't it?\n\n [shared an image: a photo of a tattoo with a quote on it]\nJohn: Thanks, Maria. This is a reminder to stay strong during tough times.\nMaria: Yeah John, when stuff like that happens, it's good to tap into our own inner strength. How did you handle it?\nJohn: I tried to stay calm and asked for assistance, which helped me handle the situation and make it back safely.\nMaria: Hey, John that's awesome! You really showed your resilience and resourcefulness. How did you feel afterwards\n[source-0012 @ 2023-04-18T00:00:00Z] inspiring to see people united in their goal.\nMaria: Wow, that must have been awesome! Being around people who share your passion is truly inspiring. How did it feel to be surrounded by like-minded individuals there?\nJohn: Talking with the group of people who were as stoked as me on tech for change was awesome! It made me think we really can make a difference. [shared an image: a photo of a group of people sitting around a table]\nMaria: No way, John! That's really cool. What was the most exciting part of it?\nJohn: The best part was the energy in the room - so infectious! We all had great ideas, brainstormed together, and stayed motivated. It was really empowering. [shared an image: a photo of a group of military men sitting around a table]\nMaria: That sounds amazing! How did being in that environment with such motivated people affect you?\nJohn: The motivated people around me gave me renewed energy and a purpose. It really inspired me to make a bigger difference. [shared an image: a pho\n[source-0012 @ 2023-04-18T00:00:00Z] to of a table with a map of a city on it]\nMaria: Cool, John! It's inspiring to be around people like that. Anything exciting on the horizon?\nJohn: I'm planning a trip to the East Coast. How about you? Anything cool going on recently?\nMaria: I'm still volunteering at the homeless shelter. It's fulfilling to lend a hand.\nJohn: Wow, Maria! You're so dedicated to helping people. How's it been going?\nMaria: It's been rewarding and tough. It's fulfilling, but the growing need for help can be overwhelming.\nJohn: It's tough sometimes, but every act of kindness matters. You're so dedicated and inspiring, Maria. Keep going!\nMaria: Thanks, John. Your kind words mean a lot. Little acts of kindness can have a big effect. We can all do something to make a difference.\nJohn: You're right, every small act can make a big impact. Let's keep doing our part for the world!\n[source-0013 @ 2023-05-04T00:00:00Z] olo trip was a transformative experience.\nMaria: Yeah, it was great. It helped me grow and made me appreciate life more. Taking a step back can really show us the beauty of life. [shared an image: a photo of a small island with a lone boat in the water]\nJohn: Wow, Maria, that's a really nice picture! Did you learn anything meaningful during your trip?\nMaria: Yeah, I realized that it's important to value different perspectives and the power of solitude. Plus, it reminded me of the importance of letting go and trusting life sometimes. [shared an image: a photo of a person walking on the beach with a surfboard]\nJohn: The pic takes me back. Did you try anything new on your vacation?\nMaria: Yeah, I did! I tried my hand at surfing for the first time- it was so exciting! Even though I kept falling off, it taught me the power of not giving up and trying new things.\nJohn: Wow Maria, that's awesome! Trying new things takes guts and it can be so rewarding. Keep up the courage! [shared an image: a\n[source-0012 @ 2023-04-18T00:00:00Z] John: Hey Maria, hope you're doing okay. Since we chatted last, I've been blogging about politics and the government. It's been a really satisfying experience and I care about making a real impact. We need way better education and infrastructure and I know firsthand how this impacts neighborhoods.\nMaria: Hey John, glad to hear you're fired up about something! Blogging can really make a difference. I agree that education and infrastructure are key to our community's growth.\nJohn: Thanks, Maria! It's been great to talk to someone who understands the importance of these issues. Digging deeper into the political system has"
+      },
+      "mem0": {
+        "correct": true,
+        "hypothesis": "Maria had dinner with her mom on May 3, 2023.",
+        "errors": [],
+        "retrieved_evidence_source_labels": [
+          "source-0013"
+        ],
+        "retrieval_contains_all_official_evidence_sources": true,
+        "reader_evidence_source_headers": [
+          "source-0013"
+        ],
+        "reader_context_contains_all_official_evidence_sources": true,
+        "reader_context": "[source-0002 @ 2022-12-22T00:00:00Z] e spend time together. Here's a pic of us at dinner. [shared an image: a photo of a group of people standing around a kitchen table]\nMaria: Woah, that's a nice pic, John! You all obviously had a blast at dinner. Nothing beats getting together with loved ones for a good meal - it makes some awesome memories!\nJohn: Thanks, Maria! Meal times are always fun. Good food, laughs, and chats help us stay close.\nMaria: Yeah, John! It definitely builds a strong bond. Those shared meals really make life enjoyable and meaningful. What did you make? [shared an image: a photo of a table with pizzas and salads on it]\nJohn: We made pizza! We had so much fun making them together. It was great picking out toppings and sharing a tasty meal with family. Have you made anything lately?\nMaria: I can picture you all laughing and having a blast making your own pizzas - a great way to bond! I made some peach cobbler recently, it was great.\nJohn: Yeah Maria, it's awesome! We get our creative on and have a blast t\n[source-0023 @ 2023-07-07T00:00:00Z]  can keep doing great stuff and making a difference. Well, I'm off to have dinner with some friends from the gym. Talk to you later!\n[source-0013 @ 2023-05-04T00:00:00Z] supporting each other during boot camp - cheering each other on during workouts and providing emotional support outside them. It's been amazing witnessing us come together and be there for each other.\nMaria: Wow, John! It's great when you have that kind of support. My mom and I made some dinner together last night! [shared an image: a photo of a table with a variety of food on it]\nJohn: Thanks, Maria. Having good support is key. Appreciate you being there for me. What do you have in this spread? Looks delicious! I made this apple pie for the kids yesterday too! [shared an image: a photo of a person holding a plate with a banana split ice cream sundae]\nMaria: Thanks, John! It had lots of great things like salads, sandwiches, and homemade desserts. My favorite is the amazing banana split sundae - I enjoy it after a day of volunteering. It's a little moment of joy in life - balance is key!\nJohn: Mm, yum! A bit of joy is definitely important. How do you find balance in your life?\nMaria: Ta\n[source-0031 @ 2023-08-13T00:00:00Z] st, John! Spending time with family is so important, and that all sounds perfect. Have a great time!\nJohn: Thanks, Maria! I'm off to spend some time with them now. Have a good day!\nMaria: Enjoy your family time, John! Have a great day!\nJohn: Thanks, Maria! You too! Stay safe!\n[source-0002 @ 2022-12-22T00:00:00Z] ogether.\nMaria: Sure, John! It's those moments of creativity and laughter that bring us closer. Let's make happy memories with our family and keep them close.\nJohn:  Yep, let's keep making great memories with our loved ones and cherishing the time we have. I'm off to do some taekwondo!\n[source-0030 @ 2023-08-11T00:00:00Z] Maria: Hey John! Long time no talk! Guess what - I got a puppy two weeks ago! Her name's Coco and she's adorable. [shared an image: a photo of a white dog laying in the grass with a baseball]\nJohn: Wow, Maria! Coco looks so adorable! She seems so happy in that photo. How's it been having her around?\nMaria: Thanks, John! It really brings joy to my life; she's always there to greet me when I come home. It's definitely been an adjustment taking care of her, but it's totally worth it!\nJohn: That's great! Pets are the best for lifting our spirits. I'm always still thinking about Max- here's a pic of him. [shared an image: a photo of a dog laying on the floor next to a person]\nMaria: Aww, he looks so cute in that pic! He obviously brought you lots of joy. What's your best memory with him?\nJohn: Thanks, Maria! Max and I had a blast on our camping trip last summer. We hiked, swam, and made great memories. It was a really peaceful and awesome experience. [shared an image: a photo of a dog and a\n[source-0006 @ 2023-02-05T00:00:00Z] Maria: Hey John! Long time no talk. I just wanted to let you know I challenged myself last Friday and did a charity event. It was great! I truly felt the power of our collective effort to help people in need, so heartwarming.\nJohn: Wow, Maria! Truly inspiring! It's so cool to see how our community can make a difference. How did it feel to be part of that event? [shared an image: a photo of a woman handing a plate of food to a man]\nMaria: Thanks, John! It was such a rewarding experience. Just the act of serving meals and seeing the gratitude on their faces was truly heartwarming. It reminded me of how powerful compassion can be. So, tell me, what made you get into politics?\nJohn: I feel a strong urge to serve my country and community. Running for office was my chance to make an impact. But anyway, tell me more about your charity event. Did something special happen that made it meaningful for you?\nMaria: Yeah, at the event, I had a conversation with someone named David. Hearing his story\n[source-0021 @ 2023-07-03T00:00:00Z] Maria: Hey John, long time no see! Sorry I didn't get back to you sooner... So much has happened! Check out these kids I met at the shelter! [shared an image: a photo of three children sitting on a step smiling]\nJohn: Hey Maria! Good to hear from you. Those little ones are adorable, any updates on them? How have you been?\nMaria: Hey John! They were great, their smiles warmed my heart. But something not so great happened yesterday... [shared an image: a photography of a car that has been damaged and is sitting on a flatbed]\nJohn: That's so sad. Can I do anything to help? What happened?\nMaria: A car ran a red light and hit us, but thankfully everyone is okay. Besides that, my cousin just had a tough time recently, so I'm lending a hand in helping her find a new place.\nJohn: That's really nice of you. It's important to help family during hard times. How is she doing now?\nMaria: Things have been tough for her lately. She had to leave and find a new place in a hurry, which has been really s\n[source-0017 @ 2023-06-03T00:00:00Z] John: Hey Maria, long time no talk! Life's been pretty wild lately. The toughest thing to deal with is that we had to say goodbye to Max. He was such an important part of our family for 10 years and it's so hard to think he's not here wagging that tail anymore.\nMaria: John, I'm sorry to hear about Max. It can be tough to lose a pet - they're like family. How have you been coping?\nJohn: Hey Maria, thanks for the kind words. We're all still sad about it, but have been comforted by the good times we had and the memories we have. It's tough, but we'll keep doing our best.\nMaria: Good to hear that you're finding comfort in the good times you had with Max. Pets really have a way of touching our hearts. Do you have any pictures you'd like to share?\nJohn: Let's make sure we make progress in the coming weeks to ensure that we honor the memories of our loved ones. Here's a picture of him that I cherish. \n [shared an image: a photo of a dog sitting in the grass with a leash]\nMaria: Max looks so p\n[source-0013 @ 2023-05-04T00:00:00Z] John: Hey Maria! Long time no see! Tons has gone down since then!\nMaria: Hey John! Nice to hear from you. What's new with you?\nJohn: I just started going to boot camps with my fam last month. It's good for bonding and getting fit.\nMaria: Sounds awesome, John! Working out together is a great way of bonding as a family. Have you noticed any changes in your fitness since you started?\nJohn: Yeah Maria! We've had lots more energy and noticed some gains in strength and endurance. We're pushing ourselves and supporting each other which is super motivating. Best of all, my kids are getting excited about staying active! [shared an image: a photo of a white board with a list of workouts on it]\nMaria: Great news John! It's important to teach them good habits early. How often do you all workout together? [shared an image: a photo of a group of people standing around a table filled with food]\nJohn: Thanks, Maria! Three times a week; it keeps us on track.\nMaria: Wow, John! You and your family are aw\n[source-0020 @ 2023-06-27T00:00:00Z] Maria: Hey John, long time no talk! A lot has happened since then. I've been struggling, but I'm focusing on the positive and relying on my friends and fam for support.\nJohn: Hey Maria, sorry to hear that. That's rough, but it's great that you're focusing on the positive. Having support from your loved ones can make a big difference. How have they been helping you out?\nMaria: Hey John, thanks. My family has been there for me all the way. They've been my rock, giving me words of encouragement and reminding me I'm not alone. It's a relief to have their support.\nJohn: That's great, Maria! It's such a blessing to have family who always supports us and reminds us that we're not alone. They know us like no one else and stick by us no matter what. Last week, we had a blast at a live music event. Seeing them dancing and having fun was awesome. The energy in the air was amazing.\nMaria:"
+      },
+      "assessment": "Both readers received the cited source header and exact text about Maria making dinner with her mom the previous night. Smriti abstained; Mem0 answered her mom. This is a reader/answering difference after evidence retrieval, subject to the dataset relative-date wording."
+    },
+    {
+      "question_id": "conv-42-q2",
+      "sample_id": "conv-42",
+      "question_type": "2",
+      "question": "When did Joanna first watch \"Eternal Sunshine of the Spotless Mind?",
+      "gold": "2019",
+      "unanswerable": false,
+      "official_evidence_ids": [
+        "D1:18"
+      ],
+      "official_evidence": [
+        {
+          "dia_id": "D1:18",
+          "source_label": "source-0001",
+          "session_key": "session_1",
+          "session_date_time": "7:31 pm on 21 January, 2022",
+          "speaker": "Joanna",
+          "text": "Yep, that movie is awesome. I first watched it around 3 years ago. I even went out and got a physical copy!",
+          "dataset_row_found": true
+        }
+      ],
+      "smriti": {
+        "correct": true,
+        "hypothesis": "Joanna first watched \"Eternal Sunshine of the Spotless Mind\" around 3 years before 2022-10-25, which would be around 2019.",
+        "errors": [],
+        "retrieved_evidence_source_labels": [
+          "source-0001"
+        ],
+        "retrieval_contains_all_official_evidence_sources": true,
+        "reader_evidence_source_headers": [
+          "source-0001"
+        ],
+        "reader_context_contains_all_official_evidence_sources": true,
+        "reader_context": "[source-0003 @ 2022-02-07T00:00:00Z] oanna: I can tell! Your cooking skills are awesome. Seen any good movies lately?\nNate: Not recently. Any good ones you'd recommend?\nJoanna: I just watched \"Little Women\" and it was amazing! It's a great story about sisterhood, love, and reaching for your dreams. Definitely a must-see!\nNate: Oh, that sounds like a great one! I'll definitely add it to my list. Thanks for the recommendation!\nJoanna: Anytime! I'm always down to give movie reccomendations.\nNate: Good to know! I'll be sure to give you a shout whenever I run out of things to watch!\nJoanna: Sounds great! Let me know what you think of it when your done!\nNate: You bet! You'll be the first to know.\nJoanna: Awesome! Enjoy yourself!\nNate: You too, take care!\nJoanna: Later, take care!\n[source-0009 @ 2022-04-21T00:00:00Z] , I bet the nerves and excitement are quite a rush! I remember when I did my first play, I was so nervous I forgot my lines. It was embarrassing, but it taught me how important it is to prepare and stay in the moment. [shared an image: a photography of a man in a striped suit is performing on stage]\nNate: Sounds like you had an interesting time on stage! It's always a learning experience. Have you ever considered going back to acting? Is that you in the photo?\nJoanna: Yeah, that's me in that photo! Acting was my first passion, but now I really shine in writing. It helps me express myself in a new way, but who knows, maybe I'll go back to acting someday. Never say never!\nNate: Go for it! Follow your passion for writing, but if acting really makes you happy, give it a shot as well. Who knows what'll happen! Any particular movies that spark your writing? [shared an image: a photo of a turtle laying on a bed of rocks and gravel]\nJoanna: Thanks Nate! I'm gonna keep writing, but if acting ca\n[source-0025 @ 2022-10-25T00:00:00Z] lready planning on watching it, but talking to you about it makes me want to watch it even more!\nJoanna: Awesome! Well enough about me, what have you been up to?\nNate: I was bored today, so I just took my turtles out for a walk. [shared an image: a photography of two turtles sitting on a log in a pond]\nJoanna: Sound fun! Did they have a good time?\nNate: Of course! They look tired from all the walking, so they're relaxing in the tank right now. [shared an image: a photography of a dog laying on a rock in a zoo]\nJoanna: Aww, they're so cute! What do they eat? [shared an image: a photo of a spoon full of ice cream and chocolate sauce]\nNate: They eat a combination of vegetables, fruits, and insects. They have a varied diet. [shared an image: a photo of a container of lettuce and other greens]\nJoanna: Wow, that's fascinating! It's interesting how they have such a varied diet, including insects. Do you have a favorite among their food choices?\nNate: I love seeing them eat fruit - they get so\n[source-0004 @ 2022-02-25T00:00:00Z] ut how the first one did.\nNate: I hear that, taking your mind of something like that is very challenging. What's the new one about?\nJoanna: It's about a thirty year old woman on a journey of self-discovery after a loss. Somewhat similar to the last one, but hey, that's just the kind of thing I'm inspired to write about!\nNate: Interesting! That's a deep topic. Love to hear more about it.\nJoanna: Thanks, Nate! It's my own story. The main character is dealing with some tough stuff: loss and trying to figure out who they are. They take a road trip to heal and grow.\nNate: Wow, Joanna, that sounds awesome. I love stories that tackle important issues. What inspired you to this one?\nJoanna: Thanks, Nate! It was inspired by personal experiences and my own journey of self-discovery.\nNate: Wow, Joanna, that takes guts! I can't wait to see it all come together. I'm also pumped to see how your first one will do!\nJoanna: Thanks, Nate! Appreciate your support. Hoping my screenplay gets noticed and ma\n[source-0001 @ 2022-01-21T00:00:00Z] ?\nNate: I love action and sci-fi movies, the effects are so cool! What about you, what's your favorite genre?\nJoanna: I'm all about dramas and romcoms. I love getting immersed in the feelings and plots.\nNate: Wow, movies can be so powerful! Do you have any recommendations for me?\nJoanna: Yeah, totally! Have you seen this romantic drama that's all about memory and relationships? It's such a good one. [shared an image: a photo of a poster of a man and a woman sitting on a bench]\nNate: Oh cool! I might check that one out some time soon! I do love watching classics.\nJoanna: Yep, that movie is awesome. I first watched it around 3 years ago. I even went out and got a physical copy! [shared an image: a photo of a dvd on a table with a blurry background]\nNate: Sounds cool! Have you seen it a lot? sounds like you know the movie well!\nJoanna: A few times. It's one of my favorites! I really like the idea and the acting.\nNate: Cool! I'll definitely check it out. Thanks for the recommendation!\nJoan\n[source-0025 @ 2022-10-25T00:00:00Z] t of it?\nJoanna: Seeing my characters I worked so hard on come alive was my favorite part. It felt like they jumped off the page and became real - it was totally surreal. [shared an image: a photo of a drawing book with a bunch of drawings on it]\nNate: Wow Joanna, those drawings are really incredible! What inspired you to create them?\nJoanna: Thanks, Nate! They're visuals of the characters to help bring them alive in my head so I can write better.\nNate: That's a cool way to gain insight into your characters. Where did you get your ideas for them?\nJoanna: I got ideas from everywhere: people I know, stuff I saw, even what I imagined. It's cool to see how an idea takes shape into a person with their own wants, worries, and wishes.\nNate: Wow Joanna, that's so cool! It's amazing how our imaginations can bring ideas to life. Can you tell me more about the character on the left in the photo?\nJoanna: Nope! You'll just have to watch the movie and find out for yourself!\nNate: You got it. I was a\n[source-0003 @ 2022-02-07T00:00:00Z] Joanna: Hey Nate, long time no see! The screenplay I sent in to the film festival has been on my mind all day everyday. I keep bouncing between crazy emotions like relief, excitement and worry! Fingers crossed a producer or director falls in love with it and it ends up on the big screen - that would be awesome!\nNate: Hey Joanna! It is a big deal! I'm sure its been a wild ride. Sending some positive vibes and hoping someone likes it enough to get it on the big screen - that would be awesome!\nJoanna: Thanks Nate, your support really means a lot. I put a lot of effort into it and I'm crossing my fingers. What about you? Anything new and exciting happening in your life?\nNate: Thanks, Joanna. Not much has changed for me, but I just discovered that I can make coconut milk icecream and gave it a try. It was actually pretty good, so I'm proud of myself. [shared an image: a photo of a bowl of ice cream with a spoon in it]\nJoanna: Looks delish! Glad you tried something new and it went well. What\n[source-0028 @ 2022-11-09T00:00:00Z] working on?\nNate: Yeah actually - creating gaming content for YouTube. It's a cool way to entertain folks and satisfy my video game cravings at the same time when there aren't any tourneys going on. [shared an image: a photo of a desk with a computer, headphones, and a microphone]\nJoanna: Wow, that's a cool idea! What inspired you to start making gaming videos?\nNate: Hey Joanna, I'm a big fan of them and thought it would be a fun idea to start making them myself. I'm hoping to share my love of gaming and connect with others who enjoy it too.\nJoanna: Way to go, Nate! Making videos and connecting with people about gaming - that's awesome! You'll do great!\nNate: Thanks Joanna! Appreciate the support. It's new to me but I'm excited to get started!\nJoanna: Make sure you watch other peoples videos first so you get a handle on what your audience likes! That way your videos don't flop when you post them. [shared an image: a photo of a computer screen displaying a product listing]\nNate: Already\n[source-0025 @ 2022-10-25T00:00:00Z] Nate: Hey Joanna, what's been up since we last chatted? How's it going?\nJoanna: Hey Nate! Another movie script that I contributed to was shown on the big screen last Sunday for the first time! It was such a surreal experience to see everything come together. I felt a mix of emotions, but overall, it was a satisfying moment. I've been waiting for this for a long time! [shared an image: a photo of a box of cards with a quote on it]\nNate: Congrats Joanna! How was it to finally see it on the big screen?\n\n[shares a photo holding a videogame controller] [shared an image: a photo of a box with a controller inside of it]\nJoanna: It was an amazing experience! I'll never forget seeing all of the characters and dialogue I wrote being acted out - it was such a cool feeling. Having all the hard work and determination I put into writing pay off was definitely rewarding. I know this is the third time it's happened"
+      },
+      "mem0": {
+        "correct": false,
+        "hypothesis": "I don't have enough information to answer that.",
+        "errors": [],
+        "retrieved_evidence_source_labels": [
+          "source-0001"
+        ],
+        "retrieval_contains_all_official_evidence_sources": true,
+        "reader_evidence_source_headers": [
+          "source-0001"
+        ],
+        "reader_context_contains_all_official_evidence_sources": true,
+        "reader_context": "[source-0004 @ 2022-02-25T00:00:00Z] ut how the first one did.\nNate: I hear that, taking your mind of something like that is very challenging. What's the new one about?\nJoanna: It's about a thirty year old woman on a journey of self-discovery after a loss. Somewhat similar to the last one, but hey, that's just the kind of thing I'm inspired to write about!\nNate: Interesting! That's a deep topic. Love to hear more about it.\nJoanna: Thanks, Nate! It's my own story. The main character is dealing with some tough stuff: loss and trying to figure out who they are. They take a road trip to heal and grow.\nNate: Wow, Joanna, that sounds awesome. I love stories that tackle important issues. What inspired you to this one?\nJoanna: Thanks, Nate! It was inspired by personal experiences and my own journey of self-discovery.\nNate: Wow, Joanna, that takes guts! I can't wait to see it all come together. I'm also pumped to see how your first one will do!\nJoanna: Thanks, Nate! Appreciate your support. Hoping my screenplay gets noticed and ma\n[source-0003 @ 2022-02-07T00:00:00Z] oanna: I can tell! Your cooking skills are awesome. Seen any good movies lately?\nNate: Not recently. Any good ones you'd recommend?\nJoanna: I just watched \"Little Women\" and it was amazing! It's a great story about sisterhood, love, and reaching for your dreams. Definitely a must-see!\nNate: Oh, that sounds like a great one! I'll definitely add it to my list. Thanks for the recommendation!\nJoanna: Anytime! I'm always down to give movie reccomendations.\nNate: Good to know! I'll be sure to give you a shout whenever I run out of things to watch!\nJoanna: Sounds great! Let me know what you think of it when your done!\nNate: You bet! You'll be the first to know.\nJoanna: Awesome! Enjoy yourself!\nNate: You too, take care!\nJoanna: Later, take care!\n[source-0001 @ 2022-01-21T00:00:00Z] ?\nNate: I love action and sci-fi movies, the effects are so cool! What about you, what's your favorite genre?\nJoanna: I'm all about dramas and romcoms. I love getting immersed in the feelings and plots.\nNate: Wow, movies can be so powerful! Do you have any recommendations for me?\nJoanna: Yeah, totally! Have you seen this romantic drama that's all about memory and relationships? It's such a good one. [shared an image: a photo of a poster of a man and a woman sitting on a bench]\nNate: Oh cool! I might check that one out some time soon! I do love watching classics.\nJoanna: Yep, that movie is awesome. I first watched it around 3 years ago. I even went out and got a physical copy! [shared an image: a photo of a dvd on a table with a blurry background]\nNate: Sounds cool! Have you seen it a lot? sounds like you know the movie well!\nJoanna: A few times. It's one of my favorites! I really like the idea and the acting.\nNate: Cool! I'll definitely check it out. Thanks for the recommendation!\nJoan\n[source-0001 @ 2022-01-21T00:00:00Z] Nate: Hey Joanna! Long time no see! What's up? Anything fun going on?\nJoanna: Hey Nate! Long time no see! I've been working on a project lately - it's been pretty cool. What about you - any fun projects or hobbies?\nNate: Hey Joanna! That's cool! I won my first video game tournament last week - so exciting!\nJoanna: Wow Nate! Congrats on winning! Tell me more - what game was it?\nNate: Thanks! it's a team shooter game.\nJoanna: Wow, great job! What was is called?\nNate: The game was called Counter-Strike: Global Offensive, and me and my team had a blast to the very end!\nJoanna: Cool, Nate! Sounds like a fun experience, even if I'm not into games.\nNate: It was! How about you? Do you have any hobbies you love?\nJoanna: Yeah! Besides writing, I also enjoy reading, watching movies, and exploring nature. Anything else you enjoy doing, Nate?\nNate: Playing video games and watching movies are my main hobbies.\nJoanna: Cool, Nate! So we both have similar interests. What type of movies do you like best\n[source-0028 @ 2022-11-09T00:00:00Z] working on?\nNate: Yeah actually - creating gaming content for YouTube. It's a cool way to entertain folks and satisfy my video game cravings at the same time when there aren't any tourneys going on. [shared an image: a photo of a desk with a computer, headphones, and a microphone]\nJoanna: Wow, that's a cool idea! What inspired you to start making gaming videos?\nNate: Hey Joanna, I'm a big fan of them and thought it would be a fun idea to start making them myself. I'm hoping to share my love of gaming and connect with others who enjoy it too.\nJoanna: Way to go, Nate! Making videos and connecting with people about gaming - that's awesome! You'll do great!\nNate: Thanks Joanna! Appreciate the support. It's new to me but I'm excited to get started!\nJoanna: Make sure you watch other peoples videos first so you get a handle on what your audience likes! That way your videos don't flop when you post them. [shared an image: a photo of a computer screen displaying a product listing]\nNate: Already\n[source-0003 @ 2022-02-07T00:00:00Z] Joanna: Hey Nate, long time no see! The screenplay I sent in to the film festival has been on my mind all day everyday. I keep bouncing between crazy emotions like relief, excitement and worry! Fingers crossed a producer or director falls in love with it and it ends up on the big screen - that would be awesome!\nNate: Hey Joanna! It is a big deal! I'm sure its been a wild ride. Sending some positive vibes and hoping someone likes it enough to get it on the big screen - that would be awesome!\nJoanna: Thanks Nate, your support really means a lot. I put a lot of effort into it and I'm crossing my fingers. What about you? Anything new and exciting happening in your life?\nNate: Thanks, Joanna. Not much has changed for me, but I just discovered that I can make coconut milk icecream and gave it a try. It was actually pretty good, so I'm proud of myself. [shared an image: a photo of a bowl of ice cream with a spoon in it]\nJoanna: Looks delish! Glad you tried something new and it went well. What\n[source-0009 @ 2022-04-21T00:00:00Z] , I bet the nerves and excitement are quite a rush! I remember when I did my first play, I was so nervous I forgot my lines. It was embarrassing, but it taught me how important it is to prepare and stay in the moment. [shared an image: a photography of a man in a striped suit is performing on stage]\nNate: Sounds like you had an interesting time on stage! It's always a learning experience. Have you ever considered going back to acting? Is that you in the photo?\nJoanna: Yeah, that's me in that photo! Acting was my first passion, but now I really shine in writing. It helps me express myself in a new way, but who knows, maybe I'll go back to acting someday. Never say never!\nNate: Go for it! Follow your passion for writing, but if acting really makes you happy, give it a shot as well. Who knows what'll happen! Any particular movies that spark your writing? [shared an image: a photo of a turtle laying on a bed of rocks and gravel]\nJoanna: Thanks Nate! I'm gonna keep writing, but if acting ca\n[source-0025 @ 2022-10-25T00:00:00Z] Nate: Hey Joanna, what's been up since we last chatted? How's it going?\nJoanna: Hey Nate! Another movie script that I contributed to was shown on the big screen last Sunday for the first time! It was such a surreal experience to see everything come together. I felt a mix of emotions, but overall, it was a satisfying moment. I've been waiting for this for a long time! [shared an image: a photo of a box of cards with a quote on it]\nNate: Congrats Joanna! How was it to finally see it on the big screen?\n\n[shares a photo holding a videogame controller] [shared an image: a photo of a box with a controller inside of it]\nJoanna: It was an amazing experience! I'll never forget seeing all of the characters and dialogue I wrote being acted out - it was such a cool feeling. Having all the hard work and determination I put into writing pay off was definitely rewarding. I know this is the third time it's happened, but its just so awesome!\nNate: That must have been amazing. What was your favorite par\n[source-0010 @ 2022-05-02T00:00:00Z] Joanna: Hey Nate, how's it going? I took your reccomendation and watched \"The Lord of the Rings\" Trilogy last night! It was awesome! [shared an image: a photo of a person holding a book openhemer]\nNate: Glad to hear you enjoyed it! It's probably the greatest trilogy of all time! As for me, life's been ok, just taking care of this. [shared an image: a photo of a gaming room with a computer and a gaming chair]\nJoanna: Wow, Nate! I'm proud of what you did. Your gaming room looks great - have you been gaming a lot recently?\nNate: Gaming has been my focus - practicing a lot and even winning a few tournaments. Last week I won my second tournament! [shared an image: a photo of a woman with purple hair and a black dress]\nJoanna: Wow, congrats! What game were you playing?\nNate: Thanks! I usually play CS:GO, but I tried my hand at the local Street Fighter tournament this time since I play that game a lot with"
+      },
+      "assessment": "Both readers received D1:18. Smriti converted “around 3 years ago” from the 21 Jan 2022 session to 2019; Mem0 abstained. This is a reader/answering difference after evidence retrieval."
+    },
+    {
+      "question_id": "conv-43-q3",
+      "sample_id": "conv-43",
+      "question_type": "3",
+      "question": "Would Tim enjoy reading books by C. S. Lewis or John Greene?",
+      "gold": "C. S.Lewis",
+      "unanswerable": false,
+      "official_evidence_ids": [
+        "D1:14",
+        "D1:16",
+        "D1:18"
+      ],
+      "official_evidence": [
+        {
+          "dia_id": "D1:14",
+          "source_label": "source-0001",
+          "session_key": "session_1",
+          "session_date_time": "7:48 pm on 21 May, 2023",
+          "speaker": "Tim",
+          "text": "It's been going well! Last week I talked to my friend who is a fan of Harry Potter and we're figuring out ideas, so it's been great to get lost in that magical world!",
+          "dataset_row_found": true
+        },
+        {
+          "dia_id": "D1:16",
+          "source_label": "source-0001",
+          "session_key": "session_1",
+          "session_date_time": "7:48 pm on 21 May, 2023",
+          "speaker": "Tim",
+          "text": "Thanks! We'll be discussing various aspects of the Harry Potter universe, like characters, spells, and magical creatures. It's great to see fans coming together for this.",
+          "dataset_row_found": true
+        },
+        {
+          "dia_id": "D1:18",
+          "source_label": "source-0001",
+          "session_key": "session_1",
+          "session_date_time": "7:48 pm on 21 May, 2023",
+          "speaker": "Tim",
+          "text": "I went to a place in London a few years ago - it was like walking into a Harry Potter movie! I also went on a tour which was amazing. Have you been to any of the real Potter places? I'd love to explore them someday!",
+          "dataset_row_found": true
+        }
+      ],
+      "smriti": {
+        "correct": true,
+        "hypothesis": "Tim would likely enjoy reading books by C. S. Lewis, as he appreciates fantasy and inspiring stories. Regarding John Greene, there is not enough information to determine if Tim would enjoy his books.",
+        "errors": [],
+        "retrieved_evidence_source_labels": [],
+        "retrieval_contains_all_official_evidence_sources": false,
+        "reader_evidence_source_headers": [],
+        "reader_context_contains_all_official_evidence_sources": false,
+        "reader_context": "[source-0022 @ 2023-12-08T00:00:00Z] around a table eating]\nTim: Awesome! Sounds like your team has something similar to the characters in the series. They rely on each other to push through challenges. By the way, what book are you currently reading? I'm always on the lookout for new reads!\nJohn: Thanks! I'm currently reading a book that I really enjoy. I highly recommend it!\nTim: Sounds cool! Let me know the title so I can add it to my list!\nJohn: I'm reading \"Dune\" by Frank Herbert. It's a great story about religion and human control over ecology. What about you? What's the last book that moved you?\nTim: I haven't read that yet but I've heard great things! Just finished \"A Dance with Dragons\" and it's a really good story. Highly recommend it! [shared an image: a photography of a book shelf with a book and a book cover]\nJohn: That's cool! I've heard it's such an inspiring book. Have you read all of George R. R. Martin's books?\nTim: Just the GoT series. Have you tried reading any of them?\nJohn: No, I haven't read them ye\n[source-0005 @ 2023-08-09T00:00:00Z]  really captivates me. It takes me to another world where I'm on the edge of my seat and my imagination soars. It's amazing how books can transport us like that.\nJohn: Books can be so captivating, taking us on such incredible journeys! What's the name of it?\nTim: It's a book by Patrick Rothfuss and it's awesome! The way the author builds the world and characters is amazing. You should read it!\nJohn: Sounds cool! I'll definitely check it out. Thanks for the recommendation!\nTim: No problem! Let me know what you think after you read it.\nJohn: Yep, I'll let you know once I'm done reading it. Thanks!\nTim: I hope you like it. Chat soon!\nJohn: Me too. Talk to you soon!\n[source-0019 @ 2023-11-21T00:00:00Z] avorites?\nTim: Yes, they are still my favorites - I love how they take me to other places. What other books do you like?\nJohn: I love non-fiction books about personal development and mindset. They help me know myself better. Do you enjoy reading other types of books as well?\nTim: Yep, John! I love getting lost in fantasy stories, but also discovering new ways to better myself through books on growth, psychology, and improving myself. It's wild how much you can learn from them, right?\nJohn: Yeah, Tim! Books really can shift how we think and help us learn totally new things. Have you come across any that made a big impact on you recently?\nTim: Yeah, John! I recently read a book that really made a big impact on me. It's all about how small changes can make big differences. It really changed the way I do things. Have you read any good books lately?\nJohn: I recently finished rereading \"The Alchemist\" - it was really inspiring. It made me think again about following dreams and searching for \n[source-0002 @ 2023-06-15T00:00:00Z] Tim: Last night I joined a fantasy literature forum and had a great talk about my fave books. It was so enriching!\nJohn: Wow, great to hear that you had a blast talking books! It's cool to connect with others who share your passion. On a different note, exciting things are happening--I'm exploring endorsement opportunities. Thinking about the possibilities pumps me up. It would be amazing to work with brands and do something special. It's so rewarding to have my hard work pay off like this.\nTim: Wow, that's awesome! Congrats - you must be so stoked! Which brands are you looking to link up with?\nJohn: Thanks! I'm really excited about this new journey! I'm currently considering sports brands like Nike and Under Armour. It would be great to collaborate with brands that are related to sports. However, I'm also open to exploring other brands that align with my values and interests. There are so many options out there, and I can't wait to see where this takes me!\nTim: That's awesome! It's go\n[source-0011 @ 2023-09-21T00:00:00Z] see some of the books I've read and enjoyed. [shared an image: a photo of a bookshelf with a lot of books on it]\nTim: Great bookshelf! I saw that you had \"The Alchemist\" on there, one of my favorites. Did you enjoy it?\nJohn: Yep, I read that book and loved it! It made me think about life and how important it is to follow one's dreams. Highly recommend it!\nTim: Glad you liked it! \"The Alchemist\" is worth it.\nJohn: Thanks! Take care!\nTim: Have fun! Take care and talk to you soon.\n[source-0004 @ 2023-08-02T00:00:00Z] thony and I went to this charity thing and ended up in this intense Harry Potter trivia contest. We did alright, but there was this one super-nerd there that took home this as a prize.\n [shared an image: a photo of a book with a picture of a person holding a bookmark]\nTim: That looks great! The signature is sweet! Have you been reading anything?\nJohn: I've been reading this inspiring book, it reminds me to keep dreaming.\nTim: Books can really inspire and help us keep our dreams alive. Keep it up!\nJohn: Thanks! They really do. I want to keep reaching for new goals.\nTim: Same here!\nJohn: Have fun with your writing! Catch you later!\nTim: Thanks! I'll enjoy writing them. Take care and talk soon!\n[source-0019 @ 2023-11-21T00:00:00Z] our own personal legends. I felt really motivated and hopeful after reading it.\nTim: Wow, that book is great! I read it a while back and it really changed my perspective on my goals. I'm glad it had the same impact on you!\nJohn: Yeah, that book is really something. It really helped motivate me to keep chasing my dreams and to trust the process. It's amazing how books can have such an impact on us, right?\nTim: Definitely! Books have a way of opening up new worlds, inspiring us, and making us think. They have the power to make us feel better and help us grow, which is amazing. It's great that we share a love for reading. Let's keep exploring books and motivating each other! Talk to you later!\n[source-0015 @ 2023-10-21T00:00:00Z] to see it all come together. Keep going! Do you have a specific source of inspiration for your stories?\nTim: Thanks! Books, movies, and real-life experiences all fire up my creativity. For example, reading about castles in the UK gave me loads of ideas. Plus, certain authors are like goldmines of inspiration for me. Connecting with the things I love makes writing even more fun.\nJohn: Wow! Sounds like a great mix. Is there a particular author whose work inspires you?\nTim: J.K. Rowling is such an inspiring writer. Her books are so captivating with their detail and creative storytelling. She can definitely transport readers into another world and make them feel so much. I'm always taking notes on her style for my own writing. [shared an image: a photo of a book with a page in it on a table]\nJohn: Cool! How long have you been reading her works?\nTim: I've been reading her stuff for a long time. Her stories have been with me and still inspire me. There's something special about her writing t\n[source-0007 @ 2023-08-17T00:00:00Z]  there who appreciate and share my interests.\nJohn: Cool! It's great when you find a group that appreciates the same things. It really adds something special to our lives. So, do you have any exciting plans or events coming up?\nTim: I have no big events coming up, but I'm hoping to attend a book conference next month. It's an interesting gathering of authors, publishers and book lovers where we talk about our favorite novels and new releases. I'm excited to go because it'll help me learn more about literature and create a stronger bond to it.\nJohn: You're a real bookworm! It would be awesome to go to a book conference with you. Check out this photo of what my teammates gave me when we met. It's a sign of our friendship and all the love we have for each other. [shared an image: a photography of a basketball with autographs on it sitting on a table]\nTim: That's so cool of your teammates. Did they sign it for a special reason?\nJohn: Thanks! They signed it to show our friendship and apprec\n[source-0017 @ 2023-11-11T00:00:00Z] Tim: Yeah! It always makes us realize how huge the world is and how special it is. These moments really show us the beauty around us. Anyways, have you read or watched anything good recently?\nJohn: Yep, I just finished this amazing fantasy series. It was a wild ride with so many twists. The author is amazing at creating awesome storylines and characters - I love getting lost in those fantasy worlds.\nTim: That's amazing! Same here. There's something special about being lost in an awesome fantasy realm and seeing what happens. It's like an escape. \"That\" is one of my favorite fantasy shows. Have you seen it?\nJohn: Yeah, I saw \"That\"! It's amazing to see those worlds and characters come alive. It's a great way to escape reality!\nTim: Yeah, it's awesome how books and movies can take you away. A great escape, right?\nJohn: Definitely, it's like a mental break, giving our minds a rest and letting them wander. So refreshing!\nTim: It's like entering another world! We get to take a break from ev\n[source-0015 @ 2023-10-21T00:00:00Z] en you hang out with friends and"
+      },
+      "mem0": {
+        "correct": false,
+        "hypothesis": "I don't have enough information to answer that.",
+        "errors": [],
+        "retrieved_evidence_source_labels": [],
+        "retrieval_contains_all_official_evidence_sources": false,
+        "reader_evidence_source_headers": [],
+        "reader_context_contains_all_official_evidence_sources": false,
+        "reader_context": "[source-0011 @ 2023-09-21T00:00:00Z] see some of the books I've read and enjoyed. [shared an image: a photo of a bookshelf with a lot of books on it]\nTim: Great bookshelf! I saw that you had \"The Alchemist\" on there, one of my favorites. Did you enjoy it?\nJohn: Yep, I read that book and loved it! It made me think about life and how important it is to follow one's dreams. Highly recommend it!\nTim: Glad you liked it! \"The Alchemist\" is worth it.\nJohn: Thanks! Take care!\nTim: Have fun! Take care and talk to you soon.\n[source-0022 @ 2023-12-08T00:00:00Z] around a table eating]\nTim: Awesome! Sounds like your team has something similar to the characters in the series. They rely on each other to push through challenges. By the way, what book are you currently reading? I'm always on the lookout for new reads!\nJohn: Thanks! I'm currently reading a book that I really enjoy. I highly recommend it!\nTim: Sounds cool! Let me know the title so I can add it to my list!\nJohn: I'm reading \"Dune\" by Frank Herbert. It's a great story about religion and human control over ecology. What about you? What's the last book that moved you?\nTim: I haven't read that yet but I've heard great things! Just finished \"A Dance with Dragons\" and it's a really good story. Highly recommend it! [shared an image: a photography of a book shelf with a book and a book cover]\nJohn: That's cool! I've heard it's such an inspiring book. Have you read all of George R. R. Martin's books?\nTim: Just the GoT series. Have you tried reading any of them?\nJohn: No, I haven't read them ye\n[source-0019 @ 2023-11-21T00:00:00Z] avorites?\nTim: Yes, they are still my favorites - I love how they take me to other places. What other books do you like?\nJohn: I love non-fiction books about personal development and mindset. They help me know myself better. Do you enjoy reading other types of books as well?\nTim: Yep, John! I love getting lost in fantasy stories, but also discovering new ways to better myself through books on growth, psychology, and improving myself. It's wild how much you can learn from them, right?\nJohn: Yeah, Tim! Books really can shift how we think and help us learn totally new things. Have you come across any that made a big impact on you recently?\nTim: Yeah, John! I recently read a book that really made a big impact on me. It's all about how small changes can make big differences. It really changed the way I do things. Have you read any good books lately?\nJohn: I recently finished rereading \"The Alchemist\" - it was really inspiring. It made me think again about following dreams and searching for \n[source-0004 @ 2023-08-02T00:00:00Z] thony and I went to this charity thing and ended up in this intense Harry Potter trivia contest. We did alright, but there was this one super-nerd there that took home this as a prize.\n [shared an image: a photo of a book with a picture of a person holding a bookmark]\nTim: That looks great! The signature is sweet! Have you been reading anything?\nJohn: I've been reading this inspiring book, it reminds me to keep dreaming.\nTim: Books can really inspire and help us keep our dreams alive. Keep it up!\nJohn: Thanks! They really do. I want to keep reaching for new goals.\nTim: Same here!\nJohn: Have fun with your writing! Catch you later!\nTim: Thanks! I'll enjoy writing them. Take care and talk soon!\n[source-0026 @ 2023-12-26T00:00:00Z] any of the stories? I'm looking for some travel ideas too.\nTim: I read a few of them. One of them is about two hikers who trekked through the Himalayas, sounds awesome! [shared an image: a photo of two men on horseback in front of a mountain]\nJohn: Wow, that sounds awesome! How challenging was the trek through the Himalayas?\nTim: The book mentioned that the trek was tough but worth it, with challenging terrain, altitude sickness, and bad weather. But they made it and saw amazing sights - it really motivated me.\nJohn: Wow! Sounds like a tough journey.\nTim: It's true. Facing challenges can be tough, but it can make us stronger. I just visited a travel agency to see what the requirements would be for my next dream trip.\nJohn: For sure, challenges help us learn and grow. Sounds fun! Keep me updated!\nTim: Thanks, I will. You have to keep pushing for your goals. [shared an image: a photo of a newspaper article with a picture of a woman]\nJohn: By the way, who was that main actress in Harry Po\n[source-0002 @ 2023-06-15T00:00:00Z] Tim: Last night I joined a fantasy literature forum and had a great talk about my fave books. It was so enriching!\nJohn: Wow, great to hear that you had a blast talking books! It's cool to connect with others who share your passion. On a different note, exciting things are happening--I'm exploring endorsement opportunities. Thinking about the possibilities pumps me up. It would be amazing to work with brands and do something special. It's so rewarding to have my hard work pay off like this.\nTim: Wow, that's awesome! Congrats - you must be so stoked! Which brands are you looking to link up with?\nJohn: Thanks! I'm really excited about this new journey! I'm currently considering sports brands like Nike and Under Armour. It would be great to collaborate with brands that are related to sports. However, I'm also open to exploring other brands that align with my values and interests. There are so many options out there, and I can't wait to see where this takes me!\nTim: That's awesome! It's go\n[source-0014 @ 2023-10-17T00:00:00Z] tain range with a few trees]\nJohn: Wow, stunning! And thanks. Really appreciate it. Means a lot.\nTim: I took this pic last summer. Seeing it was so stunning. Thanks for appreciating it. It means a lot to me. [shared an image: a photo of a sunset over a mountain with a tree]\nJohn: Where did you capture this? Nature is truly amazing, isn't it?\nTim: I snapped that pic on my trip to the Smoky Mountains last year. It was incredible seeing it in person. Nature's really something else!\nJohn: Yeah, it's amazing how nature's beauty and grandeur can take our breath away. It's so nice to escape the noise of the city and relax in nature. Good for you to get to enjoy that stunning view!\nTim: Nature is indeed refreshing. A good break from school.\nJohn: How are you doing in shcool?\nTim: Doing good! Busy with studies but finding time to relax with books - good balance.\nJohn: Cool! Finding that balance is key. Are you currently reading any books?\nTim: I'm reading this book and I'm totally hooked! What \n[source-0027 @ 2024-01-02T00:00:00Z]  books that take me there. [shared an image: a photo of a desk with a chair and a book shelf]\nJohn: That's awesome! I totally understand why reading means so much to you. It's amazing how much playing a game can help us grow. Thanks for showing us your collection! Which one do you like best that takes you to another world?\nTim: Harry Potter is my favorite book. It's so immersive! [shared an image: a photo of a collection of movies and dvds on a carpet]\nJohn: Cool! Glad you're enjoying that book! Do you have any favorite fantasy movies as well? These are mine. [shared an image: a photo of a collection of star wars movies on a table]\nTim: Definitely Star Wars! It's my favorite and never gets old. What about you, do you have any favorite fantasy films?\nJohn: I'm a huge fan of Lord of the Rings! The adventure, the world, and the characters are awesome. [shared an image: a photo of a shelf with a lot of books on it]\nTim: Wow, me too! That's an awesome collection! Have you watched them heaps\n[source-0028 @ 2024-01-07T00:00:00Z] e know if you're around!\nJohn: Yep, I'll let you know. Oh, I held a benefit basketball game last week. [shared an image: a photo of a boy dribbling a basketball on a court]\nTim: Wow! How did the game go?\nJohn: The game turned out to be a total success! Lots of people showed up and had a great time, plus we were able to raise some money for charity.\nTim: Great job organizing the event. That's really making a difference!\nJohn: Thanks! It's amazing how basketball brings people together and creates a positive impact!\nTim: You rock! Keep it up! [shared an image: a photo of a basketball ball and a book on a court]\nJohn: Thanks, Tim! It's awesome to see how sports can unite people. By the way, what book are you currently reading?\nTim: I'm currently reading a fantasy novel called \"The Name of the Wind\" by Patrick Rothfuss. It's really good!\nJohn: \"The Name of the Wind\" sounds cool. I'll add it to my list. Thanks!\nTim: I hope you enjoy it! Let me know your thoughts.\nJohn: Will do! Thanks for th\n[source-0007 @ 2023-08-17T00:00:00Z]  there who appreciate and share my interests.\nJohn: Cool! It's great when you find a group that appreciates the same things. It really adds something special to our lives. So, do you have any exciting plans or events coming up?\nTim: I have no big events coming up, but I'm hoping to attend a book conference next month. It's an interesting gathering of authors, publishers and book lovers where we talk about our favorite novels and new re"
+      },
+      "assessment": "Neither reader received any official source-0001 evidence header. The cited D1:14, D1:16, and D1:18 texts discuss Harry Potter but do not name C. S. Lewis or John Greene; a whole-conversation search found no Lewis/Greene mention. Smriti’s recorded correct answer therefore has no supporting retrieved context in this run and should be treated as an evidence-integrity flag, not a retrieval success."
+    },
+    {
+      "question_id": "conv-48-q1",
+      "sample_id": "conv-48",
+      "question_type": "1",
+      "question": "Which of Deborah`s family and friends have passed away?",
+      "gold": "mother, father, her friend Karlie",
+      "unanswerable": false,
+      "official_evidence_ids": [
+        "D1:5",
+        "D2:1",
+        "D6:4"
+      ],
+      "official_evidence": [
+        {
+          "dia_id": "D1:5",
+          "source_label": "source-0001",
+          "session_key": "session_1",
+          "session_date_time": "4:06 pm on 23 January, 2023",
+          "speaker": "Deborah",
+          "text": "It was full of memories, she passed away a few years ago. This is our last photo together.",
+          "dataset_row_found": true
+        },
+        {
+          "dia_id": "D2:1",
+          "source_label": "source-0002",
+          "session_key": "session_2",
+          "session_date_time": "9:49 am on 27 January, 2023",
+          "speaker": "Deborah",
+          "text": "Hey Jolene, sorry to tell you this but my dad passed away two days ago. It's been really tough on us all - his sudden death left us all kinda shell-shocked. I'm trying to channel my grief by spending more time with family and cherishing the memories. These moments remind me to live life fully.",
+          "dataset_row_found": true
+        },
+        {
+          "dia_id": "D6:4",
+          "source_label": "source-0006",
+          "session_key": "session_6",
+          "session_date_time": "4:12 pm on 22 February, 2023",
+          "speaker": "Deborah",
+          "text": "The roses and dahlias bring me peace. I lost a friend last week, so I've been spending time in the garden to find some comfort.",
+          "dataset_row_found": true
+        }
+      ],
+      "smriti": {
+        "correct": false,
+        "hypothesis": "Deborah's mother, her friend Karlie, and Jolene's mother.",
+        "errors": [],
+        "retrieved_evidence_source_labels": [
+          "source-0001",
+          "source-0002",
+          "source-0006"
+        ],
+        "retrieval_contains_all_official_evidence_sources": true,
+        "reader_evidence_source_headers": [
+          "source-0001",
+          "source-0002",
+          "source-0006"
+        ],
+        "reader_context_contains_all_official_evidence_sources": true,
+        "reader_context": "[source-0002 @ 2023-01-27T00:00:00Z] Deborah: Hey Jolene, sorry to tell you this but my dad passed away two days ago. It's been really tough on us all - his sudden death left us all kinda shell-shocked. I'm trying to channel my grief by spending more time with family and cherishing the memories. These moments remind me to live life fully. [shared an image: a photo of a woman hugging a woman who is sitting on a couch]\nJolene: Sorry to hear about your dad, Deborah. Losing a parent is tough - how's it going for you and your family?\nDeborah: Even though it's hard, it's comforting to look back on the great memories. We looked at the family album. Photos give me peace during difficult times. This is my parents' wedding in 1993. [shared an image: a photo of a bride and groom posing for a picture]\nJolene: They were a beautiful couple!\nDeborah: My husband and I are trying to be as good a family as my parents were!\nJolene: What do you value in your relationship?\nDeborah: It is love, and openness that have kept us close all these ye\n[source-0001 @ 2023-01-23T00:00:00Z] Deborah: Hey Jolene, nice to meet you! How's your week going? Anything fun happened?\nJolene: Hi Deb! Good to meet you! Yeah, my week's been busy. I finished an electrical engineering project last week - took a lot of work, but it's done now. Anything fun happening for you?\nDeborah: Congrats! Last week I visited a place that holds a lot of memories for me. It was my mother`s old house.\nJolene: Why does it hold such special memories for you?\nDeborah: It was full of memories, she passed away a few years ago. This is our last photo together. [shared an image: a photo of a woman in a wheelchair hugging a woman in a wheelchair]\nJolene: Sorry about your loss, Deb. My mother also passed away last year. This is my room in her house, I also have many memories there. Is there anything special about it you remember? [shared an image: a photo of a room with a bench and a window]\nDeborah: My mom's house had a special bench near the window. She loved to sit there every morning and take in the view. I\n[source-0028 @ 2023-09-15T00:00:00Z] Deborah: Since speaking last, I reconnected with my mom's old friends. Their stories made me tear up and reminded me how lucky I am to have had her. [shared an image: a photo of a living room with a couch and a fire place]\nJolene:  It's great that you could reconnect with them. Hearing stories about our loved ones can be tough but also comforting.\nDeborah: Hearing stories about my mom was emotional. It was both happy and sad to hear things I hadn't heard before. It was a mix of emotions, but overall it was comforting to reconnect with her friends.\nJolene: It can bring up a range of emotions, and it's okay to feel a mix of happiness and sadness. Those moments with her friends must've been meaningful to you.\nDeborah: Wow, it was so special. A glimpse into her life beyond what I knew. Through their eyes, I appreciate her more. Here I am and my mom. [shared an image: a photo of two women in pajamas taking a selfie in a mirror]\nJolene: That looks like a blast! What did you and your mom's fr\n[source-0006 @ 2023-02-22T00:00:00Z] Jolene: Hey Deborah, totally buzzing! Had a great night out last night - dinner, and drinks with my friends. So glad I got to let my hair down. You? [shared an image: a photo of a plate of food and a glass of wine]\nDeborah: Sounds great, Jolene! I just visited this place and it was so calming. Nostalgic too. [shared an image: a photo of a garden with a bunch of flowers in buckets]\nJolene: Wow, those flowers are beautiful! What type are they? It looks so peaceful there.\nDeborah: The roses and dahlias bring me peace. I lost a friend last week, so I've been spending time in the garden to find some comfort.\nJolene: Sorry to hear about your friend, Deb. Losing someone can be really tough. How are you holding up?\nDeborah: Thanks for the kind words. It's been tough, but I'm comforted by remembering our time together. It reminds me of how special life is.\nJolene: Memories can give us so much comfort and joy.\nDeborah: Memories keep our loved ones close. This is the last photo with Karlie which \n[source-0024 @ 2023-09-03T00:00:00Z] Deborah: Hey Jolene, just catching up. I went to a cool event last week with the aim to support each other - pretty inspiring. Have you been connecting with anyone lately?\nJolene: Hey Deb, great to hear from you! I've been focusing on studying and my relationship with my partner. We're taking little trips to the beach, it's a great way to relax. How about you, anything new going on?\nDeborah: I was busy too - went to a community meetup last Friday. We shared stories and it was nice to feel how connected we are. It made me think about how important relationships are. How about you, how are things going in that area?\nJolene: I'm really thankful for my significant other right now. It's great to have someone encouraging my goals! How are things with your friends and family? Any updates on that front?\nDeborah: Relationships with family and friends are so vital. My yoga pals have been my second family - we've held each other up through a lot. The other day I found this old photo. That was whe\n[source-0002 @ 2023-01-27T00:00:00Z] ars. Being there for each other has made us both happy. Look what letter I received yesterday! [shared an image: a photo of a note written to someone on a piece of paper]\nJolene: What touching words! Who is this letter from?\nDeborah: The group members sent this to me! They thanked me for the positive influence I had on them. Those moments remind me why I'm so passionate about yoga.\nJolene: Where do you most often do yoga?\nDeborah: This is one of the places where I do it. [shared an image: a photo of a living room with a television and a window]\nJolene: Where is it?\nDeborah: That's my old home. I go there now and then for my mom, who passed away. Sitting in that spot by the window gives me peace.\nJolene: Must be great to have that place where you feel connected to her.\nDeborah: Yeah, it's special. I can feel her presence when I sit there and it comforts me. [shared an image: a photo of a window seat in a room with a window]\nJolene: Wow, it sounds like that spot holds a lot of sentimenta\n[source-0009 @ 2023-03-13T00:00:00Z]  friends through it. It's really nice for building community connections.\nJolene: That's really motivating. It's great to have support in tough times.\nDeborah: It's one of life's best parts, right?\nJolene: Yeah, having someone to rely on is key in tough times. It really makes a difference in how we handle life. Plus, there's something I wanted to tell you.\nDeborah: What's up? I'm listening. We'll figure it out.\nJolene: I'm having a hard time dealing with my Engineering assignments. It's a lot to manage and I'm struggling to keep up. Can we still talk about time management?\nDeborah: Sure, Jolene. Let's find a time that works for both of us.\nJolene: Let's find a time to chat - I'll check my schedule and get back to you.\nDeborah: Take your time, Jolene. We'll work it out. Take care of yourself, OK?\nJolene:  I'll make sure to take it. See you soon!\nDeborah:  I'm here for you if you need me. Let's catch up soon.\nJolene: Have a great day!\n[source-0015 @ 2023-07-09T00:00:00Z] Deborah: Hey Jolene! I started a running group with Anna - it's awesome connecting with people who care about fitness! [shared an image: a photo of three men standing next to each other on a road]\nJolene: Cool, Deb! Glad you found some people to get fit with. I'm trying to add workouts into my studying schedule, which has been tough but fun. How about you? Any challenges with the running group?\nDeborah: Oh, I'm having a blast with it! We help and push each other during our runs, which makes it so much easier to stay motivated.  I have a lot of my photos from this activity. [shared an image: a photo of a woman standing on a sidewalk with a skateboard]\nJolene: Deborah, that's awesome! Being part of a supportive group must be super motivating. Finding a team that's passionate about something makes a huge difference. Just thinking about my own journey too.\nDeborah: Having people who can cheer you on and give you advice really makes a difference. What has it been like for you finding suppor\n[source-0028 @ 2023-09-15T00:00:00Z] iends do on that day?\nDeborah: We reminisced and looked through her photos. It was really sweet.\nJolene: Looking at old photos must have been so nostalgic! It's great that you could share that experience with friends. It's amazing how photos and memories can give us a deeper appreciation for the people we love.\nDeborah: Pictures really have a way of bringing back memories and making us appreciate the special bond we have with our loved ones. They remind me of how strong love is and how amazing human relationships can be. Just like this one. [shared an image: a photo of a person walking on the beach with a surfboard]\nJolene: Wow, what a gorgeous pic! Do you have any special memories of that beach or just "
+      },
+      "mem0": {
+        "correct": true,
+        "hypothesis": "Deborah's mother, her father, and her friend Karlie have passed away.",
+        "errors": [],
+        "retrieved_evidence_source_labels": [
+          "source-0001",
+          "source-0002",
+          "source-0006"
+        ],
+        "retrieval_contains_all_official_evidence_sources": true,
+        "reader_evidence_source_headers": [
+          "source-0001",
+          "source-0002",
+          "source-0006"
+        ],
+        "reader_context_contains_all_official_evidence_sources": true,
+        "reader_context": "[source-0001 @ 2023-01-23T00:00:00Z] Deborah: Hey Jolene, nice to meet you! How's your week going? Anything fun happened?\nJolene: Hi Deb! Good to meet you! Yeah, my week's been busy. I finished an electrical engineering project last week - took a lot of work, but it's done now. Anything fun happening for you?\nDeborah: Congrats! Last week I visited a place that holds a lot of memories for me. It was my mother`s old house.\nJolene: Why does it hold such special memories for you?\nDeborah: It was full of memories, she passed away a few years ago. This is our last photo together. [shared an image: a photo of a woman in a wheelchair hugging a woman in a wheelchair]\nJolene: Sorry about your loss, Deb. My mother also passed away last year. This is my room in her house, I also have many memories there. Is there anything special about it you remember? [shared an image: a photo of a room with a bench and a window]\nDeborah: My mom's house had a special bench near the window. She loved to sit there every morning and take in the view. I\n[source-0002 @ 2023-01-27T00:00:00Z] Deborah: Hey Jolene, sorry to tell you this but my dad passed away two days ago. It's been really tough on us all - his sudden death left us all kinda shell-shocked. I'm trying to channel my grief by spending more time with family and cherishing the memories. These moments remind me to live life fully. [shared an image: a photo of a woman hugging a woman who is sitting on a couch]\nJolene: Sorry to hear about your dad, Deborah. Losing a parent is tough - how's it going for you and your family?\nDeborah: Even though it's hard, it's comforting to look back on the great memories. We looked at the family album. Photos give me peace during difficult times. This is my parents' wedding in 1993. [shared an image: a photo of a bride and groom posing for a picture]\nJolene: They were a beautiful couple!\nDeborah: My husband and I are trying to be as good a family as my parents were!\nJolene: What do you value in your relationship?\nDeborah: It is love, and openness that have kept us close all these ye\n[source-0024 @ 2023-09-03T00:00:00Z] Deborah: Hey Jolene, just catching up. I went to a cool event last week with the aim to support each other - pretty inspiring. Have you been connecting with anyone lately?\nJolene: Hey Deb, great to hear from you! I've been focusing on studying and my relationship with my partner. We're taking little trips to the beach, it's a great way to relax. How about you, anything new going on?\nDeborah: I was busy too - went to a community meetup last Friday. We shared stories and it was nice to feel how connected we are. It made me think about how important relationships are. How about you, how are things going in that area?\nJolene: I'm really thankful for my significant other right now. It's great to have someone encouraging my goals! How are things with your friends and family? Any updates on that front?\nDeborah: Relationships with family and friends are so vital. My yoga pals have been my second family - we've held each other up through a lot. The other day I found this old photo. That was whe\n[source-0002 @ 2023-01-27T00:00:00Z] ars. Being there for each other has made us both happy. Look what letter I received yesterday! [shared an image: a photo of a note written to someone on a piece of paper]\nJolene: What touching words! Who is this letter from?\nDeborah: The group members sent this to me! They thanked me for the positive influence I had on them. Those moments remind me why I'm so passionate about yoga.\nJolene: Where do you most often do yoga?\nDeborah: This is one of the places where I do it. [shared an image: a photo of a living room with a television and a window]\nJolene: Where is it?\nDeborah: That's my old home. I go there now and then for my mom, who passed away. Sitting in that spot by the window gives me peace.\nJolene: Must be great to have that place where you feel connected to her.\nDeborah: Yeah, it's special. I can feel her presence when I sit there and it comforts me. [shared an image: a photo of a window seat in a room with a window]\nJolene: Wow, it sounds like that spot holds a lot of sentimenta\n[source-0022 @ 2023-08-26T00:00:00Z]  is helping you rest and recharge. It's great for reflection and self-care. Do your snakes also enjoy it?\nJolene: My snakes just like watching me chill. But she's a great company and always brings a sense of calm.\nDeborah: Having a pet around is such a calming feeling. They sure can bring a great sense of comfort. I still have cats, Luna is sitting on the left. [shared an image: a photo of two cats sitting on a window sill looking out]\nJolene: Aww, that's adorable! What's the second one's name?\nDeborah: Max! They bring lots of joy and peace to our home. [shared an image: a photo of a brown leather chair and a black and white floor]\nJolene: How did you get them?\nDeborah: Max is my mother's cat, I took him when my mother passed away. [shared an image: a photo of a car with a fan and a mesh bag]\nJolene: You're great for taming him. How did you get Luna?\nDeborah: I took Luna from the shelter.\nJolene: It’s wonderful that you have become their loving owner!\nDeborah: Yes, I really love cats, \n[source-0028 @ 2023-09-15T00:00:00Z] Deborah: Since speaking last, I reconnected with my mom's old friends. Their stories made me tear up and reminded me how lucky I am to have had her. [shared an image: a photo of a living room with a couch and a fire place]\nJolene:  It's great that you could reconnect with them. Hearing stories about our loved ones can be tough but also comforting.\nDeborah: Hearing stories about my mom was emotional. It was both happy and sad to hear things I hadn't heard before. It was a mix of emotions, but overall it was comforting to reconnect with her friends.\nJolene: It can bring up a range of emotions, and it's okay to feel a mix of happiness and sadness. Those moments with her friends must've been meaningful to you.\nDeborah: Wow, it was so special. A glimpse into her life beyond what I knew. Through their eyes, I appreciate her more. Here I am and my mom. [shared an image: a photo of two women in pajamas taking a selfie in a mirror]\nJolene: That looks like a blast! What did you and your mom's fr\n[source-0006 @ 2023-02-22T00:00:00Z] Jolene: Hey Deborah, totally buzzing! Had a great night out last night - dinner, and drinks with my friends. So glad I got to let my hair down. You? [shared an image: a photo of a plate of food and a glass of wine]\nDeborah: Sounds great, Jolene! I just visited this place and it was so calming. Nostalgic too. [shared an image: a photo of a garden with a bunch of flowers in buckets]\nJolene: Wow, those flowers are beautiful! What type are they? It looks so peaceful there.\nDeborah: The roses and dahlias bring me peace. I lost a friend last week, so I've been spending time in the garden to find some comfort.\nJolene: Sorry to hear about your friend, Deb. Losing someone can be really tough. How are you holding up?\nDeborah: Thanks for the kind words. It's been tough, but I'm comforted by remembering our time together. It reminds me of how special life is.\nJolene: Memories can give us so much comfort and joy.\nDeborah: Memories keep our loved ones close. This is the last photo with Karlie which \n[source-0023 @ 2023-08-30T00:00:00Z] \nJolene: We had a great time visiting an old temple. The stairs were amazing!\nDeborah: Wow, exploring those temples must have been incredible! Three years ago I was also in Rio de Janeiro, I took a beautiful photo on one of the excursions. [shared an image: a photo of a large stone structure with a mountain in the background]\nJolene: The architecture and history of it all were really interesting. I'm sure you also liked the places you visited there!\nDeborah: Exploring historical places and learning their stories is so fun. It was a great experience. I want to share this photo with you. [shared an image: a photo of a hand holding a piece of paper with writing on it]\nJolene:  By the way, what did that paper have written on it in the photo?\nDeborah: This was written to me by a friend who, unfortunately, will never be able to support me. I miss him here. This quote says\"Let go of what no longer serves you.\"\nJolene: I'm sorry! That's a good reminder to stay focused and let go of what no lon\n[source-0009 @ 2023-03-13T00:00:00Z]  friends through it. It's really nice for building community connections.\nJolene: That's really motivating. It's great to have support in tough times.\nDeborah: It's one of life's best parts, right?\nJolene: Yeah, having someone to rely on is key in tough times. It really makes a difference in how we handle life. Plus, there's something I wanted to tell you.\nDeborah: What's up? I'm listening. We'll figure it out.\nJolene: I'm having a hard time dealing with my Engineering assignments. It's a lot to manage and I'm struggling to keep up. Can we still talk about time management?\nDeborah: Sure, Jolene. Let's find a time that works for both of us.\nJolene: Let"
+      },
+      "assessment": "Both readers received all cited source headers. Smriti attributed the father item to Jolene and omitted the exact requested set; Mem0 returned the gold set. The cited D6:4 says only “a friend”; Karlie is named later at D6:8, outside the official evidence list, so exact-name support in the dataset evidence annotation is incomplete."
+    },
+    {
+      "question_id": "conv-50-q4",
+      "sample_id": "conv-50",
+      "question_type": "3",
+      "question": "Which country do Calvin and Dave want to meet in?",
+      "gold": "United States",
+      "unanswerable": false,
+      "official_evidence_ids": [
+        "D3:9",
+        "D3:10"
+      ],
+      "official_evidence": [
+        {
+          "dia_id": "D3:9",
+          "source_label": "source-0003",
+          "session_key": "session_3",
+          "session_date_time": "4:15 pm on 20 April, 2023",
+          "speaker": "Calvin",
+          "text": "Thanks, Dave! I'm dreaming of touring the world, performing for different people and connecting with them. I hope my music can reach a global audience and make an impact. I'm also looking forward to my upcoming trip to Boston after I finish the Frank Ocean tour. I've heard that the music scene there is awesome, so I can't wait to check it out!",
+          "dataset_row_found": true
+        },
+        {
+          "dia_id": "D3:10",
+          "source_label": "source-0003",
+          "session_key": "session_3",
+          "session_date_time": "4:15 pm on 20 April, 2023",
+          "speaker": "Dave",
+          "text": "Sounds like an amazing plan, Cal! I can't wait for your trip to Boston. I'll show you around town and all the cool spots. The music scene there is awesome, with places like Paradise Rock, House of Blues, and Fenway Park. You'll definitely have some great performances there. Count me in for the front row when you're up onstage! Oh, and by the way, check out this pic.",
+          "dataset_row_found": true
+        }
+      ],
+      "smriti": {
+        "correct": true,
+        "hypothesis": "Boston, USA.",
+        "errors": [],
+        "retrieved_evidence_source_labels": [
+          "source-0003"
+        ],
+        "retrieval_contains_all_official_evidence_sources": true,
+        "reader_evidence_source_headers": [
+          "source-0003"
+        ],
+        "reader_context_contains_all_official_evidence_sources": true,
+        "reader_context": "[source-0021 @ 2023-10-04T00:00:00Z] us there. Let's do this!\nCalvin: Yeah, let's do it! Let's stay focused and work hard to make our dreams happen. We can make it happen together! Wishing you all the best until we meet again!\n\n\n\n\n \nDave: Yep, Calvin! Together, we can do amazing things if we work together and stay motivated. We got this! Take care and stay well!\n[source-0001 @ 2023-03-23T00:00:00Z] Calvin: Hey Dave! Nice to meet you! How's it going since we talked?\nDave: Hey Calvin! Nice to meet you too! Things have been going well since we last talked. I attended this awesome event recently. It was like a car lover's paradise! They had so many classic cars on show, I was in awe. I even had the opportunity to speak with some of the owners and hear their fascinating stories. It was super inspiring. What about you? Anything exciting happening in your life lately?\nCalvin: That event sounds great! Something really exciting happened to me - I just had a big life change! Here's my new mansion - pretty cool huh? [shared an image: a photo of a building with a sign on the front of it]\nDave: Wow! Congrats on the big change! What inspired you to start this journey?\nCalvin: I'm so excited to learn about Japanese culture and get a chance to expand.\nDave: Wow, Calvin, learning about new cultures is awesome! Have you ever been to Japan?\nCalvin: Never been there before. Fascinated by the traditi\n[source-0030 @ 2023-11-17T00:00:00Z] Dave: Hey Calvin, long time no talk! A lot has happened. I've taken up photography and it's been great - been taking pics of the scenery around here which is really cool.\nCalvin: Hey Dave, it's great to hear from you! Can't wait to see your pics. I went to a fancy gala in Boston yesterday and met some interesting people. Check out this pic of me and the crew! [shared an image: a photography of a group of men sitting on a rock next to a river]\nDave: Calvin, that event looks amazing! You all look awesome. Who did you have the most interesting chat with? [shared an image: a photo of a boat is floating in the water at sunset]\nCalvin: Thanks, Dave! Had an awesome time. I had a really interesting chat with this cool artist and we clicked over music and art. We talked about our favorite artists, art, and how the power of music connects us all. It was such an inspiring conversation - I feel like I'm on a creative high. We have a photo together, take a look! [shared an image: a photography of t\n[source-0015 @ 2023-08-22T00:00:00Z] Dave: Hey Calvin! Haven't talked in a while! Last Friday I had a card-night with my friends, it was so much fun. We laughed and had a great time! Take a look at the photo! [shared an image: a photography of a group of men sitting at a table with playing cards]\nCalvin: Hey Dave! Great to hear from you, card night sounds like a blast! Always love having fun with friends. Guess what? I scored a deal to continue collaboration with Frank Ocean! This is a dream come true for me, I've been working hard and it's finally paying off. No words can describe how happy I am.\nDave: Wow Calvin, congrats! Super excited for you. How did this chance come up?\nCalvin: Thanks, Dave! I had the opportunity to meet Frank Ocean at a music festival in Tokyo and we clicked. We've been speaking and sharing ideas we arranged a meeting and recorded a song in the studio at my mansion - it's been great!\nDave: Wow, Tokyo sounds like an incredible experience!\nCalvin: It was an incredible experience, Dave! The city was b\n[source-0027 @ 2023-10-29T00:00:00Z] Calvin: Hey Dave! Since we last talked, I went to a networking event to meet more artists. So cool! The people I met will help me build up my fan base. Super excited about what it could lead to. You? Anything new since we last spoke?\nDave: Hey Calvin! That's cool that you've been networking with other artists. Nice! I've been getting into photography recently. I've seen some amazing places and taken some great shots. Would you like to see them?\nCalvin: Yeah, show me what you got!\nDave: Look at this magnificent sunset I captured on camera. It's truly breathtaking to witness such beautiful sunsets! The sky looks like it's on fire! [shared an image: a photo of a city skyline at sunset with a clock tower]\nCalvin: Wow, that view looks awesome! What city is it? Have you taken any good pictures lately?\nDave: That's Boston, Cal! Check this out, I took this picture last month, and got a great shot - it was stunning! [shared an image: a photography of a clock tower in a city with buildings]\nCalv\n[source-0003 @ 2023-04-20T00:00:00Z] nt people and connecting with them. I hope my music can reach a global audience and make an impact. I'm also looking forward to my upcoming trip to Boston after I finish the Frank Ocean tour. I've heard that the music scene there is awesome, so I can't wait to check it out!\nDave: Sounds like an amazing plan, Cal! I can't wait for your trip to Boston. I'll show you around town and all the cool spots. The music scene there is awesome, with places like Paradise Rock, House of Blues, and Fenway Park. You'll definitely have some great performances there. Count me in for the front row when you're up onstage! Oh, and by the way, check out this pic. [shared an image: a photography of a city skyline with a boat in the water]\nCalvin: Wow, Boston looks great! Thanks for the tips. And, awesome pic!\nDave: Last weekend I went to a car show. Classic cars are so charming and the dedication people put into restoring them is amazing. That's why I'm so into auto engineering. Can't wait to show you some w\n[source-0010 @ 2023-07-07T00:00:00Z] er been there?\nDave: Nope, never been to Japan but I'm so keen to go one day. I've heard it's full of vibes, good eats and awesome tech. Plus, being able to experience the culture would be amazing - I'm hooked on their music!\nCalvin: Japan definitely has it all - vibes, food, tech, and an amazing culture. It's like stepping into another world. I've been working on some cool music collaborations with Japanese artists, and I'm really excited to hear how it turns out!\nDave: Cool, Cal! Working with them is a great chance - can't wait for the tunes!\nCalvin: Thanks! I'll share some clips when everything's ready. Collaborating with various artists is always exciting, it's a chance to create something unique.\nDave: Way to go, Cal! Collaborating with different artists to create something special sounds amazing. Can't wait to see/hear the end product!\nCalvin: Thanks, Dave! Appreciate all the help. It's gonna be awesome - can't wait to show you. Great catching up, gotta get back to work now. Take\n[source-0030 @ 2023-11-17T00:00:00Z] ve: Looking forward to seeing you. Stay safe, talk to you soon!\nCalvin: Thanks! You too. Talk to you later!\n[source-0017 @ 2023-09-02T00:00:00Z] ston last week! I'm so excited about my upcoming trip to Boston. Look at this! See you soon, buddy! [shared an image: a photo of a book with a boarding pass and a boarding pass]\nDave: Cool! Let me know when you're free and we can catch up in Boston.\nCalvin: Yeah, for sure! I'll let you know when I'm in Boston. See you soon!\nDave: Looking forward to seeing you! Have a safe trip, see ya!\nCalvin: Thanks, Dave! Gotta stay safe on the trip. Can't wait to see you there! I will contact you when I arrive. Goodbye!\n[source-0015 @ 2023-08-22T00:00:00Z] uzzing with energy and the festival crowd was so lively - it was like fuel for my soul. Look at this photo, that's amazing! [shared an image: a photo of a crowd of people sitting on the grass at night]\nDave: Wow, that sounds incredible! What was it like playing at the festival? Must have been an amazing experience.\nCalvin: It was a dream come true, Dave! The festival had buzzing energy and a super upbeat crowd. We all felt connected, it was amazing!\nDave: Sounds like you had a blast! Did any other collaborations come out of that performance? Any upcoming concerts we should know about?\nCalvin: Yeah Dave, someone even noticed my performance and now we're working together, which is wild. My tour ends soon and I'm heading to Boston. Maybe we can meet up then!\nDave: Sounds great! Fill me in on the details when you have them and let's meet up when you're here. Can't wait to hear all about everything!\nCalvin: Of course, Dave can't wait to catch up! I almost forgot, yesterday my friends and I \n[source-0009 @ 2023-06-21T00:00:00Z] ve to go now. I'll see you soon!\nCalvin: Thanks, Dave! let's keep in touch, take care!\n[source-0007 @ 2023-05-31T00:00:00Z] scene is awesome! Tons of talented musicians and cool places to play. It'll be a blast performing there - I'll be there to cheer you on!\nCalvin: Thanks, Dave! Your support means a lot to me. Can't wait to experience the music scene there.\nDave: Great, Calvin! Have a great time in Boston. Can't wait to hear all about it when you get back!\nCalvin: Thanks! I'll fill you in on all the details when I get back. See you soon!"
+      },
+      "mem0": {
+        "correct": false,
+        "hypothesis": "Japan",
+        "errors": [],
+        "retrieved_evidence_source_labels": [
+          "source-0003"
+        ],
+        "retrieval_contains_all_official_evidence_sources": true,
+        "reader_evidence_source_headers": [
+          "source-0003"
+        ],
+        "reader_context_contains_all_official_evidence_sources": true,
+        "reader_context": "[source-0001 @ 2023-03-23T00:00:00Z] Calvin: Hey Dave! Nice to meet you! How's it going since we talked?\nDave: Hey Calvin! Nice to meet you too! Things have been going well since we last talked. I attended this awesome event recently. It was like a car lover's paradise! They had so many classic cars on show, I was in awe. I even had the opportunity to speak with some of the owners and hear their fascinating stories. It was super inspiring. What about you? Anything exciting happening in your life lately?\nCalvin: That event sounds great! Something really exciting happened to me - I just had a big life change! Here's my new mansion - pretty cool huh? [shared an image: a photo of a building with a sign on the front of it]\nDave: Wow! Congrats on the big change! What inspired you to start this journey?\nCalvin: I'm so excited to learn about Japanese culture and get a chance to expand.\nDave: Wow, Calvin, learning about new cultures is awesome! Have you ever been to Japan?\nCalvin: Never been there before. Fascinated by the traditi\n[source-0015 @ 2023-08-22T00:00:00Z] Dave: Hey Calvin! Haven't talked in a while! Last Friday I had a card-night with my friends, it was so much fun. We laughed and had a great time! Take a look at the photo! [shared an image: a photography of a group of men sitting at a table with playing cards]\nCalvin: Hey Dave! Great to hear from you, card night sounds like a blast! Always love having fun with friends. Guess what? I scored a deal to continue collaboration with Frank Ocean! This is a dream come true for me, I've been working hard and it's finally paying off. No words can describe how happy I am.\nDave: Wow Calvin, congrats! Super excited for you. How did this chance come up?\nCalvin: Thanks, Dave! I had the opportunity to meet Frank Ocean at a music festival in Tokyo and we clicked. We've been speaking and sharing ideas we arranged a meeting and recorded a song in the studio at my mansion - it's been great!\nDave: Wow, Tokyo sounds like an incredible experience!\nCalvin: It was an incredible experience, Dave! The city was b\n[source-0021 @ 2023-10-04T00:00:00Z] us there. Let's do this!\nCalvin: Yeah, let's do it! Let's stay focused and work hard to make our dreams happen. We can make it happen together! Wishing you all the best until we meet again!\n\n\n\n\n \nDave: Yep, Calvin! Together, we can do amazing things if we work together and stay motivated. We got this! Take care and stay well!\n[source-0021 @ 2023-10-04T00:00:00Z] Calvin: Hey Dave! Yesterday I met with some incredible artists in Boston and we talked about working together. It was such an inspiring and exciting experience - they all have individual styles and I'm stoked to collaborate with them on new music.\nDave: Awesome, Calvin! Connecting with all those talented artists must have been an inspiring experience. Can't wait to hear what you come up with in your collaboration. Let me know how it goes! Also, how did you arrange that meeting?\nCalvin: Hey Dave, it was awesome talking to those artists! Our mutual friend knew we'd be a great fit. Can't wait to show you the final result. Also, check out this project - I love working on it to chill out. How about you? Got any hobbies to help you relax? [shared an image: a photo of a shiny orange car with a hood open]\nDave: Wow, Calvin, that car looks great! Working on cars really helps me relax, it's therapeutic to see them come back to life. I've been working on that Ford Mustang I found in a junkyard - \n[source-0027 @ 2023-10-29T00:00:00Z] Calvin: Hey Dave! Since we last talked, I went to a networking event to meet more artists. So cool! The people I met will help me build up my fan base. Super excited about what it could lead to. You? Anything new since we last spoke?\nDave: Hey Calvin! That's cool that you've been networking with other artists. Nice! I've been getting into photography recently. I've seen some amazing places and taken some great shots. Would you like to see them?\nCalvin: Yeah, show me what you got!\nDave: Look at this magnificent sunset I captured on camera. It's truly breathtaking to witness such beautiful sunsets! The sky looks like it's on fire! [shared an image: a photo of a city skyline at sunset with a clock tower]\nCalvin: Wow, that view looks awesome! What city is it? Have you taken any good pictures lately?\nDave: That's Boston, Cal! Check this out, I took this picture last month, and got a great shot - it was stunning! [shared an image: a photography of a clock tower in a city with buildings]\nCalv\n[source-0026 @ 2023-10-25T00:00:00Z] Calvin: Hey Dave! Long time no talk! I had a great time yesterday, and visited some sights in Boston with a high school friend. It was really fun and eye-opening.\nDave: Hey Calvin! Good to hear from you! Sounds like you had a blast in Boston - so much to do there! One of my favorites there is great for chilling and admiring nature. BTW, something cool I wanted to tell you about - I recently attended a conference in Detroit - it was so cool, I learned a lot.\nCalvin: I had a wonderful experience during my time in Boston. It had awesome architecture and a really cool history. I followed your advice and went there, it was so peaceful. Good to hear that you've learned a lot of new things at the conference in Detroit!\nDave: Glad you enjoyed Boston! It's got some great architecture and history. Working on this takes me out of my head and calms me down. Here's a pic of my latest car project. [shared an image: a photography of a group of people washing a car in a garage]\nCalvin: Dave, that car \n[source-0024 @ 2023-10-19T00:00:00Z] Calvin: Hey Dave! Been a few days since we talked, but lots happened. Started touring with Frank Ocean and it's been amazing - so much energy from the crowd, such a connection when I'm on stage - unreal! Take a look at how I performed on stage, that was awesome! [shared an image: a photo of a band performing on stage with bright lights]\nDave: Congrats, Calvin! That's awesome. Being able to play your music to a crowd and feel that connection must be unreal. How's the tour going?\nCalvin: Thanks, Dave! The tour has been great, the energy from the crowd is awesome and jamming with Frank Ocean is a dream come true. It's been amazing!\nDave: Wow, Calvin! I bet performing with him is like a dream come true! How did it happen?\nCalvin: It all started August last year when we met at a festival and he said he wanted to collaborate. We clicked right away and the chemistry on stage was incredible. I'm so lucky! Check the photo, of how we perfectly look together on stage! [shared an image: a photo of\n[source-0003 @ 2023-04-20T00:00:00Z] Calvin: Hey Dave! Long time no see. I just went to an awesome music thingy in Tokyo - so cool!\nDave: Hey Calvin! Great to hear from you. How was the music thingy in Tokyo? See any cool bands?\nCalvin: Hey Dave! The festival in Tokyo was awesome! Didn't see any bands, but met lots of talented artists and industry people. Totally enriching!\nDave: Wow, Calvin, sounds great! What did you learn from it?\nCalvin: I learned a lot and got some great advice from professionals in the music industry. It was inspiring!\nDave: Wow, Calvin! Bet that was inspiring being surrounded by professionals. Did you get any advice from them?\nCalvin: The producer gave me some advice to stay true to myself and sound unique. It got me thinking about where I want my music to go. It's really motivating!\nDave: Wow, Calvin! It's really motivating to see you staying true to yourself. It got me thinking, where do you see your music taking you?\nCalvin: Thanks, Dave! I'm dreaming of touring the world, performing for differe\n[source-0003 @ 2023-04-20T00:00:00Z] nt people and connecting with them. I hope my music can reach a global audience and make an impact. I'm also looking forward to my upcoming trip to Boston after I finish the Frank Ocean tour. I've heard that the music scene there is awesome, so I can't wait to check it out!\nDave: Sounds like an amazing plan, Cal! I can't wait for your trip to Boston. I'll show you around town and all the cool spots. The music scene there is awesome, with places like Paradise Rock, House of Blues, and Fenway Park. You'll definitely have some great performances there. Count me in for the front row when you're up onstage! Oh, and by the way, check out this pic. [shared an image: a photography of a city skyline with a boat in the water]\nCalvin: Wow, Boston looks great! Thanks for the tips. And, awesome pic!\nDave: Last weekend I went to a car show. Classic cars are so charming and the dedication people put into restoring them is amazing. That's why I'm so into auto engineering. Can't wait to show you some w\n[source-0024 @ 2023-10-19T00:00:00Z] in, Tokyo looks incredible! Here's a pic I found online, and it's making me dream about visiting someday. The energy there seems unbeatable! Have you ever visited streets like that? [shared an image: a photo of a busy street with people walking and shopping]\nCalvin: Yes, Dave! That was an incr"
+      },
+      "assessment": "Both readers received the cited source headers. The evidence says Calvin and Dave plan to meet in Boston, so “United States” requires a geographic inference; Mem0 answered Japan from a distractor thread while Smriti answered Boston/USA."
+    }
+  ],
+  "date_judge_integrity": {
+    "scope": "answerable question_type 2 rows in the shared 50-question selection",
+    "strictly_comparable_rows": [
+      {
+        "question_id": "conv-26-q0",
+        "gold": "7 May 2023",
+        "gold_iso": "2023-05-07",
+        "smriti_hypothesis": "Caroline went to the LGBTQ support group on May 8, 2023.",
+        "smriti_correct": false,
+        "mem0_hypothesis": "May 8, 2023.",
+        "mem0_correct": false,
+        "dates_equal": false,
+        "assessment": "Both recorded incorrect; both answered the session date (8 May) while the evidence says yesterday.",
+        "question": "When did Caroline go to the LGBTQ support group?",
+        "official_evidence_ids": [
+          "D1:3"
+        ],
+        "official_evidence": [
+          {
+            "dia_id": "D1:3",
+            "source_label": "source-0001",
+            "session_key": "session_1",
+            "session_date_time": "1:56 pm on 8 May, 2023",
+            "speaker": "Caroline",
+            "text": "I went to a LGBTQ support group yesterday and it was so powerful."
+          }
+        ],
+        "reader_evidence_presence": {
+          "smriti": {
+            "retrieval_contains_all": true,
+            "reader_context_contains_all": true
+          },
+          "mem0": {
+            "retrieval_contains_all": true,
+            "reader_context_contains_all": true
+          }
+        }
+      },
+      {
+        "question_id": "conv-30-q0",
+        "gold": "19 January, 2023",
+        "gold_iso": "2023-01-19",
+        "smriti_hypothesis": "Jon lost his job as a banker on 2023-01-20.",
+        "smriti_correct": true,
+        "mem0_hypothesis": "Jon lost his job as a banker on 2023-01-20.",
+        "mem0_correct": true,
+        "dates_equal": false,
+        "assessment": "Both recorded correct despite the explicit 19 Jan vs 20 Jan mismatch; this is the known judge false-positive case.",
+        "question": "When Jon has lost his job as a banker?",
+        "official_evidence_ids": [
+          "D1:2"
+        ],
+        "official_evidence": [
+          {
+            "dia_id": "D1:2",
+            "source_label": "source-0001",
+            "session_key": "session_1",
+            "session_date_time": "4:04 pm on 20 January, 2023",
+            "speaker": "Jon",
+            "text": "Hey Gina! Good to see you too. Lost my job as a banker yesterday, so I'm gonna take a shot at starting my own business."
+          }
+        ],
+        "reader_evidence_presence": {
+          "smriti": {
+            "retrieval_contains_all": true,
+            "reader_context_contains_all": true
+          },
+          "mem0": {
+            "retrieval_contains_all": true,
+            "reader_context_contains_all": true
+          }
+        }
+      },
+      {
+        "question_id": "conv-42-q2",
+        "gold": "2019",
+        "gold_value": 2019,
+        "smriti_hypothesis": "Joanna first watched \"Eternal Sunshine of the Spotless Mind\" around 3 years before 2022-10-25, which would be around 2019.",
+        "smriti_correct": true,
+        "mem0_hypothesis": "I don't have enough information to answer that.",
+        "mem0_correct": false,
+        "dates_equal": true,
+        "assessment": "Smriti recorded correct year; Mem0 abstained and was recorded incorrect. The cited evidence says around three years before 21 Jan 2022.",
+        "question": "When did Joanna first watch \"Eternal Sunshine of the Spotless Mind?",
+        "official_evidence_ids": [
+          "D1:18"
+        ],
+        "official_evidence": [
+          {
+            "dia_id": "D1:18",
+            "source_label": "source-0001",
+            "session_key": "session_1",
+            "session_date_time": "7:31 pm on 21 January, 2022",
+            "speaker": "Joanna",
+            "text": "Yep, that movie is awesome. I first watched it around 3 years ago. I even went out and got a physical copy!"
+          }
+        ],
+        "reader_evidence_presence": {
+          "smriti": {
+            "retrieval_contains_all": true,
+            "reader_context_contains_all": true
+          },
+          "mem0": {
+            "retrieval_contains_all": true,
+            "reader_context_contains_all": true
+          }
+        }
+      }
+    ],
+    "excluded_or_non_strict_rows": [
+      {
+        "question_id": "conv-41-q0",
+        "reason": "not a date answer; question contains a date but gold is a person."
+      },
+      {
+        "question_id": "conv-43-q6",
+        "reason": "gold has month and year while hypotheses are bare months; no same-granularity explicit comparison."
+      },
+      {
+        "question_id": "conv-44-q0",
+        "reason": "hypotheses are abstentions; no paired explicit date."
+      },
+      {
+        "question_id": "conv-47-q1",
+        "reason": "not a date answer."
+      },
+      {
+        "question_id": "conv-48-q0",
+        "reason": "not a date answer."
+      },
+      {
+        "question_id": "conv-49-q4",
+        "reason": "not a date answer."
+      },
+      {
+        "question_id": "conv-50-q0",
+        "reason": "gold is a date range and hypotheses are abstentions; no strict single-date comparison."
+      }
+    ],
+    "known_false_positive_question_id": "conv-30-q0",
+    "official_scores_modified": false
+  },
+  "limitations": [
+    "This artifact audits preserved outputs and reader contexts; it does not rerun retrieval, readers, judges, or normalize scores.",
+    "Official correctness booleans remain the run outputs. The review flags evidence and judge concerns separately.",
+    "The shared qwen3:8b/nomic-embed-text:v1.5 runs used a non-isolated host window; this review makes no latency or speed ranking.",
+    "Question-type 5 rows are unanswerable under the benchmark heuristic; their 6/10 abstention scores are reported in the source artifacts and are not interpreted here as answerability proof."
+  ]
+}

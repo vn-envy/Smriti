@@ -38,15 +38,30 @@ splits and cannot be placed in the same result table as locally measured values.
 The LongMemEval oracle split contains evidence sessions only and therefore does
 not represent full-haystack retrieval.
 
-## Missing evidence
+## Remaining evidence
 
-A public LongMemEval/LoCoMo matched run remains outstanding. It needs one pinned
-dataset file and hash, identical embedding and top-k budgets where APIs allow,
-failure-inclusive denominators, and retrieval evidence labels derived from the
-dataset rather than answer strings. A full QA comparison needs the same Qwen3
-8B answer/judge settings across products and judge-output validation. Qwen3 8B
-is suitable for a local engineering baseline, not a definitive leaderboard
-judge; a human-audited subset and judge agreement should accompany publication.
+A bounded paired LoCoMo50 answer/judge baseline is now recorded for the frozen
+installed v4 candidate: both adapters completed the same 50 selected questions
+with zero operational or cleanup failures; Smriti recorded 27/50 and Mem0 26/50
+correct. Independent review verified the same IDs, dataset, gold labels, and
+reader/judge models, with 24 questions correct for both, 21 for neither, 3
+Smriti-only, and 2 Mem0-only; the exploratory question bootstrap for Smriti minus
+Mem0 was [-0.06, 0.10]. This is not a superiority result because questions share
+conversations, the bootstrap does not model that dependence, and the labels
+include known judge errors such as `conv-30-q0`.
+
+The remaining answer-quality evidence needs shared paired LongMemEval-S50
+full-history QA, GBrain held-out20 semantic retrieval QA, and Hindsight
+comparative probes (20/12). Each
+full-history question must use its complete haystack under the pinned retrieval
+and context budgets; this does not require scoring every question in a source
+dataset. All runs need one pinned dataset file and hash, identical embedding and
+top-k budgets where APIs allow, failure-inclusive denominators, retrieval
+evidence labels derived from the dataset rather than answer strings, and the
+same Qwen3 8B answer/judge settings across products with judge-output
+validation. Qwen3 8B is suitable for a local engineering baseline, not a
+definitive leaderboard judge; a human-audited subset and judge agreement should
+accompany publication.
 
 Graphify is designed to construct/query code and document graphs and has no
 matched raw episodic memory ingestion contract. Hindsight's core retain path is
