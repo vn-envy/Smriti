@@ -1,0 +1,89 @@
+{
+  "captured_utc": "2026-09-07T15:26:24.341422+00:00",
+  "scope": "Captured during Mem0 growth, after completed Smriti growth; names/dimensions also recorded per run",
+  "hardware": {
+    "machdep.cpu.brand_string": "Apple M5",
+    "hw.memsize": "25769803776",
+    "hw.physicalcpu": "10",
+    "hw.logicalcpu": "10"
+  },
+  "ollama": {
+    "version": {
+      "version": "0.24.0"
+    },
+    "tags": {
+      "models": [
+        {
+          "name": "nomic-embed-text:v1.5",
+          "model": "nomic-embed-text:v1.5",
+          "modified_at": "2026-09-06T01:27:59.961284792+05:30",
+          "size": 274302450,
+          "digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "nomic-bert",
+            "families": [
+              "nomic-bert"
+            ],
+            "parameter_size": "137M",
+            "quantization_level": "F16"
+          }
+        },
+        {
+          "name": "qwen3:8b",
+          "model": "qwen3:8b",
+          "modified_at": "2026-09-06T01:27:36.039328439+05:30",
+          "size": 5225388164,
+          "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen3",
+            "families": [
+              "qwen3"
+            ],
+            "parameter_size": "8.2B",
+            "quantization_level": "Q4_K_M"
+          }
+        }
+      ]
+    },
+    "ps": {
+      "models": [
+        {
+          "name": "nomic-embed-text:v1.5",
+          "model": "nomic-embed-text:v1.5",
+          "size": 578373632,
+          "digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "nomic-bert",
+            "families": [
+              "nomic-bert"
+            ],
+            "parameter_size": "137M",
+            "quantization_level": "F16"
+          },
+          "expires_at": "2026-09-07T21:01:24.370475+05:30",
+          "size_vram": 578373632,
+          "context_length": 2048
+        }
+      ]
+    }
+  },
+  "packages": {
+    "smriti": {
+      "numpy": "2.4.6",
+      "smriti-agents": "0.3.2"
+    },
+    "mem0": {
+      "numpy": "2.4.6",
+      "smriti-agents": "0.3.2",
+      "mem0ai": "2.0.20",
+      "qdrant-client": "1.19.0",
+      "ollama": "0.6.1"
+    }
+  }
+}

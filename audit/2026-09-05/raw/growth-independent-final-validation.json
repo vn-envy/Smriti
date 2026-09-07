@@ -1,0 +1,107 @@
+{
+  "method": "Root checks ID range and index modulo five against query topics; independently recomputes nearest-rank p50/p95. Conventional averaged median also reported. Synthetic relevance is not public benchmark accuracy.",
+  "results": [
+    {
+      "source": "growth-smriti-nomic-schema2.json",
+      "sha256": "3e7a69a1a4764c5f2872b264078d87bc0a57ab3fd98fb553b83e8ecc70a0b602",
+      "warm_queries": 100,
+      "independently_topic_relevant_hits": 500,
+      "percentiles_recomputed": true,
+      "rows": [
+        {
+          "documents": 100,
+          "conventional_median_ms": 10.0705,
+          "nearest_rank_p50_ms": 10.062
+        },
+        {
+          "documents": 1000,
+          "conventional_median_ms": 12.187,
+          "nearest_rank_p50_ms": 12.059
+        },
+        {
+          "documents": 3000,
+          "conventional_median_ms": 13.2425,
+          "nearest_rank_p50_ms": 13.135
+        },
+        {
+          "documents": 9000,
+          "conventional_median_ms": 24.902,
+          "nearest_rank_p50_ms": 24.31
+        },
+        {
+          "documents": 36500,
+          "conventional_median_ms": 20.4795,
+          "nearest_rank_p50_ms": 20.474
+        }
+      ]
+    },
+    {
+      "source": "growth-mem0-nomic-schema2.json",
+      "sha256": "02e9219e9213395a3236b9844509551114df29bf9b2fb8f6b4d54ee326f3442f",
+      "warm_queries": 100,
+      "independently_topic_relevant_hits": 500,
+      "percentiles_recomputed": true,
+      "rows": [
+        {
+          "documents": 100,
+          "conventional_median_ms": 11.2345,
+          "nearest_rank_p50_ms": 11.015
+        },
+        {
+          "documents": 1000,
+          "conventional_median_ms": 19.8435,
+          "nearest_rank_p50_ms": 19.714
+        },
+        {
+          "documents": 3000,
+          "conventional_median_ms": 37.1815,
+          "nearest_rank_p50_ms": 36.861
+        },
+        {
+          "documents": 9000,
+          "conventional_median_ms": 94.7435,
+          "nearest_rank_p50_ms": 94.669
+        },
+        {
+          "documents": 36500,
+          "conventional_median_ms": 383.4285,
+          "nearest_rank_p50_ms": 381.298
+        }
+      ]
+    },
+    {
+      "source": "growth-gbrain-analyze-overtime-schema2.json",
+      "sha256": "dedf35af9cfc4f5626e29f65eed1320bcf82a24649fd09ea6d846f09bad7ab34",
+      "warm_queries": 100,
+      "independently_topic_relevant_hits": 500,
+      "percentiles_recomputed": true,
+      "rows": [
+        {
+          "documents": 100,
+          "conventional_median_ms": 2.8935000000000004,
+          "nearest_rank_p50_ms": 2.861
+        },
+        {
+          "documents": 1000,
+          "conventional_median_ms": 3.5275,
+          "nearest_rank_p50_ms": 3.411
+        },
+        {
+          "documents": 3000,
+          "conventional_median_ms": 5.322,
+          "nearest_rank_p50_ms": 5.266
+        },
+        {
+          "documents": 9000,
+          "conventional_median_ms": 12.261500000000002,
+          "nearest_rank_p50_ms": 12.22
+        },
+        {
+          "documents": 36500,
+          "conventional_median_ms": 39.599999999999994,
+          "nearest_rank_p50_ms": 39.022
+        }
+      ]
+    }
+  ]
+}
