@@ -1,0 +1,103 @@
+{
+  "schema_version": 2,
+  "adapter": "gbrain",
+  "configuration": "gbrain PGLite / persistent public engine / lexical keyword track (no embedding)",
+  "measurement": "growing-corpus simulation in one run; checkpoints are not elapsed-day longitudinal observations",
+  "timing_scope": "persistent gbrain engine process; process-restart cold query; keyword-only, no embedding",
+  "model_cost": {
+    "observed_paid_api_usd": 0,
+    "hardware_electricity_cost_usd": null,
+    "note": "Local/API charge is $0 for this run; electricity, hardware purchase/rental, and depreciation were not measured. Shared model cache is excluded."
+  },
+  "verification": {
+    "synthetic_queries": [
+      "passport renewal appointment",
+      "doctor knee recommendation",
+      "project launch date",
+      "invoice due date",
+      "emergency contact"
+    ],
+    "nonempty_and_relevant_definition": "A result is relevant when its synthetic document bucket matches the query topic."
+  },
+  "checkpoints": [
+    {
+      "documents": 100,
+      "incremental_ingest_ms": 331.886,
+      "same_payload_update_ms": 10.618,
+      "update_definition": "re-submit the final record unchanged; adapter dedup/update semantics apply",
+      "first_query_after_ingest_ms": 6.151,
+      "first_query_after_ingest_returned": 5,
+      "first_query_after_ingest_relevant": 5,
+      "cold_query_after_restart_ms": 18.964,
+      "cold_query_boundary": "process_restart",
+      "process_restart_startup_ms": 342.834,
+      "cold_query_returned": 5,
+      "cold_query_relevant": 5,
+      "warm_query_ms_p50": 2.014,
+      "warm_query_ms_p95": 4.752,
+      "timed_query_samples": 10,
+      "warm_nonempty_results": 10,
+      "warm_queries_with_relevant_result": 10,
+      "storage_bytes": 44179964,
+      "storage_mb": 44.18
+    },
+    {
+      "documents": 1000,
+      "incremental_ingest_ms": 2188.982,
+      "same_payload_update_ms": 15.767,
+      "update_definition": "re-submit the final record unchanged; adapter dedup/update semantics apply",
+      "first_query_after_ingest_ms": 6.31,
+      "first_query_after_ingest_returned": 5,
+      "first_query_after_ingest_relevant": 5,
+      "cold_query_after_restart_ms": 18.083,
+      "cold_query_boundary": "process_restart",
+      "process_restart_startup_ms": 274.726,
+      "cold_query_returned": 5,
+      "cold_query_relevant": 5,
+      "warm_query_ms_p50": 3.354,
+      "warm_query_ms_p95": 6.83,
+      "timed_query_samples": 10,
+      "warm_nonempty_results": 10,
+      "warm_queries_with_relevant_result": 10,
+      "storage_bytes": 45695484,
+      "storage_mb": 45.695
+    },
+    {
+      "documents": 5000,
+      "incremental_ingest_ms": 13085.96,
+      "same_payload_update_ms": 68.276,
+      "update_definition": "re-submit the final record unchanged; adapter dedup/update semantics apply",
+      "first_query_after_ingest_ms": 1658.251,
+      "first_query_after_ingest_returned": 5,
+      "first_query_after_ingest_relevant": 5,
+      "cold_query_after_restart_ms": 1805.641,
+      "cold_query_boundary": "process_restart",
+      "process_restart_startup_ms": 533.178,
+      "cold_query_returned": 5,
+      "cold_query_relevant": 5,
+      "warm_query_ms_p50": 3623.84,
+      "warm_query_ms_p95": 5018.228,
+      "timed_query_samples": 10,
+      "warm_nonempty_results": 10,
+      "warm_queries_with_relevant_result": 10,
+      "storage_bytes": 69321212,
+      "storage_mb": 69.321
+    }
+  ],
+  "model_calls": {
+    "successful_calls": 0,
+    "successful_tokens": 0,
+    "failed_attempts": 0,
+    "note": "No model call in this lexical track."
+  },
+  "storage_scope": {
+    "paths": [
+      "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/gbrain-growth-lkxt4qo0/db"
+    ],
+    "shared_model_cache_included": false,
+    "shared_model_cache_paths": [],
+    "shared_model_cache_note": "Model cache location/size was not measured and is excluded from storage_bytes.",
+    "hardware_and_electricity_measured": false
+  },
+  "process_startup_ms": 1244.502
+}

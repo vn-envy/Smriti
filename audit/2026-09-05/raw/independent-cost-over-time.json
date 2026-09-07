@@ -1,0 +1,160 @@
+{
+  "source": "https://mem0.ai/pricing",
+  "source_checked": "2026-09-07",
+  "scope": "Independent conditional subscription/API budgeting, not observed elapsed-time costs or measured hosted performance",
+  "assumptions": [
+    "One project; one add/retrieval request per stated operation; no feature-driven paid-tier requirement.",
+    "Use 31-day monthly traffic to select a published fixed tier; no overage or custom rate assumed.",
+    "30/90/365 days correspond approximately to 1/3/12 subscription months for budgeting, not exact invoice prediction.",
+    "Local routes use available local models; zero model API charge excludes hardware, electricity, hosting, and operator costs.",
+    "Prices and quotas held constant; no annual discount, tax, or currency conversion applied.",
+    "Managed Mem0 tiers are distinct from the tested Mem0 OSS deployment; no managed-service speed inference."
+  ],
+  "local_total_cost_formula": "allocated hardware/hosting + electricity_kWh * electricity_price_per_kWh + provider/API charges + operations cost",
+  "rows": [
+    {
+      "adds_per_day": 100,
+      "retrievals_per_day": 20,
+      "days": 30,
+      "cumulative_add_requests": 3000,
+      "cumulative_retrieval_requests": 600,
+      "budgeted_subscription_months": 1,
+      "mem0_managed_fixed_tier": "Hobby",
+      "mem0_managed_subscription_budget_usd": 0,
+      "local_smriti_gbrain_mem0_oss_model_api_budget_usd": 0,
+      "local_total_cost_usd": null
+    },
+    {
+      "adds_per_day": 100,
+      "retrievals_per_day": 20,
+      "days": 90,
+      "cumulative_add_requests": 9000,
+      "cumulative_retrieval_requests": 1800,
+      "budgeted_subscription_months": 3,
+      "mem0_managed_fixed_tier": "Hobby",
+      "mem0_managed_subscription_budget_usd": 0,
+      "local_smriti_gbrain_mem0_oss_model_api_budget_usd": 0,
+      "local_total_cost_usd": null
+    },
+    {
+      "adds_per_day": 100,
+      "retrievals_per_day": 20,
+      "days": 365,
+      "cumulative_add_requests": 36500,
+      "cumulative_retrieval_requests": 7300,
+      "budgeted_subscription_months": 12,
+      "mem0_managed_fixed_tier": "Hobby",
+      "mem0_managed_subscription_budget_usd": 0,
+      "local_smriti_gbrain_mem0_oss_model_api_budget_usd": 0,
+      "local_total_cost_usd": null
+    },
+    {
+      "adds_per_day": 100,
+      "retrievals_per_day": 100,
+      "days": 30,
+      "cumulative_add_requests": 3000,
+      "cumulative_retrieval_requests": 3000,
+      "budgeted_subscription_months": 1,
+      "mem0_managed_fixed_tier": "Starter",
+      "mem0_managed_subscription_budget_usd": 19,
+      "local_smriti_gbrain_mem0_oss_model_api_budget_usd": 0,
+      "local_total_cost_usd": null
+    },
+    {
+      "adds_per_day": 100,
+      "retrievals_per_day": 100,
+      "days": 90,
+      "cumulative_add_requests": 9000,
+      "cumulative_retrieval_requests": 9000,
+      "budgeted_subscription_months": 3,
+      "mem0_managed_fixed_tier": "Starter",
+      "mem0_managed_subscription_budget_usd": 57,
+      "local_smriti_gbrain_mem0_oss_model_api_budget_usd": 0,
+      "local_total_cost_usd": null
+    },
+    {
+      "adds_per_day": 100,
+      "retrievals_per_day": 100,
+      "days": 365,
+      "cumulative_add_requests": 36500,
+      "cumulative_retrieval_requests": 36500,
+      "budgeted_subscription_months": 12,
+      "mem0_managed_fixed_tier": "Starter",
+      "mem0_managed_subscription_budget_usd": 228,
+      "local_smriti_gbrain_mem0_oss_model_api_budget_usd": 0,
+      "local_total_cost_usd": null
+    },
+    {
+      "adds_per_day": 100,
+      "retrievals_per_day": 1000,
+      "days": 30,
+      "cumulative_add_requests": 3000,
+      "cumulative_retrieval_requests": 30000,
+      "budgeted_subscription_months": 1,
+      "mem0_managed_fixed_tier": "Pro",
+      "mem0_managed_subscription_budget_usd": 249,
+      "local_smriti_gbrain_mem0_oss_model_api_budget_usd": 0,
+      "local_total_cost_usd": null
+    },
+    {
+      "adds_per_day": 100,
+      "retrievals_per_day": 1000,
+      "days": 90,
+      "cumulative_add_requests": 9000,
+      "cumulative_retrieval_requests": 90000,
+      "budgeted_subscription_months": 3,
+      "mem0_managed_fixed_tier": "Pro",
+      "mem0_managed_subscription_budget_usd": 747,
+      "local_smriti_gbrain_mem0_oss_model_api_budget_usd": 0,
+      "local_total_cost_usd": null
+    },
+    {
+      "adds_per_day": 100,
+      "retrievals_per_day": 1000,
+      "days": 365,
+      "cumulative_add_requests": 36500,
+      "cumulative_retrieval_requests": 365000,
+      "budgeted_subscription_months": 12,
+      "mem0_managed_fixed_tier": "Pro",
+      "mem0_managed_subscription_budget_usd": 2988,
+      "local_smriti_gbrain_mem0_oss_model_api_budget_usd": 0,
+      "local_total_cost_usd": null
+    },
+    {
+      "adds_per_day": 100,
+      "retrievals_per_day": 2000,
+      "days": 30,
+      "cumulative_add_requests": 3000,
+      "cumulative_retrieval_requests": 60000,
+      "budgeted_subscription_months": 1,
+      "mem0_managed_fixed_tier": "custom/usage-based quote required",
+      "mem0_managed_subscription_budget_usd": null,
+      "local_smriti_gbrain_mem0_oss_model_api_budget_usd": 0,
+      "local_total_cost_usd": null
+    },
+    {
+      "adds_per_day": 100,
+      "retrievals_per_day": 2000,
+      "days": 90,
+      "cumulative_add_requests": 9000,
+      "cumulative_retrieval_requests": 180000,
+      "budgeted_subscription_months": 3,
+      "mem0_managed_fixed_tier": "custom/usage-based quote required",
+      "mem0_managed_subscription_budget_usd": null,
+      "local_smriti_gbrain_mem0_oss_model_api_budget_usd": 0,
+      "local_total_cost_usd": null
+    },
+    {
+      "adds_per_day": 100,
+      "retrievals_per_day": 2000,
+      "days": 365,
+      "cumulative_add_requests": 36500,
+      "cumulative_retrieval_requests": 730000,
+      "budgeted_subscription_months": 12,
+      "mem0_managed_fixed_tier": "custom/usage-based quote required",
+      "mem0_managed_subscription_budget_usd": null,
+      "local_smriti_gbrain_mem0_oss_model_api_budget_usd": 0,
+      "local_total_cost_usd": null
+    }
+  ]
+}
