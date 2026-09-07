@@ -271,3 +271,13 @@ accuracy or speed-superiority claim.
 The current documentation records completed evidence without closing these
 engineering priorities. Each future feature requires workload evidence, tests,
 and a stated migration boundary before it is described as shipped.
+
+## Final social launch film — added user requirement
+
+After memory-system and comparative validation, root will personally build a new narrative motion-studio launch film. It will use the supplied reference films, music and SFX, Smriti's four retrieval streams, and completed evidence to explain developer pain points, the product opportunity, and concrete outcomes. The existing verified 30-second teaser remains preserved.
+
+- [ ] Finalize narrative and claims against completed comparisons.
+- [ ] Root builds the composition, animation, and supplied audio mix.
+- [ ] Render and validate timing, readability, motion, sound, and final export.
+
+See [final film brief](FINAL-LAUNCH-FILM-BRIEF.md) and [preproduction inventory](FINAL-LAUNCH-FILM-PREPRODUCTION-HANDOFF.md). The provisional duration is 60 seconds, pending optional user preference. This new deliverable remains required before marking the overall goal complete.

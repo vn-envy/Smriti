@@ -203,6 +203,16 @@
         "audit/2026-09-05/cost-speed-projections.md"
       ],
       "caveat": "ROADMAP still correctly marks Phase 1 reopened and Phase 2 in progress; this audit does not close either gate."
+    },
+    {
+      "id": "final-social-launch-film",
+      "requirement": "After memory/comparative validation, root personally builds and validates a narrative motion-studio launch film using the supplied references, music and SFX, Smriti four-stream visuals, and final evidence-backed outcomes. Preserve the already completed 30-second teaser.",
+      "status": "pending_build_after_memory_validation",
+      "evidence": [
+        "audit/2026-09-05/FINAL-LAUNCH-FILM-BRIEF.md (user request, local assets verified and sample frames inspected)",
+        "audit/2026-09-05/FINAL-LAUNCH-FILM-PREPRODUCTION-HANDOFF.md (existing composition inventory only)"
+      ],
+      "remaining": "Root storyboard, final claims, motion implementation, supplied audio mix, render, and visual/audio/export validation. Provisional60-second duration awaits optional preference; existing30-second teaser alone does not satisfy this new request."
     }
   ],
   "real_pending_build_work": [
