@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "status": "mixed_improvements_and_defects",
+  "source_artifact": "audit/2026-09-05/smriti-mira-full-scoped-contract-v4.json",
+  "source_status": "completed_with_failures",
+  "source_facts_preserved": true,
+  "offline_rescore": true,
+  "contract_checks": {
+    "current_rust_structured_state": true,
+    "current_atlas_structured_evidence": true,
+    "aurora_event_subject_and_temporal_scope": true,
+    "berlin_current_evidence": true,
+    "atlas_joined_event_subject": true,
+    "atlas_transition_subject_and_scope": true,
+    "adjacent_theme_unscoped": true,
+    "no_primary_language_inferred_from_preference": false
+  },
+  "improvements": {
+    "named_subjects_preserved": true,
+    "berlin_current_evidence": true,
+    "rust_current_uses_tool_scoped_atlas": true,
+    "light_mode_unscoped": true
+  },
+  "defects": {
+    "primary_language_inferred_from_preference": true,
+    "probe_status_should_remain_rejected": true
+  },
+  "current_rust_facts": [
+    {
+      "id": 6,
+      "statement": "Mira currently uses Rust for the Atlas project",
+      "subject": "mira",
+      "predicate": "uses_tool",
+      "object": "Rust",
+      "kind": "knowledge",
+      "event_date": null,
+      "ingested_at": "2026-09-07T18:59:57Z",
+      "valid_from": "2025-02-20T12:00:00Z",
+      "invalid_at": null,
+      "superseded_by": null,
+      "episode_id": 3,
+      "session_id": "mira-update-3",
+      "scope": "project:Atlas"
+    }
+  ],
+  "berlin_facts": [
+    {
+      "id": 3,
+      "statement": "Mira moved to Berlin on June 15, 2024",
+      "subject": "mira",
+      "predicate": "lives_in",
+      "object": "Berlin",
+      "kind": "event",
+      "event_date": "2024-06-15",
+      "ingested_at": "2026-09-07T18:59:39Z",
+      "valid_from": "2024-06-15",
+      "invalid_at": null,
+      "superseded_by": null,
+      "episode_id": 2,
+      "session_id": "mira-update-2",
+      "scope": ""
+    }
+  ],
+  "primary_python_facts": [
+    {
+      "id": 5,
+      "statement": "Mira's primary_programming_language is Python",
+      "subject": "mira",
+      "predicate": "primary_programming_language",
+      "object": "Python",
+      "kind": "profile",
+      "event_date": null,
+      "ingested_at": "2026-09-07T18:59:39Z",
+      "valid_from": "2024-06-15T12:00:00Z",
+      "invalid_at": null,
+      "superseded_by": null,
+      "episode_id": 2,
+      "session_id": "mira-update-2",
+      "scope": ""
+    }
+  ],
+  "observed_subjects": [
+    "mira"
+  ],
+  "note": "Offline rescore of recorded v4 facts; no model, service, or database calls. This mixed review does not claim acceptance and does not alter the preserved raw artifact."
+}

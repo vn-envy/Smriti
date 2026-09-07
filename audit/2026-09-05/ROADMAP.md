@@ -71,8 +71,12 @@ named third party rewritten as `user`, a light-mode preference inheriting
 and reviews are preserved in [`raw/installed-scope-candidate-261.json`](raw/installed-scope-candidate-261.json),
 [`raw/smriti-mira-contract-v3-independent-review.json`](raw/smriti-mira-contract-v3-independent-review.json),
 and [`raw/smriti-mira-full-scoped-contract-v3-corrected-review.json`](raw/smriti-mira-full-scoped-contract-v3-corrected-review.json).
-The generic fix is installed offline; the next model-backed runtime remains
-pending, so this is installation evidence rather than phase completion.
+The generic fix is installed offline. The subsequent v4 model-backed runtime is
+terminal with failures: the direct facts preserve Mira as subject, leave the
+light-mode preference unscoped, and retrieve current Rust for Atlas correctly,
+but brittle `uses_tool`/Aurora assertions fail and an unsupported inferred
+primary-Python fact remains. The model-backed acceptance gate therefore remains
+open; this is installation evidence rather than phase completion.
 
 ## Phase 2 — Reproducible evaluation (P0, in progress)
 
@@ -111,9 +115,16 @@ pending, so this is installation evidence rather than phase completion.
   configuration. The 500-question oracle run bypasses extraction and answer
   generation, so it is evidence-only and not full-haystack QA.
 
-A bounded LoCoMo50 answer/judge preflight is currently running from the
-immutable installed v4 candidate. Until it completes, no LoCoMo quality result
-is recorded.
+A bounded LoCoMo50 answer/judge preflight completed from the immutable installed
+v4 candidate: 50/50 questions completed with zero operational or cleanup
+failures, 27/50 recorded correct (54%), 21/40 answerable correct (52.5%), and
+6/10 abstention rows correct (60%) across all 10 selected sources. The
+independent operational review matches the final artifact hash. These figures
+are exploratory and do not close quality evaluation: the recorded score
+contains a known judge false-positive date case (`conv-30-q0`), and the paired
+Mem0 run remains pending. Failure analysis classifies the 19 failed answerable
+rows as 7 retrieved-supported reader failures, 11 missing-evidence failures,
+and 1 ambiguous case. Full-history LongMemEval/LoCoMo QA remains open.
 
 The final matched growth report covers 100, 1,000, 3,000, 9,000, and 36,500
 documents for Smriti and Mem0 with the same local Ollama nomic model and for a

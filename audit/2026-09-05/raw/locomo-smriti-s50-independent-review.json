@@ -1,0 +1,33 @@
+{
+  "status": "operational_counts_verified",
+  "source_sha256": "e0f6417f0180d5c5756483d3f8ed6a5f2f1b79f119fcc3cc4db24369935194dc",
+  "requested": 50,
+  "completed": 50,
+  "sources": 10,
+  "categories": {
+    "1": {
+      "n": 10,
+      "correct": 4
+    },
+    "2": {
+      "n": 10,
+      "correct": 3
+    },
+    "3": {
+      "n": 10,
+      "correct": 5
+    },
+    "4": {
+      "n": 10,
+      "correct": 9
+    },
+    "5": {
+      "n": 10,
+      "correct": 6
+    }
+  },
+  "recorded_correct": 27,
+  "recorded_accuracy": 0.54,
+  "judge_limit": "Known false-positive date case conv-30-q0 is preserved in recorded score; this is not independently adjudicated accuracy.",
+  "comparison_limit": "Matched Mem0 run pending; no comparative superiority claim."
+}
