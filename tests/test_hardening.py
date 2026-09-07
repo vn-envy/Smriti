@@ -775,7 +775,7 @@ def test_extracted_scoped_fact_embedding_excludes_search_keys():
             return super().embed(texts)
 
     raw = json.dumps([{
-        "statement": "Atlas uses Rust",
+        "statement": "Atlas uses Rust for project Atlas",
         "subject": "user",
         "predicate": "primary_programming_language",
         "object": "Rust",
@@ -788,14 +788,14 @@ def test_extracted_scoped_fact_embedding_excludes_search_keys():
     embedder = RecordingEmbedder()
     mem = Smriti(embedder=embedder, llm=MockLLM([raw]), mode="full")
     result = mem.add(
-        [{"role": "user", "content": "Atlas uses Rust"}],
+        [{"role": "user", "content": "Atlas uses Rust for project Atlas"}],
         session_id="scope-test",
         timestamp="2025-01-01T00:00:00Z",
     )
     assert result["facts"] == 1
     fact_inputs = [text for text in embedder.inputs if text.startswith("Atlas uses Rust")]
-    assert "Atlas uses Rust scope:project:Atlas" in fact_inputs
-    assert "Atlas uses Rust scope:project:Atlas programming language tool" not in fact_inputs
+    assert "Atlas uses Rust for project Atlas scope:project:Atlas" in fact_inputs
+    assert "Atlas uses Rust for project Atlas scope:project:Atlas programming language tool" not in fact_inputs
 
 
 def test_scoped_entity_and_predicate_observations_keep_scope_and_refresh():

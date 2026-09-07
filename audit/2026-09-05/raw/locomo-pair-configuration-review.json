@@ -1,0 +1,43 @@
+{
+  "status": "running_pair_configuration_verified",
+  "same_50_selected_question_ids": true,
+  "same_dataset_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+  "same_answer_judge_configuration": true,
+  "models": {
+    "answer": {
+      "class": "LLM",
+      "model": "qwen3:8b",
+      "provider": null,
+      "endpoint": "http://127.0.0.1:11436/v1",
+      "temperature": 0.0,
+      "max_tokens": 2048,
+      "extra_body": {
+        "reasoning_effort": "none",
+        "think": false
+      }
+    },
+    "judge": {
+      "class": "LLM",
+      "model": "qwen3:8b",
+      "provider": null,
+      "endpoint": "http://127.0.0.1:11436/v1",
+      "temperature": 0.0,
+      "max_tokens": 2048,
+      "extra_body": {
+        "reasoning_effort": "none",
+        "think": false
+      }
+    }
+  },
+  "mem0_progress_at_check": {
+    "processed_questions": 9,
+    "requested_questions": 50,
+    "failed_questions": 0,
+    "cleanup_failures": 0,
+    "last_question_id": "conv-30-q2"
+  },
+  "limits": [
+    "Mem0 run incomplete; no paired accuracy comparison yet.",
+    "Same reader and judge retain known judge error risk."
+  ]
+}

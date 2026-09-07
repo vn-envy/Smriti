@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "status": "rejected_recorded_run",
+  "review_type": "offline independent raw-evidence and implementation-design review",
+  "source_artifact": "audit/2026-09-05/extraction-generalization-installed-v6.json",
+  "source_status": "completed_with_failures",
+  "source_facts_preserved": true,
+  "observed_defect": {
+    "fact_id": 6,
+    "statement": "Leila switched from Sketch to Figma for project Cedar",
+    "source_scope_expected": "project:Cedar",
+    "recorded_scope": "project:Ceder",
+    "finding": "The transition fact records project:Ceder although the input explicitly says project Cedar. The destination state independently records project:Cedar. This is a real scope identifier mismatch, not a valid alias.",
+    "fuzzy_or_silent_normalization_prohibited": true
+  },
+  "raw_v6_contract_results": {
+    "named_people_and_cities_preserved": true,
+    "scoped_destination_state_preserved": true,
+    "global_preference_unscoped": true,
+    "self_reference_separate": true,
+    "historical_transition_scope_exact": false
+  },
+  "code_path_review": {
+    "ingest_entry": {
+      "file": "smriti/memory.py",
+      "lines": "163-205",
+      "finding": "Memory.add redacts and hashes the source, embeds episodes, calls the extractor at 193-195, parses at 197, and only then computes fact embeddings at 199-205."
+    },
+    "atomic_write_boundary": {
+      "file": "smriti/memory.py",
+      "lines": "207-231",
+      "finding": "The transaction and episode/fact writes begin after extraction and fact embedding. Scope validation and one corrective extraction retry can therefore happen before any database mutation; a rejected retry still allows the raw episode to be stored with no wrong fact."
+    },
+    "prompt_source": {
+      "file": "smriti/extraction.py",
+      "lines": "129-135",
+      "finding": "build_extraction_prompt includes the original session turns and timestamp, so source-ground validation can compare every returned scope with the exact source supplied to the model."
+    },
+    "parser_contract": {
+      "file": "smriti/extraction.py",
+      "lines": "198-246",
+      "finding": "parse_facts is a public-shaped pure parser that strips a string scope and rejects non-string scopes, but it has no source text and cannot decide whether a scope is evidenced. Keep its signature/API unchanged; validate parsed Facts in Memory.add with source context."
+    },
+    "scope_normalization": {
+      "file": "smriti/store.py",
+      "lines": "86-91, 233-246",
+      "finding": "normalize_scope currently only trims and add_fact persists the value. It is storage normalization, not evidence validation; do not broaden it into fuzzy correction."
+    }
+  },
+  "minimal_robust_design": {
+    "scope": [
+      "Add a private source-ground validator called after parse_facts and before fact embeddings/transactions; leave parse_facts(raw, session_id, session_ts, diagnostics) unchanged.",
+      "Require nonempty scopes to have a conservative kind:value shape, preserve the exact value, and reject date:* as an applicability scope because dates belong in event_date/validity fields.",
+      "Require the scope kind/value to be evidenced in the source clause and in the returned fact statement. This prevents a project scope from bleeding into an adjacent global preference and catches Ceder because the exact source value Cedar is absent.",
+      "Accept arbitrary context kinds and multiword/quoted values when explicitly evidenced (for example project:North Star or workspace:Research Lab). Do not impose a fixed project/location allowlist.",
+      "Support only deterministic presentation aliases such as “project Cedar” ↔ “Cedar project” while comparing the exact identifier value. Do not alias Cedar/Ceder, project/workspace, or unrelated context kinds without an explicit schema rule; record any accepted alias in diagnostics.",
+      "Normalize comparison case and whitespace only for evidence matching; retain the model-provided scope string in the Fact and artifact. Never silently rewrite a rejected value."
+    ],
+    "single_retry": [
+      "If and only if one or more parsed scopes fail validation, issue exactly one corrective extraction call using the original source prompt plus machine-generated rejected-scope feedback and the exact evidenced context candidates.",
+      "Require a complete replacement JSON array; reparse and validate all scopes. Do not merge untrusted first-attempt facts with the retry.",
+      "If the retry still contains an unsupported or unevidenced scope, reject that fact (or the scoped extraction set) with explicit diagnostics rather than stripping scope to make it global. Continue storing the original episode so raw evidence is not lost.",
+      "Record retry_used, first/second invalid scopes, candidate contexts, dropped facts, and usage deltas in extraction diagnostics. Failed-call usage remains unknown; do not report a zero-cost correction."
+    ],
+    "atomicity_and_compatibility": [
+      "Place validation/retry before _embed_many for facts and before store.begin, matching the current side-effect-free extraction boundary.",
+      "Keep parse_facts and public Memory.add return behavior unchanged for valid outputs; scope validation is an internal guard and only changes behavior for unsupported evidence.",
+      "Keep raw episodes append-only and preserve the original source text. A failed correction must never mutate or overwrite the source episode.",
+      "Add tests for exact Cedar/Ceder rejection, multiword quoted contexts, deterministic “Cedar project” alias, absent-context scope rejection, adjacent global preference, date:* rejection, one retry success, retry exhaustion, and raw episode retention."
+    ]
+  },
+  "risks_and_limits": [
+    "A lexical validator cannot infer an unstated relationship between a scope and a clause; requiring scope evidence in the fact statement is intentionally conservative and may drop some valid but elliptical model outputs.",
+    "A correction retry adds one provider call only on scope-validation failure; broad prompt retries or fuzzy spell correction would hide extraction quality and inflate cost.",
+    "The v6 defect should remain recorded as a failed raw run even if a future retry repairs it."
+  ],
+  "note": "No model, service, or database calls were made. This review does not modify the preserved v6 artifact or product code."
+}

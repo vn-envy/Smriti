@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import re
 from collections import defaultdict
-from typing import List, Optional
+from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 from .llm import extract_json
 from .types import Fact
@@ -94,13 +94,15 @@ Rules:
   explicit date in `event_date`/`valid_from` and do not encode it as `scope`.
   Apply a scope only to the clause that explicitly establishes that context;
   an adjacent preference or fact does not inherit a project scope by proximity.
-- For an explicitly singular state, use the category predicate when the text
-  establishes it: `primary_programming_language` for a stated primary language
-  and `preferred_theme` for a stated theme. Do not infer either category from
-  vague liking or from an unrelated transition; retain the stated generic
-  predicate/event instead. When an explicit switch states a resulting state
-  and its applicability context, emit that resulting state with the category
-  predicate and scope, and retain a separate transition event when useful.
+- Do not upgrade a generic preference or usage fact into a primary-state fact:
+  use `primary_programming_language` only when the source explicitly says
+  primary, main, or default. Use `preferred_programming_language` when the
+  source explicitly states a preference, and use a factual usage predicate
+  such as `uses_language` or `uses_tool` for actual usage. Apply the same
+  rule to other categories: `preferred_theme` requires an explicit theme
+  preference. For an explicit switch, emit the factual destination usage with
+  its stated scope and retain the historical transition; do not label it a
+  primary state or preference unless the source does so.
 - entities: proper nouns and key concrete nouns in the fact.
 - search_keys: 2-5 alternate search terms a person might use to find this fact that are NOT already in the statement — category words, synonyms, or hypernyms (e.g. for "lime" include "citrus", "fruit"; for "gallery opening" include "art", "event"; for a doctor visit include "doctor", "appointment", "health"). This widens recall for aggregation/category questions.
 - kind: one of profile | preference | event | knowledge.
@@ -132,6 +134,172 @@ def build_extraction_prompt(turns: List[dict], session_ts: Optional[str]) -> Lis
         {"role": "system", "content": EXTRACT_SYSTEM},
         {"role": "user", "content": "\n".join(lines)},
     ]
+
+
+_SCOPE_KIND_MARKERS = {
+    "project": ("project",),
+    "workspace": ("workspace",),
+    "team": ("team",),
+    "account": ("account",),
+    "organization": ("organization", "organisation", "org"),
+    # Location scopes are often expressed with a preposition rather than the
+    # literal word "location" ("worked in Mumbai", "based at Pune").
+    "location": ("location", "city", "in", "at", "from"),
+}
+
+
+def _scope_text(value: Any) -> str:
+    """Normalize only presentation differences for scope evidence matching."""
+    text = " ".join(str(value or "").casefold().split())
+    if len(text) >= 2 and text[0] == text[-1] and text[0] in "\"'“”‘’":
+        text = text[1:-1].strip()
+    return text
+
+
+def _scope_value_pattern(value: str) -> re.Pattern[str]:
+    # Word boundaries prevent Ceder from matching Cedar and Cedar from
+    # matching Cedarwood while still supporting quoted/multiword values.
+    return re.compile(r"(?<!\w)" + re.escape(value) + r"(?!\w)", re.IGNORECASE)
+
+
+def _scope_kind_markers(kind: str) -> Tuple[str, ...]:
+    normalized = _scope_text(kind).replace("_", " ")
+    markers = _SCOPE_KIND_MARKERS.get(normalized)
+    if markers:
+        return markers
+    return (normalized,) if normalized else ()
+
+
+def _scope_evidenced(scope: str, source: str, statement: str) -> Tuple[bool, str]:
+    """Check an explicitly formatted scope against source and fact text.
+
+    This intentionally uses bounded lexical evidence rather than a general NER
+    or fuzzy spelling pipeline.  The identifier value must occur in both the
+    source and returned statement; an applicability marker must occur near the
+    value on both sides when the scope is nonempty.
+    """
+    if not isinstance(scope, str) or not scope.strip():
+        return True, ""
+    raw = scope.strip()
+    if ":" not in raw:
+        return False, "scope must use kind:value form"
+    kind, value = raw.split(":", 1)
+    kind = _scope_text(kind)
+    value = _scope_text(value)
+    if not kind or not value:
+        return False, "scope kind and value must be non-empty"
+    if kind == "date":
+        return False, "dates belong in event_date/validity fields, not scope"
+    value_pattern = _scope_value_pattern(value)
+    marker_patterns = [_scope_value_pattern(marker) for marker in _scope_kind_markers(kind)]
+
+    def text_supports(text: str) -> Tuple[bool, bool]:
+        normalized = _scope_text(text)
+        value_match = value_pattern.search(normalized)
+        if value_match is None:
+            return False, False
+        # Keep the relation bounded to local proximity. This supports "for
+        # project Cedar" and "Cedar project" without claiming to solve full
+        # clause semantics or coreference.
+        value_matches = value_pattern.finditer(normalized)
+        for candidate_value in value_matches:
+            for marker_pattern in marker_patterns:
+                for marker_match in marker_pattern.finditer(normalized):
+                    if abs(marker_match.start() - candidate_value.start()) <= 80:
+                        return True, True
+        return True, False
+
+    source_has_value, source_has_marker = text_supports(source)
+    statement_has_value, statement_has_marker = text_supports(statement)
+    if not source_has_value:
+        return False, "scope kind/value is not evidenced by the source turns"
+    if not statement_has_value:
+        return False, "scope kind/value is not evidenced by the fact statement"
+    if not source_has_marker or not statement_has_marker:
+        return False, "scope kind marker is not evidenced in both source and fact statement"
+    return True, ""
+
+
+def validate_fact_scopes(facts: List[Fact], turns: List[dict]) -> Tuple[List[Fact], List[Dict[str, Any]]]:
+    """Return facts with source-grounded scopes and diagnostics for rejects."""
+    source = "\n".join(str(turn.get("content", "")) for turn in turns)
+    valid: List[Fact] = []
+    invalid: List[Dict[str, Any]] = []
+    for fact in facts:
+        ok, reason = _scope_evidenced(fact.scope, source, fact.statement)
+        if ok:
+            valid.append(fact)
+        else:
+            invalid.append({"statement": fact.statement, "scope": fact.scope,
+                            "subject": fact.subject, "predicate": fact.predicate,
+                            "object": fact.object, "reason": reason})
+    return valid, invalid
+
+
+def reject_scope_erasure_retry(facts: List[Fact], rejected: List[Dict[str, Any]]) -> Tuple[List[Fact], List[Dict[str, Any]]]:
+    """Block a correction that silently turns a rejected scope into global."""
+    rejected_keys = {
+        (str(item.get("subject", "")).casefold().strip(),
+         str(item.get("predicate", "")).casefold().strip(),
+         str(item.get("object", "")).casefold().strip())
+        for item in rejected if str(item.get("scope", "")).strip()
+    }
+    valid: List[Fact] = []
+    blocked: List[Dict[str, Any]] = []
+    for fact in facts:
+        key = (fact.subject.casefold().strip(), fact.predicate.casefold().strip(),
+               fact.object.casefold().strip())
+        if not fact.scope.strip() and key in rejected_keys:
+            blocked.append({"statement": fact.statement, "scope": fact.scope,
+                            "subject": fact.subject, "predicate": fact.predicate,
+                            "object": fact.object,
+                            "reason": "retry erased scope from an originally rejected candidate; refusing to globalize it"})
+        else:
+            valid.append(fact)
+    return valid, blocked
+
+
+def merge_scope_valid_facts(first: List[Fact], replacement: List[Fact]) -> List[Fact]:
+    """Retain validated first facts that a corrective response omitted.
+
+    Only an exact fact identity is deduplicated. Distinct objects in a
+    multivalued relation (for example Python and tea preferences) remain
+    available if a corrective response omits one. Invalid scoped facts never
+    enter this merge.
+    """
+    replacement_keys = {
+        (fact.subject.casefold().strip(), fact.predicate.casefold().strip(),
+         fact.object.casefold().strip(), fact.scope.strip(),
+         fact.statement.casefold().strip(), fact.event_date or "")
+        for fact in replacement
+    }
+    retained = [fact for fact in first if (
+        fact.subject.casefold().strip(), fact.predicate.casefold().strip(),
+        fact.object.casefold().strip(), fact.scope.strip(),
+        fact.statement.casefold().strip(), fact.event_date or ""
+    ) not in replacement_keys]
+    return retained + replacement
+
+
+def build_scope_correction_prompt(turns: List[dict], session_ts: Optional[str],
+                                  invalid: List[Dict[str, Any]]) -> List[dict]:
+    """Ask for one complete replacement extraction after scope validation."""
+    prompts = build_extraction_prompt(turns, session_ts)
+    rejected = "\n".join(
+        f"- scope={item.get('scope')!r}; statement={item.get('statement')!r}; reason={item.get('reason')}"
+        for item in invalid
+    )
+    prompts[1]["content"] += (
+        "\n\nSCOPE VALIDATION FEEDBACK:\n"
+        "The previous JSON contained applicability scopes that were not copied "
+        "exactly from the source clause and fact statement. Return a complete "
+        "replacement JSON array. Preserve valid facts, use only explicitly "
+        "evidenced kind:value scopes, keep dates in event_date/validity fields, "
+        "and leave scope empty when applicability is not explicit. Do not guess, "
+        "spell-correct, or move a scope to a neighboring fact.\n"
+        + rejected
+    )
+    return prompts
 
 
 OBSERVATION_SYSTEM = """You synthesize a concise, objective profile of an entity from a list of known facts about it.

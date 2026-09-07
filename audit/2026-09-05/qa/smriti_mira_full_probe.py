@@ -64,7 +64,7 @@ MIRA_SUBJECT = "Mira"
 LANGUAGE_STATE_PREDICATES = (
     "prefers", "preferred", "preference", "primary_programming_language",
     "preferred_language", "preferred_programming_language", "uses_language",
-    "uses_programming_language", "currently_uses_language",
+    "uses_programming_language", "currently_uses_language", "uses_tool",
 )
 
 
@@ -280,6 +280,17 @@ def raw_fact_matches(fact: Dict[str, Any], *, predicate: Optional[str] = None,
     return event_date is None or str(fact.get("event_date", "")) == event_date
 
 
+def scope_is_not_date(fact: Dict[str, Any]) -> bool:
+    """Dates belong in event/validity fields, not applicability scope."""
+    return not str(fact.get("scope", "")).strip().casefold().startswith("date:")
+
+
+def is_project_membership_predicate(value: Any) -> bool:
+    predicate = str(value or "").strip().casefold()
+    return predicate in {"joined", "joined_project", "works_on", "worked_on",
+                         "participates_in", "member_of"} or predicate.startswith("joined_")
+
+
 def judge_verdict(text: Optional[str]) -> Optional[str]:
     if not text:
         return None
@@ -472,6 +483,10 @@ def main(argv: Optional[List[str]] = None) -> int:
             fact, "python", HISTORY_POINT, subject=MIRA_SUBJECT)]
         atlas_python_preference_facts = [fact for fact in facts if language_preference_matches(
             fact, "python", scope=ATLAS_SCOPE, subject=MIRA_SUBJECT)]
+        inferred_primary_python_facts = [fact for fact in facts if
+                                         str(fact.get("subject", "")).strip().casefold() == MIRA_SUBJECT.casefold()
+                                         and str(fact.get("predicate", "")).strip().casefold() == "primary_programming_language"
+                                         and str(fact.get("object", "")).strip().casefold() == "python"]
         current_atlas_facts = [fact for fact in facts if structured_fact_matches(
             fact, ("atlas",), NOW) and str(fact.get("subject", "")).strip().casefold() == MIRA_SUBJECT.casefold()]
         current_berlin_facts = [fact for fact in facts if structured_fact_matches(fact, ("berlin",), NOW)
@@ -487,18 +502,19 @@ def main(argv: Optional[List[str]] = None) -> int:
         )
         identity_scope_assertions = {
             "aurora_event_keeps_mira_subject": any(raw_fact_matches(
-                fact, predicate="worked_on", object_terms=("aurora", "mumbai"),
-                scope="", event_date="2024-01-10")
+                fact, predicate="worked_on", object_terms=("aurora",),
+                event_date="2024-01-10") and scope_is_not_date(fact)
                 for fact in facts),
             "aurora_date_is_not_applicability_scope": any(raw_fact_matches(
                 fact, predicate="worked_on", object_terms=("aurora",),
-                scope="", event_date="2024-01-10")
+                event_date="2024-01-10") and scope_is_not_date(fact)
                 for fact in facts),
             "berlin_event_keeps_mira_subject": any(raw_fact_matches(
                 fact, predicate="lives_in", object_terms=("berlin",), scope="", event_date="2024-06-15")
                 for fact in facts),
-            "atlas_project_event_keeps_mira_subject": any(raw_fact_matches(
-                fact, predicate="joined_project", object_terms=("atlas",), scope="", event_date="2024-06-15")
+            "atlas_project_event_keeps_mira_subject": any(
+                raw_fact_matches(fact, object_terms=("atlas",), scope="", event_date="2024-06-15")
+                and is_project_membership_predicate(fact.get("predicate"))
                 for fact in facts),
             "atlas_language_state_keeps_mira_subject": bool(current_rust_state_facts),
             "atlas_transition_keeps_mira_subject": any(raw_fact_matches(
@@ -515,6 +531,7 @@ def main(argv: Optional[List[str]] = None) -> int:
             "current_berlin_facts": current_berlin_facts,
             "january_python_facts": january_python_facts,
             "atlas_python_preference_facts": atlas_python_preference_facts,
+            "inferred_primary_python_facts": inferred_primary_python_facts,
             "prior_python_preference_ended_before_now": prior_python_ended,
             "python_preference_end_dates": [fact.get("invalid_at") for fact in atlas_python_preference_facts],
             "latest_python_preference": latest_python,
@@ -551,6 +568,7 @@ def main(argv: Optional[List[str]] = None) -> int:
             "judge_sanity_negative_no": report["judge_sanity_negative_control"]["verdict"] == "NO",
             "current_answer_judge_yes": judge_verdicts.get("current_rust_atlas") == "YES",
             "history_answer_judge_yes": judge_verdicts.get("history_mumbai_python") == "YES",
+            "no_primary_language_inferred_from_preference": not inferred_primary_python_facts,
             **identity_scope_assertions,
         }
     except Exception as exc:

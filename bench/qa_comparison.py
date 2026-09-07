@@ -39,6 +39,8 @@ DEFAULT_BASE_URL,
 
 SCHEMA_VERSION = 1
 DEFAULT_QWEN_MODEL = "qwen3:8b"
+DEFAULT_SESSION_OVERFETCH = 3
+MAX_SESSION_OVERFETCH = 8
 
 
 def _error(stage: str, exc: BaseException) -> dict[str, Any]:
@@ -113,7 +115,9 @@ def _write_progress_checkpoint(path: str | Path | None, *, raw: bytes,
                                selected: Sequence[Mapping[str, Any]],
                                results: Sequence[Mapping[str, Any]],
                                cleanup: Sequence[Mapping[str, Any]],
-                               answer_llm: object, judge_llm: object) -> None:
+                               answer_llm: object, judge_llm: object,
+                               session_diverse: bool,
+                               session_overfetch: int) -> None:
     """Persist an in-flight result without presenting it as a completed run."""
     if path is None:
         return
@@ -137,6 +141,8 @@ def _write_progress_checkpoint(path: str | Path | None, *, raw: bytes,
         "provenance": {
             "benchmark": benchmark,
             "adapter": adapter_name,
+            "retrieval": {"session_diverse": session_diverse,
+                           "session_overfetch": session_overfetch},
             "models": {"answer": _llm_meta(answer_llm),
                         "judge": _llm_meta(judge_llm)},
         },
@@ -240,9 +246,19 @@ def _longmemeval_questions(data: Sequence[Mapping[str, Any]], session_budget: in
     return questions
 
 
+def _smriti_context(adapter: SmritiAdapter, query: str, k: int, *,
+                    session_diverse: bool,
+                    session_overfetch: int) -> Sequence[object]:
+    """Call Smriti's real selector with the requested opt-in controls."""
+    return adapter.memory.search(query, k=k, session_diverse=session_diverse,
+                                 session_overfetch=session_overfetch)
+
+
 def _context(adapter: object, query: str, k: int, char_budget: int,
              rows: Sequence[Mapping[str, Any]],
-             source_labels: Mapping[str, str]) -> tuple[str, list[str], list[dict[str, Any]], list[dict[str, Any]]]:
+             source_labels: Mapping[str, str], *,
+             session_diverse: bool = False,
+             session_overfetch: int = DEFAULT_SESSION_OVERFETCH) -> tuple[str, list[str], list[dict[str, Any]], list[dict[str, Any]]]:
     row_meta = {(str(row["session_id"]), int(row["chunk_index"])): row for row in rows}
     returned: list[str] = []
     retrieved_rows: list[dict[str, Any]] = []
@@ -252,7 +268,9 @@ def _context(adapter: object, query: str, k: int, char_budget: int,
                                           if str(row["session_id"]) == sid})}
                   for sid, label in source_labels.items()]
     if isinstance(adapter, SmritiAdapter):
-        hits = adapter.memory.search(query, k=k)
+        hits = _smriti_context(adapter, query, k,
+                               session_diverse=session_diverse,
+                               session_overfetch=session_overfetch)
         for hit in hits:
             episode = adapter.memory.store.get_episode(hit.id)
             sid = str(episode.session_id) if episode else None
@@ -308,7 +326,9 @@ def run_comparison(data: Sequence[Mapping[str, Any]], raw: bytes, adapter_name: 
                    mem0_config: Mapping[str, Any] | None = None,
                    temp_root: str | None = None, verbose: bool = True,
                    benchmark: str = "LongMemEval-S",
-                   progress_path: str | Path | None = None) -> dict[str, Any]:
+                   progress_path: str | Path | None = None,
+                   session_diverse: bool = False,
+                   session_overfetch: int = DEFAULT_SESSION_OVERFETCH) -> dict[str, Any]:
     """Run the matched evaluation.
 
     When ``progress_path`` is provided, a status-``running`` artifact is
@@ -321,10 +341,16 @@ def run_comparison(data: Sequence[Mapping[str, Any]], raw: bytes, adapter_name: 
     if any(value < 1 for value in (k, session_char_budget, chunk_char_budget,
                                    context_char_budget)):
         raise ValueError("k and all character budgets must be positive")
+    if (type(session_overfetch) is not int
+            or not 1 <= session_overfetch <= MAX_SESSION_OVERFETCH):
+        raise ValueError(
+            f"session_overfetch must be an integer between 1 and {MAX_SESSION_OVERFETCH}")
     if embed_model != DEFAULT_EMBED_MODEL:
         raise ValueError(f"matched comparison requires embed model {DEFAULT_EMBED_MODEL!r}")
     if adapter_name == "mem0" and mem0_config is None:
         raise ValueError("mem0 config is required")
+    if adapter_name == "mem0" and (session_diverse or session_overfetch != DEFAULT_SESSION_OVERFETCH):
+        raise ValueError("session-diverse retrieval options are supported only for Smriti; Mem0 parity is unavailable")
     selected = stratified_answerable_sample(data, sample)
     results: list[dict[str, Any]] = []
     cleanup: list[dict[str, Any]] = []
@@ -356,7 +382,9 @@ def run_comparison(data: Sequence[Mapping[str, Any]], raw: bytes, adapter_name: 
                 context_started = time.perf_counter()
                 context, returned, retrieved_rows, source_map = _context(
                     adapter, str(item["question"]), k, context_char_budget,
-                    item["rows"], source_labels)
+                    item["rows"], source_labels,
+                    session_diverse=session_diverse,
+                    session_overfetch=session_overfetch)
                 rec["retrieval_s"] = round(time.perf_counter() - context_started, 4)
                 rec["returned_session_ids"] = returned
                 rec["retrieved_rows"] = retrieved_rows
@@ -419,7 +447,9 @@ def run_comparison(data: Sequence[Mapping[str, Any]], raw: bytes, adapter_name: 
                     progress_path, raw=raw, benchmark=benchmark,
                     adapter_name=adapter_name, selected=selected,
                     results=results, cleanup=cleanup,
-                    answer_llm=answer_llm, judge_llm=judge_llm)
+                    answer_llm=answer_llm, judge_llm=judge_llm,
+                    session_diverse=session_diverse,
+                    session_overfetch=session_overfetch)
     failures = sum(1 for row in results if row["errors"])
     answerable_rows = [row for row in results if not row["unanswerable"]]
     abstention_rows = [row for row in results if row["unanswerable"]]
@@ -476,6 +506,9 @@ def run_comparison(data: Sequence[Mapping[str, Any]], raw: bytes, adapter_name: 
                                                  "base_url": base_url}}),
                        "embedding": {"provider": "ollama", "model": embed_model,
                                      "dimensions": 768, "base_url": base_url},
+                       "retrieval": {"session_diverse": session_diverse,
+                                     "session_overfetch": session_overfetch,
+                                     "option_scope": "Smriti only; Mem0 rejects non-default options"},
                        "budgets": {"sample": sample, "k": k,
                                    "session_char_budget": session_char_budget,
                                    "chunk_char_budget": chunk_char_budget,
@@ -532,6 +565,10 @@ def main() -> None:
     parser.add_argument("--judge-model", default=DEFAULT_QWEN_MODEL)
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL)
     parser.add_argument("--mem0-config", default=None)
+    parser.add_argument("--session-diverse", action="store_true",
+                        help="enable Smriti's opt-in session-diverse selector")
+    parser.add_argument("--session-overfetch", type=int, default=DEFAULT_SESSION_OVERFETCH,
+                        help="bounded Smriti selector overfetch (default: 3)")
     parser.add_argument("--quiet", action="store_true")
     sanity_group = parser.add_mutually_exclusive_group()
     sanity_group.add_argument("--judge-sanity-check", action="store_true",
@@ -541,6 +578,12 @@ def main() -> None:
     args = parser.parse_args()
     if args.answer_model != DEFAULT_QWEN_MODEL or args.judge_model != DEFAULT_QWEN_MODEL:
         raise SystemExit("matched QA route requires qwen3:8b for both answer and judge")
+    if (type(args.session_overfetch) is not int
+            or not 1 <= args.session_overfetch <= MAX_SESSION_OVERFETCH):
+        raise SystemExit(
+            f"--session-overfetch must be an integer between 1 and {MAX_SESSION_OVERFETCH}")
+    if args.adapter == "mem0" and (args.session_diverse or args.session_overfetch != DEFAULT_SESSION_OVERFETCH):
+        raise SystemExit("session-diverse retrieval options are supported only for Smriti; Mem0 parity is unavailable")
     path = Path(args.data)
     raw = path.read_bytes()
     if args.dataset == "longmemeval":
@@ -589,6 +632,8 @@ def main() -> None:
                             chunk_char_budget=args.chunk_char_budget,
                             context_char_budget=args.context_char_budget,
                             base_url=args.base_url, mem0_config=config,
+                            session_diverse=args.session_diverse,
+                            session_overfetch=args.session_overfetch,
                             verbose=not args.quiet,
                             benchmark="LongMemEval-S" if args.dataset == "longmemeval" else "LoCoMo",
                             progress_path=destination)

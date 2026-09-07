@@ -1,6 +1,8 @@
 """No-network checks for the matched public answer/judge wrapper."""
 
 import json
+import subprocess
+import sys
 
 import bench.qa_comparison as qa
 
@@ -30,6 +32,7 @@ class _Store:
 class _Adapter:
     instances = 0
     fail_first_add = False
+    search_calls = []
 
     def __init__(self, embedder):
         self.index = type(self).instances
@@ -44,7 +47,8 @@ class _Adapter:
             raise RuntimeError("ingest failure")
         self.rows.append(row)
 
-    def search(self, query, k=5):
+    def search(self, query, k=5, **kwargs):
+        type(self).search_calls.append((query, k, kwargs))
         return self.store.hits[:k]
 
     def close(self):
@@ -114,6 +118,69 @@ def test_context_uses_opaque_labels_and_exact_later_chunk(monkeypatch):
         "source_label": "source-0001", "session_id": "answer_session_1",
         "chunk_index": 1, "timestamp": "2024-02-02", "match": "exact",
     }]
+
+
+def test_session_diverse_options_reach_smriti_and_default_is_unchanged(monkeypatch):
+    monkeypatch.setattr(qa, "SmritiAdapter", _Adapter)
+    _Adapter.instances = 0
+    _Adapter.search_calls = []
+    _Adapter.fail_first_add = False
+    data = [_item()]
+
+    qa.run_comparison(data, b"dataset", "smriti", _Answer(["answer"]),
+                      _Judge([]), sample=1, k=1, verbose=False)
+    assert _Adapter.search_calls[-1][2] == {
+        "session_diverse": False, "session_overfetch": qa.DEFAULT_SESSION_OVERFETCH,
+    }
+
+    answer = _Answer(["answer"])
+    result = qa.run_comparison(
+        data, b"dataset", "smriti", answer, _Judge([]), sample=1, k=1,
+        session_diverse=True, session_overfetch=2, verbose=False,
+    )
+    assert _Adapter.search_calls[-1][2] == {
+        "session_diverse": True, "session_overfetch": 2,
+    }
+    assert result["provenance"]["retrieval"] == {
+        "session_diverse": True, "session_overfetch": 2,
+        "option_scope": "Smriti only; Mem0 rejects non-default options",
+    }
+
+
+def test_session_diverse_options_reject_mem0_without_constructing_adapter():
+    try:
+        qa.run_comparison([_item()], b"dataset", "mem0", _Answer(["answer"]),
+                          _Judge([]), sample=1, k=1, mem0_config={},
+                          session_diverse=True, verbose=False)
+    except ValueError as exc:
+        assert "only for Smriti" in str(exc)
+    else:
+        raise AssertionError("Mem0 must reject the Smriti-only selector option")
+
+
+def test_session_overfetch_rejects_out_of_bounds_and_non_int_before_adapter(monkeypatch):
+    monkeypatch.setattr(qa, "SmritiAdapter", _Adapter)
+    data = [_item()]
+    for value in (0, 9, True, 1.5, "3"):
+        _Adapter.instances = 0
+        try:
+            qa.run_comparison(data, b"dataset", "smriti", _Answer(["answer"]),
+                              _Judge([]), sample=1, k=1,
+                              session_overfetch=value, verbose=False)
+        except ValueError as exc:
+            assert "between 1 and 8" in str(exc)
+        else:
+            raise AssertionError(f"invalid overfetch {value!r} must be rejected")
+        assert _Adapter.instances == 0
+
+
+def test_cli_help_exposes_session_diverse_controls():
+    completed = subprocess.run(
+        [sys.executable, "-m", "bench.qa_comparison", "--help"],
+        check=True, capture_output=True, text=True,
+    )
+    assert "--session-diverse" in completed.stdout
+    assert "--session-overfetch" in completed.stdout
 
 
 def test_failures_cleanup_and_abs_denominator_are_explicit(monkeypatch):

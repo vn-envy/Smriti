@@ -78,6 +78,16 @@ but brittle `uses_tool`/Aurora assertions fail and an unsupported inferred
 primary-Python fact remains. The model-backed acceptance gate therefore remains
 open; this is installation evidence rather than phase completion.
 
+The latest installed v7 candidate passes **276 tests** across the core and
+enterprise suites offline, with `pip check` clean. Its scope guard checks
+model-generated applicability scopes against the source and fact statement,
+allows one bounded correction call, preserves the raw episode, and reports
+unresolved candidates through the `add()`/MCP result plus detailed diagnostics.
+This is an operational extraction safeguard, not a semantic quality claim;
+explicit `add_fact()` writes remain trusted caller input. The model-backed
+quality gate remains pending while the coordinated Mem0 run is still in
+progress.
+
 ## Phase 2 — Reproducible evaluation (P0, in progress)
 
 - [x] Pin versions, data hashes, runtime and retrieval configuration for the

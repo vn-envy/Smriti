@@ -123,6 +123,15 @@ included in retrieval evidence, MCP structured results, exports, and enterprise
 packs. Export format v3 preserves it; v1/v2 imports remain supported under
 their existing embedding-identity checks.
 
+Model-generated scopes pass a bounded lexical check against the source turns
+and returned fact statement before embedding or storage. An invalid scope can
+trigger at most one additional logical extraction call; unresolved candidates
+are omitted from fact writes while the raw episode is retained. `add()` and the
+MCP `remember` tool expose the retry outcome and counts, while detailed
+diagnostics remain available on `last_extraction_diagnostics`. This guard is
+source-grounded lexical evidence, not semantic proof of identity, quotation,
+or clause boundaries. Direct `add_fact()` calls remain trusted explicit writes.
+
 Two design decisions worth defending:
 
 1. **Facts AND raw episodes are both first-class at retrieval time.** Extraction-only systems lose whatever the extractor missed; episode-only systems fumble knowledge updates. Fusing both gets the precision of consolidated facts with the recall safety net of raw evidence.

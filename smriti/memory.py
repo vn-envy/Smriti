@@ -44,7 +44,9 @@ def redact_secrets(text: str) -> str:
 from .consolidation import consolidate, heuristic_conflicts
 from .embedder import HashEmbedder
 from .extraction import (build_extraction_prompt, build_followup_prompt,
-                         build_observation_prompt, compute_numeric_totals, parse_facts)
+                         build_observation_prompt, build_scope_correction_prompt,
+                         compute_numeric_totals, merge_scope_valid_facts, parse_facts,
+                         reject_scope_erasure_retry, validate_fact_scopes)
 from .llm import LLM
 from .profiles import RetrievalProfile, get_profile
 from .retrieval import is_aggregation_query, pack_context, retrieve
@@ -189,12 +191,108 @@ class Smriti:
         embs = (_embed_many(self.embedder, contents, "episode")
                 if (self.embed_episodes and contents) else [None] * len(contents))
         facts, fembs = [], []
+        # Keep diagnostics local to this call.  The public property is the
+        # detailed audit trail, while the return value below must never reuse
+        # a previous full-mode ingest after a mode/configuration change.
+        scope_diagnostics = None
         if self.mode == "full":
             raw = self.llm.complete(
                 build_extraction_prompt(messages, timestamp), json_mode=False
             )
             diagnostics = {}
             facts = parse_facts(raw, session_id, timestamp, diagnostics=diagnostics)
+            diagnostics["accepted_before_scope"] = len(facts)
+            valid_facts, invalid_scopes = validate_fact_scopes(facts, messages)
+            scope_diagnostics = {
+                "attempts": 1,
+                "retry_used": False,
+                "accepted_before_scope": len(facts),
+                "first_invalid": invalid_scopes,
+                "second_invalid": [],
+                "rejected_candidates": list(invalid_scopes),
+                "facts_dropped_after_retry": [],
+                "unresolved_candidates": [],
+                "replacement_matches": [],
+                "retry_status": "not_needed",
+                "input_roles": [str(turn.get("role", "user")) for turn in messages],
+                "semantic_scope_guarantee": False,
+                "limitation": "Lexical source/fact-statement evidence only; this guard does not prove cross-person, quotation, or adjacent-clause semantics.",
+            }
+            if invalid_scopes:
+                scope_diagnostics["retry_used"] = True
+                retry_parse_diagnostics = {}
+                scope_diagnostics["retry_parse"] = retry_parse_diagnostics
+                retry_valid = []
+                try:
+                    retry_raw = self.llm.complete(
+                        build_scope_correction_prompt(messages, timestamp, invalid_scopes),
+                        json_mode=False,
+                    )
+                    retry_facts = parse_facts(
+                        retry_raw, session_id, timestamp,
+                        diagnostics=retry_parse_diagnostics,
+                    )
+                    retry_valid, retry_invalid = validate_fact_scopes(retry_facts, messages)
+                    retry_valid, erased_scope = reject_scope_erasure_retry(
+                        retry_valid, invalid_scopes)
+                    retry_invalid.extend(erased_scope)
+                    scope_diagnostics["attempts"] = 2
+                    scope_diagnostics["second_invalid"] = retry_invalid
+                    # Keep validated first facts if the correction omitted
+                    # them; exact duplicate facts are deduplicated below.
+                    # Invalid scopes never enter this merge.
+                    facts = merge_scope_valid_facts(valid_facts, retry_valid)
+                except Exception as exc:
+                    # A failed correction is bounded and fail-closed for the
+                    # invalid scopes while preserving any valid first facts and
+                    # the raw episode that is written below.
+                    facts = valid_facts
+                    scope_diagnostics["attempts"] = 2
+                    scope_diagnostics["retry_error"] = {
+                        "type": type(exc).__name__, "error": str(exc)
+                    }
+            if invalid_scopes:
+                retry_keys = {
+                    (fact.subject.casefold().strip(), fact.predicate.casefold().strip(),
+                     fact.object.casefold().strip())
+                    for fact in retry_valid if fact.scope.strip()
+                }
+                replacement_matches = [
+                    item for item in invalid_scopes
+                    if (str(item.get("subject", "")).casefold().strip(),
+                        str(item.get("predicate", "")).casefold().strip(),
+                        str(item.get("object", "")).casefold().strip()) in retry_keys
+                ]
+                unresolved = [item for item in invalid_scopes
+                              if item not in replacement_matches]
+                scope_diagnostics["replacement_matches"] = replacement_matches
+                scope_diagnostics["unresolved_candidates"] = unresolved
+                scope_diagnostics["rejected_candidates"] = (
+                    list(invalid_scopes) + list(scope_diagnostics.get("second_invalid", []))
+                )
+                # This is based on structured-identity matches against the
+                # validated correction, rather than counting rejected output
+                # candidates.  A corrected candidate is therefore not called
+                # a lost fact; an omitted or still-invalid initial candidate
+                # is retained in the raw episode and reported here.
+                scope_diagnostics["facts_dropped_after_retry"] = unresolved
+                if scope_diagnostics.get("retry_error"):
+                    scope_diagnostics["retry_status"] = "retry_failed"
+                elif (scope_diagnostics.get("retry_parse", {}).get("status")
+                      not in (None, "ok")):
+                    scope_diagnostics["retry_status"] = "retry_parse_failed"
+                elif scope_diagnostics["second_invalid"] and not unresolved:
+                    scope_diagnostics["retry_status"] = "corrected_with_rejections"
+                elif unresolved:
+                    scope_diagnostics["retry_status"] = (
+                        "rejected" if scope_diagnostics["second_invalid"] else
+                        "retry_completed"
+                    )
+                else:
+                    scope_diagnostics["retry_status"] = "corrected"
+            diagnostics["accepted"] = len(facts)
+            scope_diagnostics["accepted_final"] = len(facts)
+            diagnostics["scope_validation"] = scope_diagnostics
             self.last_extraction_diagnostics = diagnostics
             if facts:
                 if not self.expand_keys:
@@ -234,7 +332,40 @@ class Smriti:
         except BaseException:
             self.store.rollback()
             raise
-        return {"session_id": session_id, "episodes": len(episode_ids), "facts": facts_added}
+        result = {"session_id": session_id, "episodes": len(episode_ids), "facts": facts_added}
+        if scope_diagnostics and scope_diagnostics.get("retry_used"):
+            retry_status = scope_diagnostics.get("retry_status", "retry_completed")
+            outcome = {
+                "corrected": "corrected",
+                "corrected_with_rejections": "corrected_with_rejections",
+                "rejected": "rejected",
+                "retry_completed": "retry_completed",
+                "retry_failed": "retry_failed",
+                "retry_parse_failed": "retry_parse_failed",
+            }.get(retry_status, "retry_completed")
+            warning = {
+                "corrected": "Invalid first-pass scopes were persisted only after a validated correction; inspect last_extraction_diagnostics for details.",
+                "corrected_with_rejections": "Some correction candidates remained invalid and were not persisted; inspect last_extraction_diagnostics for details.",
+                "retry_completed": "The correction completed but did not replace every rejected candidate; no unverified scope was globalized.",
+                "rejected": "Rejected scoped candidates were not globalized; inspect last_extraction_diagnostics for details.",
+                "retry_failed": "The correction failed and rejected scoped candidates were not globalized; inspect last_extraction_diagnostics for details.",
+                "retry_parse_failed": "The correction response was malformed and rejected scoped candidates were not globalized; inspect last_extraction_diagnostics for details.",
+            }[outcome]
+            result["scope_validation"] = {
+                "outcome": outcome,
+                "attempts": scope_diagnostics.get("attempts"),
+                "accepted_before_scope": scope_diagnostics.get("accepted_before_scope", 0),
+                "accepted_final": scope_diagnostics.get("accepted_final", 0),
+                # Final invalid candidates and identity-proven omissions are
+                # separate counts; the former is not presented as lost facts.
+                "rejected_candidates": len(scope_diagnostics.get("second_invalid", [])),
+                "validation_rejections": len(scope_diagnostics.get("rejected_candidates", [])),
+                "facts_dropped_after_retry": len(scope_diagnostics.get(
+                    "facts_dropped_after_retry", [])),
+                "unresolved_candidates": len(scope_diagnostics.get("unresolved_candidates", [])),
+                "warning": warning,
+            }
+        return result
 
     @staticmethod
     def _index_text(fact: Fact) -> str:
