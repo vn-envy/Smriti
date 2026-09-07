@@ -168,10 +168,24 @@ class Store:
                 "verify the configured embedder, then reopen with "
                 "adopt_legacy_embedder=True"
             )
+        # The initial SELECT above is only an optimization. Multiple
+        # connections can pass it concurrently on a newly-created database;
+        # INSERT OR IGNORE makes the metadata claim itself atomic. The
+        # post-insert read is authoritative, so competing identities receive
+        # the same compatibility error as an already-bound database rather
+        # than leaking a UNIQUE constraint failure or silently sharing vectors.
         self.db.execute(
-            "INSERT INTO metadata(key, value) VALUES('embedder_identity', ?)",
+            "INSERT OR IGNORE INTO metadata(key, value) VALUES('embedder_identity', ?)",
             (identity,),
         )
+        row = self.db.execute(
+            "SELECT value FROM metadata WHERE key='embedder_identity'"
+        ).fetchone()
+        if row and row[0] != identity:
+            raise ValueError(
+                "embedder is incompatible with this database; "
+                f"stored={row[0]}, requested={identity}"
+            )
 
     # ------------------------------------------------------------- episodes
     def add_episode(self, ep: Episode, emb=None) -> int:

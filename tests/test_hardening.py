@@ -10,6 +10,7 @@ from smriti import Fact, HashEmbedder, MockLLM, Smriti
 from smriti.mcp_server import SmritiMCP
 from smriti.memory import redact_secrets
 from smriti.retrieval import extract_dates
+from smriti.store import Store
 
 
 def lite(**kw):
@@ -473,6 +474,66 @@ def test_concurrent_first_time_db_creation(tmp_path):
     assert not errors, errors
     check = Smriti(path=p, embedder=HashEmbedder(), mode="lite")
     assert check.stats()["episodes"] == 6
+
+
+def test_concurrent_embedder_claim_is_atomic(tmp_path):
+    """Only one initial identity claim wins; same-identity callers all pass."""
+    import threading
+
+    p = str(tmp_path / "identity-race.db")
+    seed = Store(path=p)
+    seed.close()
+    barrier = threading.Barrier(6)
+    errors = []
+
+    def worker():
+        store = Store(path=p)
+        try:
+            barrier.wait(timeout=5)
+            store.ensure_embedder("same-model")
+        except Exception as exc:  # noqa: BLE001
+            errors.append(exc)
+        finally:
+            store.close()
+
+    threads = [threading.Thread(target=worker) for _ in range(6)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(timeout=10)
+    assert not errors, errors
+
+
+def test_concurrent_different_embedder_claims_have_one_winner(tmp_path):
+    """Competing identities never produce duplicate-key errors or both pass."""
+    import threading
+
+    p = str(tmp_path / "identity-compete.db")
+    seed = Store(path=p)
+    seed.close()
+    barrier = threading.Barrier(2)
+    outcomes = []
+
+    def worker(identity):
+        store = Store(path=p)
+        try:
+            barrier.wait(timeout=5)
+            store.ensure_embedder(identity)
+            outcomes.append((identity, "ok"))
+        except Exception as exc:  # noqa: BLE001
+            outcomes.append((identity, type(exc).__name__, str(exc)))
+        finally:
+            store.close()
+
+    threads = [threading.Thread(target=worker, args=(identity,))
+               for identity in ("model-a", "model-b")]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(timeout=10)
+    assert sum(row[1] == "ok" for row in outcomes) == 1
+    loser = next(row for row in outcomes if row[1] != "ok")
+    assert loser[1] == "ValueError" and "incompatible" in loser[2]
 
 
 def test_cross_connection_dedupe(tmp_path):
