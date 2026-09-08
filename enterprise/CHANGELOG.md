@@ -1,5 +1,11 @@
 # Changelog — smriti-enterprise
 
+## Unreleased — PR #2 hardening (2026-09-08)
+
+Package metadata remains 0.1.0. Scope now follows facts through enterprise storage, results and receipts. Temporal world/known-time boundaries, policy/hold paths, lineage erasure and signed evidence controls were hardened. Pre-scope verified packs remain readable without modifying schema or checksum.
+
+The installed combined core/enterprise suite passes 276 tests; this is not an enterprise-only count. See the [release notes and upgrade guidance](../RELEASE_NOTES.md) and [verified evidence](../audit/2026-09-05/VERIFIED-RESULTS.md).
+
 ## v0.1.0 — E1A + E1B + E2 (2026-07-19)
 
 First enterprise release. Built against `smriti-agents` 0.3.2 with **zero core edits** — the core suite (85 tests) is unchanged and still green.

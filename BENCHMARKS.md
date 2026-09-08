@@ -1,5 +1,11 @@
 # SMRITI — Benchmark Results
 
+## Current PR #2 results — September 8, 2026
+
+The [README benchmark section](README.md#benchmarks) is the current consolidated comparison: matched LongMemEval-S50 and LoCoMo50 QA, retrieval50, GBrain held-out20, five growth checkpoints through 36,500 records, costs, and Hindsight/Graphify installation probes. Those bounded runs are complete; see [release notes](RELEASE_NOTES.md) and the [independent evidence index](audit/2026-09-05/VERIFIED-RESULTS.md).
+
+**The sections below preserve historical experiments.** Their models, oracle splits, budgets and candidate versions differ from the new comparisons. Statements about a pending run refer to that experiment at the time, not the completed selected-question PR #2 tracks. Historical deltas are not measured PR #2 improvements and cannot be compared directly with vendor scores.
+
 Numbers you can reproduce with `bench/ab.sh` and `bench/run_all.sh`. Everything
 here is **self-run with a fixed judge**; vendor numbers use different judges,
 answer models, and splits and are not directly comparable (see the dashboard's
@@ -32,11 +38,10 @@ Per-question flips: **19 helped, 10 hurt (net +9)**, 29 discordant.
 ### Honesty / caveats
 
 - **Significance:** McNemar on the 29 discordant pairs gives z ≈ 1.67, **p ≈ 0.095**
-  — directionally strong and near-significant, *not yet* below 0.05. One more
-  n≈200 run pooled with this one is expected to cross p < 0.05. Treat the +4.8
-  as "very likely real, not yet proven."
+  — directionally strong and near-significant, *not yet* below 0.05. A further prespecified experiment is needed; another run cannot be assumed
+  to cross a significance threshold. Treat the +4.8 as an exploratory observation.
 - **Split:** this is the *oracle* (evidence-only) split — absolute numbers are
-  easy-mode; the **delta** is the transferable result, not the level. A
+  easy-mode; neither the level nor the delta is established on a different workload. A
   full-haystack `longmemeval_s` run is still pending (it is slow and has timed
   out once; the harness now retries + checkpoints).
 - **Safety:** the highest-value recall category (single-session-user, 94%) is

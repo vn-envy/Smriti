@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased — PR #2: scoped temporal memory and comparative evidence (2026-09-08)
+
+Compared with main `a2afb3d` (core v0.3.2). Package metadata remains 0.3.2; no new published release is implied.
+
+- Add applicability scope throughout consolidation, retrieval, MCP and JSON v3, while preserving v1/v2 import compatibility.
+- Harden late-arriving temporal facts, atomic writes, cross-connection caches, redaction, embedder identity, extraction diagnostics and HTTP retry accounting.
+- Validate model-generated scopes with one bounded correction call; retain raw episodes and expose unresolved candidates.
+- Add read-only doctor/lifecycle support and opt-in session-diverse retrieval with bounded overfetch.
+- Complete selected paired QA, five-checkpoint growth/cost comparisons and real GBrain, Hindsight, Mem0 and Graphify installation/evaluation tracks.
+- Verify 276 installed core/enterprise tests, current bounded model checks and Python 3.9/3.12 CI.
+- Add the launch teaser, narrative social film and separately preserved camera-motion version.
+
+See [release notes](RELEASE_NOTES.md) for migration guidance, measured results and known limits, and [README benchmarks](README.md#benchmarks) for complete comparison tables. These results do not establish universal quality superiority or a measured speed/accuracy lift over v0.3.2.
+
 ## v0.3.2 — Audit fixes, round 2 (2026-07-17)
 
 Second external audit pass; three findings, three fixes.

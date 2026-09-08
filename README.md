@@ -11,17 +11,48 @@
   <a href="LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-4c9?style=flat-square"></a>
   <img alt="Python 3.9+" src="https://img.shields.io/badge/python-3.9%2B-3776AB?style=flat-square&logo=python&logoColor=white">
   <img alt="Dependencies: stdlib + numpy" src="https://img.shields.io/badge/deps-stdlib%20%2B%20numpy-F4A43C?style=flat-square">
-  <img alt="Tests: 169 package tests" src="https://img.shields.io/badge/tests-169%20package%20tests-success?style=flat-square">
+  <img alt="Tests: 276 installed core and enterprise tests" src="https://img.shields.io/badge/tests-276%20installed%20tests-success?style=flat-square">
   <img alt="Storage: one SQLite file" src="https://img.shields.io/badge/storage-one%20SQLite%20file-blue?style=flat-square">
   <img alt="MCP: ready" src="https://img.shields.io/badge/MCP-ready-B794E0?style=flat-square">
   <a href="https://github.com/vn-envy/Smriti/pulls"><img alt="PRs welcome" src="https://img.shields.io/badge/PRs-welcome-E08AA0?style=flat-square"></a>
 </p>
 
 <p align="center">
-  <a href="https://vn-envy.github.io/Smriti/"><b>smriti.agents.io</b></a> — the four rivers, live
+  <a href="https://vn-envy.github.io/Smriti/"><b>Explore the four retrieval streams</b></a>
 </p>
 
 The core is a zero-infrastructure, local-first, Apache-2.0 memory layer for AI agents. It uses one SQLite file: no Neo4j, Postgres, Docker, cloud account, or paid tier is required. Stdlib HTTP + numpy is the core dependency surface. The optional enterprise package adds governance metadata and can write a separate audit sink or verified pack.
+
+**Jump to:** [PR #2 highlights](#pr-2--where-smriti-stands) · [Since v0.3.2](#what-changed-since-v032) · [Benchmarks](#benchmarks) · [Architecture](#architecture) · [Install](#install--try-it-in-60-seconds) · [MCP](#drop-it-into-your-agent-mcp) · [Roadmap](#roadmap) · [Release notes](RELEASE_NOTES.md)
+
+## PR #2 — where Smriti stands
+
+**Local agent memory that preserves what changed—and lets you inspect the evidence.**
+
+The [PR #2 candidate](https://github.com/vn-envy/Smriti/pull/2) combines explicit
+fact history, project-scoped applicability, four retrieval channels and a
+portable SQLite core. It now has completed local growth comparisons and matched
+selected-question QA runs, with raw evidence available for review.
+
+| Measured highlight | Current result | What it means |
+|---|---|---|
+| **Warm retrieval at 36,500 records** | **20.5ms Smriti · 66.3ms GBrain semantic · 381.3ms Mem0 OSS** | Local synthetic workload, same nomic model; retrieval only |
+| **Store footprint at that checkpoint** | **161.1MB Smriti · 840.2MB GBrain semantic · 313.8MB Mem0 OSS** | Measured store sizes, excluding shared model caches |
+| **Matched answer quality** | **LongMemEval-S50: 64% / 64%; LoCoMo50: 54% / 52%** (Smriti / Mem0) | Competitive in these selected samples; no demonstrated quality superiority |
+| **Held-out20 source-session recall@5** | **93.3% opt-in diverse Smriti · 87.9% GBrain · 84.6% default Smriti** | Retrieval ablation, not an answer-accuracy score |
+| **Installed candidate validation** | **276 core + enterprise tests passed; clean dependency checks** | Non-editable wheels tested outside the checkout; separate Python 3.9/3.12 CI |
+
+The strongest evidence is a small local footprint, low warm-retrieval latency
+in the measured growth workload, and explicit, inspectable temporal history.
+The next quality gains need better preservation of complete source statements,
+selection of competing updates and more reliable judging. Larger graph,
+reflection, hosting and connector surfaces remain strengths to learn from in
+other systems. [Full tables and limits ↓](#benchmarks) ·
+[Source-linked competitive review](audit/2026-09-05/COMPETITIVE-RESEARCH.md)
+
+This is an **unreleased PR candidate**, compared with main snapshot `a2afb3d`
+(core v0.3.2 / enterprise v0.1.0). Package version metadata is unchanged; no new
+PyPI release or tag is implied. [Release notes and upgrade guidance](RELEASE_NOTES.md).
 
 ```python
 from smriti import Smriti, LLM, OllamaEmbedder
@@ -30,32 +61,50 @@ mem = Smriti(path="memory.db",
              embedder=OllamaEmbedder("nomic-embed-text"),
              llm=LLM("qwen3:14b", provider="ollama"))
 
+mem.add([{"role": "user", "content": "I live in Hyderabad."}],
+        timestamp="2026-01-15T10:00:00Z")
 mem.add([{"role": "user", "content": "I moved to Bengaluru on June 1st."}],
         timestamp="2026-06-02T10:00:00Z")
 
 print(mem.context("where do I live?"))
+# Illustrative output; extraction wording depends on the configured model.
 # KNOWN FACTS:
 # - [2026-01-15 | SUPERSEDED on 2026-06-01] The user lives in Hyderabad.
 # - [2026-06-01 | CURRENT] The user lives in Bengaluru.
 ```
 
-**Jump to:** [What you get](#what-you-get) · [Agile retrieval](#agile-retrieval-drishti--new-in-020) · [Architecture](#architecture) · [Ancient wisdom, load-bearing](#ancient-wisdom-load-bearing) · [Comparison](#how-it-compares-on-what-youll-actually-run-into) · [Install](#install--try-it-in-60-seconds) · [MCP](#drop-it-into-your-agent-mcp) · [Benchmarks](#benchmarks) · [Roadmap](#roadmap)
+## What changed since v0.3.2
+
+| Area | Previous main snapshot | PR #2 candidate |
+|---|---|---|
+| Applicability | Fact identity had no explicit applicability scope | Scope follows facts through consolidation, retrieval, MCP, receipts and JSON v3; project-specific values can remain separate |
+| Temporal correctness | Existing history model with defects found during installation/audit | Late-arriving facts rebuild validity chains; enterprise world/known-time boundaries and retained history have regression coverage |
+| Extraction | Model output needed stronger validation and failure visibility | Bounded source-grounded scope checks, at most one correction call, raw-episode preservation and explicit diagnostics |
+| Operational reliability | Existing transactional/session and identity behavior needed edge-case hardening | Atomic direct writes, cross-connection cache refresh, embedding-identity checks, read-only doctor and tested legacy-pack compatibility |
+| Retrieval experimentation | Existing profiles and four-channel fusion | Opt-in session diversity with bounded overfetch; ordinary defaults preserved |
+| Evidence | Historical oracle/profile experiments and scale probes | Matched QA samples, five growth checkpoints, cost scenarios, GBrain/Hindsight/Graphify install evidence and independent artifact reviews |
+
+These are verified implementation and evidence improvements. **We have not run
+a matched old-v0.3.2 versus current-v7 answer-quality or speed experiment**, so
+the new competitor results must not be advertised as a measured version-to-version
+performance lift. The prior 85-test core changelog count and current 276-test
+combined installed suite also cover different scopes.
 
 ## What you get
 
-A memory layer you can run today, on your own machine, and verify on your own data — no infrastructure, no cloud account, no leaderboard to take on faith. Everything below is something we've tested, not marketing copy.
+A memory layer you can run today, on your own machine, and verify on your own data — no infrastructure, no cloud account, no leaderboard to take on faith. The measurements below link to their tested configurations and limits.
 
 **1. One line to run. Nothing to stand up.** `pip install -e .` gives you a working core memory layer in a single SQLite file — no Postgres, Neo4j, Qdrant, Redis, Docker, or cloud account. The dependency surface is the Python standard library plus numpy. The offline core suite and quickstart run with no network and no API keys; lite mode is fully offline.
 
 **2. No external services to break — and clear failure boundaries.** Memory is one file: no cluster to keep alive or version-match. It is provider-agnostic — point it at any OpenAI-compatible endpoint (Ollama, DeepSeek, Groq, OpenAI, vLLM…) and any embedder. Direct writes and session ingestion are transactional, identical session replays can be deduplicated, malformed extraction output is diagnosed, and LLM attempt/usage metadata is exposed for inspection.
 
-**3. Cost follows the mode and provider.** Lite mode does zero LLM calls at write time. Full mode makes an extraction call per session and may make additional arbitration calls for semantic conflicts. Provider pricing, model output, retries, and workload determine the bill, so we do not publish a fixed per-question dollar claim. Apache-2.0 includes the graph, temporal, and retrieval-profile features; there is no paid core tier.
+**3. Cost follows the mode and provider.** Lite mode does zero LLM calls at write time. Full mode makes an extraction call per session and may make additional calls for semantic arbitration, bounded scope correction and provider retries. Provider pricing, model output, retries, and workload determine the bill, so we do not publish a fixed per-question dollar claim. Apache-2.0 includes the graph, temporal, and retrieval-profile features; there is no paid core tier.
 
-**4. A measured local scale envelope, with a clear boundary.** A 256-dim single-run probe reported ~3 ms warm queries at 12.5k rows, ~31 ms at 125k, ~81 ms at 312k, and roughly 50k rows/sec ingest; needle retrieval was correct at each tested checkpoint. These are workload- and hardware-specific observations. The vector channel is an exact numpy scan, so multi-million-row, high-concurrency serving and larger embedding dimensions need further measurement and optional quantization/ANN work. Updates *supersede* rather than delete: prior facts remain queryable with validity metadata, so the store can answer both “what's true now?” and “what was true then?”
+**4. A measured local scale envelope, with a clear boundary.** The matched 768-dimensional growth run measured **20.474ms warm p50 retrieval at 36,500 records** with a **161.075MB** store. The full comparison, p95, ingestion times and workload qualifications are [below](#speed-and-storage-as-memory-grows). The vector channel uses an exact numpy scan; multi-million-row, high-concurrency serving remains a future evaluation target. Supersession preserves prior facts and their validity metadata for current and historical queries.
 
 **5. Small enough to inspect, honest enough to verify yourself.** The benchmark harness ships with it, so you measure SMRITI on *your* data, with *your* judge, on *your* hardware — `bench/ab.sh` runs a fixed-judge A/B and prints the delta. The audit records the exact configurations and open limits instead of turning a small diagnostic into a leaderboard claim.
 
-## Agile retrieval (*drishti*) — new in 0.2.0
+## Agile retrieval (*drishti*)
 
 One store, many ways of looking at it. Four retrieval channels — lexical, semantic, entity, temporal — are individually switchable, and **retrieval profiles** bundle them into named, per-query policies. Ask for facts when you want facts; ask for relationships when you want the graph; go deep when you want everything.
 
@@ -80,7 +129,7 @@ mem.search(query, profile=support)
 ```
 
 > [!NOTE]
-> **Others ship knobs. SMRITI ships tuned policies with receipts.** Every built-in profile carries an `evidence` field citing the A/B that justified it (see `smriti/profiles.py` and BENCHMARKS.md — e.g. `deep` is the configuration that lifted multi-session +10.3, McNemar p=0.046, with no knowledge-update regression). The default path without a profile is byte-identical to 0.1.0, so existing evidence still describes existing behavior — and `bench/ab.sh` re-validates any profile, including yours, on your own data.
+> Built-in profiles carry an `evidence` field linking to their historical within-system experiments. Those oracle A/B results use different models and workloads from the current comparisons below; they do not establish cross-system or version-to-version superiority. Use the shipped harness to evaluate a profile on your own workload.
 
 The same selection is exposed to agents through the MCP tools (`profile` and `channels` on `recall`/`search`), so an agent spends one enum per call instead of seven numeric knobs.
 
@@ -92,7 +141,7 @@ flowchart LR
         S[session] --> E["episodic log · anubhava अनुभव<br/>append-only · embedded · FTS-indexed"]
         S --> X["fact extraction · grahana ग्रहण<br/>1+ LLM calls / session (full mode)"]
         X --> B{"conflict? · badha बाध"}
-        B -->|"(subject, predicate) collision"| SUP["supersede · 0 tokens"]
+        B -->|"single-valued (subject, predicate, scope) collision"| SUP["supersede · 0 tokens"]
         B -->|semantic collision| ARB["1 tiny arbitration call"]
         SUP --> F["fact store · samskara संस्कार<br/>valid_from · invalid_at · superseded_by"]
         ARB --> F
@@ -112,7 +161,7 @@ flowchart LR
     end
 ```
 
-Facts are **never** deleted — supersession preserves the full bi-temporal history (validity window = *avadhi* अवधि), so one store answers both "what's true now" and "what was true then."
+Supersession preserves prior facts and their bi-temporal history; explicit owner erasure is a separate operation. History carries validity metadata (validity window = *avadhi* अवधि), so one store answers both "what's true now" and "what was true then."
 
 Facts may also carry an explicit applicability `scope`, such as
 `project:Atlas`. An empty scope is the legacy unscoped value. Only explicitly
@@ -140,7 +189,7 @@ Two design decisions worth defending:
 ### Modes
 
 - **`lite`** (alias `laghu`, लघु — "light") — no LLM at write time at all. Episodic ingest + 4-channel hybrid retrieval. Fully offline-capable and useful when write-time cost or model access is constrained.
-- **`full`** (alias `purna`, पूर्ण — "complete") — adds fact extraction + write-time consolidation. It makes one extraction call per session in the ordinary path, with extra arbitration calls only for semantic collisions. Full-mode quality depends on the configured model and predicate normalization.
+- **`full`** (alias `purna`, पूर्ण — "complete") — adds fact extraction + write-time consolidation. It makes one extraction call per session in the ordinary path, with additional calls possible for semantic arbitration, bounded scope correction and provider retries. Full-mode quality depends on the configured model and predicate normalization.
 
 ## Ancient wisdom, load-bearing
 
@@ -197,6 +246,10 @@ SMRITI's stance is **ship-and-verify**. The harness lets you measure on your own
 
 ## Install & try it in 60 seconds
 
+To evaluate these **unmerged PR #2 changes**, clone with
+`git clone --branch codex/smriti-hardening-benchmarks-teaser https://github.com/vn-envy/Smriti`.
+The ordinary command below checks out the default branch.
+
 ```bash
 git clone https://github.com/vn-envy/Smriti && cd Smriti
 python -m pip install -e '.[dev]' # install the core and test tools from source
@@ -241,31 +294,198 @@ bash bench/ab.sh   # fixed-judge A/B, prints the accuracy delta
 
 ## Benchmarks
 
-The harness ships in `bench/` for **LongMemEval** (ICLR 2025 — the de-facto standard: 500 questions over ~115k-token histories testing extraction, multi-session reasoning, temporal reasoning, knowledge updates, abstention) and **LoCoMo** (the benchmark behind mem0's published numbers).
+**Measured through September 8, 2026.** These are self-run, independently checked
+within this project, selected-workload results—not an external certification or
+vendor leaderboard. We ran real installed packages and retained configurations,
+raw per-question outputs, failures, model identities and dataset hashes.
 
-```bash
-# 1. get datasets (LongMemEval from HuggingFace, LoCoMo from GitHub)
-python -m bench.download            # oracle + locomo (small, fast)
-python -m bench.download --all      # every split, or name one: longmemeval_s
+### Answer quality: matched reader and judge
 
-# 2. evidence-only sanity pass on the oracle split, fully local
-python -m bench.run --bench longmemeval --data data/longmemeval_oracle.json \
-    --mode lite --limit 50 --answer-model qwen3:14b --judge-model qwen3:14b
+Both systems received the same selected questions and complete per-question
+haystacks under the same chunk/context budgets. The frozen installed-v4 Smriti
+candidate (lite mode) and local Mem0 OSS (`infer=False`, Qdrant) used
+`qwen3:8b` for the reader/judge and `nomic-embed-text:v1.5` embeddings. These scores
+precede the latest installed-v7 hardening; they are not a measured v7 quality lift.
+Budgets: k=12, 16,000 characters/session, 1,000/chunk, 9,000 in reader context,
+256 answer tokens and 8 judge tokens; thinking disabled. Abstention rows use
+the harness's abstention heuristic rather than the answerable-question judge.
 
-# 3. the comparable number: full mode on longmemeval_s
-python -m bench.run --bench longmemeval --data data/longmemeval_s_cleaned.json \
-    --mode full --provider groq --api-key $GROQ_API_KEY \
-    --memory-model llama-3.3-70b-versatile \
-    --answer-model llama-3.3-70b-versatile --judge-model llama-3.3-70b-versatile
+| Selected test | Smriti | Mem0 OSS | What the result supports |
+|---|---:|---:|---|
+| LongMemEval-S50: all questions | **32/50 · 64%** | **32/50 · 64%** | Equal recorded score in this sample |
+| ↳ Answerable questions | 14/30 · 46.7% | 14/30 · 46.7% | Substantial room to improve evidence delivery and reading |
+| ↳ Abstention questions | 18/20 · 90% | 18/20 · 90% | Same recorded abstention performance |
+| LoCoMo50: all questions | **27/50 · 54%** | **26/50 · 52%** | One-question difference; no demonstrated superiority |
+| ↳ Answerable questions | 21/40 · 52.5% | 20/40 · 50% | Exploratory difference |
+| ↳ Abstention questions | 6/10 · 60% | 6/10 · 60% | Same recorded abstention performance |
+| Operational / cleanup failures, each test | 0 / 0 | 0 / 0 | Both completed all 50 rows in each run |
 
-# 4. LoCoMo
-python -m bench.run --bench locomo --data data/locomo10.json --mode full --limit 200
+LongMemEval-S50 contains 40% abstention questions, so its overall score does not
+represent the full 500-question dataset. LoCoMo's exploratory paired bootstrap
+for the score difference spans **−6 to +10 percentage points**; questions share
+conversations, and that dependence is not modeled by this interval. Known judge
+errors are retained and documented. Full-history describes the selected
+questions' haystacks, not completion of every question in either dataset.
+
+Evidence: [LongMemEval pair and configuration review](audit/2026-09-05/raw/longmemeval-pair-final-independent-review.json),
+[LoCoMo pair review](audit/2026-09-05/raw/locomo-pair-final-independent-review.json),
+[exact-source disagreement review](audit/2026-09-05/raw/longmemeval-pair-four-disagreement-review.json).
+No matched generated-answer score was measured for GBrain, Hindsight or Graphify.
+
+### Retrieval: keep each workload separate
+
+| Test / configuration | Source-session recall@5 | Reciprocal rank | Completed |
+|---|---:|---:|---:|
+| LongMemEval-S retrieval50 · Smriti | 0.8383 | 0.8300 | 48/50 |
+| LongMemEval-S retrieval50 · Mem0 OSS | 0.8300 | 0.8333 | 48/50 |
+| Held-out20 · Smriti default | 0.8458 | 0.8875 | 20/20 |
+| Held-out20 · Smriti opt-in session diversity | **0.9333** | 0.9042 | 20/20 |
+| Held-out20 · GBrain semantic | 0.8792 | **0.9083** | 20/20 |
+
+The first pair uses the same 50 selected IDs, dataset, nomic model and budgets;
+its denominator includes two failures per adapter. Its nine-question
+multi-session stratum was **0.6111 Smriti / 0.7407 Mem0**, which motivated the
+separate diversity experiment. The held-out20 comparison uses the same 991
+sessions and 10,047 input chunks, nomic 768-dimensional vectors and a five-chunk
+budget. Its reciprocal rank uses **deduplicated session order within those
+chunks**, not conventional chunk rank. GBrain's run verified full vector
+coverage and no degraded search; expansion, reranking and graph enrichment were
+not the evaluated route. Do not compare values across the two workloads as if
+they were a single ranking.
+
+```python
+# Opt-in experiment; ordinary search/context defaults stay unchanged.
+mem.search(query, k=5, session_diverse=True, session_overfetch=3)
+mem.context(query, k=5, session_diverse=True, session_overfetch=3)
 ```
 
-Output: overall accuracy, **per-question-type accuracy** (the honest view — temporal-reasoning and knowledge-update are where flat stores die), ingest/answer latency, and token counts, plus a full per-question JSONL for error analysis.
+Iterative retrieval/context currently reject this option. More session coverage
+is a promising retrieval result, not proof of better generated answers.
+Evidence: [retrieval50 paired analysis](audit/2026-09-05/public-retrieval-s50-paired-analysis.md),
+[held-out20 independent review](audit/2026-09-05/raw/gbrain-heldout20-independent-review.json).
 
-> [!IMPORTANT]
-> **Honesty section.** The current evidence includes a 500-question LongMemEval **oracle, evidence-only retrieval** run (extraction and answer generation bypassed), plus a 20-document/12-query diagnostic across Smriti, Mem0, GBrain, and a lexical control. These are useful checks, not full-haystack answer quality or a universal ranking. A separate persistent GBrain lexical growth run covers 100 and 1,000 documents, but uses no embeddings and does not establish parity with Smriti or Mem0 ([raw run](audit/2026-09-05/raw/independent-gbrain-growth.json)). Full `longmemeval_s` / LoCoMo runs with one shared answer and judge configuration, and a matched cost/speed growth comparison, remain unfinished. See [`BENCHMARKS.md`](BENCHMARKS.md), the [benchmark methodology audit](audit/2026-09-05/benchmark-methodology.md), and the [verified results](audit/2026-09-05/VERIFIED-RESULTS.md).
+### Speed and storage as memory grows
+
+**At 36,500 synthetic records, Smriti's warm retrieval p50 was 20.474ms**, versus
+66.268ms for GBrain semantic and 381.298ms for local Mem0 OSS in these runs.
+
+| Records | Smriti semantic p50 | GBrain semantic p50 | Mem0 OSS semantic p50 | GBrain lexical p50¹ |
+|---:|---:|---:|---:|---:|
+| 100 | 10.062ms | 25.486ms | 11.015ms | 2.861ms |
+| 1,000 | 12.059ms | 32.935ms | 19.714ms | 3.411ms |
+| 3,000 | 13.135ms | 44.231ms | 36.861ms | 5.266ms |
+| 9,000 | 24.310ms | 43.396ms | 94.669ms | 12.220ms |
+| **36,500** | **20.474ms** | **66.268ms** | **381.298ms** | **39.022ms** |
+
+![Warm retrieval latency across five measured corpus sizes](audit/2026-09-05/charts/semantic/growth-semantic-query-latency.svg)
+
+| At 36,500 records | Smriti semantic | GBrain semantic | Mem0 OSS semantic | GBrain lexical¹ |
+|---|---:|---:|---:|---:|
+| Warm p95 | 23.726ms | 92.448ms | 456.301ms | 47.373ms |
+| Store footprint² | 161.075MB | 840.246MB | 313.803MB | 206.529MB |
+| Cumulative ingestion | 693.925s | 1,060.756s | 686.973s | 235.371s |
+| Observed paid model/API charges | $0 | $0 | $0 | $0 |
+
+Apple M5, 24GB RAM; 20 warm queries over five synthetic topics per checkpoint;
+nearest-rank p50/p95. The semantic routes share local Ollama
+`nomic-embed-text:v1.5`, measured at 768 dimensions. Smriti uses lite ingestion;
+Mem0 uses local Qdrant with `infer=False`; GBrain uses persistent PGLite hybrid
+search with maintenance. Optional Mem0 spaCy models were unavailable: original
+query text was used without entity boosts. All 100 timed queries per semantic
+track returned topic-relevant hits. This easy synthetic relevance check is not
+an answer-quality benchmark.
+
+¹ GBrain lexical is a separate no-embedding, `ANALYZE`-maintained configuration;
+it is faster at the first four checkpoints and is not semantic parity. Its
+0.820s cumulative maintenance is recorded separately. An untuned 5,000-document
+GBrain lexical run reached 1,516.268ms p50; that query-plan observation must not
+be merged into the maintained series.
+
+² Footprints use each implementation's measured store boundary, including the
+reported database/WAL or storage-directory files; shared model caches are
+excluded. See the raw reports for boundaries. Hardware cost is not included.
+
+These are warm retrieval timings, not end-to-end answer speed. Cold rows have
+different boundaries (Smriti/Mem0 client reopens versus GBrain worker restarts),
+so we do not present a matched cold-start ranking. Ingestion here does not test
+full-mode extraction cost. The uncontrolled elapsed times from the separate
+answer/judge runs are also excluded from speed comparisons.
+
+### Cost over time
+
+At **100 additions/day**, the measured 3,000 / 9,000 / 36,500-record checkpoints
+represent **30 / 90 / 365 days of workload volume**. They were not collected over
+a year, and the non-monotonic timing samples do not predict production latency.
+All tested local growth routes incurred **$0 paid model/API charges**. That is
+shared by Smriti, Mem0 and GBrain; electricity, hardware, hosting and operator
+time remain unmeasured, so there is no defensible total-cost winner yet.
+
+For budgeting a different deployment, our **September 7, 2026 managed-Mem0
+pricing snapshot** modeled 100 adds/day and the following retrieval volumes:
+
+| Retrievals/day | 30-day modeled subscription | 90-day | 365-day | Snapshot tier |
+|---:|---:|---:|---:|---|
+| 20 | $0 | $0 | $0 | Hobby |
+| 100 | $19 | $57 | $228 | Starter |
+| 1,000 | $249 | $747 | $2,988 | Pro |
+| 2,000 | Quote required | Quote required | Quote required | Custom / usage quote |
+
+This is a dated subscription scenario using the report's billing assumptions,
+not a bill we paid or a benchmark of managed Mem0. Recheck current plan limits
+before buying. Full checkpoint tables, cumulative ingestion, resubmission,
+cold boundaries, storage, source snapshots and calculations:
+[cost and speed report](audit/2026-09-05/cost-speed-projections.md),
+[validated semantic results](audit/2026-09-05/growth-semantic-final-report.json),
+[validated matched/lexical results](audit/2026-09-05/growth-matched-final-report.json).
+
+### Other tested systems and installed-model checks
+
+| System / track | What we actually ran | Observed result | Comparison limit |
+|---|---|---|---|
+| **Hindsight 0.9.2** | Embedded installation, then 20 retains / 12 recalls | All operations and cleanup passed; expected sources appeared in the first five results for 10/10 answerable queries; relevant source ranked first for 9/10 | Every query returned all 20 facts, including both unanswerable queries. No generated-answer scoring; observations/reranking disabled; bank embedding model not exposed |
+| **Graphify 0.9.54** | Real install and AST extraction over 13 Smriti core files | 229 nodes, 531 edges, source-linked query verified; extraction reported zero LLM tokens | Code-structure tooling, not the same conversational-memory workload; no matched quality/cost/speed score |
+| **Smriti installed-v7 full mode** | Fresh local-model Mira contract and Leila/Omar generalization | 26/26 and 8/8 bounded checks; corrected as-of probe verifies Sketch → Figma while retaining history | Single-model fixtures, not broad semantic accuracy; inferred applicability still has limits |
+| **Mem0 OSS full extraction** | Two bounded Mira installation/update probes | Current and historical evidence returned in the inspected examples | Separate smoke tests; the paired QA/growth route above uses `infer=False` |
+
+For Hindsight's current-drink question, old coffee ranked first and new tea
+second. Both unanswerable recalls were nonempty; without an answer stage, that
+is not evidence of hallucination. Its earlier three-retain/two-recall smoke
+remains available separately.
+
+Evidence: [Hindsight full comparative run](audit/2026-09-05/hindsight-comparative-v1.json)
+and [independent review](audit/2026-09-05/raw/hindsight-comparative-independent-review.json),
+[Graphify install](audit/2026-09-05/raw/graphify-installed-smoke.json),
+[Smriti installed-model verification](audit/2026-09-05/VERIFIED-RESULTS.md),
+[Mem0 extraction probe](audit/2026-09-05/mem0-mira-full-installed.json).
+
+### Earlier diagnostics and reproduction
+
+Earlier runs remain available to expose how the evaluation improved:
+
+| Earlier track | Coverage | How to use it |
+|---|---|---|
+| Mixed-config diagnostic | 20 documents / 12 queries; recall@5 Smriti .85, Mem0 1.00, GBrain .95 | Different embeddings/configurations; smoke evidence, not a ranking |
+| LongMemEval oracle retrieval | Smriti 500 questions; Mem0 10-question pilot | Evidence-only retrieval ceiling; extraction and answer generation bypassed |
+| Matched answer/judge preflight | Six questions; Smriti 4/6, Mem0 3/6 | Harness check, superseded by the larger selected QA runs above |
+| Historical oracle profile A/B and 256-dim scale probe | Different models, budgets and workloads | Within-system historical observations; not a before/after measure of PR #2 |
+
+Start with the [benchmark methodology](audit/2026-09-05/benchmark-methodology.md),
+[verified result index](audit/2026-09-05/VERIFIED-RESULTS.md),
+[reproduction script](audit/2026-09-05/benchmark-reproduce.sh),
+[paired retrieval reproduction](audit/2026-09-05/reproduce-public-retrieval-s50-paired.py)
+and runners in [`bench/`](bench/). [BENCHMARKS.md](BENCHMARKS.md) preserves older
+within-system experiments. The JSON artifacts record exact datasets, model
+budgets, engine revisions and candidate hashes; use those settings to reproduce
+a reported number rather than treating an arbitrary default run as identical.
+
+```bash
+python -m bench.download --all
+python -m bench.qa_comparison --help
+python -m bench.public_retrieval --help
+python -m bench.public_retrieval_gbrain_semantic --help
+python -m bench.growth --help
+python -m bench.hindsight_probe --help
+```
 
 ## Repo layout
 
@@ -288,28 +508,29 @@ enterprise/         optional enterprise modules (separate package, zero core edi
                     tri-temporal as-of queries · exact lineage · evidence receipts
                     · retention/legal holds · deployment profiles · verified
                     knowledge packs · multi-store federation. See enterprise/README.md
-site/               the landing page — live at smriti-memory.netlify.app
+site/               landing-page source
 ```
 
 ## Roadmap
 
-### Current candidate (verified 2026-09-07)
+### Delivered in PR #2 — verified September 8, 2026
 
-- [x] Core and enterprise package installs pass **169 tests** across non-editable wheels on macOS Python 3.11 and Linux Python 3.12, plus an isolated Linux Python 3.9 source-distribution install. See [`audit/2026-09-05/VERIFIED-RESULTS.md`](audit/2026-09-05/VERIFIED-RESULTS.md).
-- [x] Temporal hardening: late-arriving facts rebuild validity chains in event-time order; enterprise world-time and system-known-time queries preserve the expected boundary.
-- [x] Extraction diagnostics and embedder identity metadata: malformed or rejected extraction output is reported, and incompatible vector spaces fail before reads or writes mix. Legacy databases require explicit adoption after operator verification.
-- [x] Read-only `smriti-doctor`, atomic export/restore for the core schema, MCP structured results, and lifecycle support.
-- [x] Exactly 30 seconds of rendered launch video plus a browser preview that reported `WEBGPU · ACTIVE` in Chrome; see [`audit/2026-09-05/video.md`](audit/2026-09-05/video.md).
+- [x] Temporal, applicability-scope, extraction and enterprise hardening; 276 installed core/enterprise tests and clean `pip check`.
+- [x] Bounded actual-model checks: Mira 26/26, Leila/Omar 8/8, independently verified current/as-of tool history.
+- [x] Paired LongMemEval-S50 and LoCoMo50 answer/judge runs, retrieval50, GBrain held-out20 and Hindsight/Graphify installation probes.
+- [x] Five growth checkpoints through 36,500 records, three semantic routes plus maintained lexical GBrain, and explicit cost-over-volume scenarios.
+- [x] Thirty-second teaser plus original and camera-motion 60-second social films, with reproduction source and [verification](audit/2026-09-05/social-film-verification.md).
 
-### Next priorities
+### Next priorities, driven by the failures we inspected
 
-Ordered by impact:
+1. **Preserve complete supporting source messages.** Measure whether the actual user statement survives retrieval and context truncation; session-header presence is insufficient. Evaluate session diversity on a new held-out selection.
+2. **Make competing updates explicit to the reader.** Preserve dates, source order and complete values, and distinguish current answers from explicit as-of requests.
+3. **Improve judge/date reliability.** Keep raw judge outputs, flag ambiguous gold and date disagreements, and preserve historical scores rather than silently relabeling them.
+4. **Broaden quality and scale evaluation.** Repeat across representative models and larger held-out sets; measure concurrent and higher-dimensional workloads before choosing ANN/quantization or larger graph/reflection features.
 
-1. **Finish reproducibility documentation and measurements** — complete the full-history LongMemEval/LoCoMo track with pinned data, identical reader/judge settings, failure-inclusive denominators, and raw per-question outputs. Keep the existing oracle and 20-document diagnostic clearly labeled as such.
-2. **Finish matched growth and cost reporting** — rerun multiple corpus checkpoints with effective embedding parity and explicit process boundaries. Do not publish speed ratios from the current artifacts: the GBrain run has one checkpoint and CLI startup, and the Mem0/Smriti filenames do not establish parity.
-3. **Finish operator documentation** — exercise source and non-editable installs, `smriti-doctor`, embedder legacy adoption, core JSON export, and the enterprise snapshot/knowledge-pack boundary in a clean environment.
-4. **Validate full-mode extraction on representative models** — keep extraction status, accepted/skipped counts, predicate normalization, and semantic-arbitration outcomes visible in the evidence; do not treat the scripted quickstart as model-quality proof.
-5. **Only then evaluate architecture work** — profile matrices, higher-dimensional/concurrent scaling, optional quantization/ANN, richer graph edges, namespaces, and platform adapters should each follow workload evidence and retain an exact-search regression oracle.
+See the [prioritized quality plan and acceptance criteria](audit/2026-09-05/QUALITY-NEXT-STEPS.md)
+and [full build roadmap](audit/2026-09-05/ROADMAP.md). These are future priorities,
+not capabilities already demonstrated by the current scores.
 
 ### The boundary (how we avoid becoming a 50k-line platform)
 
