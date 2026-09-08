@@ -91,11 +91,20 @@ def erase_session(store, session_id: str) -> dict:
     observations are found via derivation edges, not heuristics."""
     if _active_holds(store, "session", session_id):
         raise HeldError(f"session {session_id!r} is under an active legal hold")
-    held = store.db.execute(
-        "SELECT COUNT(*) FROM facts WHERE session_id=? AND hold_id IS NOT NULL",
-        (session_id,)).fetchone()[0]
-    if held:
-        raise HeldError(f"{held} fact(s) in session {session_id!r} carry a hold")
+    # hold_id is denormalized display state and cannot represent overlapping
+    # holds. The authoritative check is the active hold table joined through
+    # the entity index, which also covers facts written after a hold began.
+    now = utcnow()
+    held_entities = store.db.execute(
+        "SELECT COUNT(DISTINCT h.id) FROM holds h "
+        "JOIN entities e ON e.name=h.scope_value "
+        "JOIN facts f ON f.id=e.fact_id "
+        "WHERE h.scope_kind='entity' AND f.session_id=? "
+        "AND h.released_at IS NULL AND (h.expires_at IS NULL OR h.expires_at > ?)",
+        (session_id, now)).fetchone()[0]
+    if held_entities:
+        raise HeldError(f"session {session_id!r} contains facts under an active "
+                        "entity legal hold")
 
     store.db.execute("BEGIN IMMEDIATE")
     try:

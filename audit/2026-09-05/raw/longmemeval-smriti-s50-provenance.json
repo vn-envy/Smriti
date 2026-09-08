@@ -1,0 +1,18 @@
+{
+  "status": "active_run_provenance",
+  "session_id": 85898,
+  "benchmark": "LongMemEval-S50 Smriti",
+  "smriti_module": "/private/tmp/smriti-candidate-qa-20260906/lib/python3.11/site-packages/smriti/__init__.py",
+  "qa_module": "/private/tmp/smriti-candidate-qa-20260906/lib/python3.11/site-packages/bench/qa_comparison.py",
+  "qa_sha256": "dc652326712e846f442c72e5e15149c97e194ccdf91e3945abd43612b8823c27",
+  "wheel": "/private/tmp/smriti-scope-reviewed-wheel-v4/smriti_agents-0.3.2-py3-none-any.whl",
+  "budgets": {
+    "sample": 50,
+    "k": 12,
+    "session_char_budget": 16000,
+    "chunk_char_budget": 1000,
+    "context_char_budget": 9000
+  },
+  "data_sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
+  "comparison_note": "Frozen installed v4 default baseline, matching prior LoCoMo pair. Current v7 scope acceptance is evaluated separately. This is not a completed quality result."
+}

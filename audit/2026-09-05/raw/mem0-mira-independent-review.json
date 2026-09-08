@@ -1,0 +1,17 @@
+{
+  "status": "operational_smoke_complete_quality_ranking_withheld",
+  "source": "mem0-mira-full-installed.json",
+  "elapsed_s": 128.1195,
+  "completed_updates": 3,
+  "native_history_events": [
+    "ADD",
+    "ADD",
+    "ADD"
+  ],
+  "llm_calls": 3,
+  "reported_prompt_tokens": 12288,
+  "reported_output_tokens": 160,
+  "current_and_historical_text_retrieved": true,
+  "limitation": "All three prompt_eval_count values are4096; immediately subsequent /api/ps reports Qwen context_length4096. Prompt truncation is suspected, not proven by these counts alone; rerun with explicit larger context and per-call input provenance before drawing comparative quality conclusions. This route uses a documented custom native Ollama think=False wrapper.",
+  "scope": "No answer generation or judge was run; keyword presence is only a smoke assertion, not answer accuracy."
+}

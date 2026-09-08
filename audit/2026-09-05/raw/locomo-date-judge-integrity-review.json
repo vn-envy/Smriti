@@ -1,0 +1,420 @@
+{
+  "schema_version": 1,
+  "status": "partial_integrity_review",
+  "review_type": "locomo_answerable_date_judge_and_citation_audit",
+  "captured_at_utc": "2026-09-07T18:43:10.124766+00:00",
+  "source_artifact": {
+    "path": "audit/2026-09-05/locomo-qa-smriti-s50.json",
+    "sha256_at_capture": "a12339fbe90548747b1444e46fc2a9a4052b9ebdb4d8f15e42ee6c2fb82c494a",
+    "status": "running",
+    "progress": {
+      "processed_questions": 27,
+      "requested_questions": 50,
+      "failed_questions": 0,
+      "cleanup_failures": 0,
+      "last_question_id": "conv-47-q0"
+    },
+    "results_at_capture": 27
+  },
+  "dataset": {
+    "path": "/private/tmp/smriti-public-data/locomo10.json",
+    "sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+    "fixture_rows": 10
+  },
+  "method": {
+    "question_filter": "question_type == 2 and unanswerable == false",
+    "strict_date_rule": "Compare only when both gold and hypothesis have one unambiguous explicit date/year/month parse with matching granularity.",
+    "ambiguous_handling": "Excluded from strict comparison; no date inference or normalization is applied.",
+    "citation_rule": "Expected evidence dialogue maps to a returned source_label and that label appears in the stored reader_context.",
+    "official_results_modified": false
+  },
+  "strict_date_checks": [
+    {
+      "question_id": "conv-26-q0",
+      "sample_id": "conv-26",
+      "question": "When did Caroline go to the LGBTQ support group?",
+      "gold": "7 May 2023",
+      "hypothesis": "Caroline went to the LGBTQ support group on May 8, 2023.",
+      "recorded_correct": false,
+      "evidence_ids": [
+        "D1:3"
+      ],
+      "cited_source_labels": [
+        "source-0001"
+      ],
+      "returned_source_labels": [
+        "source-0001",
+        "source-0010",
+        "source-0005",
+        "source-0004",
+        "source-0012",
+        "source-0015",
+        "source-0002",
+        "source-0015",
+        "source-0007",
+        "source-0018",
+        "source-0019",
+        "source-0007"
+      ],
+      "gold_parsed": {
+        "granularity": "date",
+        "iso": "2023-05-07",
+        "method": "day-month-year"
+      },
+      "hypothesis_parsed": {
+        "granularity": "date",
+        "iso": "2023-05-08",
+        "method": "month-day-year"
+      },
+      "strictly_comparable": true,
+      "dates_equal": false,
+      "citation_supported": true,
+      "citation_details": {
+        "source_map_entries": [
+          {
+            "source_label": "source-0001",
+            "session_id": "c0-session_1",
+            "timestamps": [
+              "2023-05-08T00:00:00Z"
+            ]
+          }
+        ],
+        "retrieved_evidence_rows": [
+          {
+            "source_label": "source-0001",
+            "session_id": "c0-session_1",
+            "chunk_index": 0,
+            "timestamp": "2023-05-08T00:00:00Z",
+            "match": "exact"
+          }
+        ]
+      }
+    },
+    {
+      "question_id": "conv-30-q0",
+      "sample_id": "conv-30",
+      "question": "When Jon has lost his job as a banker?",
+      "gold": "19 January, 2023",
+      "hypothesis": "Jon lost his job as a banker on 2023-01-20.",
+      "recorded_correct": true,
+      "evidence_ids": [
+        "D1:2"
+      ],
+      "cited_source_labels": [
+        "source-0001"
+      ],
+      "returned_source_labels": [
+        "source-0001",
+        "source-0014",
+        "source-0005",
+        "source-0006",
+        "source-0004",
+        "source-0016",
+        "source-0008",
+        "source-0011",
+        "source-0010",
+        "source-0010",
+        "source-0017",
+        "source-0018"
+      ],
+      "gold_parsed": {
+        "granularity": "date",
+        "iso": "2023-01-19",
+        "method": "day-month-year"
+      },
+      "hypothesis_parsed": {
+        "granularity": "date",
+        "iso": "2023-01-20",
+        "method": "iso"
+      },
+      "strictly_comparable": true,
+      "dates_equal": false,
+      "citation_supported": true,
+      "citation_details": {
+        "source_map_entries": [
+          {
+            "source_label": "source-0001",
+            "session_id": "c1-session_1",
+            "timestamps": [
+              "2023-01-20T00:00:00Z"
+            ]
+          }
+        ],
+        "retrieved_evidence_rows": [
+          {
+            "source_label": "source-0001",
+            "session_id": "c1-session_1",
+            "chunk_index": 0,
+            "timestamp": "2023-01-20T00:00:00Z",
+            "match": "exact"
+          }
+        ]
+      }
+    },
+    {
+      "question_id": "conv-42-q2",
+      "sample_id": "conv-42",
+      "question": "When did Joanna first watch \"Eternal Sunshine of the Spotless Mind?",
+      "gold": "2019",
+      "hypothesis": "Joanna first watched \"Eternal Sunshine of the Spotless Mind\" around 3 years before 2022-10-25, which would be around 2019.",
+      "recorded_correct": true,
+      "evidence_ids": [
+        "D1:18"
+      ],
+      "cited_source_labels": [
+        "source-0001"
+      ],
+      "returned_source_labels": [
+        "source-0003",
+        "source-0009",
+        "source-0025",
+        "source-0004",
+        "source-0001",
+        "source-0025",
+        "source-0003",
+        "source-0028",
+        "source-0025",
+        "source-0023",
+        "source-0001",
+        "source-0026"
+      ],
+      "gold_parsed": {
+        "granularity": "year",
+        "value": "2019",
+        "method": "year"
+      },
+      "hypothesis_parsed": {
+        "granularity": "year",
+        "value": "2019",
+        "method": "single-standalone-year"
+      },
+      "strictly_comparable": true,
+      "dates_equal": true,
+      "citation_supported": true,
+      "citation_details": {
+        "source_map_entries": [
+          {
+            "source_label": "source-0001",
+            "session_id": "c3-session_1",
+            "timestamps": [
+              "2022-01-21T00:00:00Z"
+            ]
+          }
+        ],
+        "retrieved_evidence_rows": [
+          {
+            "source_label": "source-0001",
+            "session_id": "c3-session_1",
+            "chunk_index": 1,
+            "timestamp": "2022-01-21T00:00:00Z",
+            "match": "exact"
+          },
+          {
+            "source_label": "source-0001",
+            "session_id": "c3-session_1",
+            "chunk_index": 0,
+            "timestamp": "2022-01-21T00:00:00Z",
+            "match": "exact"
+          }
+        ]
+      }
+    }
+  ],
+  "ambiguous_or_excluded_date_checks": [
+    {
+      "question_id": "conv-41-q0",
+      "sample_id": "conv-41",
+      "question": "Who did Maria have dinner with on May 3, 2023?",
+      "gold": "her mother",
+      "hypothesis": "I don't have enough information to answer that.",
+      "recorded_correct": false,
+      "evidence_ids": [
+        "D13:16"
+      ],
+      "cited_source_labels": [
+        "source-0013"
+      ],
+      "returned_source_labels": [
+        "source-0013",
+        "source-0002",
+        "source-0023",
+        "source-0006",
+        "source-0013",
+        "source-0004",
+        "source-0012",
+        "source-0012",
+        "source-0013",
+        "source-0012",
+        "source-0031",
+        "source-0002"
+      ],
+      "gold_parsed": null,
+      "hypothesis_parsed": null,
+      "strictly_comparable": false,
+      "exclusion_reason": "At least one side is missing an unambiguous parse; no date inference or normalization performed."
+    },
+    {
+      "question_id": "conv-43-q6",
+      "sample_id": "conv-43",
+      "question": "In which month's game did John achieve a career-high score in points?",
+      "gold": "June 2023",
+      "hypothesis": "September",
+      "recorded_correct": false,
+      "evidence_ids": [
+        "D3:1"
+      ],
+      "cited_source_labels": [
+        "source-0003"
+      ],
+      "returned_source_labels": [
+        "source-0003",
+        "source-0023",
+        "source-0021",
+        "source-0005",
+        "source-0006",
+        "source-0023",
+        "source-0028",
+        "source-0012",
+        "source-0024",
+        "source-0016",
+        "source-0016",
+        "source-0014"
+      ],
+      "gold_parsed": {
+        "granularity": "month",
+        "value": "2023-06",
+        "method": "month-year"
+      },
+      "hypothesis_parsed": null,
+      "strictly_comparable": false,
+      "exclusion_reason": "At least one side is missing an unambiguous parse; no date inference or normalization performed."
+    },
+    {
+      "question_id": "conv-44-q0",
+      "sample_id": "conv-44",
+      "question": "Which year did Audrey adopt the first three of her dogs?",
+      "gold": "2020",
+      "hypothesis": "I don't have enough information to answer that.",
+      "recorded_correct": false,
+      "evidence_ids": [
+        "D1:7"
+      ],
+      "cited_source_labels": [
+        "source-0001"
+      ],
+      "returned_source_labels": [
+        "source-0002",
+        "source-0028",
+        "source-0005",
+        "source-0027",
+        "source-0024",
+        "source-0010",
+        "source-0003",
+        "source-0014",
+        "source-0019",
+        "source-0015",
+        "source-0001",
+        "source-0013"
+      ],
+      "gold_parsed": {
+        "granularity": "year",
+        "value": "2020",
+        "method": "year"
+      },
+      "hypothesis_parsed": null,
+      "strictly_comparable": false,
+      "exclusion_reason": "At least one side is missing an unambiguous parse; no date inference or normalization performed."
+    }
+  ],
+  "needs_review": [
+    {
+      "question_id": "conv-30-q0",
+      "sample_id": "conv-30",
+      "question": "When Jon has lost his job as a banker?",
+      "gold": "19 January, 2023",
+      "hypothesis": "Jon lost his job as a banker on 2023-01-20.",
+      "recorded_correct": true,
+      "evidence_ids": [
+        "D1:2"
+      ],
+      "cited_source_labels": [
+        "source-0001"
+      ],
+      "returned_source_labels": [
+        "source-0001",
+        "source-0014",
+        "source-0005",
+        "source-0006",
+        "source-0004",
+        "source-0016",
+        "source-0008",
+        "source-0011",
+        "source-0010",
+        "source-0010",
+        "source-0017",
+        "source-0018"
+      ],
+      "gold_parsed": {
+        "granularity": "date",
+        "iso": "2023-01-19",
+        "method": "day-month-year"
+      },
+      "hypothesis_parsed": {
+        "granularity": "date",
+        "iso": "2023-01-20",
+        "method": "iso"
+      },
+      "strictly_comparable": true,
+      "dates_equal": false,
+      "citation_supported": true,
+      "citation_details": {
+        "source_map_entries": [
+          {
+            "source_label": "source-0001",
+            "session_id": "c1-session_1",
+            "timestamps": [
+              "2023-01-20T00:00:00Z"
+            ]
+          }
+        ],
+        "retrieved_evidence_rows": [
+          {
+            "source_label": "source-0001",
+            "session_id": "c1-session_1",
+            "chunk_index": 0,
+            "timestamp": "2023-01-20T00:00:00Z",
+            "match": "exact"
+          }
+        ]
+      },
+      "review_reasons": [
+        "judge accepted explicit date mismatch"
+      ],
+      "evidence_dialogues": [
+        {
+          "dia_id": "D1:2",
+          "session_key": "session_1",
+          "session_date_time": "4:04 pm on 20 January, 2023",
+          "speaker": "Jon",
+          "text": "Hey Gina! Good to see you too. Lost my job as a banker yesterday, so I'm gonna take a shot at starting my own business."
+        }
+      ],
+      "reader_context": "[source-0001 @ 2023-01-20T00:00:00Z] Gina: Hey Jon! Good to see you. What's up? Anything new?\nJon: Hey Gina! Good to see you too. Lost my job as a banker yesterday, so I'm gonna take a shot at starting my own business.\nGina: Sorry about your job Jon, but starting your own business sounds awesome! Unfortunately, I also lost my job at Door Dash this month. What business are you thinking of?\nJon: Sorry to hear that! I'm starting a dance studio 'cause I'm passionate about dancing and it'd be great to share it with others.\nGina: That's cool, Jon! What got you into this biz?\nJon: I've been into dancing since I was a kid and it's been my passion and escape. I wanna start a dance studio so I can teach others the joy that dancing brings me.\nGina: Wow Jon, same here! Dance is pretty much my go-to for stress relief. Got any fave styles?\nJon: Cool, Gina! I love all dances, but contemporary is my top pick. It's so expressive and powerful! What's your fave?\nGina: Yeah, me too! Contemporary dance is so expressive and graceful - it reall\n[source-0014 @ 2023-06-16T00:00:00Z] Jon: Gina, you won't believe it - I got mentored by this amazing business dude yesterday! It was really inspiring and now I'm even more pumped to chase my dreams. What's been up with you lately?\nGina: Wow, Jon! Mentors can really help. I'm working on my online store, growing the customer base. It's tough but I'm determined. How about you? Any new things happening?\nJon: Been doing some promotion for my business. Crazy ride so far, but I'm hanging in there. Got any tips for marketing?\nGina: Awesome! Marketing is key. Use social media channels and work with influencers for bigger reach.\nJon: Thanks for the advice, Gina! I already started doing what you said about social media and posted some of my dance videos. It's creating a bit of a stir.\nGina: Nice! Glad your dance vids are doing well online. Keep it up!\nJon: Your help really helps. Hey, have you thought about being an entrepreneur?\nGina: Ha, yeah, Jon. I've been one 'cause I lost my job. I opened an online clothing store and it's bee\n[source-0005 @ 2023-02-08T00:00:00Z]  It's made me grow, and even got me out of my secure 9-5 as a banker. Now, I'm aiming to turn my dancing passion into a business. I'm determined to make it work, I just know it! That being said, I definitely don't underestimate the difficulties - it ain't been a walk in the park, that's for sure.\nGina: It's tough starting a biz, but don't let it get you down. You can make your studio work, I'm sure. And remember, I'm always here for you.\nJon: Thanks, Gina. Your help means a lot. I'll keep plugging away and stay optimistic. [shared an image: a photography of a cartoon character with a quote about fear]\nGina: This quote kept me positive through tough times. We all need a push sometimes, right? Even made a tattoo to remind myself about it. [shared an image: a photo of a woman standing on a balcony with a blue dress]\nJon: Love the tattoo, did you just get it?\nGina: Thanks! Got the tattoo a few years ago, it stands for freedom - dancing without worrying what people think. A reminder to foll\n[source-0006 @ 2023-03-16T00:00:00Z] Jon: Hi Gina! Been hectic for me lately. Started hitting the gym last week to stay on track with the venture. Gotta figure out how to balance it all, but it's going well. How about you?\nGina: Hey Jon! Great to hear from you. Been having some tough times lately.\nJon: Oof, sorry to hear that. What's up? Is there anything I can do to help?\nGina: Thanks, Jon! Appreciate your offer. Since I lost my job at Door Dash, things have been tough. But here's some good news - I've got something to share!\nJon: Wow, that's awesome! Can't wait to hear it!\nGina: Yay! My online clothes store is open! I've been dreaming of this for a while now - can't wait to see what happens! [shared an image: a photo of a computer screen showing a book and a pair of shoes]\nJon: Congrats! That's awesome! What gave you the idea to start the online store?\nGina: Thanks! I'm passionate about fashion trends and finding unique pieces. Plus, I wanted to blend my love for dance and fashion, so it was a perfect match.\nJon: Wow, t\n[source-0004 @ 2023-02-04T00:00:00Z] Jon: Hey Gina! What's up? How's the store going? I gotta tell you about this thing with my biz.\nGina: Hey Jon! The store's doing great! It's a wild ride. How's the biz?\nJon: Hey Gina! I'm putting in a lot of work on my business even with the obstacles. I'm gonna make it happen!\nGina: Wow! You've got drive! Keep it up and you'll definitely make a splash.\nJon: Thanks Gina! Your help really means a lot. Sometimes it's hard when things don't go my way, but I'm sure if I keep pushing, I'll reach my dreams!\nGina: Understand where you're at, Jon. Setbacks are just opportunities for comebacks. You got the skills, passion, and drive. Plus my full support. Don't give up, buddy!\nJon: Thanks! Setbacks can be tough, but with your support, I can handle anything. Appreciate you having my back!\nGina: I'm here for you no matter what! Anything you want to say about your biz?\nJon: Searching for a dance studio location has been tricky, but I'm determined to find the right spot - when I do, I'm sure the re\n[source-0016 @ 2023-06-21T00:00:00Z] Gina: Hey Jon, what's been up? Some pretty cool stuff happened since we talked. I have acquired some new unique pieces for my store. [shared an image: a photo of a woman in a black hoodie posing for a picture]\nJon: Congrats on your store, Gina! Happy for you! It looks sick - is it a unique piece you're selling?\nGina: Thanks! This hoodie isn't for sale, it's from my own collection. I made a limited edition line last week to show off my style and creativity - it was tough but worth it! [shared an image: a photo of a hoodie with a camouflage print on it]\nJon: What gave you the idea?\nGina: This design reminds me of the grit it takes to stand out and face challenges.\nJon: That's awesome, Gina! Yesterday I chose to go to networking events to make things happen. It's been tough but I'm staying determined and focused.\nGina: Way to go, Jon! Attending those networking events takes guts and drive. Keep it up!\nJon: Thanks! It's been tough going since I lost my job, but I'm sure investing my time i\n[source-0008 @ 2023-04-03T00:00:00Z] Jon: Hey Gina, I had to shut down my bank account. It was tough, but I needed to do it for my biz.\nGina: Oh no, Jon! Sorry to hear that. Tough decision for you? How're you handling the changes?\nJon: It was a tough call, but I thought it'd help my biz grow. Handling changes has been hard, but I'm staying positive and looking ahead. Anything new for you?\nGina: Oof, that's tough, Jon. I got some new offers and promotions going on my online store to try and bring in new customers. It's been a wild ride starting my business, but I'm not giving up!\nJon: Nice one, Gina! Love how you never give up. What helps you stay motivated?\nGina: Thanks Jon! Dance is my stress relief and fashion fuels my creativity. I love finding new trends for my store. It keeps me motivated to keep growing. Check out this pic of my fave dance session! [shared an image: a photo of a man and woman doing a yoga pose]\nJon: Wow, that's great! What made you combine clothing biz and dance?\nGina: Thanks! I'm passionate about d\n[source-0011 @ 2023-05-11T00:00:00Z] Jon: Hi! Since we last spoke I am still working on the dance studio and things are looking up! [shared an image: a photo of a woman in a short skirt with her hands on her hips]\nGina: Hi! You're so inspiring taking it on and opening your own studio!\nJon: Thanks! Losing my job gave me the push to finally start my dream business: my own dance studio! Now I'm stepping into the unknown and hoping for the best.\nGina: It must be scary stepping into the unknown but I know you can do it, Jon. With your determination and drive, your dance studio will be a huge success. Keep that positive outlook and keep going!\nJon: Thanks! It's a bit scary, but I just think about my love for dance and how it makes me feel. It's been my stress-buster since childhood!\nGina: Gotcha, Jon! Dance is my stress fix too. As soon as I start, all my worries vanish. It's amazing what we can do for our own mental health with something we enjoy.\nJon: Yeah, Gina! Dancing helps me de-stress. It's where I'm most alive. It's a m\n[source-0010 @ 2023-04-25T00:00:00Z] Jon: Hi Gina! I just wanted to fill you in on my business. Yesterday, I went to a fair to show off my studio, it was both stressful and great! I got some possible leads, so that was awesome. But overall, I've learned that this biz is no cakewalk and having confidence in yourself is important for making it successful! [shared an image: a photo of a group of women performing a dance on a stage]\nGina: Hey Jon, congrats on the fair! It's awesome to see your hard work paying off. Keep on pushing, pal, you're headed for greatness. Oh, and BTW, I started my own online clothing store not so long ago - pretty cool, huh? [shared an image: a photography of a lap",
+      "errors": []
+    }
+  ],
+  "summary": {
+    "answerable_date_rows_seen": 6,
+    "strictly_comparable": 3,
+    "excluded_ambiguous_or_unmatched": 3,
+    "needs_review_count": 1,
+    "judge_accepted_explicit_date_mismatches": 1,
+    "citation_misses": 0,
+    "headline_allowed": false
+  },
+  "limitations": [
+    "The LoCoMo artifact was still running at capture; this is a partial snapshot and not an aggregate quality result.",
+    "The artifact stores judge booleans but not raw judge responses; the accepted mismatch is diagnosed from preserved gold and hypothesis.",
+    "The review is limited to answerable question_type 2 rows and does not validate non-date or unanswerable scoring."
+  ]
+}

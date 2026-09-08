@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "status": "rejected_recorded_run",
+  "source_artifact": "audit/2026-09-05/smriti-mira-full-scoped-contract-v3.json",
+  "source_status": "completed_with_failures",
+  "source_facts_preserved": true,
+  "scope_contract_review": {
+    "uses_language_predicate_is_supported": true,
+    "named_subject_on_current_state": false,
+    "aurora_event_keeps_mira_subject": false,
+    "aurora_date_is_not_applicability_scope": false,
+    "berlin_event_keeps_mira_subject": false,
+    "atlas_project_event_keeps_mira_subject": false,
+    "atlas_transition_keeps_mira_subject": false,
+    "adjacent_theme_does_not_inherit_atlas_scope": false
+  },
+  "observed_subjects": [
+    "user"
+  ],
+  "current_rust_candidates": [
+    {
+      "id": 5,
+      "statement": "The user currently uses Rust for the Atlas project",
+      "subject": "user",
+      "predicate": "uses_language",
+      "object": "Rust",
+      "kind": "knowledge",
+      "event_date": null,
+      "ingested_at": "2026-09-07T18:25:10Z",
+      "valid_from": "2025-02-20T12:00:00Z",
+      "invalid_at": null,
+      "superseded_by": null,
+      "episode_id": 3,
+      "session_id": "mira-update-3",
+      "scope": "project:Atlas"
+    }
+  ],
+  "current_rust_mira_candidates": [],
+  "note": "Offline rescore of the recorded facts; no model, service, or database calls. This artifact does not alter the preserved raw run."
+}

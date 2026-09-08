@@ -1,0 +1,22 @@
+{
+  "source": "audit/2026-09-05/smriti-mira-full-scoped-contract-v5.json",
+  "sha256": "3803a88c77480fd2fe109f8e9443c9907e0e660bbbc98bc1264c476bad6b0498",
+  "status": "bounded_mira_acceptance_pass",
+  "checks": {
+    "all_subjects_mira": true,
+    "current_rust_atlas": true,
+    "berlin_still_active": true,
+    "theme_global": true,
+    "no_inferred_primary": true,
+    "no_date_scope": true,
+    "recorded_assertions_pass": true,
+    "raw_current_answer_correct": true
+  },
+  "facts_reviewed": 8,
+  "scope_limits": [
+    "One deterministic fixture and one model run, not general reliability proof.",
+    "No Atlas-scoped prior Python usage fact was established; the retirement assertion is vacuous here and does not establish explicit old-tool retirement.",
+    "Aurora preference scope was inferred from the same sentence, not independently specified; lexical scope guard does not prove semantic applicability.",
+    "Scope correction retry was not exercised: three extraction calls for three updates. Independent generalization and prior-tool tests remain separate gates."
+  ]
+}

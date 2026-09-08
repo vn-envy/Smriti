@@ -1,0 +1,154 @@
+{
+  "status": "verified_completed_pair",
+  "sources": [
+    {
+      "path": "audit/2026-09-05/locomo-qa-smriti-s50.json",
+      "sha256": "e0f6417f0180d5c5756483d3f8ed6a5f2f1b79f119fcc3cc4db24369935194dc"
+    },
+    {
+      "path": "audit/2026-09-05/locomo-qa-mem0-s50.json",
+      "sha256": "311d65f7d6a3247194a4bc1c686ac9535ad4a4a94c184b812035dd1d01d23add"
+    }
+  ],
+  "matched_question_ids_gold_models_dataset": true,
+  "summaries": [
+    {
+      "benchmark": "LoCoMo",
+      "adapter": "smriti",
+      "requested": 50,
+      "completed": 50,
+      "failures": 0,
+      "cleanup_failures": 0,
+      "failure_inclusive_denominator": 50,
+      "correct": 27,
+      "accuracy": 0.54,
+      "answerable_requested": 40,
+      "abstention_requested": 10,
+      "answerable_completed": 40,
+      "abstention_completed": 10,
+      "answerable_correct": 21,
+      "abstention_correct": 6,
+      "answerable_accuracy": 0.525,
+      "abstention_accuracy": 0.6,
+      "source_count": 10,
+      "question_type_counts": {
+        "2": 10,
+        "3": 10,
+        "1": 10,
+        "4": 10,
+        "5": 10
+      },
+      "elapsed_s": 1385.6815,
+      "usage": {
+        "answer": {
+          "calls": 50,
+          "attempts": 50,
+          "http_attempts": 50,
+          "tokens_in": 124426,
+          "tokens_out": 632,
+          "usage_missing": 0
+        },
+        "judge": {
+          "calls": 42,
+          "attempts": 42,
+          "http_attempts": 42,
+          "tokens_in": 5338,
+          "tokens_out": 84,
+          "usage_missing": 0
+        }
+      }
+    },
+    {
+      "benchmark": "LoCoMo",
+      "adapter": "mem0",
+      "requested": 50,
+      "completed": 50,
+      "failures": 0,
+      "cleanup_failures": 0,
+      "failure_inclusive_denominator": 50,
+      "correct": 26,
+      "accuracy": 0.52,
+      "answerable_requested": 40,
+      "abstention_requested": 10,
+      "answerable_completed": 40,
+      "abstention_completed": 10,
+      "answerable_correct": 20,
+      "abstention_correct": 6,
+      "answerable_accuracy": 0.5,
+      "abstention_accuracy": 0.6,
+      "source_count": 10,
+      "question_type_counts": {
+        "2": 10,
+        "3": 10,
+        "1": 10,
+        "4": 10,
+        "5": 10
+      },
+      "elapsed_s": 1685.6208,
+      "usage": {
+        "answer": {
+          "calls": 50,
+          "attempts": 50,
+          "http_attempts": 50,
+          "tokens_in": 124288,
+          "tokens_out": 561,
+          "usage_missing": 0
+        },
+        "judge": {
+          "calls": 42,
+          "attempts": 42,
+          "http_attempts": 42,
+          "tokens_in": 5279,
+          "tokens_out": 84,
+          "usage_missing": 0
+        }
+      }
+    }
+  ],
+  "pair_counts": {
+    "both_correct": 24,
+    "both_incorrect": 21,
+    "smriti_only": 3,
+    "mem0_only": 2
+  },
+  "recorded_accuracy_delta": 0.02,
+  "exploratory_question_bootstrap_95_percent_interval": [
+    -0.06,
+    0.1
+  ],
+  "bootstrap_caveat": "Questions share conversations; question-level resampling does not model within-conversation dependence. Recorded judge labels include known errors. No quality superiority established.",
+  "disagreements": [
+    {
+      "question_id": "conv-41-q0",
+      "smriti_correct": false,
+      "mem0_correct": true,
+      "delta": -1
+    },
+    {
+      "question_id": "conv-42-q2",
+      "smriti_correct": true,
+      "mem0_correct": false,
+      "delta": 1
+    },
+    {
+      "question_id": "conv-43-q3",
+      "smriti_correct": true,
+      "mem0_correct": false,
+      "delta": 1
+    },
+    {
+      "question_id": "conv-48-q1",
+      "smriti_correct": false,
+      "mem0_correct": true,
+      "delta": -1
+    },
+    {
+      "question_id": "conv-50-q4",
+      "smriti_correct": true,
+      "mem0_correct": false,
+      "delta": 1
+    }
+  ],
+  "operational_failures": 0,
+  "cleanup_failures": 0
+}

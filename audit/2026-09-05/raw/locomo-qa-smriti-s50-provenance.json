@@ -1,0 +1,36 @@
+{
+  "status": "running",
+  "session_id": 34572,
+  "wheel": "/private/tmp/smriti-scope-reviewed-wheel-v4/smriti_agents-0.3.2-py3-none-any.whl",
+  "wheel_sha256": "22581d0ded8c54a2973ee66b8e89aafac7bd8ae1d2ad40a7cb823f6f8af06338",
+  "modules": [
+    {
+      "module": "bench.qa_comparison",
+      "path": "/private/tmp/smriti-candidate-qa-20260906/lib/python3.11/site-packages/bench/qa_comparison.py",
+      "sha256": "dc652326712e846f442c72e5e15149c97e194ccdf91e3945abd43612b8823c27"
+    },
+    {
+      "module": "bench.locomo",
+      "path": "/private/tmp/smriti-candidate-qa-20260906/lib/python3.11/site-packages/bench/locomo.py",
+      "sha256": "f5d734566ee12ffce534a84c426a16bb611132ceb031cb5aafebbbd6c20a586a"
+    },
+    {
+      "module": "bench.longmemeval",
+      "path": "/private/tmp/smriti-candidate-qa-20260906/lib/python3.11/site-packages/bench/longmemeval.py",
+      "sha256": "37be83f49fb40909229241d576e0a50fe7cdac111aa3ab987f57a2de2e1b4728"
+    },
+    {
+      "module": "bench.judge",
+      "path": "/private/tmp/smriti-candidate-qa-20260906/lib/python3.11/site-packages/bench/judge.py",
+      "sha256": "176b54097a34deb693812f47aec77e09e9e6cc235bb31ac3d9a0d1332b607bbd"
+    },
+    {
+      "module": "smriti.memory",
+      "path": "/private/tmp/smriti-candidate-qa-20260906/lib/python3.11/site-packages/smriti/memory.py",
+      "sha256": "0e4b62b6255112b58e952c4408962d1bfa01f589bf5a6a83b059b1c5ac3cd805"
+    }
+  ],
+  "data_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+  "artifact": "locomo-qa-smriti-s50.json",
+  "note": "Installed v4 baseline. Later scope prompt edits in separate v6 environment do not change this run. No final accuracy claim."
+}

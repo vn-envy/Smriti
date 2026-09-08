@@ -1,0 +1,1805 @@
+{
+  "schema_version": 1,
+  "status": "complete",
+  "track": "official LongMemEval-S full-haystack raw-session retrieval; GBrain semantic/hybrid separate track",
+  "dataset": {
+    "source": "official LongMemEval-S input",
+    "sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
+    "total_items": 500,
+    "selected_question_ids": [
+      "f8c5f88b",
+      "dd2973ad",
+      "caf03d32",
+      "gpt4_b5700ca9",
+      "ce6d2d27",
+      "ceb54acb",
+      "5d3d2817",
+      "c4a1ceb8",
+      "54026fce",
+      "9a707b81",
+      "9ea5eabc",
+      "f523d9fe",
+      "7527f7e2",
+      "gpt4_a56e767c",
+      "06f04340",
+      "gpt4_1d4ab0c9",
+      "07741c44",
+      "0e5e2d1a",
+      "c960da58",
+      "6cb6f249"
+    ],
+    "excluded_question_ids": [
+      "06878be2",
+      "0862e8bf_abs",
+      "0a995998",
+      "0bc8ad92",
+      "0edc2aef",
+      "118b2229",
+      "1903aded",
+      "195a1a1b",
+      "1e043500",
+      "32260d93",
+      "35a27287",
+      "3a704032",
+      "4c36ccef",
+      "51a45a95",
+      "58bf7951",
+      "58ef2f1c",
+      "6a1eabeb",
+      "6ade9755",
+      "6ae235be",
+      "6aeb4375",
+      "6d550036",
+      "6f9b354f",
+      "71017276",
+      "71315a70",
+      "7161e7e2",
+      "75832dbd",
+      "7e00a6cb",
+      "830ce83f",
+      "852ce960",
+      "88432d0a_abs",
+      "89527b6b",
+      "89941a93",
+      "8a2466db",
+      "945e3d21",
+      "aae3761f",
+      "af082822",
+      "afdc33df",
+      "b46e15ed",
+      "b5ef892d",
+      "c4f10528",
+      "c5e8278d",
+      "d7c942c3",
+      "e47becba",
+      "e831120c",
+      "e9327a54",
+      "gpt4_4929293a",
+      "gpt4_59149c77",
+      "gpt4_59c863d7",
+      "gpt4_d84a3211",
+      "gpt4_f2262a51",
+      "gpt4_f49edff3",
+      "gpt4_fa19884c"
+    ],
+    "exclusion_sources": [
+      "/Users/kshitijvatsa/Downloads/Smriti-main/audit/2026-09-05/public-retrieval-smriti-s50.json",
+      "/Users/kshitijvatsa/Downloads/Smriti-main/audit/2026-09-05/public-retrieval-mem0-s50.json",
+      "/Users/kshitijvatsa/Downloads/Smriti-main/audit/2026-09-05/public-qa-smriti-s6.json",
+      "/Users/kshitijvatsa/Downloads/Smriti-main/audit/2026-09-05/public-qa-mem0-s6.json"
+    ]
+  },
+  "configuration": {
+    "engine": "GBrain persistent PGLite / hybrid semantic + keyword / Ollama nomic 768d",
+    "embedding": {
+      "provider": "ollama:nomic-embed-text:v1.5",
+      "dimensions": 768,
+      "ollama_base_url": "http://localhost:11436/v1",
+      "measured_dimensions": 768
+    },
+    "budgets": {
+      "sample": 20,
+      "k": 5,
+      "session_char_budget": 16000,
+      "chunk_char_budget": 1000
+    },
+    "worker_startup_ms": 4384.9076,
+    "semantic_fail_closed": true,
+    "input_contract": "rendered role/content only; opaque document mapping; labels read after retrieval",
+    "latency_policy": "timings are diagnostic only and are not ranked against semantic adapters"
+  },
+  "run": {
+    "started_utc": "2026-09-08T02:34:40Z",
+    "elapsed_s": 968.337,
+    "gbrain_source_snapshot": {
+      "captured_at_utc": "2026-09-08T02:34:40Z",
+      "gbrain_root": "/private/tmp/smriti-competitors-20260905/gbrain",
+      "commit": "8c70f6255047a7647adb30b1d6333a48068d9fa5",
+      "worker_path": "/private/tmp/smriti-gbrain-heldout20-5b434d1/bench/gbrain_public_semantic_worker.ts",
+      "imported_module_paths": [
+        "/private/tmp/smriti-competitors-20260905/gbrain/src/core/engine-factory.ts",
+        "/private/tmp/smriti-competitors-20260905/gbrain/src/core/import-file.ts",
+        "/private/tmp/smriti-competitors-20260905/gbrain/src/core/search/hybrid.ts",
+        "/private/tmp/smriti-competitors-20260905/gbrain/src/core/ai/gateway.ts",
+        "/private/tmp/smriti-competitors-20260905/gbrain/src/core/ai/recipes/ollama.ts"
+      ],
+      "file_sha256": {
+        "/private/tmp/smriti-gbrain-heldout20-5b434d1/bench/gbrain_public_semantic_worker.ts": "ccbd2d7ece97b124a4dbf2e94a0d16ae86c750d406b14b200041a4d7a4836f30",
+        "/private/tmp/smriti-competitors-20260905/gbrain/src/core/engine-factory.ts": "a37e8b2c6f8a0eb32b922ea00b42fb0faf001802424dcf9308f3001e2718e6aa",
+        "/private/tmp/smriti-competitors-20260905/gbrain/src/core/import-file.ts": "f2222ca3d63aebc51ff8c2abbc85b8f90364900660775a8ca02a5067cd572461",
+        "/private/tmp/smriti-competitors-20260905/gbrain/src/core/search/hybrid.ts": "6c064401dcc9cde82adb4122eb8882db24f6935a986979a7fef24ae63e3c338b",
+        "/private/tmp/smriti-competitors-20260905/gbrain/src/core/ai/gateway.ts": "441ea6b6751f63df0aec8f1356537e8b991a649e9a9fba6f24eec3dbf6bb71dc",
+        "/private/tmp/smriti-competitors-20260905/gbrain/src/core/ai/recipes/ollama.ts": "d5fc19341f27654bf6ff80212b18fb69c9c0459a755bd46f9ebd2e39441d20e8"
+      }
+    }
+  },
+  "summary": {
+    "requested": 20,
+    "completed": 20,
+    "failures": 0,
+    "cleanup_failures": 0,
+    "failure_inclusive_denominator": 20,
+    "unanswerable_requested": 0,
+    "gbrain": {
+      "mean_recall_at_k": 0.8792,
+      "mean_reciprocal_rank": 0.9083,
+      "answerable_requested": 20,
+      "answerable_completed": 20
+    },
+    "truncation": {
+      "sessions": 991,
+      "chunks": 10047,
+      "original_chars": 9867725,
+      "indexed_chars": 9614420,
+      "truncated_session_chars": 253305,
+      "truncated_chunk_chars": 0
+    }
+  },
+  "results": [
+    {
+      "question_id": "f8c5f88b",
+      "question_type": "single-session-user",
+      "question": "Where did I buy my new tennis racket from?",
+      "unanswerable": false,
+      "session_count": 46,
+      "chunk_count": 511,
+      "ingest_s": 79.6693,
+      "query_s": 0.2193,
+      "hits": [
+        {
+          "document_slug": "bench/public-00000300",
+          "session_id": "answer_c3567066",
+          "score": 0.9051835195246042
+        },
+        {
+          "document_slug": "bench/public-00000305",
+          "session_id": "answer_c3567066",
+          "score": 0.5622265889718994
+        },
+        {
+          "document_slug": "bench/public-00000298",
+          "session_id": "answer_c3567066",
+          "score": 0.5439266109074713
+        },
+        {
+          "document_slug": "bench/public-00000303",
+          "session_id": "answer_c3567066",
+          "score": 0.5360612324456129
+        },
+        {
+          "document_slug": "bench/public-00000304",
+          "session_id": "answer_c3567066",
+          "score": 0.5231631205251432
+        }
+      ],
+      "vector_stats": {
+        "page_count": 511,
+        "chunk_count": 512,
+        "embedded_count": 512,
+        "link_count": 0,
+        "tag_count": 0,
+        "timeline_entry_count": 0,
+        "pages_by_type": {
+          "concept": 511
+        }
+      },
+      "search_meta": {
+        "vector_enabled": true,
+        "detail_resolved": null,
+        "expansion_applied": false,
+        "intent": "general",
+        "mode": "balanced",
+        "embedding_column": "embedding",
+        "degraded": [],
+        "retrieved_count": 5,
+        "token_budget": {
+          "budget": 12000,
+          "used": 1270,
+          "dropped": 0,
+          "kept": 5
+        }
+      },
+      "relevance": {
+        "returned_session_ids": [
+          "answer_c3567066"
+        ],
+        "returned_session_count": 1,
+        "relevant_session_ids": [
+          "answer_c3567066"
+        ],
+        "covered_relevant_session_ids": [
+          "answer_c3567066"
+        ],
+        "recall_at_k": 1.0,
+        "reciprocal_rank": 1.0,
+        "empty_retrieval": false
+      }
+    },
+    {
+      "question_id": "dd2973ad",
+      "question_type": "multi-session",
+      "question": "What time did I go to bed on the day before I had a doctor's appointment?",
+      "unanswerable": false,
+      "session_count": 49,
+      "chunk_count": 497,
+      "ingest_s": 66.4553,
+      "query_s": 0.1214,
+      "hits": [
+        {
+          "document_slug": "bench/public-00000247",
+          "session_id": "answer_f9de4602_2",
+          "score": 0.8811626255402427
+        },
+        {
+          "document_slug": "bench/public-00000248",
+          "session_id": "answer_f9de4602_2",
+          "score": 0.8636467321068952
+        },
+        {
+          "document_slug": "bench/public-00000147",
+          "session_id": "56266c38_1",
+          "score": 0.8446490889531488
+        },
+        {
+          "document_slug": "bench/public-00000004",
+          "session_id": "ultrachat_404693",
+          "score": 0.833609076117767
+        },
+        {
+          "document_slug": "bench/public-00000246",
+          "session_id": "answer_f9de4602_2",
+          "score": 0.8231007757005334
+        }
+      ],
+      "vector_stats": {
+        "page_count": 497,
+        "chunk_count": 501,
+        "embedded_count": 501,
+        "link_count": 0,
+        "tag_count": 0,
+        "timeline_entry_count": 0,
+        "pages_by_type": {
+          "concept": 497
+        }
+      },
+      "search_meta": {
+        "vector_enabled": true,
+        "detail_resolved": null,
+        "expansion_applied": false,
+        "intent": "general",
+        "mode": "balanced",
+        "embedding_column": "embedding",
+        "degraded": [],
+        "retrieved_count": 5,
+        "token_budget": {
+          "budget": 12000,
+          "used": 1067,
+          "dropped": 0,
+          "kept": 5
+        },
+        "relaxed_dropped": 50
+      },
+      "relevance": {
+        "returned_session_ids": [
+          "answer_f9de4602_2",
+          "56266c38_1",
+          "ultrachat_404693"
+        ],
+        "returned_session_count": 3,
+        "relevant_session_ids": [
+          "answer_f9de4602_2",
+          "answer_f9de4602_1"
+        ],
+        "covered_relevant_session_ids": [
+          "answer_f9de4602_2"
+        ],
+        "recall_at_k": 0.5,
+        "reciprocal_rank": 1.0,
+        "empty_retrieval": false
+      }
+    },
+    {
+      "question_id": "caf03d32",
+      "question_type": "single-session-preference",
+      "question": "I've been struggling with my slow cooker recipes. Any advice on getting better results?",
+      "unanswerable": false,
+      "session_count": 51,
+      "chunk_count": 505,
+      "ingest_s": 61.6065,
+      "query_s": 0.1146,
+      "hits": [
+        {
+          "document_slug": "bench/public-00000489",
+          "session_id": "answer_2fc6aabb",
+          "score": 0.9021023734042846
+        },
+        {
+          "document_slug": "bench/public-00000497",
+          "session_id": "answer_2fc6aabb",
+          "score": 0.8895201920069074
+        },
+        {
+          "document_slug": "bench/public-00000501",
+          "session_id": "answer_2fc6aabb",
+          "score": 0.8741323048792933
+        },
+        {
+          "document_slug": "bench/public-00000491",
+          "session_id": "answer_2fc6aabb",
+          "score": 0.8620583593566592
+        },
+        {
+          "document_slug": "bench/public-00000496",
+          "session_id": "answer_2fc6aabb",
+          "score": 0.849225188347221
+        }
+      ],
+      "vector_stats": {
+        "page_count": 505,
+        "chunk_count": 515,
+        "embedded_count": 515,
+        "link_count": 0,
+        "tag_count": 0,
+        "timeline_entry_count": 0,
+        "pages_by_type": {
+          "concept": 505
+        }
+      },
+      "search_meta": {
+        "vector_enabled": true,
+        "detail_resolved": null,
+        "expansion_applied": false,
+        "intent": "general",
+        "mode": "balanced",
+        "embedding_column": "embedding",
+        "degraded": [],
+        "retrieved_count": 5,
+        "token_budget": {
+          "budget": 12000,
+          "used": 1270,
+          "dropped": 0,
+          "kept": 5
+        },
+        "relaxed_dropped": 50
+      },
+      "relevance": {
+        "returned_session_ids": [
+          "answer_2fc6aabb"
+        ],
+        "returned_session_count": 1,
+        "relevant_session_ids": [
+          "answer_2fc6aabb"
+        ],
+        "covered_relevant_session_ids": [
+          "answer_2fc6aabb"
+        ],
+        "recall_at_k": 1.0,
+        "reciprocal_rank": 1.0,
+        "empty_retrieval": false
+      }
+    },
+    {
+      "question_id": "gpt4_b5700ca9",
+      "question_type": "temporal-reasoning",
+      "question": "How many days ago did I attend the Maundy Thursday service at the Episcopal Church?",
+      "unanswerable": false,
+      "session_count": 52,
+      "chunk_count": 507,
+      "ingest_s": 42.3165,
+      "query_s": 0.1657,
+      "hits": [
+        {
+          "document_slug": "bench/public-00000219",
+          "session_id": "answer_a17423e7_1",
+          "score": 0.8852756559800619
+        },
+        {
+          "document_slug": "bench/public-00000078",
+          "session_id": "ultrachat_142856",
+          "score": 0.8675352944475294
+        },
+        {
+          "document_slug": "bench/public-00000217",
+          "session_id": "answer_a17423e7_1",
+          "score": 0.8552165983432743
+        },
+        {
+          "document_slug": "bench/public-00000028",
+          "session_id": "d743153b_1",
+          "score": 0.8431167626833251
+        },
+        {
+          "document_slug": "bench/public-00000246",
+          "session_id": "c81aa33c_2",
+          "score": 0.8309309851711787
+        }
+      ],
+      "vector_stats": {
+        "page_count": 507,
+        "chunk_count": 509,
+        "embedded_count": 509,
+        "link_count": 0,
+        "tag_count": 0,
+        "timeline_entry_count": 0,
+        "pages_by_type": {
+          "concept": 507
+        }
+      },
+      "search_meta": {
+        "vector_enabled": true,
+        "detail_resolved": null,
+        "expansion_applied": false,
+        "intent": "general",
+        "mode": "balanced",
+        "embedding_column": "embedding",
+        "degraded": [],
+        "retrieved_count": 5,
+        "token_budget": {
+          "budget": 12000,
+          "used": 1270,
+          "dropped": 0,
+          "kept": 5
+        },
+        "relaxed_dropped": 50
+      },
+      "relevance": {
+        "returned_session_ids": [
+          "answer_a17423e7_1",
+          "ultrachat_142856",
+          "d743153b_1",
+          "c81aa33c_2"
+        ],
+        "returned_session_count": 4,
+        "relevant_session_ids": [
+          "answer_a17423e7_1"
+        ],
+        "covered_relevant_session_ids": [
+          "answer_a17423e7_1"
+        ],
+        "recall_at_k": 1.0,
+        "reciprocal_rank": 1.0,
+        "empty_retrieval": false
+      }
+    },
+    {
+      "question_id": "ce6d2d27",
+      "question_type": "knowledge-update",
+      "question": "What day of the week do I take a cocktail-making class?",
+      "unanswerable": false,
+      "session_count": 51,
+      "chunk_count": 512,
+      "ingest_s": 45.1863,
+      "query_s": 0.1229,
+      "hits": [
+        {
+          "document_slug": "bench/public-00000174",
+          "session_id": "answer_73540165_2",
+          "score": 0.8986481394523896
+        },
+        {
+          "document_slug": "bench/public-00000171",
+          "session_id": "answer_73540165_2",
+          "score": 0.8851335574647072
+        },
+        {
+          "document_slug": "bench/public-00000067",
+          "session_id": "0e250059_1",
+          "score": 0.8724017825878951
+        },
+        {
+          "document_slug": "bench/public-00000172",
+          "session_id": "answer_73540165_2",
+          "score": 0.8612809045766713
+        },
+        {
+          "document_slug": "bench/public-00000072",
+          "session_id": "0e250059_1",
+          "score": 0.8497855517334483
+        }
+      ],
+      "vector_stats": {
+        "page_count": 512,
+        "chunk_count": 515,
+        "embedded_count": 515,
+        "link_count": 0,
+        "tag_count": 0,
+        "timeline_entry_count": 0,
+        "pages_by_type": {
+          "concept": 512
+        }
+      },
+      "search_meta": {
+        "vector_enabled": true,
+        "detail_resolved": null,
+        "expansion_applied": false,
+        "intent": "general",
+        "mode": "balanced",
+        "embedding_column": "embedding",
+        "degraded": [],
+        "retrieved_count": 5,
+        "token_budget": {
+          "budget": 12000,
+          "used": 1177,
+          "dropped": 0,
+          "kept": 5
+        },
+        "relaxed_dropped": 50
+      },
+      "relevance": {
+        "returned_session_ids": [
+          "answer_73540165_2",
+          "0e250059_1"
+        ],
+        "returned_session_count": 2,
+        "relevant_session_ids": [
+          "answer_73540165_1",
+          "answer_73540165_2"
+        ],
+        "covered_relevant_session_ids": [
+          "answer_73540165_2"
+        ],
+        "recall_at_k": 0.5,
+        "reciprocal_rank": 1.0,
+        "empty_retrieval": false
+      }
+    },
+    {
+      "question_id": "ceb54acb",
+      "question_type": "single-session-assistant",
+      "question": "In our previous chat, you suggested 'sexual compulsions' and a few other options for alternative terms for certain behaviors. Can you remind me what the other four options were?",
+      "unanswerable": false,
+      "session_count": 50,
+      "chunk_count": 503,
+      "ingest_s": 40.067,
+      "query_s": 0.1541,
+      "hits": [
+        {
+          "document_slug": "bench/public-00000269",
+          "session_id": "answer_sharegpt_cGdjmYo_0",
+          "score": 0.9497527974794084
+        },
+        {
+          "document_slug": "bench/public-00000270",
+          "session_id": "answer_sharegpt_cGdjmYo_0",
+          "score": 0.9173544181121258
+        },
+        {
+          "document_slug": "bench/public-00000111",
+          "session_id": "de293134_1",
+          "score": 0.8806950525490684
+        },
+        {
+          "document_slug": "bench/public-00000044",
+          "session_id": "a1cbe83a",
+          "score": 0.8661406538092544
+        },
+        {
+          "document_slug": "bench/public-00000437",
+          "session_id": "0bbd7094_1",
+          "score": 0.8531326010651449
+        }
+      ],
+      "vector_stats": {
+        "page_count": 503,
+        "chunk_count": 520,
+        "embedded_count": 520,
+        "link_count": 0,
+        "tag_count": 0,
+        "timeline_entry_count": 0,
+        "pages_by_type": {
+          "concept": 503
+        }
+      },
+      "search_meta": {
+        "vector_enabled": true,
+        "detail_resolved": null,
+        "expansion_applied": false,
+        "intent": "general",
+        "mode": "balanced",
+        "embedding_column": "embedding",
+        "degraded": [],
+        "retrieved_count": 5,
+        "token_budget": {
+          "budget": 12000,
+          "used": 1066,
+          "dropped": 0,
+          "kept": 5
+        },
+        "relaxed_dropped": 50
+      },
+      "relevance": {
+        "returned_session_ids": [
+          "answer_sharegpt_cGdjmYo_0",
+          "de293134_1",
+          "a1cbe83a",
+          "0bbd7094_1"
+        ],
+        "returned_session_count": 4,
+        "relevant_session_ids": [
+          "answer_sharegpt_cGdjmYo_0"
+        ],
+        "covered_relevant_session_ids": [
+          "answer_sharegpt_cGdjmYo_0"
+        ],
+        "recall_at_k": 1.0,
+        "reciprocal_rank": 1.0,
+        "empty_retrieval": false
+      }
+    },
+    {
+      "question_id": "5d3d2817",
+      "question_type": "single-session-user",
+      "question": "What was my previous occupation?",
+      "unanswerable": false,
+      "session_count": 53,
+      "chunk_count": 503,
+      "ingest_s": 39.3572,
+      "query_s": 0.0509,
+      "hits": [
+        {
+          "document_slug": "bench/public-00000267",
+          "session_id": "sharegpt_BKl952A_23",
+          "score": 0.8735567483870896
+        },
+        {
+          "document_slug": "bench/public-00000255",
+          "session_id": "answer_235eb6fb",
+          "score": 0.8546527139661767
+        },
+        {
+          "document_slug": "bench/public-00000270",
+          "session_id": "sharegpt_BKl952A_23",
+          "score": 0.8421429352976199
+        },
+        {
+          "document_slug": "bench/public-00000266",
+          "session_id": "sharegpt_BKl952A_23",
+          "score": 0.8291320417672214
+        },
+        {
+          "document_slug": "bench/public-00000207",
+          "session_id": "sharegpt_VuQnjeB_0",
+          "score": 0.817650741023138
+        }
+      ],
+      "vector_stats": {
+        "page_count": 503,
+        "chunk_count": 505,
+        "embedded_count": 505,
+        "link_count": 0,
+        "tag_count": 0,
+        "timeline_entry_count": 0,
+        "pages_by_type": {
+          "concept": 503
+        }
+      },
+      "search_meta": {
+        "vector_enabled": true,
+        "detail_resolved": null,
+        "expansion_applied": false,
+        "intent": "general",
+        "mode": "balanced",
+        "embedding_column": "embedding",
+        "degraded": [],
+        "retrieved_count": 5,
+        "token_budget": {
+          "budget": 12000,
+          "used": 945,
+          "dropped": 0,
+          "kept": 5
+        },
+        "relaxed_dropped": 13
+      },
+      "relevance": {
+        "returned_session_ids": [
+          "sharegpt_BKl952A_23",
+          "answer_235eb6fb",
+          "sharegpt_VuQnjeB_0"
+        ],
+        "returned_session_count": 3,
+        "relevant_session_ids": [
+          "answer_235eb6fb"
+        ],
+        "covered_relevant_session_ids": [
+          "answer_235eb6fb"
+        ],
+        "recall_at_k": 1.0,
+        "reciprocal_rank": 0.5,
+        "empty_retrieval": false
+      }
+    },
+    {
+      "question_id": "c4a1ceb8",
+      "question_type": "multi-session",
+      "question": "How many different types of citrus fruits have I used in my cocktail recipes?",
+      "unanswerable": false,
+      "session_count": 49,
+      "chunk_count": 513,
+      "ingest_s": 30.8501,
+      "query_s": 0.1387,
+      "hits": [
+        {
+          "document_slug": "bench/public-00000323",
+          "session_id": "answer_56d02cab_2",
+          "score": 0.9250179374570178
+        },
+        {
+          "document_slug": "bench/public-00000326",
+          "session_id": "answer_56d02cab_2",
+          "score": 0.9084441129506003
+        },
+        {
+          "document_slug": "bench/public-00000324",
+          "session_id": "answer_56d02cab_2",
+          "score": 0.8973119450029886
+        },
+        {
+          "document_slug": "bench/public-00000215",
+          "session_id": "answer_56d02cab_4",
+          "score": 0.8840624239677364
+        },
+        {
+          "document_slug": "bench/public-00000500",
+          "session_id": "answer_56d02cab_1",
+          "score": 0.8733397822540799
+        }
+      ],
+      "vector_stats": {
+        "page_count": 513,
+        "chunk_count": 513,
+        "embedded_count": 513,
+        "link_count": 0,
+        "tag_count": 0,
+        "timeline_entry_count": 0,
+        "pages_by_type": {
+          "concept": 513
+        }
+      },
+      "search_meta": {
+        "vector_enabled": true,
+        "detail_resolved": null,
+        "expansion_applied": false,
+        "intent": "general",
+        "mode": "balanced",
+        "embedding_column": "embedding",
+        "degraded": [],
+        "retrieved_count": 5,
+        "token_budget": {
+          "budget": 12000,
+          "used": 1270,
+          "dropped": 0,
+          "kept": 5
+        },
+        "relaxed_dropped": 50
+      },
+      "relevance": {
+        "returned_session_ids": [
+          "answer_56d02cab_2",
+          "answer_56d02cab_4",
+          "answer_56d02cab_1"
+        ],
+        "returned_session_count": 3,
+        "relevant_session_ids": [
+          "answer_56d02cab_3",
+          "answer_56d02cab_4",
+          "answer_56d02cab_2",
+          "answer_56d02cab_1"
+        ],
+        "covered_relevant_session_ids": [
+          "answer_56d02cab_4",
+          "answer_56d02cab_2",
+          "answer_56d02cab_1"
+        ],
+        "recall_at_k": 0.75,
+        "reciprocal_rank": 1.0,
+        "empty_retrieval": false
+      }
+    },
+    {
+      "question_id": "54026fce",
+      "question_type": "single-session-preference",
+      "question": "I've been thinking about ways to stay connected with my colleagues. Any suggestions?",
+      "unanswerable": false,
+      "session_count": 49,
+      "chunk_count": 505,
+      "ingest_s": 29.1144,
+      "query_s": 0.1061,
+      "hits": [
+        {
+          "document_slug": "bench/public-00000264",
+          "session_id": "answer_f7b22c66",
+          "score": 0.9324905219666705
+        },
+        {
+          "document_slug": "bench/public-00000265",
+          "session_id": "answer_f7b22c66",
+          "score": 0.8894817030543746
+        },
+        {
+          "document_slug": "bench/public-00000269",
+          "session_id": "answer_f7b22c66",
+          "score": 0.8701325438667489
+        },
+        {
+          "document_slug": "bench/public-00000278",
+          "session_id": "answer_f7b22c66",
+          "score": 0.8502013753338008
+        },
+        {
+          "document_slug": "bench/public-00000270",
+          "session_id": "answer_f7b22c66",
+          "score": 0.8365598099944612
+        }
+      ],
+      "vector_stats": {
+        "page_count": 505,
+        "chunk_count": 507,
+        "embedded_count": 507,
+        "link_count": 0,
+        "tag_count": 0,
+        "timeline_entry_count": 0,
+        "pages_by_type": {
+          "concept": 505
+        }
+      },
+      "search_meta": {
+        "vector_enabled": true,
+        "detail_resolved": null,
+        "expansion_applied": false,
+        "intent": "concept",
+        "mode": "balanced",
+        "embedding_column": "embedding",
+        "degraded": [],
+        "retrieved_count": 5,
+        "token_budget": {
+          "budget": 12000,
+          "used": 1170,
+          "dropped": 0,
+          "kept": 5
+        },
+        "relaxed_dropped": 50
+      },
+      "relevance": {
+        "returned_session_ids": [
+          "answer_f7b22c66"
+        ],
+        "returned_session_count": 1,
+        "relevant_session_ids": [
+          "answer_f7b22c66"
+        ],
+        "covered_relevant_session_ids": [
+          "answer_f7b22c66"
+        ],
+        "recall_at_k": 1.0,
+        "reciprocal_rank": 1.0,
+        "empty_retrieval": false
+      }
+    },
+    {
+      "question_id": "9a707b81",
+      "question_type": "temporal-reasoning",
+      "question": "How many days ago did I attend a baking class at a local culinary school when I made my friend's birthday cake?",
+      "unanswerable": false,
+      "session_count": 54,
+      "chunk_count": 510,
+      "ingest_s": 45.1963,
+      "query_s": 0.1808,
+      "hits": [
+        {
+          "document_slug": "bench/public-00000186",
+          "session_id": "answer_dba89487_2",
+          "score": 0.9214641094698449
+        },
+        {
+          "document_slug": "bench/public-00000185",
+          "session_id": "answer_dba89487_2",
+          "score": 0.9004070425051192
+        },
+        {
+          "document_slug": "bench/public-00000200",
+          "session_id": "answer_dba89487_2",
+          "score": 0.8878200000864693
+        },
+        {
+          "document_slug": "bench/public-00000173",
+          "session_id": "e75c302b_2",
+          "score": 0.8725780391511866
+        },
+        {
+          "document_slug": "bench/public-00000430",
+          "session_id": "answer_dba89487_1",
+          "score": 0.8596248090540457
+        }
+      ],
+      "vector_stats": {
+        "page_count": 510,
+        "chunk_count": 510,
+        "embedded_count": 510,
+        "link_count": 0,
+        "tag_count": 0,
+        "timeline_entry_count": 0,
+        "pages_by_type": {
+          "concept": 510
+        }
+      },
+      "search_meta": {
+        "vector_enabled": true,
+        "detail_resolved": "high",
+        "expansion_applied": false,
+        "intent": "temporal",
+        "mode": "balanced",
+        "embedding_column": "embedding",
+        "degraded": [],
+        "retrieved_count": 5,
+        "token_budget": {
+          "budget": 12000,
+          "used": 984,
+          "dropped": 0,
+          "kept": 5
+        },
+        "relaxed_dropped": 50
+      },
+      "relevance": {
+        "returned_session_ids": [
+          "answer_dba89487_2",
+          "e75c302b_2",
+          "answer_dba89487_1"
+        ],
+        "returned_session_count": 3,
+        "relevant_session_ids": [
+          "answer_dba89487_2",
+          "answer_dba89487_1"
+        ],
+        "covered_relevant_session_ids": [
+          "answer_dba89487_2",
+          "answer_dba89487_1"
+        ],
+        "recall_at_k": 1.0,
+        "reciprocal_rank": 1.0,
+        "empty_retrieval": false
+      }
+    },
+    {
+      "question_id": "9ea5eabc",
+      "question_type": "knowledge-update",
+      "question": "Where did I go on my most recent family trip?",
+      "unanswerable": false,
+      "session_count": 53,
+      "chunk_count": 490,
+      "ingest_s": 44.1531,
+      "query_s": 0.1272,
+      "hits": [
+        {
+          "document_slug": "bench/public-00000393",
+          "session_id": "answer_02e66dec_2",
+          "score": 0.9077141588162071
+        },
+        {
+          "document_slug": "bench/public-00000059",
+          "session_id": "answer_02e66dec_1",
+          "score": 0.5720435160039871
+        },
+        {
+          "document_slug": "bench/public-00000057",
+          "session_id": "answer_02e66dec_1",
+          "score": 0.5600039531637392
+        },
+        {
+          "document_slug": "bench/public-00000060",
+          "session_id": "answer_02e66dec_1",
+          "score": 0.5537933397730993
+        },
+        {
+          "document_slug": "bench/public-00000392",
+          "session_id": "answer_02e66dec_2",
+          "score": 0.5450764353282825
+        }
+      ],
+      "vector_stats": {
+        "page_count": 490,
+        "chunk_count": 499,
+        "embedded_count": 499,
+        "link_count": 0,
+        "tag_count": 0,
+        "timeline_entry_count": 0,
+        "pages_by_type": {
+          "concept": 490
+        }
+      },
+      "search_meta": {
+        "vector_enabled": true,
+        "detail_resolved": "high",
+        "expansion_applied": false,
+        "intent": "temporal",
+        "mode": "balanced",
+        "embedding_column": "embedding",
+        "degraded": [],
+        "retrieved_count": 5,
+        "token_budget": {
+          "budget": 12000,
+          "used": 1270,
+          "dropped": 0,
+          "kept": 5
+        }
+      },
+      "relevance": {
+        "returned_session_ids": [
+          "answer_02e66dec_2",
+          "answer_02e66dec_1"
+        ],
+        "returned_session_count": 2,
+        "relevant_session_ids": [
+          "answer_02e66dec_1",
+          "answer_02e66dec_2"
+        ],
+        "covered_relevant_session_ids": [
+          "answer_02e66dec_1",
+          "answer_02e66dec_2"
+        ],
+        "recall_at_k": 1.0,
+        "reciprocal_rank": 1.0,
+        "empty_retrieval": false
+      }
+    },
+    {
+      "question_id": "f523d9fe",
+      "question_type": "single-session-assistant",
+      "question": "I wanted to check back on our previous conversation about Netflix. I mentioned that I wanted to be able to access all seasons of old shows? Do you remember what show I used as an example, the one that only had the last season available?",
+      "unanswerable": false,
+      "session_count": 50,
+      "chunk_count": 506,
+      "ingest_s": 42.2028,
+      "query_s": 0.1933,
+      "hits": [
+        {
+          "document_slug": "bench/public-00000292",
+          "session_id": "answer_sharegpt_m2xJfjo_0",
+          "score": 0.9133353794655189
+        },
+        {
+          "document_slug": "bench/public-00000299",
+          "session_id": "debc34d7_1",
+          "score": 0.8830776797975137
+        },
+        {
+          "document_slug": "bench/public-00000422",
+          "session_id": "a07f9d5c_1",
+          "score": 0.8634036477307209
+        },
+        {
+          "document_slug": "bench/public-00000492",
+          "session_id": "44165708",
+          "score": 0.8523344380768123
+        },
+        {
+          "document_slug": "bench/public-00000490",
+          "session_id": "44165708",
+          "score": 0.8392258852394822
+        }
+      ],
+      "vector_stats": {
+        "page_count": 506,
+        "chunk_count": 508,
+        "embedded_count": 508,
+        "link_count": 0,
+        "tag_count": 0,
+        "timeline_entry_count": 0,
+        "pages_by_type": {
+          "concept": 506
+        }
+      },
+      "search_meta": {
+        "vector_enabled": true,
+        "detail_resolved": null,
+        "expansion_applied": false,
+        "intent": "general",
+        "mode": "balanced",
+        "embedding_column": "embedding",
+        "degraded": [],
+        "retrieved_count": 5,
+        "token_budget": {
+          "budget": 12000,
+          "used": 1248,
+          "dropped": 0,
+          "kept": 5
+        },
+        "relaxed_dropped": 50
+      },
+      "relevance": {
+        "returned_session_ids": [
+          "answer_sharegpt_m2xJfjo_0",
+          "debc34d7_1",
+          "a07f9d5c_1",
+          "44165708"
+        ],
+        "returned_session_count": 4,
+        "relevant_session_ids": [
+          "answer_sharegpt_m2xJfjo_0"
+        ],
+        "covered_relevant_session_ids": [
+          "answer_sharegpt_m2xJfjo_0"
+        ],
+        "recall_at_k": 1.0,
+        "reciprocal_rank": 1.0,
+        "empty_retrieval": false
+      }
+    },
+    {
+      "question_id": "7527f7e2",
+      "question_type": "single-session-user",
+      "question": "How much did I spend on a designer handbag?",
+      "unanswerable": false,
+      "session_count": 45,
+      "chunk_count": 497,
+      "ingest_s": 40.6591,
+      "query_s": 0.1009,
+      "hits": [
+        {
+          "document_slug": "bench/public-00000172",
+          "session_id": "answer_7cb94507",
+          "score": 0.897676021261892
+        },
+        {
+          "document_slug": "bench/public-00000173",
+          "session_id": "answer_7cb94507",
+          "score": 0.8815361021499895
+        },
+        {
+          "document_slug": "bench/public-00000170",
+          "session_id": "answer_7cb94507",
+          "score": 0.8629794163929254
+        },
+        {
+          "document_slug": "bench/public-00000171",
+          "session_id": "answer_7cb94507",
+          "score": 0.850707330627217
+        },
+        {
+          "document_slug": "bench/public-00000176",
+          "session_id": "answer_7cb94507",
+          "score": 0.8397078657736636
+        }
+      ],
+      "vector_stats": {
+        "page_count": 497,
+        "chunk_count": 497,
+        "embedded_count": 497,
+        "link_count": 0,
+        "tag_count": 0,
+        "timeline_entry_count": 0,
+        "pages_by_type": {
+          "concept": 497
+        }
+      },
+      "search_meta": {
+        "vector_enabled": true,
+        "detail_resolved": null,
+        "expansion_applied": false,
+        "intent": "general",
+        "mode": "balanced",
+        "embedding_column": "embedding",
+        "degraded": [],
+        "retrieved_count": 5,
+        "token_budget": {
+          "budget": 12000,
+          "used": 1270,
+          "dropped": 0,
+          "kept": 5
+        },
+        "relaxed_dropped": 50
+      },
+      "relevance": {
+        "returned_session_ids": [
+          "answer_7cb94507"
+        ],
+        "returned_session_count": 1,
+        "relevant_session_ids": [
+          "answer_7cb94507"
+        ],
+        "covered_relevant_session_ids": [
+          "answer_7cb94507"
+        ],
+        "recall_at_k": 1.0,
+        "reciprocal_rank": 1.0,
+        "empty_retrieval": false
+      }
+    },
+    {
+      "question_id": "gpt4_a56e767c",
+      "question_type": "multi-session",
+      "question": "How many movie festivals that I attended?",
+      "unanswerable": false,
+      "session_count": 48,
+      "chunk_count": 500,
+      "ingest_s": 38.4028,
+      "query_s": 0.1052,
+      "hits": [
+        {
+          "document_slug": "bench/public-00000185",
+          "session_id": "d75245ea",
+          "score": 0.877884544261072
+        },
+        {
+          "document_slug": "bench/public-00000489",
+          "session_id": "e1616c77",
+          "score": 0.8603420130277994
+        },
+        {
+          "document_slug": "bench/public-00000179",
+          "session_id": "d75245ea",
+          "score": 0.8449537392422198
+        },
+        {
+          "document_slug": "bench/public-00000303",
+          "session_id": "answer_cf9e3940_1",
+          "score": 0.8335878322788315
+        },
+        {
+          "document_slug": "bench/public-00000308",
+          "session_id": "dac54d1e_1",
+          "score": 0.8214366812221304
+        }
+      ],
+      "vector_stats": {
+        "page_count": 500,
+        "chunk_count": 507,
+        "embedded_count": 507,
+        "link_count": 0,
+        "tag_count": 0,
+        "timeline_entry_count": 0,
+        "pages_by_type": {
+          "concept": 500
+        }
+      },
+      "search_meta": {
+        "vector_enabled": true,
+        "detail_resolved": null,
+        "expansion_applied": false,
+        "intent": "general",
+        "mode": "balanced",
+        "embedding_column": "embedding",
+        "degraded": [],
+        "retrieved_count": 5,
+        "token_budget": {
+          "budget": 12000,
+          "used": 1270,
+          "dropped": 0,
+          "kept": 5
+        },
+        "relaxed_dropped": 50
+      },
+      "relevance": {
+        "returned_session_ids": [
+          "d75245ea",
+          "e1616c77",
+          "answer_cf9e3940_1",
+          "dac54d1e_1"
+        ],
+        "returned_session_count": 4,
+        "relevant_session_ids": [
+          "answer_cf9e3940_2",
+          "answer_cf9e3940_1",
+          "answer_cf9e3940_3"
+        ],
+        "covered_relevant_session_ids": [
+          "answer_cf9e3940_1"
+        ],
+        "recall_at_k": 0.3333333333333333,
+        "reciprocal_rank": 0.3333333333333333,
+        "empty_retrieval": false
+      }
+    },
+    {
+      "question_id": "06f04340",
+      "question_type": "single-session-preference",
+      "question": "What should I serve for dinner this weekend with my homegrown ingredients?",
+      "unanswerable": false,
+      "session_count": 55,
+      "chunk_count": 503,
+      "ingest_s": 44.7619,
+      "query_s": 0.1347,
+      "hits": [
+        {
+          "document_slug": "bench/public-00000340",
+          "session_id": "6e6fbb6b",
+          "score": 0.8969897807154176
+        },
+        {
+          "document_slug": "bench/public-00000210",
+          "session_id": "91223fd5_1",
+          "score": 0.8845575889764202
+        },
+        {
+          "document_slug": "bench/public-00000329",
+          "session_id": "6e6fbb6b",
+          "score": 0.8700116767043689
+        },
+        {
+          "document_slug": "bench/public-00000128",
+          "session_id": "answer_92d5f7cd",
+          "score": 0.8510986820111195
+        },
+        {
+          "document_slug": "bench/public-00000209",
+          "session_id": "91223fd5_1",
+          "score": 0.840580595894639
+        }
+      ],
+      "vector_stats": {
+        "page_count": 503,
+        "chunk_count": 520,
+        "embedded_count": 520,
+        "link_count": 0,
+        "tag_count": 0,
+        "timeline_entry_count": 0,
+        "pages_by_type": {
+          "concept": 503
+        }
+      },
+      "search_meta": {
+        "vector_enabled": true,
+        "detail_resolved": null,
+        "expansion_applied": false,
+        "intent": "general",
+        "mode": "balanced",
+        "embedding_column": "embedding",
+        "degraded": [],
+        "retrieved_count": 5,
+        "token_budget": {
+          "budget": 12000,
+          "used": 1270,
+          "dropped": 0,
+          "kept": 5
+        },
+        "relaxed_dropped": 50
+      },
+      "relevance": {
+        "returned_session_ids": [
+          "6e6fbb6b",
+          "91223fd5_1",
+          "answer_92d5f7cd"
+        ],
+        "returned_session_count": 3,
+        "relevant_session_ids": [
+          "answer_92d5f7cd"
+        ],
+        "covered_relevant_session_ids": [
+          "answer_92d5f7cd"
+        ],
+        "recall_at_k": 1.0,
+        "reciprocal_rank": 0.3333333333333333,
+        "empty_retrieval": false
+      }
+    },
+    {
+      "question_id": "gpt4_1d4ab0c9",
+      "question_type": "temporal-reasoning",
+      "question": "How many days passed between the day I started watering my herb garden and the day I harvested my first batch of fresh herbs?",
+      "unanswerable": false,
+      "session_count": 53,
+      "chunk_count": 500,
+      "ingest_s": 50.0537,
+      "query_s": 0.1911,
+      "hits": [
+        {
+          "document_slug": "bench/public-00000115",
+          "session_id": "answer_febde667_1",
+          "score": 0.9185161274709113
+        },
+        {
+          "document_slug": "bench/public-00000116",
+          "session_id": "answer_febde667_1",
+          "score": 0.8984237429925896
+        },
+        {
+          "document_slug": "bench/public-00000275",
+          "session_id": "answer_febde667_2",
+          "score": 0.8870235049401307
+        },
+        {
+          "document_slug": "bench/public-00000272",
+          "session_id": "answer_febde667_2",
+          "score": 0.8750717751221679
+        },
+        {
+          "document_slug": "bench/public-00000277",
+          "session_id": "answer_febde667_2",
+          "score": 0.8626008153350124
+        }
+      ],
+      "vector_stats": {
+        "page_count": 500,
+        "chunk_count": 508,
+        "embedded_count": 508,
+        "link_count": 0,
+        "tag_count": 0,
+        "timeline_entry_count": 0,
+        "pages_by_type": {
+          "concept": 500
+        }
+      },
+      "search_meta": {
+        "vector_enabled": true,
+        "detail_resolved": null,
+        "expansion_applied": false,
+        "intent": "general",
+        "mode": "balanced",
+        "embedding_column": "embedding",
+        "degraded": [],
+        "retrieved_count": 5,
+        "token_budget": {
+          "budget": 12000,
+          "used": 1270,
+          "dropped": 0,
+          "kept": 5
+        },
+        "relaxed_dropped": 50
+      },
+      "relevance": {
+        "returned_session_ids": [
+          "answer_febde667_1",
+          "answer_febde667_2"
+        ],
+        "returned_session_count": 2,
+        "relevant_session_ids": [
+          "answer_febde667_1",
+          "answer_febde667_2"
+        ],
+        "covered_relevant_session_ids": [
+          "answer_febde667_1",
+          "answer_febde667_2"
+        ],
+        "recall_at_k": 1.0,
+        "reciprocal_rank": 1.0,
+        "empty_retrieval": false
+      }
+    },
+    {
+      "question_id": "07741c44",
+      "question_type": "knowledge-update",
+      "question": "Where do I initially keep my old sneakers?",
+      "unanswerable": false,
+      "session_count": 50,
+      "chunk_count": 515,
+      "ingest_s": 45.6324,
+      "query_s": 0.1121,
+      "hits": [
+        {
+          "document_slug": "bench/public-00000077",
+          "session_id": "answer_7e9ad7b4_1",
+          "score": 0.9145552916151378
+        },
+        {
+          "document_slug": "bench/public-00000082",
+          "session_id": "answer_7e9ad7b4_1",
+          "score": 0.9003172673496039
+        },
+        {
+          "document_slug": "bench/public-00000304",
+          "session_id": "answer_7e9ad7b4_2",
+          "score": 0.8880258649527778
+        },
+        {
+          "document_slug": "bench/public-00000305",
+          "session_id": "answer_7e9ad7b4_2",
+          "score": 0.8766513412890194
+        },
+        {
+          "document_slug": "bench/public-00000075",
+          "session_id": "answer_7e9ad7b4_1",
+          "score": 0.8652002293700894
+        }
+      ],
+      "vector_stats": {
+        "page_count": 515,
+        "chunk_count": 515,
+        "embedded_count": 515,
+        "link_count": 0,
+        "tag_count": 0,
+        "timeline_entry_count": 0,
+        "pages_by_type": {
+          "concept": 515
+        }
+      },
+      "search_meta": {
+        "vector_enabled": true,
+        "detail_resolved": null,
+        "expansion_applied": false,
+        "intent": "general",
+        "mode": "balanced",
+        "embedding_column": "embedding",
+        "degraded": [],
+        "retrieved_count": 5,
+        "token_budget": {
+          "budget": 12000,
+          "used": 1270,
+          "dropped": 0,
+          "kept": 5
+        },
+        "relaxed_dropped": 50
+      },
+      "relevance": {
+        "returned_session_ids": [
+          "answer_7e9ad7b4_1",
+          "answer_7e9ad7b4_2"
+        ],
+        "returned_session_count": 2,
+        "relevant_session_ids": [
+          "answer_7e9ad7b4_1",
+          "answer_7e9ad7b4_2"
+        ],
+        "covered_relevant_session_ids": [
+          "answer_7e9ad7b4_1",
+          "answer_7e9ad7b4_2"
+        ],
+        "recall_at_k": 1.0,
+        "reciprocal_rank": 1.0,
+        "empty_retrieval": false
+      }
+    },
+    {
+      "question_id": "0e5e2d1a",
+      "question_type": "single-session-assistant",
+      "question": "I wanted to follow up on our previous conversation about binaural beats for anxiety and depression. Can you remind me how many subjects were in the study published in the journal Music and Medicine that found significant reductions in symptoms of depression, anxiety, and stress?",
+      "unanswerable": false,
+      "session_count": 46,
+      "chunk_count": 497,
+      "ingest_s": 41.2998,
+      "query_s": 0.1545,
+      "hits": [
+        {
+          "document_slug": "bench/public-00000244",
+          "session_id": "answer_ultrachat_113156",
+          "score": 0.9695371011932369
+        },
+        {
+          "document_slug": "bench/public-00000243",
+          "session_id": "answer_ultrachat_113156",
+          "score": 0.9385837678322664
+        },
+        {
+          "document_slug": "bench/public-00000245",
+          "session_id": "answer_ultrachat_113156",
+          "score": 0.9194717464018389
+        },
+        {
+          "document_slug": "bench/public-00000455",
+          "session_id": "c756c34e",
+          "score": 0.8623896056356415
+        },
+        {
+          "document_slug": "bench/public-00000246",
+          "session_id": "answer_ultrachat_113156",
+          "score": 0.8519404204262326
+        }
+      ],
+      "vector_stats": {
+        "page_count": 497,
+        "chunk_count": 501,
+        "embedded_count": 501,
+        "link_count": 0,
+        "tag_count": 0,
+        "timeline_entry_count": 0,
+        "pages_by_type": {
+          "concept": 497
+        }
+      },
+      "search_meta": {
+        "vector_enabled": true,
+        "detail_resolved": null,
+        "expansion_applied": false,
+        "intent": "general",
+        "mode": "balanced",
+        "embedding_column": "embedding",
+        "degraded": [],
+        "retrieved_count": 5,
+        "token_budget": {
+          "budget": 12000,
+          "used": 1060,
+          "dropped": 0,
+          "kept": 5
+        },
+        "relaxed_dropped": 50
+      },
+      "relevance": {
+        "returned_session_ids": [
+          "answer_ultrachat_113156",
+          "c756c34e"
+        ],
+        "returned_session_count": 2,
+        "relevant_session_ids": [
+          "answer_ultrachat_113156"
+        ],
+        "covered_relevant_session_ids": [
+          "answer_ultrachat_113156"
+        ],
+        "recall_at_k": 1.0,
+        "reciprocal_rank": 1.0,
+        "empty_retrieval": false
+      }
+    },
+    {
+      "question_id": "c960da58",
+      "question_type": "single-session-user",
+      "question": "How many playlists do I have on Spotify?",
+      "unanswerable": false,
+      "session_count": 46,
+      "chunk_count": 490,
+      "ingest_s": 40.1793,
+      "query_s": 0.0707,
+      "hits": [
+        {
+          "document_slug": "bench/public-00000037",
+          "session_id": "answer_e05e4612",
+          "score": 0.9132141221449086
+        },
+        {
+          "document_slug": "bench/public-00000035",
+          "session_id": "answer_e05e4612",
+          "score": 0.5778882656811102
+        },
+        {
+          "document_slug": "bench/public-00000036",
+          "session_id": "answer_e05e4612",
+          "score": 0.5709935280623989
+        },
+        {
+          "document_slug": "bench/public-00000034",
+          "session_id": "answer_e05e4612",
+          "score": 0.5631416814364906
+        },
+        {
+          "document_slug": "bench/public-00000032",
+          "session_id": "answer_e05e4612",
+          "score": 0.5439310979522383
+        }
+      ],
+      "vector_stats": {
+        "page_count": 490,
+        "chunk_count": 497,
+        "embedded_count": 497,
+        "link_count": 0,
+        "tag_count": 0,
+        "timeline_entry_count": 0,
+        "pages_by_type": {
+          "concept": 490
+        }
+      },
+      "search_meta": {
+        "vector_enabled": true,
+        "detail_resolved": null,
+        "expansion_applied": false,
+        "intent": "general",
+        "mode": "balanced",
+        "embedding_column": "embedding",
+        "degraded": [],
+        "retrieved_count": 5,
+        "token_budget": {
+          "budget": 12000,
+          "used": 1271,
+          "dropped": 0,
+          "kept": 5
+        }
+      },
+      "relevance": {
+        "returned_session_ids": [
+          "answer_e05e4612"
+        ],
+        "returned_session_count": 1,
+        "relevant_session_ids": [
+          "answer_e05e4612"
+        ],
+        "covered_relevant_session_ids": [
+          "answer_e05e4612"
+        ],
+        "recall_at_k": 1.0,
+        "reciprocal_rank": 1.0,
+        "empty_retrieval": false
+      }
+    },
+    {
+      "question_id": "6cb6f249",
+      "question_type": "multi-session",
+      "question": "How many days did I take social media breaks in total?",
+      "unanswerable": false,
+      "session_count": 41,
+      "chunk_count": 483,
+      "ingest_s": 42.6326,
+      "query_s": 0.1202,
+      "hits": [
+        {
+          "document_slug": "bench/public-00000258",
+          "session_id": "answer_a4204937_1",
+          "score": 0.9038667791690242
+        },
+        {
+          "document_slug": "bench/public-00000247",
+          "session_id": "answer_a4204937_1",
+          "score": 0.890242474262379
+        },
+        {
+          "document_slug": "bench/public-00000311",
+          "session_id": "ultrachat_404221",
+          "score": 0.8770959824711191
+        },
+        {
+          "document_slug": "bench/public-00000249",
+          "session_id": "answer_a4204937_1",
+          "score": 0.8601726977561489
+        },
+        {
+          "document_slug": "bench/public-00000319",
+          "session_id": "ultrachat_404221",
+          "score": 0.8492592894544175
+        }
+      ],
+      "vector_stats": {
+        "page_count": 483,
+        "chunk_count": 487,
+        "embedded_count": 487,
+        "link_count": 0,
+        "tag_count": 0,
+        "timeline_entry_count": 0,
+        "pages_by_type": {
+          "concept": 483
+        }
+      },
+      "search_meta": {
+        "vector_enabled": true,
+        "detail_resolved": null,
+        "expansion_applied": false,
+        "intent": "general",
+        "mode": "balanced",
+        "embedding_column": "embedding",
+        "degraded": [],
+        "retrieved_count": 5,
+        "token_budget": {
+          "budget": 12000,
+          "used": 1270,
+          "dropped": 0,
+          "kept": 5
+        },
+        "relaxed_dropped": 50
+      },
+      "relevance": {
+        "returned_session_ids": [
+          "answer_a4204937_1",
+          "ultrachat_404221"
+        ],
+        "returned_session_count": 2,
+        "relevant_session_ids": [
+          "answer_a4204937_2",
+          "answer_a4204937_1"
+        ],
+        "covered_relevant_session_ids": [
+          "answer_a4204937_1"
+        ],
+        "recall_at_k": 0.5,
+        "reciprocal_rank": 1.0,
+        "empty_retrieval": false
+      }
+    }
+  ],
+  "failure_records": [],
+  "cleanup_failure_records": []
+}

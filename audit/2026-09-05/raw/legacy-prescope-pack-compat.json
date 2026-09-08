@@ -1,0 +1,65 @@
+{
+  "historical_source": "/private/tmp/smriti-pre-scope-source",
+  "historical_source_revision": "6d21be6",
+  "producer_stdout": "{\"fact_id\": 1, \"manifest\": {\"format\": \"smriti-pack\", \"pack_version\": 1, \"name\": \"historical-prescope\", \"audience\": \"same-access-cohort\", \"created_at\": \"2026-09-07T16:19:02Z\", \"expires_at\": null, \"store_id\": \"c6a9d5d09dfc4df7ac644da9b3865bb1\", \"enterprise_schema_version\": 2, \"core_version\": \"0.3.2\", \"enterprise_version\": \"0.1.0\", \"embedder_fingerprint\": \"hash-256\", \"sha256\": \"d79a5fcbd7ec4d960a279567ddb90c6a50947d826273eba4de10d63fd4f50984\"}}",
+  "pack": "/private/tmp/smriti-pre-scope-compat/legacy.pack.db",
+  "manifest": {
+    "format": "smriti-pack",
+    "pack_version": 1,
+    "name": "historical-prescope",
+    "audience": "same-access-cohort",
+    "created_at": "2026-09-07T16:19:02Z",
+    "expires_at": null,
+    "store_id": "c6a9d5d09dfc4df7ac644da9b3865bb1",
+    "enterprise_schema_version": 2,
+    "core_version": "0.3.2",
+    "enterprise_version": "0.1.0",
+    "embedder_fingerprint": "hash-256",
+    "sha256": "d79a5fcbd7ec4d960a279567ddb90c6a50947d826273eba4de10d63fd4f50984"
+  },
+  "pack_sha256_before": "d79a5fcbd7ec4d960a279567ddb90c6a50947d826273eba4de10d63fd4f50984",
+  "pack_sha256_after": "d79a5fcbd7ec4d960a279567ddb90c6a50947d826273eba4de10d63fd4f50984",
+  "pack_unchanged": true,
+  "facts_columns": [
+    "id",
+    "statement",
+    "subject",
+    "predicate",
+    "object",
+    "kind",
+    "event_date",
+    "ingested_at",
+    "valid_from",
+    "invalid_at",
+    "superseded_by",
+    "episode_id",
+    "session_id",
+    "emb",
+    "uuid",
+    "recorded_at",
+    "withdrawn_at",
+    "origin",
+    "quarantined",
+    "retain_until",
+    "hold_id"
+  ],
+  "scope_column_present": false,
+  "get_fact_scope": "",
+  "fts_hits": [
+    [
+      1,
+      1e-06
+    ]
+  ],
+  "facts_asof_scopes": [
+    ""
+  ],
+  "export_scopes": [
+    ""
+  ],
+  "retrieve_hit_count": 1,
+  "limitations": [
+    "The historical fixture contains one fact and does not exercise scoped data; compatibility projects scope to empty.",
+    "Read-only compatibility does not add scope or enterprise governance columns to the verified pack."
+  ]
+}

@@ -1,0 +1,283 @@
+[
+  {
+    "initialize": {
+      "meta": null,
+      "protocol_version": "2025-06-18",
+      "capabilities": {
+        "experimental": null,
+        "logging": null,
+        "prompts": null,
+        "resources": null,
+        "tools": {
+          "list_changed": null
+        },
+        "completions": null,
+        "extensions": null,
+        "tasks": null
+      },
+      "server_info": {
+        "name": "smriti",
+        "title": null,
+        "version": "0.3.2",
+        "description": null,
+        "website_url": null,
+        "icons": null
+      },
+      "instructions": null
+    }
+  },
+  {
+    "tools": [
+      "remember",
+      "recall",
+      "search",
+      "facts_about",
+      "add_fact",
+      "stats"
+    ]
+  },
+  {
+    "tool": "remember",
+    "result": {
+      "meta": null,
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"session_id\": \"audit\", \"episodes\": 1, \"facts\": 0}",
+          "annotations": null,
+          "meta": null
+        }
+      ],
+      "structured_content": {
+        "session_id": "audit",
+        "episodes": 1,
+        "facts": 0
+      },
+      "is_error": false,
+      "result_type": "complete"
+    }
+  },
+  {
+    "tool": "remember",
+    "result": {
+      "meta": null,
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"session_id\": \"audit\", \"episodes\": 0, \"facts\": 0, \"deduped\": true}",
+          "annotations": null,
+          "meta": null
+        }
+      ],
+      "structured_content": {
+        "session_id": "audit",
+        "episodes": 0,
+        "facts": 0,
+        "deduped": true
+      },
+      "is_error": false,
+      "result_type": "complete"
+    }
+  },
+  {
+    "tool": "add_fact",
+    "result": {
+      "meta": null,
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"fact_id\": 1, \"stored\": true}",
+          "annotations": null,
+          "meta": null
+        }
+      ],
+      "structured_content": {
+        "fact_id": 1,
+        "stored": true
+      },
+      "is_error": false,
+      "result_type": "complete"
+    }
+  },
+  {
+    "tool": "add_fact",
+    "result": {
+      "meta": null,
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"fact_id\": 2, \"stored\": true}",
+          "annotations": null,
+          "meta": null
+        }
+      ],
+      "structured_content": {
+        "fact_id": 2,
+        "stored": true
+      },
+      "is_error": false,
+      "result_type": "complete"
+    }
+  },
+  {
+    "tool": "search",
+    "result": {
+      "meta": null,
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"results\": [{\"kind\": \"fact\", \"text\": \"Cedar owner is Bob\", \"score\": 0.0407, \"valid_from\": \"2026-09-06T18:29:31Z\", \"invalid_at\": null, \"current\": true, \"ts\": null, \"role\": null, \"channels\": [\"bm25_fact\", \"vec_fact\", \"entity\"]}, {\"kind\": \"fact\", \"text\": \"Cedar owner is Alice\", \"score\": 0.0406, \"valid_from\": \"2026-09-06T18:29:31Z\", \"invalid_at\": null, \"current\": true, \"ts\": null, \"role\": null, \"channels\": [\"bm25_fact\", \"vec_fact\", \"entity\"]}, {\"kind\": \"episode\", \"text\": \"Agent audit: project Cedar uses SQLite.\", \"score\": 0.0311, \"valid_from\": null, \"invalid_at\": null, \"current\": true, \"ts\": \"2026-09-01T10:00:00Z\", \"role\": \"user\", \"channels\": [\"bm25_episode\", \"vec_episode\"]}]}",
+          "annotations": null,
+          "meta": null
+        }
+      ],
+      "structured_content": {
+        "results": [
+          {
+            "kind": "fact",
+            "text": "Cedar owner is Bob",
+            "score": 0.0407,
+            "valid_from": "2026-09-06T18:29:31Z",
+            "invalid_at": null,
+            "current": true,
+            "ts": null,
+            "role": null,
+            "channels": [
+              "bm25_fact",
+              "vec_fact",
+              "entity"
+            ]
+          },
+          {
+            "kind": "fact",
+            "text": "Cedar owner is Alice",
+            "score": 0.0406,
+            "valid_from": "2026-09-06T18:29:31Z",
+            "invalid_at": null,
+            "current": true,
+            "ts": null,
+            "role": null,
+            "channels": [
+              "bm25_fact",
+              "vec_fact",
+              "entity"
+            ]
+          },
+          {
+            "kind": "episode",
+            "text": "Agent audit: project Cedar uses SQLite.",
+            "score": 0.0311,
+            "valid_from": null,
+            "invalid_at": null,
+            "current": true,
+            "ts": "2026-09-01T10:00:00Z",
+            "role": "user",
+            "channels": [
+              "bm25_episode",
+              "vec_episode"
+            ]
+          }
+        ]
+      },
+      "is_error": false,
+      "result_type": "complete"
+    }
+  },
+  {
+    "tool": "recall",
+    "result": {
+      "meta": null,
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"context\": \"KNOWN FACTS (each with validity window; CURRENT means still true, SUPERSEDED means it was true then but later changed):\\n- [2026-09-06 | CURRENT] Cedar owner is Bob\\n- [2026-09-06 | CURRENT] Cedar owner is Alice\\n\\nRAW CONVERSATION EVIDENCE (timestamped):\\n- [2026-09-01] user: Agent audit: project Cedar uses SQLite.\"}",
+          "annotations": null,
+          "meta": null
+        }
+      ],
+      "structured_content": {
+        "context": "KNOWN FACTS (each with validity window; CURRENT means still true, SUPERSEDED means it was true then but later changed):\n- [2026-09-06 | CURRENT] Cedar owner is Bob\n- [2026-09-06 | CURRENT] Cedar owner is Alice\n\nRAW CONVERSATION EVIDENCE (timestamped):\n- [2026-09-01] user: Agent audit: project Cedar uses SQLite."
+      },
+      "is_error": false,
+      "result_type": "complete"
+    }
+  },
+  {
+    "tool": "facts_about",
+    "result": {
+      "meta": null,
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"entity\": \"Cedar\", \"facts\": [{\"statement\": \"Cedar owner is Alice\", \"valid_from\": \"2026-09-06T18:29:31Z\", \"invalid_at\": null, \"current\": true}, {\"statement\": \"Cedar owner is Bob\", \"valid_from\": \"2026-09-06T18:29:31Z\", \"invalid_at\": null, \"current\": true}]}",
+          "annotations": null,
+          "meta": null
+        }
+      ],
+      "structured_content": {
+        "entity": "Cedar",
+        "facts": [
+          {
+            "statement": "Cedar owner is Alice",
+            "valid_from": "2026-09-06T18:29:31Z",
+            "invalid_at": null,
+            "current": true
+          },
+          {
+            "statement": "Cedar owner is Bob",
+            "valid_from": "2026-09-06T18:29:31Z",
+            "invalid_at": null,
+            "current": true
+          }
+        ]
+      },
+      "is_error": false,
+      "result_type": "complete"
+    }
+  },
+  {
+    "tool": "stats",
+    "result": {
+      "meta": null,
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"episodes\": 1, \"facts\": 2, \"valid_facts\": 2, \"entities\": 3, \"mode\": \"lite\"}",
+          "annotations": null,
+          "meta": null
+        }
+      ],
+      "structured_content": {
+        "episodes": 1,
+        "facts": 2,
+        "valid_facts": 2,
+        "entities": 3,
+        "mode": "lite"
+      },
+      "is_error": false,
+      "result_type": "complete"
+    }
+  },
+  {
+    "restart_stats": {
+      "meta": null,
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"episodes\": 1, \"facts\": 2, \"valid_facts\": 2, \"entities\": 3, \"mode\": \"lite\"}",
+          "annotations": null,
+          "meta": null
+        }
+      ],
+      "structured_content": {
+        "episodes": 1,
+        "facts": 2,
+        "valid_facts": 2,
+        "entities": 3,
+        "mode": "lite"
+      },
+      "is_error": false,
+      "result_type": "complete"
+    }
+  }
+]

@@ -1,0 +1,460 @@
+{
+  "track": "installed Smriti scoped uses_tool transition diagnostic; not a benchmark",
+  "status": "completed_with_failures",
+  "fixture": {
+    "updates": [
+      {
+        "timestamp": "2025-01-10T12:00:00Z",
+        "content": "Leila currently uses Sketch for project Cedar."
+      },
+      {
+        "timestamp": "2025-03-10T12:00:00Z",
+        "content": "Leila switched from Sketch to Figma for project Cedar."
+      }
+    ],
+    "scope": "project:Cedar",
+    "asof_points": {
+      "before_switch": "2025-02-01T12:00:00Z",
+      "after_switch": "2025-04-01T12:00:00Z"
+    },
+    "expected_prior": {
+      "subject": "Leila",
+      "predicate": "uses_tool",
+      "object": "Sketch",
+      "scope": "project:Cedar"
+    },
+    "expected_destination": {
+      "subject": "Leila",
+      "predicate": "uses_tool",
+      "object": "Figma",
+      "scope": "project:Cedar"
+    },
+    "expected_transition": {
+      "subject": "Leila",
+      "predicate": "switched_from",
+      "object": "Sketch",
+      "scope": "project:Cedar"
+    }
+  },
+  "config": {
+    "mode": "full",
+    "model": "qwen3:8b",
+    "embed_model": "nomic-embed-text:v1.5",
+    "llm_endpoint": "http://127.0.0.1:11436/v1",
+    "embed_endpoint": "http://127.0.0.1:11436",
+    "extra_body": {
+      "reasoning_effort": "none",
+      "think": false
+    },
+    "extract_max_tokens": 2048,
+    "session_ids": [
+      "tool-transition-update-1",
+      "tool-transition-update-2"
+    ],
+    "database": ":memory:"
+  },
+  "facts": [
+    {
+      "id": 1,
+      "statement": "Leila currently uses Sketch for project Cedar",
+      "subject": "leila",
+      "predicate": "uses_tool",
+      "object": "Sketch",
+      "kind": "knowledge",
+      "event_date": null,
+      "ingested_at": "2026-09-07T19:40:18Z",
+      "valid_from": "2025-01-10T12:00:00Z",
+      "invalid_at": "2025-03-10T12:00:00Z",
+      "superseded_by": 2,
+      "episode_id": 1,
+      "session_id": "tool-transition-update-1",
+      "scope": "project:Cedar"
+    },
+    {
+      "id": 2,
+      "statement": "Leila currently uses Figma for project Cedar",
+      "subject": "leila",
+      "predicate": "uses_tool",
+      "object": "Figma",
+      "kind": "knowledge",
+      "event_date": null,
+      "ingested_at": "2026-09-07T19:40:37Z",
+      "valid_from": "2025-03-10T12:00:00Z",
+      "invalid_at": null,
+      "superseded_by": null,
+      "episode_id": 2,
+      "session_id": "tool-transition-update-2",
+      "scope": "project:Cedar"
+    },
+    {
+      "id": 3,
+      "statement": "Leila switched from Sketch to Figma for project Cedar",
+      "subject": "leila",
+      "predicate": "switched_from",
+      "object": "Sketch",
+      "kind": "event",
+      "event_date": null,
+      "ingested_at": "2026-09-07T19:40:37Z",
+      "valid_from": "2025-03-10T12:00:00Z",
+      "invalid_at": null,
+      "superseded_by": null,
+      "episode_id": 2,
+      "session_id": "tool-transition-update-2",
+      "scope": "project:Cedar"
+    }
+  ],
+  "asof": {
+    "before_switch": [
+      {
+        "id": 1,
+        "statement": "Leila currently uses Sketch for project Cedar",
+        "subject": "leila",
+        "predicate": "uses_tool",
+        "object": "Sketch",
+        "kind": "knowledge",
+        "event_date": null,
+        "ingested_at": "2026-09-07T19:40:18Z",
+        "valid_from": "2025-01-10T12:00:00Z",
+        "invalid_at": "2025-03-10T12:00:00Z",
+        "superseded_by": 2,
+        "episode_id": 1,
+        "session_id": "tool-transition-update-1",
+        "scope": "project:Cedar"
+      }
+    ],
+    "after_switch": [
+      {
+        "id": 2,
+        "statement": "Leila currently uses Figma for project Cedar",
+        "subject": "leila",
+        "predicate": "uses_tool",
+        "object": "Figma",
+        "kind": "knowledge",
+        "event_date": null,
+        "ingested_at": "2026-09-07T19:40:37Z",
+        "valid_from": "2025-03-10T12:00:00Z",
+        "invalid_at": null,
+        "superseded_by": null,
+        "episode_id": 2,
+        "session_id": "tool-transition-update-2",
+        "scope": "project:Cedar"
+      },
+      {
+        "id": 3,
+        "statement": "Leila switched from Sketch to Figma for project Cedar",
+        "subject": "leila",
+        "predicate": "switched_from",
+        "object": "Sketch",
+        "kind": "event",
+        "event_date": null,
+        "ingested_at": "2026-09-07T19:40:37Z",
+        "valid_from": "2025-03-10T12:00:00Z",
+        "invalid_at": null,
+        "superseded_by": null,
+        "episode_id": 2,
+        "session_id": "tool-transition-update-2",
+        "scope": "project:Cedar"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "name": "ingest_update_1",
+      "timestamp": "2025-01-10T12:00:00Z",
+      "content": "Leila currently uses Sketch for project Cedar.",
+      "session_id": "tool-transition-update-1",
+      "ok": true,
+      "add_result": {
+        "session_id": "tool-transition-update-1",
+        "episodes": 1,
+        "facts": 1
+      },
+      "extraction_diagnostics": {
+        "raw_chars": 299,
+        "status": "ok",
+        "items": 1,
+        "accepted": 1,
+        "skipped": 0,
+        "normalized_predicates": 0,
+        "accepted_before_scope": 1,
+        "scope_validation": {
+          "attempts": 1,
+          "retry_used": false,
+          "accepted_before_scope": 1,
+          "first_invalid": [],
+          "second_invalid": [],
+          "rejected_candidates": [],
+          "facts_dropped_after_retry": [],
+          "unresolved_candidates": [],
+          "replacement_matches": [],
+          "retry_status": "not_needed",
+          "input_roles": [
+            "user"
+          ],
+          "semantic_scope_guarantee": false,
+          "limitation": "Lexical source/fact-statement evidence only; this guard does not prove cross-person, quotation, or adjacent-clause semantics.",
+          "accepted_final": 1
+        }
+      },
+      "usage_before": {
+        "calls": 0,
+        "attempts": 0,
+        "http_attempts": 0,
+        "tokens_in": 0,
+        "tokens_out": 0,
+        "usage_missing": 0
+      },
+      "usage_after": {
+        "calls": 1,
+        "attempts": 1,
+        "http_attempts": 1,
+        "tokens_in": 1087,
+        "tokens_out": 88,
+        "usage_missing": 0
+      },
+      "usage_delta": {
+        "calls": 1,
+        "attempts": 1,
+        "http_attempts": 1,
+        "tokens_in": 1087,
+        "tokens_out": 88,
+        "usage_missing": 0
+      },
+      "elapsed_s": 8.5357
+    },
+    {
+      "name": "ingest_update_2",
+      "timestamp": "2025-03-10T12:00:00Z",
+      "content": "Leila switched from Sketch to Figma for project Cedar.",
+      "session_id": "tool-transition-update-2",
+      "ok": true,
+      "add_result": {
+        "session_id": "tool-transition-update-2",
+        "episodes": 1,
+        "facts": 2
+      },
+      "extraction_diagnostics": {
+        "raw_chars": 622,
+        "status": "ok",
+        "items": 2,
+        "accepted": 2,
+        "skipped": 0,
+        "normalized_predicates": 0,
+        "accepted_before_scope": 2,
+        "scope_validation": {
+          "attempts": 1,
+          "retry_used": false,
+          "accepted_before_scope": 2,
+          "first_invalid": [],
+          "second_invalid": [],
+          "rejected_candidates": [],
+          "facts_dropped_after_retry": [],
+          "unresolved_candidates": [],
+          "replacement_matches": [],
+          "retry_status": "not_needed",
+          "input_roles": [
+            "user"
+          ],
+          "semantic_scope_guarantee": false,
+          "limitation": "Lexical source/fact-statement evidence only; this guard does not prove cross-person, quotation, or adjacent-clause semantics.",
+          "accepted_final": 2
+        }
+      },
+      "usage_before": {
+        "calls": 1,
+        "attempts": 1,
+        "http_attempts": 1,
+        "tokens_in": 1087,
+        "tokens_out": 88,
+        "usage_missing": 0
+      },
+      "usage_after": {
+        "calls": 3,
+        "attempts": 3,
+        "http_attempts": 3,
+        "tokens_in": 2402,
+        "tokens_out": 289,
+        "usage_missing": 0
+      },
+      "usage_delta": {
+        "calls": 2,
+        "attempts": 2,
+        "http_attempts": 2,
+        "tokens_in": 1315,
+        "tokens_out": 201,
+        "usage_missing": 0
+      },
+      "elapsed_s": 19.0441
+    }
+  ],
+  "failures": [
+    {
+      "step": "contract",
+      "error_type": "MissingExpectedFact",
+      "error": "sketch_active_before_switch"
+    }
+  ],
+  "quality_failures": [],
+  "assertions": {
+    "sketch_active_before_switch": false,
+    "figma_active_after_switch": true,
+    "sketch_active_after_switch": false,
+    "historical_transition_present": true,
+    "sketch_before_facts": [],
+    "figma_after_facts": [
+      {
+        "id": 2,
+        "statement": "Leila currently uses Figma for project Cedar",
+        "subject": "leila",
+        "predicate": "uses_tool",
+        "object": "Figma",
+        "kind": "knowledge",
+        "event_date": null,
+        "ingested_at": "2026-09-07T19:40:37Z",
+        "valid_from": "2025-03-10T12:00:00Z",
+        "invalid_at": null,
+        "superseded_by": null,
+        "episode_id": 2,
+        "session_id": "tool-transition-update-2",
+        "scope": "project:Cedar"
+      }
+    ],
+    "sketch_after_facts": [],
+    "transition_facts": [
+      {
+        "id": 3,
+        "statement": "Leila switched from Sketch to Figma for project Cedar",
+        "subject": "leila",
+        "predicate": "switched_from",
+        "object": "Sketch",
+        "kind": "event",
+        "event_date": null,
+        "ingested_at": "2026-09-07T19:40:37Z",
+        "valid_from": "2025-03-10T12:00:00Z",
+        "invalid_at": null,
+        "superseded_by": null,
+        "episode_id": 2,
+        "session_id": "tool-transition-update-2",
+        "scope": "project:Cedar"
+      }
+    ],
+    "asof_fact_counts": {
+      "before_switch": 1,
+      "after_switch": 2
+    }
+  },
+  "usage": {
+    "extract": {
+      "calls": 3,
+      "attempts": 3,
+      "http_attempts": 3,
+      "tokens_in": 2402,
+      "tokens_out": 289,
+      "usage_missing": 0
+    }
+  },
+  "metrics_scope": "Cumulative counters on this probe's extraction LLM object; failed-call usage is unknown.",
+  "provenance": {
+    "script": "/Users/kshitijvatsa/Downloads/Smriti-main/audit/2026-09-05/qa/extraction_tool_transition_probe.py",
+    "script_sha256_at_start": "1377972267a2bf84f2fb38e737a405ec4a006937f689462cfb9539cdd229acb3",
+    "reused_helper": "/Users/kshitijvatsa/Downloads/Smriti-main/audit/2026-09-05/qa/extraction_generalization_probe.py",
+    "reused_helper_sha256_at_start": "a138da262718ff7364e3ab4a75d583ca5976178b8dd742091072ff543c472240",
+    "smriti_version": "0.3.2",
+    "smriti_module": "/private/tmp/smriti-qa-20260905/lib/python3.11/site-packages/smriti/__init__.py",
+    "smriti_module_sha256": "e34522a3d31d2db13981097f5c3c258572ae8b15174296d0672373e9e49a05e7",
+    "python": "3.11.15 (main, Jun 11 2026, 04:04:09) [Clang 22.1.3 ]",
+    "distribution_version": "0.3.2"
+  },
+  "interpretation": {
+    "retirement_contract": "diagnostic only: uses_tool is not assumed single-valued by this fixture",
+    "quality_failure_meaning": "old Sketch remaining active alongside explicit scoped Figma destination",
+    "quality_failure_is_proof": false,
+    "unobserved_runtime_behavior": "same-predicate semantic arbitration may be conditional on similarity, scope, and arbiter response"
+  },
+  "provider": {
+    "endpoint": "http://127.0.0.1:11436/v1",
+    "runtime_endpoint": "http://127.0.0.1:11436",
+    "version": {
+      "version": "0.24.0"
+    },
+    "tags": {
+      "models": [
+        {
+          "name": "nomic-embed-text:v1.5",
+          "model": "nomic-embed-text:v1.5",
+          "modified_at": "2026-09-06T01:27:59.961284792+05:30",
+          "size": 274302450,
+          "digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "nomic-bert",
+            "families": [
+              "nomic-bert"
+            ],
+            "parameter_size": "137M",
+            "quantization_level": "F16"
+          }
+        },
+        {
+          "name": "qwen3:8b",
+          "model": "qwen3:8b",
+          "modified_at": "2026-09-06T01:27:36.039328439+05:30",
+          "size": 5225388164,
+          "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen3",
+            "families": [
+              "qwen3"
+            ],
+            "parameter_size": "8.2B",
+            "quantization_level": "Q4_K_M"
+          }
+        }
+      ]
+    },
+    "models": {
+      "qwen3:8b": [
+        {
+          "name": "qwen3:8b",
+          "model": "qwen3:8b",
+          "modified_at": "2026-09-06T01:27:36.039328439+05:30",
+          "size": 5225388164,
+          "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen3",
+            "families": [
+              "qwen3"
+            ],
+            "parameter_size": "8.2B",
+            "quantization_level": "Q4_K_M"
+          }
+        }
+      ],
+      "nomic-embed-text:v1.5": [
+        {
+          "name": "nomic-embed-text:v1.5",
+          "model": "nomic-embed-text:v1.5",
+          "modified_at": "2026-09-06T01:27:59.961284792+05:30",
+          "size": 274302450,
+          "digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "nomic-bert",
+            "families": [
+              "nomic-bert"
+            ],
+            "parameter_size": "137M",
+            "quantization_level": "F16"
+          }
+        }
+      ]
+    },
+    "errors": []
+  }
+}

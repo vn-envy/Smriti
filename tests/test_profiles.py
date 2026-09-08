@@ -162,6 +162,13 @@ def test_mcp_recall_and_search_accept_profile_and_channels():
         assert set(r["channels"]) <= set(CHANNEL_GROUPS["lexical"])
 
 
+def test_mcp_call_returns_native_structured_content():
+    srv = SmritiMCP(seeded())
+    resp = srv.handle({"jsonrpc": "2.0", "id": 1, "method": "tools/call",
+                       "params": {"name": "stats", "arguments": {}}})
+    assert resp["result"]["structuredContent"]["episodes"] == 3
+
+
 def test_mcp_rejects_bad_profile_and_bad_channel():
     srv = SmritiMCP(seeded())
     resp = srv.handle({"jsonrpc": "2.0", "id": 2, "method": "tools/call",
@@ -179,3 +186,22 @@ def test_mcp_tool_defs_advertise_profiles():
     recall = next(t for t in TOOL_DEFS if t["name"] == "recall")
     assert "profile" in recall["inputSchema"]["properties"]
     assert "facts" in recall["inputSchema"]["properties"]["profile"]["enum"]
+
+
+def test_mcp_initialize_reports_the_version_server_implements():
+    from smriti.mcp_server import PROTOCOL_VERSION
+    srv = SmritiMCP(seeded())
+    resp = srv.handle({"jsonrpc": "2.0", "id": 1, "method": "initialize",
+                       "params": {"protocolVersion": "unsupported-future-version"}})
+    assert resp["result"]["protocolVersion"] == PROTOCOL_VERSION
+
+
+def test_mcp_rejects_invalid_jsonrpc_version_and_params_shape():
+    srv = SmritiMCP(seeded())
+    resp = srv.handle({"id": 1, "method": "ping"})
+    assert resp["error"]["code"] == -32600
+    resp = srv.handle({"jsonrpc": "1.0", "id": 2, "method": "ping"})
+    assert resp["error"]["code"] == -32600
+    resp = srv.handle({"jsonrpc": "2.0", "id": 3, "method": "tools/list",
+                       "params": []})
+    assert resp["error"]["code"] == -32602

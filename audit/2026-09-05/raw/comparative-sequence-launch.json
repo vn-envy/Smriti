@@ -1,0 +1,18 @@
+{
+  "status": "launched_waiting_for_mem0",
+  "captured_at_utc": "2026-09-07T21:16:14.755444+00:00",
+  "wait_for_mem0_pid": 38124,
+  "wait_for_mem0_session": 68479,
+  "controller_directory": "/private/tmp/smriti-comparison-sequence-456c189",
+  "gbrain_frozen_manifest": "audit/2026-09-05/raw/gbrain-heldout20-frozen-runner.json",
+  "hindsight_frozen_script": "/private/tmp/smriti-comparison-sequence-456c189/hindsight_comparative.py",
+  "hindsight_script_sha256": "d0b34aa6078b5a4c7ccba5ea929ac95948a4dd54c21ce212947fb3fb976bda3e",
+  "dataset_path": "/Users/kshitijvatsa/Downloads/Smriti-main/bench/comparative_dataset.json",
+  "dataset_sha256": "277d1bf48b2dea7babb1459841be1a0af4deb74820eb01f1d74ad61fe3436944",
+  "policy": "Run GBrain heldout20 then Hindsight 20 retains/12 recalls only after Mem0 process exits and terminal artifact is complete. No automatic retries or overwrite of existing outputs. Root quality review remains required.",
+  "controller_session_id": 61364,
+  "controller_script": "/private/tmp/smriti-comparison-sequence-456c189/run.py",
+  "controller_script_sha256": "9b67915b77ebbe141be57b6251d97f3e7903a4a65a0557db0e6dc3668b11ca30",
+  "launched_at_utc": "2026-09-07T21:17:41.524063+00:00",
+  "execution_evidence": "Controller returned a live exec session with waiting_for_mem0 after verifying PID38124 identity. The dependent benchmarks have not run yet."
+}

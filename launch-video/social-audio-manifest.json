@@ -1,0 +1,22 @@
+{
+  "duration_seconds": 60,
+  "source_media_committed": false,
+  "files_sha256": {
+    "groove.mp3": "908bcbb29626d4218802f98cafdb519e57f3eae3963070693091073628c821ae",
+    "typing.wav": "1eef2f5cf924f53d4b320015a054f4f5f7f0151d19918fecd7b5089a92885faf",
+    "key.wav": "62ffb1f881ed4cd7a522dccbfbb0eed16e70e2813e3ce664a01b6f322b6a2684",
+    "social-mix.wav": "f762913cde0e3452702a373806f71efdfaca18b5c09ab1032f89ba718a9feeb6",
+    "notification.wav": "850e962d07ea5deadefd38ba180d9da88b149f7cac6e52600c26389fa37eace7",
+    "technology.wav": "09a032272e271f381063b8a20bfdad65f0583a9f20197860bffa9673f16920c9"
+  },
+  "filter_graph": "[0:a]atrim=start=0.12:end=60.12,asetpts=PTS-STARTPTS,volume=0.90,afade=t=in:d=0.18,afade=t=out:st=58.2:d=1.8[bed];[1:a]atrim=0:3,asetpts=PTS-STARTPTS,volume=0.09,afade=t=in:d=0.12,afade=t=out:st=1:d=2[texture];[2:a]atrim=0:1.6,asetpts=PTS-STARTPTS,volume=0.35,afade=t=out:st=1.3:d=0.3,adelay=1300|1300[typing];[3:a]atrim=0:0.6,asetpts=PTS-STARTPTS,volume=0.5,asplit=2[k1][k2];[k1]adelay=34000|34000[key1];[k2]adelay=37200|37200[key2];[4:a]atrim=0:1.4,asetpts=PTS-STARTPTS,volume=0.22,asplit=2[n1][n2];[n1]adelay=11200|11200[notice1];[n2]adelay=51000|51000[notice2];[bed][texture][typing][key1][key2][notice1][notice2]amix=inputs=7:duration=first:normalize=0,alimiter=limit=0.84:level=false,aformat=sample_rates=48000:channel_layouts=stereo[out]",
+  "cues_seconds": {
+    "typing": 1.3,
+    "record_reveal": 11.2,
+    "time_cursor": [
+      34,
+      37.2
+    ],
+    "measurement_result": 51
+  }
+}

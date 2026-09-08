@@ -1,0 +1,15 @@
+{
+  "captured_at_utc": "2026-09-07T20:47:58.758819+00:00",
+  "run_session": 85898,
+  "completed_questions_at_observation": 49,
+  "observed_operational_failures": 0,
+  "load_averages": [
+    262.26,
+    230.71,
+    127.82
+  ],
+  "physical_memory_bytes": 25769803776,
+  "system_memory_free_percent": 25,
+  "observation": "Local host reported unusually high load during final question. Process handle remained live. Multiple desktop and background processes were active. No external processes were modified.",
+  "interpretation": "Host contention may explain late slowdown. Do not use overall wall-clock duration as an isolated comparative speed measurement. Preserve final quality and failure evidence unchanged."
+}

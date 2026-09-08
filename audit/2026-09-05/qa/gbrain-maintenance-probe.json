@@ -1,0 +1,474 @@
+{
+  "schema_version": 1,
+  "track": "CPU-only copied-database GBrain repeat-maintenance diagnostic; source fixture may already be analyzed; no embedding or model calls",
+  "configuration": {
+    "engine": "pglite",
+    "query_count": 10,
+    "search_limit": 5,
+    "orFallback": true,
+    "model": null,
+    "embedding": null,
+    "root": "/private/tmp/smriti-competitors-20260905/gbrain",
+    "source_db": "/private/tmp/smriti-gbrain-analyze-20260907/db",
+    "copied_db": "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/gbrain-maintenance-copy-uCAydl/db",
+    "source_mutated": false,
+    "source_state": "The preserved fixture used for this run was already analyzed; this is not evidence of the original cold-start cliff.",
+    "copy_strategy": "recursive copy before engine connect; ANALYZE and restart target copied_db"
+  },
+  "documents": 5000,
+  "before": [
+    {
+      "index": 0,
+      "query": "passport renewal appointment",
+      "ms": 68.69249999999988,
+      "slugs": [
+        "bench/n0000000",
+        "bench/n0000005",
+        "bench/n0000010",
+        "bench/n0000015",
+        "bench/n0000020"
+      ],
+      "returned_count": 5
+    },
+    {
+      "index": 1,
+      "query": "doctor knee recommendation",
+      "ms": 55.48358299999995,
+      "slugs": [
+        "bench/n0000001",
+        "bench/n0000006",
+        "bench/n0000011",
+        "bench/n0000016",
+        "bench/n0000021"
+      ],
+      "returned_count": 5
+    },
+    {
+      "index": 2,
+      "query": "project launch date",
+      "ms": 58.15520900000001,
+      "slugs": [
+        "bench/n0000002",
+        "bench/n0000007",
+        "bench/n0000012",
+        "bench/n0000017",
+        "bench/n0000022"
+      ],
+      "returned_count": 5
+    },
+    {
+      "index": 3,
+      "query": "invoice due date",
+      "ms": 49.93554100000006,
+      "slugs": [
+        "bench/n0000003",
+        "bench/n0000008",
+        "bench/n0000013",
+        "bench/n0000018",
+        "bench/n0000023"
+      ],
+      "returned_count": 5
+    },
+    {
+      "index": 4,
+      "query": "emergency contact",
+      "ms": 32.291999999999916,
+      "slugs": [
+        "bench/n0000004",
+        "bench/n0000009",
+        "bench/n0000014",
+        "bench/n0000019",
+        "bench/n0000024"
+      ],
+      "returned_count": 5
+    },
+    {
+      "index": 5,
+      "query": "passport renewal appointment",
+      "ms": 30.975582999999915,
+      "slugs": [
+        "bench/n0000000",
+        "bench/n0000005",
+        "bench/n0000010",
+        "bench/n0000015",
+        "bench/n0000020"
+      ],
+      "returned_count": 5
+    },
+    {
+      "index": 6,
+      "query": "doctor knee recommendation",
+      "ms": 26.994542000000138,
+      "slugs": [
+        "bench/n0000001",
+        "bench/n0000006",
+        "bench/n0000011",
+        "bench/n0000016",
+        "bench/n0000021"
+      ],
+      "returned_count": 5
+    },
+    {
+      "index": 7,
+      "query": "project launch date",
+      "ms": 24.808708000000024,
+      "slugs": [
+        "bench/n0000002",
+        "bench/n0000007",
+        "bench/n0000012",
+        "bench/n0000017",
+        "bench/n0000022"
+      ],
+      "returned_count": 5
+    },
+    {
+      "index": 8,
+      "query": "invoice due date",
+      "ms": 32.549749999999904,
+      "slugs": [
+        "bench/n0000003",
+        "bench/n0000008",
+        "bench/n0000013",
+        "bench/n0000018",
+        "bench/n0000023"
+      ],
+      "returned_count": 5
+    },
+    {
+      "index": 9,
+      "query": "emergency contact",
+      "ms": 32.05854199999976,
+      "slugs": [
+        "bench/n0000004",
+        "bench/n0000009",
+        "bench/n0000014",
+        "bench/n0000019",
+        "bench/n0000024"
+      ],
+      "returned_count": 5
+    }
+  ],
+  "maintenance_ms": 957.731875,
+  "after": [
+    {
+      "index": 0,
+      "query": "passport renewal appointment",
+      "ms": 29.605209000000286,
+      "slugs": [
+        "bench/n0000000",
+        "bench/n0000005",
+        "bench/n0000010",
+        "bench/n0000015",
+        "bench/n0000020"
+      ],
+      "returned_count": 5
+    },
+    {
+      "index": 1,
+      "query": "doctor knee recommendation",
+      "ms": 26.629041000000143,
+      "slugs": [
+        "bench/n0000001",
+        "bench/n0000006",
+        "bench/n0000011",
+        "bench/n0000016",
+        "bench/n0000021"
+      ],
+      "returned_count": 5
+    },
+    {
+      "index": 2,
+      "query": "project launch date",
+      "ms": 30.297167000000172,
+      "slugs": [
+        "bench/n0000002",
+        "bench/n0000007",
+        "bench/n0000012",
+        "bench/n0000017",
+        "bench/n0000022"
+      ],
+      "returned_count": 5
+    },
+    {
+      "index": 3,
+      "query": "invoice due date",
+      "ms": 32.821290999999746,
+      "slugs": [
+        "bench/n0000003",
+        "bench/n0000008",
+        "bench/n0000013",
+        "bench/n0000018",
+        "bench/n0000023"
+      ],
+      "returned_count": 5
+    },
+    {
+      "index": 4,
+      "query": "emergency contact",
+      "ms": 35.05841600000031,
+      "slugs": [
+        "bench/n0000004",
+        "bench/n0000009",
+        "bench/n0000014",
+        "bench/n0000019",
+        "bench/n0000024"
+      ],
+      "returned_count": 5
+    },
+    {
+      "index": 5,
+      "query": "passport renewal appointment",
+      "ms": 31.18520899999976,
+      "slugs": [
+        "bench/n0000000",
+        "bench/n0000005",
+        "bench/n0000010",
+        "bench/n0000015",
+        "bench/n0000020"
+      ],
+      "returned_count": 5
+    },
+    {
+      "index": 6,
+      "query": "doctor knee recommendation",
+      "ms": 34.083292000000256,
+      "slugs": [
+        "bench/n0000001",
+        "bench/n0000006",
+        "bench/n0000011",
+        "bench/n0000016",
+        "bench/n0000021"
+      ],
+      "returned_count": 5
+    },
+    {
+      "index": 7,
+      "query": "project launch date",
+      "ms": 43.312875000000076,
+      "slugs": [
+        "bench/n0000002",
+        "bench/n0000007",
+        "bench/n0000012",
+        "bench/n0000017",
+        "bench/n0000022"
+      ],
+      "returned_count": 5
+    },
+    {
+      "index": 8,
+      "query": "invoice due date",
+      "ms": 24.837625000000116,
+      "slugs": [
+        "bench/n0000003",
+        "bench/n0000008",
+        "bench/n0000013",
+        "bench/n0000018",
+        "bench/n0000023"
+      ],
+      "returned_count": 5
+    },
+    {
+      "index": 9,
+      "query": "emergency contact",
+      "ms": 28.542625000000044,
+      "slugs": [
+        "bench/n0000004",
+        "bench/n0000009",
+        "bench/n0000014",
+        "bench/n0000019",
+        "bench/n0000024"
+      ],
+      "returned_count": 5
+    }
+  ],
+  "restart": {
+    "rows": [
+      {
+        "index": 0,
+        "query": "passport renewal appointment",
+        "ms": 73.25220799999988,
+        "slugs": [
+          "bench/n0000000",
+          "bench/n0000005",
+          "bench/n0000010",
+          "bench/n0000015",
+          "bench/n0000020"
+        ],
+        "returned_count": 5
+      },
+      {
+        "index": 1,
+        "query": "doctor knee recommendation",
+        "ms": 35.6081250000002,
+        "slugs": [
+          "bench/n0000001",
+          "bench/n0000006",
+          "bench/n0000011",
+          "bench/n0000016",
+          "bench/n0000021"
+        ],
+        "returned_count": 5
+      },
+      {
+        "index": 2,
+        "query": "project launch date",
+        "ms": 33.33329200000003,
+        "slugs": [
+          "bench/n0000002",
+          "bench/n0000007",
+          "bench/n0000012",
+          "bench/n0000017",
+          "bench/n0000022"
+        ],
+        "returned_count": 5
+      },
+      {
+        "index": 3,
+        "query": "invoice due date",
+        "ms": 30.19637499999999,
+        "slugs": [
+          "bench/n0000003",
+          "bench/n0000008",
+          "bench/n0000013",
+          "bench/n0000018",
+          "bench/n0000023"
+        ],
+        "returned_count": 5
+      },
+      {
+        "index": 4,
+        "query": "emergency contact",
+        "ms": 28.750375000000076,
+        "slugs": [
+          "bench/n0000004",
+          "bench/n0000009",
+          "bench/n0000014",
+          "bench/n0000019",
+          "bench/n0000024"
+        ],
+        "returned_count": 5
+      },
+      {
+        "index": 5,
+        "query": "passport renewal appointment",
+        "ms": 21.70254100000011,
+        "slugs": [
+          "bench/n0000000",
+          "bench/n0000005",
+          "bench/n0000010",
+          "bench/n0000015",
+          "bench/n0000020"
+        ],
+        "returned_count": 5
+      },
+      {
+        "index": 6,
+        "query": "doctor knee recommendation",
+        "ms": 25.741709000000128,
+        "slugs": [
+          "bench/n0000001",
+          "bench/n0000006",
+          "bench/n0000011",
+          "bench/n0000016",
+          "bench/n0000021"
+        ],
+        "returned_count": 5
+      },
+      {
+        "index": 7,
+        "query": "project launch date",
+        "ms": 21.93095799999992,
+        "slugs": [
+          "bench/n0000002",
+          "bench/n0000007",
+          "bench/n0000012",
+          "bench/n0000017",
+          "bench/n0000022"
+        ],
+        "returned_count": 5
+      },
+      {
+        "index": 8,
+        "query": "invoice due date",
+        "ms": 20.953250000000025,
+        "slugs": [
+          "bench/n0000003",
+          "bench/n0000008",
+          "bench/n0000013",
+          "bench/n0000018",
+          "bench/n0000023"
+        ],
+        "returned_count": 5
+      },
+      {
+        "index": 9,
+        "query": "emergency contact",
+        "ms": 23.91316699999993,
+        "slugs": [
+          "bench/n0000004",
+          "bench/n0000009",
+          "bench/n0000014",
+          "bench/n0000019",
+          "bench/n0000024"
+        ],
+        "returned_count": 5
+      }
+    ],
+    "startup_ms": 1251.2202909999999
+  },
+  "verification": {
+    "before": {
+      "all_queries_returned_five": true,
+      "unique_query_order": [
+        "passport renewal appointment",
+        "doctor knee recommendation",
+        "project launch date",
+        "invoice due date",
+        "emergency contact",
+        "passport renewal appointment",
+        "doctor knee recommendation",
+        "project launch date",
+        "invoice due date",
+        "emergency contact"
+      ]
+    },
+    "after": {
+      "all_queries_returned_five": true,
+      "unique_query_order": [
+        "passport renewal appointment",
+        "doctor knee recommendation",
+        "project launch date",
+        "invoice due date",
+        "emergency contact",
+        "passport renewal appointment",
+        "doctor knee recommendation",
+        "project launch date",
+        "invoice due date",
+        "emergency contact"
+      ]
+    },
+    "restart": {
+      "all_queries_returned_five": true,
+      "unique_query_order": [
+        "passport renewal appointment",
+        "doctor knee recommendation",
+        "project launch date",
+        "invoice due date",
+        "emergency contact",
+        "passport renewal appointment",
+        "doctor knee recommendation",
+        "project launch date",
+        "invoice due date",
+        "emergency contact"
+      ]
+    },
+    "identical_ranked_results_before_after": true,
+    "identical_ranked_results_after_restart": true
+  },
+  "limitations": [
+    "One deterministic ten-query order; caches and concurrent host workload are not randomized.",
+    "Returned slugs are compared exactly; this diagnostic does not claim semantic relevance beyond the fixture check.",
+    "The provided source fixture was already analyzed; this run validates repeat maintenance and restart preservation, not the original cold-start cliff."
+  ],
+  "reproduce": "GBRAIN_ROOT=/path/to/gbrain GBRAIN_DB_SOURCE=/path/to/closed/db bun audit/2026-09-05/qa/gbrain_maintenance_probe.ts"
+}

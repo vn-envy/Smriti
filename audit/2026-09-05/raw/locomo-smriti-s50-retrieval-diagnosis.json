@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "status": "complete_offline_diagnosis",
+  "review_type": "locomo_smriti_s50_missing_evidence_retrieval_diagnosis",
+  "purpose": "Quantify returned session diversity and distinguish absent evidence sources from returned sources whose specific official dialogue is absent after reader budgeting.",
+  "source": {
+    "failure_analysis": "audit/2026-09-05/raw/locomo-smriti-s50-failure-analysis.json",
+    "qa_artifact": "audit/2026-09-05/locomo-qa-smriti-s50.json",
+    "qa_artifact_sha256": "e0f6417f0180d5c5756483d3f8ed6a5f2f1b79f119fcc3cc4db24369935194dc",
+    "dataset_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4"
+  },
+  "method": {
+    "population": "The 11 answerable rows classified as missing evidence in the terminal failure analysis.",
+    "session_slots": "Count retrieved_rows entries; unique sessions are distinct retrieved_rows.session_id values; repeated slots are slots minus unique sessions.",
+    "evidence_status": "source_never_returned means source_returned=false; source_returned_dialogue_missing means source_returned=true and exact_dialogue_in_context=false; source_returned_dialogue_present means both source_returned and exact_dialogue_in_context are true.",
+    "inputs_used": "Official evidence mappings, returned rows, source markers, and exact stored reader_context from the immutable QA/failure-analysis artifacts.",
+    "model_calls": 0,
+    "rescore_performed": false,
+    "official_results_modified": false
+  },
+  "rows": [
+    {
+      "question_id": "conv-41-q8",
+      "gold_evidence": [{"evidence_id": "D5:5", "source_label": "source-0005", "status": "source_never_returned"}],
+      "retrieved_chunk_slots": 12,
+      "unique_returned_sessions": 12,
+      "repeated_session_slots": 0,
+      "case_class": "source_never_returned_only"
+    },
+    {
+      "question_id": "conv-30-q3",
+      "gold_evidence": [
+        {"evidence_id": "D1:2", "source_label": "source-0001", "status": "source_never_returned"},
+        {"evidence_id": "D1:3", "source_label": "source-0001", "status": "source_never_returned"},
+        {"evidence_id": "D1:4", "source_label": "source-0001", "status": "source_never_returned"},
+        {"evidence_id": "D2:1", "source_label": "source-0002", "status": "source_never_returned"}
+      ],
+      "retrieved_chunk_slots": 12,
+      "unique_returned_sessions": 9,
+      "repeated_session_slots": 3,
+      "case_class": "source_never_returned_only"
+    },
+    {
+      "question_id": "conv-42-q1",
+      "gold_evidence": [
+        {"evidence_id": "D1:10", "source_label": "source-0001", "status": "source_returned_dialogue_present"},
+        {"evidence_id": "D1:11", "source_label": "source-0001", "status": "source_returned_dialogue_present"},
+        {"evidence_id": "D1:12", "source_label": "source-0001", "status": "source_returned_dialogue_missing"},
+        {"evidence_id": "D3:4", "source_label": "source-0003", "status": "source_never_returned"},
+        {"evidence_id": "D4:9", "source_label": "source-0004", "status": "source_never_returned"},
+        {"evidence_id": "D10:9", "source_label": "source-0010", "status": "source_never_returned"},
+        {"evidence_id": "D20:2", "source_label": "source-0020", "status": "source_never_returned"}
+      ],
+      "retrieved_chunk_slots": 12,
+      "unique_returned_sessions": 9,
+      "repeated_session_slots": 3,
+      "case_class": "mixed_returned_source_and_source_omission"
+    },
+    {
+      "question_id": "conv-44-q19",
+      "gold_evidence": [
+        {"evidence_id": "D10:12", "source_label": "source-0010", "status": "source_never_returned"},
+        {"evidence_id": "D12:1", "source_label": "source-0012", "status": "source_never_returned"}
+      ],
+      "retrieved_chunk_slots": 12,
+      "unique_returned_sessions": 10,
+      "repeated_session_slots": 2,
+      "case_class": "source_never_returned_only"
+    },
+    {
+      "question_id": "conv-44-q0",
+      "gold_evidence": [{"evidence_id": "D1:7", "source_label": "source-0001", "status": "source_returned_dialogue_missing"}],
+      "retrieved_chunk_slots": 12,
+      "unique_returned_sessions": 12,
+      "repeated_session_slots": 0,
+      "case_class": "returned_source_target_dialogue_missing_only"
+    },
+    {
+      "question_id": "conv-47-q0",
+      "gold_evidence": [{"evidence_id": "D1:27", "source_label": "source-0001", "status": "source_returned_dialogue_missing"}],
+      "retrieved_chunk_slots": 12,
+      "unique_returned_sessions": 11,
+      "repeated_session_slots": 1,
+      "case_class": "returned_source_target_dialogue_missing_only"
+    },
+    {
+      "question_id": "conv-44-q2",
+      "gold_evidence": [
+        {"evidence_id": "D13:1", "source_label": "source-0013", "status": "source_never_returned"},
+        {"evidence_id": "D23:1", "source_label": "source-0023", "status": "source_returned_dialogue_present"},
+        {"evidence_id": "D25:1", "source_label": "source-0025", "status": "source_returned_dialogue_present"},
+        {"evidence_id": "D19:15", "source_label": "source-0019", "status": "source_never_returned"}
+      ],
+      "retrieved_chunk_slots": 12,
+      "unique_returned_sessions": 9,
+      "repeated_session_slots": 3,
+      "case_class": "mixed_returned_source_and_source_omission"
+    },
+    {
+      "question_id": "conv-47-q1",
+      "gold_evidence": [{"evidence_id": "D1:26", "source_label": "source-0001", "status": "source_never_returned"}],
+      "retrieved_chunk_slots": 12,
+      "unique_returned_sessions": 10,
+      "repeated_session_slots": 2,
+      "case_class": "source_never_returned_only"
+    },
+    {
+      "question_id": "conv-47-q2",
+      "gold_evidence": [
+        {"evidence_id": "D1:36", "source_label": "source-0001", "status": "source_never_returned"},
+        {"evidence_id": "D21:15", "source_label": "source-0021", "status": "source_never_returned"},
+        {"evidence_id": "D23:5", "source_label": "source-0023", "status": "source_returned_dialogue_present"},
+        {"evidence_id": "D23:6", "source_label": "source-0023", "status": "source_returned_dialogue_present"}
+      ],
+      "retrieved_chunk_slots": 12,
+      "unique_returned_sessions": 10,
+      "repeated_session_slots": 2,
+      "case_class": "mixed_returned_source_and_source_omission"
+    },
+    {
+      "question_id": "conv-48-q0",
+      "gold_evidence": [{"evidence_id": "D1:2", "source_label": "source-0001", "status": "source_returned_dialogue_missing"}],
+      "retrieved_chunk_slots": 12,
+      "unique_returned_sessions": 10,
+      "repeated_session_slots": 2,
+      "case_class": "returned_source_target_dialogue_missing_only"
+    },
+    {
+      "question_id": "conv-26-q14",
+      "gold_evidence": [
+        {"evidence_id": "D4:15", "source_label": "source-0004", "status": "source_returned_dialogue_missing"},
+        {"evidence_id": "D3:5", "source_label": "source-0003", "status": "source_returned_dialogue_missing"}
+      ],
+      "retrieved_chunk_slots": 12,
+      "unique_returned_sessions": 9,
+      "repeated_session_slots": 3,
+      "case_class": "returned_source_target_dialogue_missing_only"
+    }
+  ],
+  "aggregate": {
+    "missing_evidence_cases": 11,
+    "retrieved_chunk_slots": 132,
+    "unique_returned_sessions_sum": 111,
+    "repeated_session_slots": 21,
+    "mean_unique_sessions_per_case": 10.090909,
+    "evidence_dialogues": 28,
+    "evidence_status_counts": {
+      "source_never_returned": 16,
+      "source_returned_dialogue_missing": 6,
+      "source_returned_dialogue_present": 6
+    },
+    "case_class_counts": {
+      "source_never_returned_only": 4,
+      "returned_source_target_dialogue_missing_only": 4,
+      "mixed_returned_source_and_source_omission": 3
+    }
+  },
+  "interpretation": {
+    "measured": "Among these 11 missing-evidence failures, 4 cases had only never-returned gold sources, 4 had returned sources whose target dialogue was absent, and 3 mixed both conditions. Retrieval returned 132 chunk slots representing 111 unique sessions, with 21 repeated session slots.",
+    "ablation_signal": "The repeated-session slots and returned-source dialogue omissions make a bounded session-diversity/context-budget ablation a reasonable follow-up hypothesis, especially for the 5 cases with at least one returned source but missing target dialogue.",
+    "limits": [
+      "source_returned_dialogue_missing proves only that the exact official dialogue was absent from the stored reader_context while the source label appeared; it does not prove a particular truncation mechanism, ranking cause, or that session diversity would improve accuracy.",
+      "The table covers only the 11 answerable rows classified as missing evidence. It excludes 7 retrieved-supported reader failures, 1 ambiguous failure, correct rows, abstention rows, and the pending Mem0 comparison.",
+      "No new score, rescore, causal claim, or model judgment was produced."
+    ]
+  }
+}

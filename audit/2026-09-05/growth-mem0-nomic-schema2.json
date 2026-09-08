@@ -1,0 +1,2858 @@
+{
+  "schema_version": 2,
+  "status": "complete",
+  "adapter": "mem0",
+  "configuration": "mem0 OSS / infer=False / embedder=ollama:nomic-embed-text:v1.5 dims=768 endpoint=http://127.0.0.1:11436 / vector_store=qdrant",
+  "measurement": "growing-corpus simulation in one run; checkpoints are not elapsed-day longitudinal observations",
+  "timing_scope": "in-process operations; cold query follows same-process client/database reopen (not a new OS process)",
+  "model_cost": {
+    "observed_paid_api_usd": 0,
+    "hardware_electricity_cost_usd": null,
+    "note": "Local/API charge is $0 only for the verified local route; otherwise paid API cost is unknown. Electricity, hardware purchase/rental, and depreciation were not measured. Shared model cache is excluded."
+  },
+  "verification": {
+    "synthetic_queries": [
+      "passport renewal appointment",
+      "doctor knee recommendation",
+      "project launch date",
+      "invoice due date",
+      "emergency contact"
+    ],
+    "nonempty_and_relevant_definition": "A result is relevant when its synthetic document bucket matches the query topic."
+  },
+  "checkpoints": [
+    {
+      "documents": 100,
+      "incremental_ingest_ms": 1317.983,
+      "same_payload_update_ms": 11.856,
+      "update_definition": "idempotent re-submit of the final record unchanged; adapter dedup/update semantics apply",
+      "gbrain_analyze_maintenance_ms": null,
+      "gbrain_ingest_statuses": null,
+      "gbrain_update_statuses": null,
+      "first_query_after_ingest_ms": 12.317,
+      "first_query_after_ingest_returned_ids": [
+        "n0000060",
+        "n0000020",
+        "n0000055",
+        "n0000090",
+        "n0000040"
+      ],
+      "first_query_after_ingest_per_hit_relevance": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "first_query_after_ingest_returned": 5,
+      "first_query_after_ingest_relevant_ids": [
+        "n0000060",
+        "n0000020",
+        "n0000055",
+        "n0000090",
+        "n0000040"
+      ],
+      "first_query_after_ingest_relevant": 5,
+      "cold_query_after_restart_ms": 73.595,
+      "cold_query_boundary": "same_process_client_reopen",
+      "process_restart_startup_ms": 12.348,
+      "cold_query_returned_ids": [
+        "n0000060",
+        "n0000020",
+        "n0000055",
+        "n0000090",
+        "n0000040"
+      ],
+      "cold_query_per_hit_relevance": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "cold_query_returned": 5,
+      "cold_query_relevant": 5,
+      "warm_query_ms_p50": 11.015,
+      "warm_query_ms_p95": 15.521,
+      "timed_query_samples": 20,
+      "warm_nonempty_results": 20,
+      "warm_queries_with_relevant_result": 20,
+      "timed_queries": [
+        {
+          "query": "passport renewal appointment",
+          "returned_ids": [
+            "n0000060",
+            "n0000020",
+            "n0000055",
+            "n0000090",
+            "n0000040"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000060",
+            "n0000020",
+            "n0000055",
+            "n0000090",
+            "n0000040"
+          ],
+          "latency_ms": 12.483
+        },
+        {
+          "query": "doctor knee recommendation",
+          "returned_ids": [
+            "n0000021",
+            "n0000091",
+            "n0000081",
+            "n0000061",
+            "n0000071"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000021",
+            "n0000091",
+            "n0000081",
+            "n0000061",
+            "n0000071"
+          ],
+          "latency_ms": 12.561
+        },
+        {
+          "query": "project launch date",
+          "returned_ids": [
+            "n0000072",
+            "n0000017",
+            "n0000042",
+            "n0000022",
+            "n0000092"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000072",
+            "n0000017",
+            "n0000042",
+            "n0000022",
+            "n0000092"
+          ],
+          "latency_ms": 13.07
+        },
+        {
+          "query": "invoice due date",
+          "returned_ids": [
+            "n0000018",
+            "n0000038",
+            "n0000093",
+            "n0000078",
+            "n0000088"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000018",
+            "n0000038",
+            "n0000093",
+            "n0000078",
+            "n0000088"
+          ],
+          "latency_ms": 15.521
+        },
+        {
+          "query": "emergency contact",
+          "returned_ids": [
+            "n0000014",
+            "n0000074",
+            "n0000059",
+            "n0000084",
+            "n0000034"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000014",
+            "n0000074",
+            "n0000059",
+            "n0000084",
+            "n0000034"
+          ],
+          "latency_ms": 10.375
+        },
+        {
+          "query": "passport renewal appointment",
+          "returned_ids": [
+            "n0000060",
+            "n0000020",
+            "n0000055",
+            "n0000090",
+            "n0000040"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000060",
+            "n0000020",
+            "n0000055",
+            "n0000090",
+            "n0000040"
+          ],
+          "latency_ms": 11.454
+        },
+        {
+          "query": "doctor knee recommendation",
+          "returned_ids": [
+            "n0000021",
+            "n0000091",
+            "n0000081",
+            "n0000061",
+            "n0000071"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000021",
+            "n0000091",
+            "n0000081",
+            "n0000061",
+            "n0000071"
+          ],
+          "latency_ms": 10.774
+        },
+        {
+          "query": "project launch date",
+          "returned_ids": [
+            "n0000072",
+            "n0000017",
+            "n0000042",
+            "n0000022",
+            "n0000092"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000072",
+            "n0000017",
+            "n0000042",
+            "n0000022",
+            "n0000092"
+          ],
+          "latency_ms": 11.462
+        },
+        {
+          "query": "invoice due date",
+          "returned_ids": [
+            "n0000018",
+            "n0000038",
+            "n0000093",
+            "n0000078",
+            "n0000088"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000018",
+            "n0000038",
+            "n0000093",
+            "n0000078",
+            "n0000088"
+          ],
+          "latency_ms": 10.651
+        },
+        {
+          "query": "emergency contact",
+          "returned_ids": [
+            "n0000014",
+            "n0000074",
+            "n0000059",
+            "n0000084",
+            "n0000034"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000014",
+            "n0000074",
+            "n0000059",
+            "n0000084",
+            "n0000034"
+          ],
+          "latency_ms": 10.731
+        },
+        {
+          "query": "passport renewal appointment",
+          "returned_ids": [
+            "n0000060",
+            "n0000020",
+            "n0000055",
+            "n0000090",
+            "n0000040"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000060",
+            "n0000020",
+            "n0000055",
+            "n0000090",
+            "n0000040"
+          ],
+          "latency_ms": 14.124
+        },
+        {
+          "query": "doctor knee recommendation",
+          "returned_ids": [
+            "n0000021",
+            "n0000091",
+            "n0000081",
+            "n0000061",
+            "n0000071"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000021",
+            "n0000091",
+            "n0000081",
+            "n0000061",
+            "n0000071"
+          ],
+          "latency_ms": 12.334
+        },
+        {
+          "query": "project launch date",
+          "returned_ids": [
+            "n0000072",
+            "n0000017",
+            "n0000042",
+            "n0000022",
+            "n0000092"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000072",
+            "n0000017",
+            "n0000042",
+            "n0000022",
+            "n0000092"
+          ],
+          "latency_ms": 10.863
+        },
+        {
+          "query": "invoice due date",
+          "returned_ids": [
+            "n0000018",
+            "n0000038",
+            "n0000093",
+            "n0000078",
+            "n0000088"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000018",
+            "n0000038",
+            "n0000093",
+            "n0000078",
+            "n0000088"
+          ],
+          "latency_ms": 10.857
+        },
+        {
+          "query": "emergency contact",
+          "returned_ids": [
+            "n0000014",
+            "n0000074",
+            "n0000059",
+            "n0000084",
+            "n0000034"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000014",
+            "n0000074",
+            "n0000059",
+            "n0000084",
+            "n0000034"
+          ],
+          "latency_ms": 11.015
+        },
+        {
+          "query": "passport renewal appointment",
+          "returned_ids": [
+            "n0000060",
+            "n0000020",
+            "n0000055",
+            "n0000090",
+            "n0000040"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000060",
+            "n0000020",
+            "n0000055",
+            "n0000090",
+            "n0000040"
+          ],
+          "latency_ms": 13.278
+        },
+        {
+          "query": "doctor knee recommendation",
+          "returned_ids": [
+            "n0000021",
+            "n0000091",
+            "n0000081",
+            "n0000061",
+            "n0000071"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000021",
+            "n0000091",
+            "n0000081",
+            "n0000061",
+            "n0000071"
+          ],
+          "latency_ms": 10.83
+        },
+        {
+          "query": "project launch date",
+          "returned_ids": [
+            "n0000072",
+            "n0000017",
+            "n0000042",
+            "n0000022",
+            "n0000092"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000072",
+            "n0000017",
+            "n0000042",
+            "n0000022",
+            "n0000092"
+          ],
+          "latency_ms": 11.003
+        },
+        {
+          "query": "invoice due date",
+          "returned_ids": [
+            "n0000018",
+            "n0000038",
+            "n0000093",
+            "n0000078",
+            "n0000088"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000018",
+            "n0000038",
+            "n0000093",
+            "n0000078",
+            "n0000088"
+          ],
+          "latency_ms": 10.884
+        },
+        {
+          "query": "emergency contact",
+          "returned_ids": [
+            "n0000014",
+            "n0000074",
+            "n0000059",
+            "n0000084",
+            "n0000034"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000014",
+            "n0000074",
+            "n0000059",
+            "n0000084",
+            "n0000034"
+          ],
+          "latency_ms": 15.808
+        }
+      ],
+      "storage_bytes": 905815,
+      "storage_mb": 0.906
+    },
+    {
+      "documents": 1000,
+      "incremental_ingest_ms": 11136.229,
+      "same_payload_update_ms": 11.792,
+      "update_definition": "idempotent re-submit of the final record unchanged; adapter dedup/update semantics apply",
+      "gbrain_analyze_maintenance_ms": null,
+      "gbrain_ingest_statuses": null,
+      "gbrain_update_statuses": null,
+      "first_query_after_ingest_ms": 18.876,
+      "first_query_after_ingest_returned_ids": [
+        "n0000820",
+        "n0000210",
+        "n0000180",
+        "n0000720",
+        "n0000810"
+      ],
+      "first_query_after_ingest_per_hit_relevance": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "first_query_after_ingest_returned": 5,
+      "first_query_after_ingest_relevant_ids": [
+        "n0000820",
+        "n0000210",
+        "n0000180",
+        "n0000720",
+        "n0000810"
+      ],
+      "first_query_after_ingest_relevant": 5,
+      "cold_query_after_restart_ms": 80.869,
+      "cold_query_boundary": "same_process_client_reopen",
+      "process_restart_startup_ms": 38.985,
+      "cold_query_returned_ids": [
+        "n0000820",
+        "n0000210",
+        "n0000180",
+        "n0000720",
+        "n0000810"
+      ],
+      "cold_query_per_hit_relevance": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "cold_query_returned": 5,
+      "cold_query_relevant": 5,
+      "warm_query_ms_p50": 19.714,
+      "warm_query_ms_p95": 23.71,
+      "timed_query_samples": 20,
+      "warm_nonempty_results": 20,
+      "warm_queries_with_relevant_result": 20,
+      "timed_queries": [
+        {
+          "query": "passport renewal appointment",
+          "returned_ids": [
+            "n0000820",
+            "n0000210",
+            "n0000180",
+            "n0000720",
+            "n0000810"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000820",
+            "n0000210",
+            "n0000180",
+            "n0000720",
+            "n0000810"
+          ],
+          "latency_ms": 23.71
+        },
+        {
+          "query": "doctor knee recommendation",
+          "returned_ids": [
+            "n0000826",
+            "n0000821",
+            "n0000816",
+            "n0000776",
+            "n0000836"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000826",
+            "n0000821",
+            "n0000816",
+            "n0000776",
+            "n0000836"
+          ],
+          "latency_ms": 19.478
+        },
+        {
+          "query": "project launch date",
+          "returned_ids": [
+            "n0000592",
+            "n0000072",
+            "n0000562",
+            "n0000092",
+            "n0000697"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000592",
+            "n0000072",
+            "n0000562",
+            "n0000092",
+            "n0000697"
+          ],
+          "latency_ms": 19.063
+        },
+        {
+          "query": "invoice due date",
+          "returned_ids": [
+            "n0000598",
+            "n0000538",
+            "n0000568",
+            "n0000798",
+            "n0000788"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000598",
+            "n0000538",
+            "n0000568",
+            "n0000798",
+            "n0000788"
+          ],
+          "latency_ms": 19.973
+        },
+        {
+          "query": "emergency contact",
+          "returned_ids": [
+            "n0000614",
+            "n0000619",
+            "n0000739",
+            "n0000829",
+            "n0000784"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000614",
+            "n0000619",
+            "n0000739",
+            "n0000829",
+            "n0000784"
+          ],
+          "latency_ms": 18.956
+        },
+        {
+          "query": "passport renewal appointment",
+          "returned_ids": [
+            "n0000820",
+            "n0000210",
+            "n0000180",
+            "n0000720",
+            "n0000810"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000820",
+            "n0000210",
+            "n0000180",
+            "n0000720",
+            "n0000810"
+          ],
+          "latency_ms": 19.714
+        },
+        {
+          "query": "doctor knee recommendation",
+          "returned_ids": [
+            "n0000826",
+            "n0000821",
+            "n0000816",
+            "n0000776",
+            "n0000836"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000826",
+            "n0000821",
+            "n0000816",
+            "n0000776",
+            "n0000836"
+          ],
+          "latency_ms": 19.087
+        },
+        {
+          "query": "project launch date",
+          "returned_ids": [
+            "n0000592",
+            "n0000072",
+            "n0000562",
+            "n0000092",
+            "n0000697"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000592",
+            "n0000072",
+            "n0000562",
+            "n0000092",
+            "n0000697"
+          ],
+          "latency_ms": 20.659
+        },
+        {
+          "query": "invoice due date",
+          "returned_ids": [
+            "n0000598",
+            "n0000538",
+            "n0000568",
+            "n0000798",
+            "n0000788"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000598",
+            "n0000538",
+            "n0000568",
+            "n0000798",
+            "n0000788"
+          ],
+          "latency_ms": 21.051
+        },
+        {
+          "query": "emergency contact",
+          "returned_ids": [
+            "n0000614",
+            "n0000619",
+            "n0000739",
+            "n0000829",
+            "n0000784"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000614",
+            "n0000619",
+            "n0000739",
+            "n0000829",
+            "n0000784"
+          ],
+          "latency_ms": 18.701
+        },
+        {
+          "query": "passport renewal appointment",
+          "returned_ids": [
+            "n0000820",
+            "n0000210",
+            "n0000180",
+            "n0000720",
+            "n0000810"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000820",
+            "n0000210",
+            "n0000180",
+            "n0000720",
+            "n0000810"
+          ],
+          "latency_ms": 20.498
+        },
+        {
+          "query": "doctor knee recommendation",
+          "returned_ids": [
+            "n0000826",
+            "n0000821",
+            "n0000816",
+            "n0000776",
+            "n0000836"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000826",
+            "n0000821",
+            "n0000816",
+            "n0000776",
+            "n0000836"
+          ],
+          "latency_ms": 20.768
+        },
+        {
+          "query": "project launch date",
+          "returned_ids": [
+            "n0000592",
+            "n0000072",
+            "n0000562",
+            "n0000092",
+            "n0000697"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000592",
+            "n0000072",
+            "n0000562",
+            "n0000092",
+            "n0000697"
+          ],
+          "latency_ms": 22.012
+        },
+        {
+          "query": "invoice due date",
+          "returned_ids": [
+            "n0000598",
+            "n0000538",
+            "n0000568",
+            "n0000798",
+            "n0000788"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000598",
+            "n0000538",
+            "n0000568",
+            "n0000798",
+            "n0000788"
+          ],
+          "latency_ms": 17.681
+        },
+        {
+          "query": "emergency contact",
+          "returned_ids": [
+            "n0000614",
+            "n0000619",
+            "n0000739",
+            "n0000829",
+            "n0000784"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000614",
+            "n0000619",
+            "n0000739",
+            "n0000829",
+            "n0000784"
+          ],
+          "latency_ms": 20.225
+        },
+        {
+          "query": "passport renewal appointment",
+          "returned_ids": [
+            "n0000820",
+            "n0000210",
+            "n0000180",
+            "n0000720",
+            "n0000810"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000820",
+            "n0000210",
+            "n0000180",
+            "n0000720",
+            "n0000810"
+          ],
+          "latency_ms": 21.644
+        },
+        {
+          "query": "doctor knee recommendation",
+          "returned_ids": [
+            "n0000826",
+            "n0000821",
+            "n0000816",
+            "n0000776",
+            "n0000836"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000826",
+            "n0000821",
+            "n0000816",
+            "n0000776",
+            "n0000836"
+          ],
+          "latency_ms": 19.06
+        },
+        {
+          "query": "project launch date",
+          "returned_ids": [
+            "n0000592",
+            "n0000072",
+            "n0000562",
+            "n0000092",
+            "n0000697"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000592",
+            "n0000072",
+            "n0000562",
+            "n0000092",
+            "n0000697"
+          ],
+          "latency_ms": 24.727
+        },
+        {
+          "query": "invoice due date",
+          "returned_ids": [
+            "n0000598",
+            "n0000538",
+            "n0000568",
+            "n0000798",
+            "n0000788"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000598",
+            "n0000538",
+            "n0000568",
+            "n0000798",
+            "n0000788"
+          ],
+          "latency_ms": 17.756
+        },
+        {
+          "query": "emergency contact",
+          "returned_ids": [
+            "n0000614",
+            "n0000619",
+            "n0000739",
+            "n0000829",
+            "n0000784"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000614",
+            "n0000619",
+            "n0000739",
+            "n0000829",
+            "n0000784"
+          ],
+          "latency_ms": 19.594
+        }
+      ],
+      "storage_bytes": 8639063,
+      "storage_mb": 8.639
+    },
+    {
+      "documents": 3000,
+      "incremental_ingest_ms": 25026.442,
+      "same_payload_update_ms": 12.346,
+      "update_definition": "idempotent re-submit of the final record unchanged; adapter dedup/update semantics apply",
+      "gbrain_analyze_maintenance_ms": null,
+      "gbrain_ingest_statuses": null,
+      "gbrain_update_statuses": null,
+      "first_query_after_ingest_ms": 35.684,
+      "first_query_after_ingest_returned_ids": [
+        "n0001020",
+        "n0001045",
+        "n0001720",
+        "n0001040",
+        "n0000820"
+      ],
+      "first_query_after_ingest_per_hit_relevance": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "first_query_after_ingest_returned": 5,
+      "first_query_after_ingest_relevant_ids": [
+        "n0001020",
+        "n0001045",
+        "n0001720",
+        "n0001040",
+        "n0000820"
+      ],
+      "first_query_after_ingest_relevant": 5,
+      "cold_query_after_restart_ms": 98.935,
+      "cold_query_boundary": "same_process_client_reopen",
+      "process_restart_startup_ms": 128.038,
+      "cold_query_returned_ids": [
+        "n0001020",
+        "n0001045",
+        "n0001720",
+        "n0001040",
+        "n0000820"
+      ],
+      "cold_query_per_hit_relevance": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "cold_query_returned": 5,
+      "cold_query_relevant": 5,
+      "warm_query_ms_p50": 36.861,
+      "warm_query_ms_p95": 41.974,
+      "timed_query_samples": 20,
+      "warm_nonempty_results": 20,
+      "warm_queries_with_relevant_result": 20,
+      "timed_queries": [
+        {
+          "query": "passport renewal appointment",
+          "returned_ids": [
+            "n0001020",
+            "n0001045",
+            "n0001720",
+            "n0001040",
+            "n0000820"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0001020",
+            "n0001045",
+            "n0001720",
+            "n0001040",
+            "n0000820"
+          ],
+          "latency_ms": 40.653
+        },
+        {
+          "query": "doctor knee recommendation",
+          "returned_ids": [
+            "n0002191",
+            "n0000696",
+            "n0000721",
+            "n0002186",
+            "n0000616"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0002191",
+            "n0000696",
+            "n0000721",
+            "n0002186",
+            "n0000616"
+          ],
+          "latency_ms": 39.954
+        },
+        {
+          "query": "project launch date",
+          "returned_ids": [
+            "n0000592",
+            "n0002072",
+            "n0002042",
+            "n0002122",
+            "n0002152"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000592",
+            "n0002072",
+            "n0002042",
+            "n0002122",
+            "n0002152"
+          ],
+          "latency_ms": 35.004
+        },
+        {
+          "query": "invoice due date",
+          "returned_ids": [
+            "n0000768",
+            "n0000778",
+            "n0001678",
+            "n0000798",
+            "n0000788"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000768",
+            "n0000778",
+            "n0001678",
+            "n0000798",
+            "n0000788"
+          ],
+          "latency_ms": 36.177
+        },
+        {
+          "query": "emergency contact",
+          "returned_ids": [
+            "n0002654",
+            "n0002274",
+            "n0002624",
+            "n0002279",
+            "n0002634"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0002654",
+            "n0002274",
+            "n0002624",
+            "n0002279",
+            "n0002634"
+          ],
+          "latency_ms": 35.481
+        },
+        {
+          "query": "passport renewal appointment",
+          "returned_ids": [
+            "n0001020",
+            "n0001045",
+            "n0001720",
+            "n0001040",
+            "n0000820"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0001020",
+            "n0001045",
+            "n0001720",
+            "n0001040",
+            "n0000820"
+          ],
+          "latency_ms": 36.861
+        },
+        {
+          "query": "doctor knee recommendation",
+          "returned_ids": [
+            "n0002191",
+            "n0000696",
+            "n0000721",
+            "n0002186",
+            "n0000616"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0002191",
+            "n0000696",
+            "n0000721",
+            "n0002186",
+            "n0000616"
+          ],
+          "latency_ms": 37.502
+        },
+        {
+          "query": "project launch date",
+          "returned_ids": [
+            "n0000592",
+            "n0002072",
+            "n0002042",
+            "n0002122",
+            "n0002152"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000592",
+            "n0002072",
+            "n0002042",
+            "n0002122",
+            "n0002152"
+          ],
+          "latency_ms": 38.005
+        },
+        {
+          "query": "invoice due date",
+          "returned_ids": [
+            "n0000768",
+            "n0000778",
+            "n0001678",
+            "n0000798",
+            "n0000788"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000768",
+            "n0000778",
+            "n0001678",
+            "n0000798",
+            "n0000788"
+          ],
+          "latency_ms": 42.051
+        },
+        {
+          "query": "emergency contact",
+          "returned_ids": [
+            "n0002654",
+            "n0002274",
+            "n0002624",
+            "n0002279",
+            "n0002634"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0002654",
+            "n0002274",
+            "n0002624",
+            "n0002279",
+            "n0002634"
+          ],
+          "latency_ms": 41.974
+        },
+        {
+          "query": "passport renewal appointment",
+          "returned_ids": [
+            "n0001020",
+            "n0001045",
+            "n0001720",
+            "n0001040",
+            "n0000820"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0001020",
+            "n0001045",
+            "n0001720",
+            "n0001040",
+            "n0000820"
+          ],
+          "latency_ms": 38.111
+        },
+        {
+          "query": "doctor knee recommendation",
+          "returned_ids": [
+            "n0002191",
+            "n0000696",
+            "n0000721",
+            "n0002186",
+            "n0000616"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0002191",
+            "n0000696",
+            "n0000721",
+            "n0002186",
+            "n0000616"
+          ],
+          "latency_ms": 35.189
+        },
+        {
+          "query": "project launch date",
+          "returned_ids": [
+            "n0000592",
+            "n0002072",
+            "n0002042",
+            "n0002122",
+            "n0002152"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000592",
+            "n0002072",
+            "n0002042",
+            "n0002122",
+            "n0002152"
+          ],
+          "latency_ms": 34.729
+        },
+        {
+          "query": "invoice due date",
+          "returned_ids": [
+            "n0000768",
+            "n0000778",
+            "n0001678",
+            "n0000798",
+            "n0000788"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000768",
+            "n0000778",
+            "n0001678",
+            "n0000798",
+            "n0000788"
+          ],
+          "latency_ms": 35.685
+        },
+        {
+          "query": "emergency contact",
+          "returned_ids": [
+            "n0002654",
+            "n0002274",
+            "n0002624",
+            "n0002279",
+            "n0002634"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0002654",
+            "n0002274",
+            "n0002624",
+            "n0002279",
+            "n0002634"
+          ],
+          "latency_ms": 35.263
+        },
+        {
+          "query": "passport renewal appointment",
+          "returned_ids": [
+            "n0001020",
+            "n0001045",
+            "n0001720",
+            "n0001040",
+            "n0000820"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0001020",
+            "n0001045",
+            "n0001720",
+            "n0001040",
+            "n0000820"
+          ],
+          "latency_ms": 36.547
+        },
+        {
+          "query": "doctor knee recommendation",
+          "returned_ids": [
+            "n0002191",
+            "n0000696",
+            "n0000721",
+            "n0002186",
+            "n0000616"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0002191",
+            "n0000696",
+            "n0000721",
+            "n0002186",
+            "n0000616"
+          ],
+          "latency_ms": 38.942
+        },
+        {
+          "query": "project launch date",
+          "returned_ids": [
+            "n0000592",
+            "n0002072",
+            "n0002042",
+            "n0002122",
+            "n0002152"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000592",
+            "n0002072",
+            "n0002042",
+            "n0002122",
+            "n0002152"
+          ],
+          "latency_ms": 38.711
+        },
+        {
+          "query": "invoice due date",
+          "returned_ids": [
+            "n0000768",
+            "n0000778",
+            "n0001678",
+            "n0000798",
+            "n0000788"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000768",
+            "n0000778",
+            "n0001678",
+            "n0000798",
+            "n0000788"
+          ],
+          "latency_ms": 40.68
+        },
+        {
+          "query": "emergency contact",
+          "returned_ids": [
+            "n0002654",
+            "n0002274",
+            "n0002624",
+            "n0002279",
+            "n0002634"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0002654",
+            "n0002274",
+            "n0002624",
+            "n0002279",
+            "n0002634"
+          ],
+          "latency_ms": 35.878
+        }
+      ],
+      "storage_bytes": 25838167,
+      "storage_mb": 25.838
+    },
+    {
+      "documents": 9000,
+      "incremental_ingest_ms": 81580.817,
+      "same_payload_update_ms": 17.786,
+      "update_definition": "idempotent re-submit of the final record unchanged; adapter dedup/update semantics apply",
+      "gbrain_analyze_maintenance_ms": null,
+      "gbrain_ingest_statuses": null,
+      "gbrain_update_statuses": null,
+      "first_query_after_ingest_ms": 166.469,
+      "first_query_after_ingest_returned_ids": [
+        "n0007210",
+        "n0006190",
+        "n0006140",
+        "n0008190",
+        "n0006185"
+      ],
+      "first_query_after_ingest_per_hit_relevance": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "first_query_after_ingest_returned": 5,
+      "first_query_after_ingest_relevant_ids": [
+        "n0007210",
+        "n0006190",
+        "n0006140",
+        "n0008190",
+        "n0006185"
+      ],
+      "first_query_after_ingest_relevant": 5,
+      "cold_query_after_restart_ms": 216.423,
+      "cold_query_boundary": "same_process_client_reopen",
+      "process_restart_startup_ms": 664.883,
+      "cold_query_returned_ids": [
+        "n0007210",
+        "n0006190",
+        "n0006140",
+        "n0008190",
+        "n0006185"
+      ],
+      "cold_query_per_hit_relevance": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "cold_query_returned": 5,
+      "cold_query_relevant": 5,
+      "warm_query_ms_p50": 94.669,
+      "warm_query_ms_p95": 105.864,
+      "timed_query_samples": 20,
+      "warm_nonempty_results": 20,
+      "warm_queries_with_relevant_result": 20,
+      "timed_queries": [
+        {
+          "query": "passport renewal appointment",
+          "returned_ids": [
+            "n0007210",
+            "n0006190",
+            "n0006140",
+            "n0008190",
+            "n0006185"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0007210",
+            "n0006190",
+            "n0006140",
+            "n0008190",
+            "n0006185"
+          ],
+          "latency_ms": 112.054
+        },
+        {
+          "query": "doctor knee recommendation",
+          "returned_ids": [
+            "n0007621",
+            "n0007641",
+            "n0007616",
+            "n0002726",
+            "n0006216"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0007621",
+            "n0007641",
+            "n0007616",
+            "n0002726",
+            "n0006216"
+          ],
+          "latency_ms": 105.864
+        },
+        {
+          "query": "project launch date",
+          "returned_ids": [
+            "n0006222",
+            "n0006172",
+            "n0006162",
+            "n0006182",
+            "n0006217"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0006222",
+            "n0006172",
+            "n0006162",
+            "n0006182",
+            "n0006217"
+          ],
+          "latency_ms": 94.818
+        },
+        {
+          "query": "invoice due date",
+          "returned_ids": [
+            "n0006968",
+            "n0006218",
+            "n0006978",
+            "n0006268",
+            "n0006598"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0006968",
+            "n0006218",
+            "n0006978",
+            "n0006268",
+            "n0006598"
+          ],
+          "latency_ms": 104.211
+        },
+        {
+          "query": "emergency contact",
+          "returned_ids": [
+            "n0002654",
+            "n0002274",
+            "n0002624",
+            "n0002279",
+            "n0002634"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0002654",
+            "n0002274",
+            "n0002624",
+            "n0002279",
+            "n0002634"
+          ],
+          "latency_ms": 100.392
+        },
+        {
+          "query": "passport renewal appointment",
+          "returned_ids": [
+            "n0007210",
+            "n0006190",
+            "n0006140",
+            "n0008190",
+            "n0006185"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0007210",
+            "n0006190",
+            "n0006140",
+            "n0008190",
+            "n0006185"
+          ],
+          "latency_ms": 101.658
+        },
+        {
+          "query": "doctor knee recommendation",
+          "returned_ids": [
+            "n0007621",
+            "n0007641",
+            "n0007616",
+            "n0002726",
+            "n0006216"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0007621",
+            "n0007641",
+            "n0007616",
+            "n0002726",
+            "n0006216"
+          ],
+          "latency_ms": 94.669
+        },
+        {
+          "query": "project launch date",
+          "returned_ids": [
+            "n0006222",
+            "n0006172",
+            "n0006162",
+            "n0006182",
+            "n0006217"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0006222",
+            "n0006172",
+            "n0006162",
+            "n0006182",
+            "n0006217"
+          ],
+          "latency_ms": 92.909
+        },
+        {
+          "query": "invoice due date",
+          "returned_ids": [
+            "n0006968",
+            "n0006218",
+            "n0006978",
+            "n0006268",
+            "n0006598"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0006968",
+            "n0006218",
+            "n0006978",
+            "n0006268",
+            "n0006598"
+          ],
+          "latency_ms": 95.675
+        },
+        {
+          "query": "emergency contact",
+          "returned_ids": [
+            "n0002654",
+            "n0002274",
+            "n0002624",
+            "n0002279",
+            "n0002634"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0002654",
+            "n0002274",
+            "n0002624",
+            "n0002279",
+            "n0002634"
+          ],
+          "latency_ms": 92.257
+        },
+        {
+          "query": "passport renewal appointment",
+          "returned_ids": [
+            "n0007210",
+            "n0006190",
+            "n0006140",
+            "n0008190",
+            "n0006185"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0007210",
+            "n0006190",
+            "n0006140",
+            "n0008190",
+            "n0006185"
+          ],
+          "latency_ms": 95.797
+        },
+        {
+          "query": "doctor knee recommendation",
+          "returned_ids": [
+            "n0007621",
+            "n0007641",
+            "n0007616",
+            "n0002726",
+            "n0006216"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0007621",
+            "n0007641",
+            "n0007616",
+            "n0002726",
+            "n0006216"
+          ],
+          "latency_ms": 93.804
+        },
+        {
+          "query": "project launch date",
+          "returned_ids": [
+            "n0006222",
+            "n0006172",
+            "n0006162",
+            "n0006182",
+            "n0006217"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0006222",
+            "n0006172",
+            "n0006162",
+            "n0006182",
+            "n0006217"
+          ],
+          "latency_ms": 88.732
+        },
+        {
+          "query": "invoice due date",
+          "returned_ids": [
+            "n0006968",
+            "n0006218",
+            "n0006978",
+            "n0006268",
+            "n0006598"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0006968",
+            "n0006218",
+            "n0006978",
+            "n0006268",
+            "n0006598"
+          ],
+          "latency_ms": 91.719
+        },
+        {
+          "query": "emergency contact",
+          "returned_ids": [
+            "n0002654",
+            "n0002274",
+            "n0002624",
+            "n0002279",
+            "n0002634"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0002654",
+            "n0002274",
+            "n0002624",
+            "n0002279",
+            "n0002634"
+          ],
+          "latency_ms": 98.23
+        },
+        {
+          "query": "passport renewal appointment",
+          "returned_ids": [
+            "n0007210",
+            "n0006190",
+            "n0006140",
+            "n0008190",
+            "n0006185"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0007210",
+            "n0006190",
+            "n0006140",
+            "n0008190",
+            "n0006185"
+          ],
+          "latency_ms": 94.951
+        },
+        {
+          "query": "doctor knee recommendation",
+          "returned_ids": [
+            "n0007621",
+            "n0007641",
+            "n0007616",
+            "n0002726",
+            "n0006216"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0007621",
+            "n0007641",
+            "n0007616",
+            "n0002726",
+            "n0006216"
+          ],
+          "latency_ms": 90.391
+        },
+        {
+          "query": "project launch date",
+          "returned_ids": [
+            "n0006222",
+            "n0006172",
+            "n0006162",
+            "n0006182",
+            "n0006217"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0006222",
+            "n0006172",
+            "n0006162",
+            "n0006182",
+            "n0006217"
+          ],
+          "latency_ms": 92.71
+        },
+        {
+          "query": "invoice due date",
+          "returned_ids": [
+            "n0006968",
+            "n0006218",
+            "n0006978",
+            "n0006268",
+            "n0006598"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0006968",
+            "n0006218",
+            "n0006978",
+            "n0006268",
+            "n0006598"
+          ],
+          "latency_ms": 89.654
+        },
+        {
+          "query": "emergency contact",
+          "returned_ids": [
+            "n0002654",
+            "n0002274",
+            "n0002624",
+            "n0002279",
+            "n0002634"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0002654",
+            "n0002274",
+            "n0002624",
+            "n0002279",
+            "n0002634"
+          ],
+          "latency_ms": 94.141
+        }
+      ],
+      "storage_bytes": 77431383,
+      "storage_mb": 77.431
+    },
+    {
+      "documents": 36500,
+      "incremental_ingest_ms": 567911.257,
+      "same_payload_update_ms": 22.668,
+      "update_definition": "idempotent re-submit of the final record unchanged; adapter dedup/update semantics apply",
+      "gbrain_analyze_maintenance_ms": null,
+      "gbrain_ingest_statuses": null,
+      "gbrain_update_statuses": null,
+      "first_query_after_ingest_ms": 648.433,
+      "first_query_after_ingest_returned_ids": [
+        "n0021740",
+        "n0021640",
+        "n0006190",
+        "n0006140",
+        "n0008190"
+      ],
+      "first_query_after_ingest_per_hit_relevance": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "first_query_after_ingest_returned": 5,
+      "first_query_after_ingest_relevant_ids": [
+        "n0021740",
+        "n0021640",
+        "n0006190",
+        "n0006140",
+        "n0008190"
+      ],
+      "first_query_after_ingest_relevant": 5,
+      "cold_query_after_restart_ms": 510.341,
+      "cold_query_boundary": "same_process_client_reopen",
+      "process_restart_startup_ms": 2334.754,
+      "cold_query_returned_ids": [
+        "n0021740",
+        "n0021640",
+        "n0006190",
+        "n0006140",
+        "n0008190"
+      ],
+      "cold_query_per_hit_relevance": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "cold_query_returned": 5,
+      "cold_query_relevant": 5,
+      "warm_query_ms_p50": 381.298,
+      "warm_query_ms_p95": 456.301,
+      "timed_query_samples": 20,
+      "warm_nonempty_results": 20,
+      "warm_queries_with_relevant_result": 20,
+      "timed_queries": [
+        {
+          "query": "passport renewal appointment",
+          "returned_ids": [
+            "n0021740",
+            "n0021640",
+            "n0006190",
+            "n0006140",
+            "n0008190"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0021740",
+            "n0021640",
+            "n0006190",
+            "n0006140",
+            "n0008190"
+          ],
+          "latency_ms": 396.693
+        },
+        {
+          "query": "doctor knee recommendation",
+          "returned_ids": [
+            "n0009201",
+            "n0006216",
+            "n0006986",
+            "n0009216",
+            "n0008221"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0009201",
+            "n0006216",
+            "n0006986",
+            "n0009216",
+            "n0008221"
+          ],
+          "latency_ms": 363.401
+        },
+        {
+          "query": "project launch date",
+          "returned_ids": [
+            "n0025522",
+            "n0016622",
+            "n0006157",
+            "n0006122",
+            "n0005617"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0025522",
+            "n0016622",
+            "n0006157",
+            "n0006122",
+            "n0005617"
+          ],
+          "latency_ms": 359.865
+        },
+        {
+          "query": "invoice due date",
+          "returned_ids": [
+            "n0006968",
+            "n0006218",
+            "n0015678",
+            "n0015598",
+            "n0015648"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0006968",
+            "n0006218",
+            "n0015678",
+            "n0015598",
+            "n0015648"
+          ],
+          "latency_ms": 377.77
+        },
+        {
+          "query": "emergency contact",
+          "returned_ids": [
+            "n0026219",
+            "n0026224",
+            "n0026184",
+            "n0026214",
+            "n0026174"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0026219",
+            "n0026224",
+            "n0026184",
+            "n0026214",
+            "n0026174"
+          ],
+          "latency_ms": 381.298
+        },
+        {
+          "query": "passport renewal appointment",
+          "returned_ids": [
+            "n0021740",
+            "n0021640",
+            "n0006190",
+            "n0006140",
+            "n0008190"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0021740",
+            "n0021640",
+            "n0006190",
+            "n0006140",
+            "n0008190"
+          ],
+          "latency_ms": 391.434
+        },
+        {
+          "query": "doctor knee recommendation",
+          "returned_ids": [
+            "n0009201",
+            "n0006216",
+            "n0006986",
+            "n0009216",
+            "n0008221"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0009201",
+            "n0006216",
+            "n0006986",
+            "n0009216",
+            "n0008221"
+          ],
+          "latency_ms": 373.524
+        },
+        {
+          "query": "project launch date",
+          "returned_ids": [
+            "n0025522",
+            "n0016622",
+            "n0006157",
+            "n0006122",
+            "n0005617"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0025522",
+            "n0016622",
+            "n0006157",
+            "n0006122",
+            "n0005617"
+          ],
+          "latency_ms": 361.785
+        },
+        {
+          "query": "invoice due date",
+          "returned_ids": [
+            "n0006968",
+            "n0006218",
+            "n0015678",
+            "n0015598",
+            "n0015648"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0006968",
+            "n0006218",
+            "n0015678",
+            "n0015598",
+            "n0015648"
+          ],
+          "latency_ms": 368.845
+        },
+        {
+          "query": "emergency contact",
+          "returned_ids": [
+            "n0026219",
+            "n0026224",
+            "n0026184",
+            "n0026214",
+            "n0026174"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0026219",
+            "n0026224",
+            "n0026184",
+            "n0026214",
+            "n0026174"
+          ],
+          "latency_ms": 377.81
+        },
+        {
+          "query": "passport renewal appointment",
+          "returned_ids": [
+            "n0021740",
+            "n0021640",
+            "n0006190",
+            "n0006140",
+            "n0008190"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0021740",
+            "n0021640",
+            "n0006190",
+            "n0006140",
+            "n0008190"
+          ],
+          "latency_ms": 402.539
+        },
+        {
+          "query": "doctor knee recommendation",
+          "returned_ids": [
+            "n0009201",
+            "n0006216",
+            "n0006986",
+            "n0009216",
+            "n0008221"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0009201",
+            "n0006216",
+            "n0006986",
+            "n0009216",
+            "n0008221"
+          ],
+          "latency_ms": 388.685
+        },
+        {
+          "query": "project launch date",
+          "returned_ids": [
+            "n0025522",
+            "n0016622",
+            "n0006157",
+            "n0006122",
+            "n0005617"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0025522",
+            "n0016622",
+            "n0006157",
+            "n0006122",
+            "n0005617"
+          ],
+          "latency_ms": 374.836
+        },
+        {
+          "query": "invoice due date",
+          "returned_ids": [
+            "n0006968",
+            "n0006218",
+            "n0015678",
+            "n0015598",
+            "n0015648"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0006968",
+            "n0006218",
+            "n0015678",
+            "n0015598",
+            "n0015648"
+          ],
+          "latency_ms": 420.632
+        },
+        {
+          "query": "emergency contact",
+          "returned_ids": [
+            "n0026219",
+            "n0026224",
+            "n0026184",
+            "n0026214",
+            "n0026174"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0026219",
+            "n0026224",
+            "n0026184",
+            "n0026214",
+            "n0026174"
+          ],
+          "latency_ms": 441.208
+        },
+        {
+          "query": "passport renewal appointment",
+          "returned_ids": [
+            "n0021740",
+            "n0021640",
+            "n0006190",
+            "n0006140",
+            "n0008190"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0021740",
+            "n0021640",
+            "n0006190",
+            "n0006140",
+            "n0008190"
+          ],
+          "latency_ms": 456.301
+        },
+        {
+          "query": "doctor knee recommendation",
+          "returned_ids": [
+            "n0009201",
+            "n0006216",
+            "n0006986",
+            "n0009216",
+            "n0008221"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0009201",
+            "n0006216",
+            "n0006986",
+            "n0009216",
+            "n0008221"
+          ],
+          "latency_ms": 476.56
+        },
+        {
+          "query": "project launch date",
+          "returned_ids": [
+            "n0025522",
+            "n0016622",
+            "n0006157",
+            "n0006122",
+            "n0005617"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0025522",
+            "n0016622",
+            "n0006157",
+            "n0006122",
+            "n0005617"
+          ],
+          "latency_ms": 418.328
+        },
+        {
+          "query": "invoice due date",
+          "returned_ids": [
+            "n0006968",
+            "n0006218",
+            "n0015678",
+            "n0015598",
+            "n0015648"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0006968",
+            "n0006218",
+            "n0015678",
+            "n0015598",
+            "n0015648"
+          ],
+          "latency_ms": 385.559
+        },
+        {
+          "query": "emergency contact",
+          "returned_ids": [
+            "n0026219",
+            "n0026224",
+            "n0026184",
+            "n0026214",
+            "n0026174"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0026219",
+            "n0026224",
+            "n0026184",
+            "n0026214",
+            "n0026174"
+          ],
+          "latency_ms": 378.165
+        }
+      ],
+      "storage_bytes": 313803351,
+      "storage_mb": 313.803
+    }
+  ],
+  "gbrain_analyze": false,
+  "model_calls": {
+    "successful_calls": null,
+    "successful_tokens": null,
+    "failed_attempts": "unknown",
+    "note": "Embedding client counters are not exposed; failed/retried attempts may be unobserved."
+  },
+  "storage_scope": {
+    "paths": [
+      "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/smriti-matched-growth-tzptob44/history.db",
+      "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/smriti-matched-growth-tzptob44/qdrant"
+    ],
+    "shared_model_cache_included": false,
+    "shared_model_cache_paths": [],
+    "shared_model_cache_note": "Model cache location/size was not measured and is excluded from storage_bytes.",
+    "hardware_and_electricity_measured": false
+  },
+  "effective_embedder": {
+    "provider": "ollama",
+    "model": "nomic-embed-text:v1.5",
+    "embedding_dims": 768,
+    "endpoint": "http://127.0.0.1:11436",
+    "configured_embedding_dims": 768,
+    "measured_embedding_dims": 768
+  },
+  "effective_vector_store": {
+    "provider": "qdrant"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "status": "source_audio_measurements_only",
+  "method": "ffmpeg ebur128=peak=true, full source duration, original assets unchanged",
+  "tracks": [
+    {
+      "path": "/Users/kshitijvatsa/Downloads/Funky_Launch_Groove-53a7553e-4c2e-45c1-8f10-d947eb6d68af.mp3",
+      "sha256": "908bcbb29626d4218802f98cafdb519e57f3eae3963070693091073628c821ae",
+      "duration_s": 159.15,
+      "integrated_lufs": -14.0,
+      "loudness_range_lu": 4.1,
+      "true_peak_dbfs": -0.5
+    },
+    {
+      "path": "/Users/kshitijvatsa/Downloads/futuristic-technology-presentation-inspiring-ai-2026-06-30-00-56-58-utc/wav/Tech Futuristic Product Informative AI (60 sec).wav",
+      "sha256": "09a032272e271f381063b8a20bfdad65f0583a9f20197860bffa9673f16920c9",
+      "duration_s": 60.0,
+      "integrated_lufs": -7.9,
+      "loudness_range_lu": 3.5,
+      "true_peak_dbfs": 1.4
+    }
+  ],
+  "mix_implication": "The tech music is materially louder and its reconstructed true peak exceeds 0dBFS. Attenuate and verify final combined mix with SFX; do not layer at source gain. Funky track also needs headroom for SFX. Final mix target and music choice remain undecided.",
+  "limitations": [
+    "Signal measurements do not replace listening or editorial music selection.",
+    "No video composition or final mix has been produced."
+  ]
+}

@@ -1,0 +1,306 @@
+{
+  "schema_version": 1,
+  "status": "complete",
+  "track": "official LongMemEval-S full-haystack raw-session retrieval; GBrain semantic/hybrid separate track",
+  "dataset": {
+    "source": "official LongMemEval-S input",
+    "sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
+    "total_items": 500,
+    "selected_question_ids": [
+      "f8c5f88b",
+      "dd2973ad"
+    ],
+    "excluded_question_ids": [
+      "06878be2",
+      "0862e8bf_abs",
+      "0a995998",
+      "0bc8ad92",
+      "0edc2aef",
+      "118b2229",
+      "1903aded",
+      "195a1a1b",
+      "1e043500",
+      "32260d93",
+      "35a27287",
+      "3a704032",
+      "4c36ccef",
+      "51a45a95",
+      "58bf7951",
+      "58ef2f1c",
+      "6a1eabeb",
+      "6ade9755",
+      "6ae235be",
+      "6aeb4375",
+      "6d550036",
+      "6f9b354f",
+      "71017276",
+      "71315a70",
+      "7161e7e2",
+      "75832dbd",
+      "7e00a6cb",
+      "830ce83f",
+      "852ce960",
+      "88432d0a_abs",
+      "89527b6b",
+      "89941a93",
+      "8a2466db",
+      "945e3d21",
+      "aae3761f",
+      "af082822",
+      "afdc33df",
+      "b46e15ed",
+      "b5ef892d",
+      "c4f10528",
+      "c5e8278d",
+      "d7c942c3",
+      "e47becba",
+      "e831120c",
+      "e9327a54",
+      "gpt4_4929293a",
+      "gpt4_59149c77",
+      "gpt4_59c863d7",
+      "gpt4_d84a3211",
+      "gpt4_f2262a51",
+      "gpt4_f49edff3",
+      "gpt4_fa19884c"
+    ],
+    "exclusion_sources": [
+      "/Users/kshitijvatsa/Downloads/Smriti-main/audit/2026-09-05/public-retrieval-smriti-s50.json",
+      "/Users/kshitijvatsa/Downloads/Smriti-main/audit/2026-09-05/public-retrieval-mem0-s50.json",
+      "/Users/kshitijvatsa/Downloads/Smriti-main/audit/2026-09-05/public-qa-smriti-s6.json",
+      "/Users/kshitijvatsa/Downloads/Smriti-main/audit/2026-09-05/public-qa-mem0-s6.json"
+    ]
+  },
+  "configuration": {
+    "engine": "GBrain persistent PGLite / hybrid semantic + keyword / Ollama nomic 768d",
+    "embedding": {
+      "provider": "ollama:nomic-embed-text:v1.5",
+      "dimensions": 768,
+      "ollama_base_url": "http://localhost:11436/v1",
+      "measured_dimensions": 768
+    },
+    "budgets": {
+      "sample": 2,
+      "k": 5,
+      "session_char_budget": 16000,
+      "chunk_char_budget": 1000
+    },
+    "worker_startup_ms": 2231.3167,
+    "semantic_fail_closed": true,
+    "input_contract": "rendered role/content only; opaque document mapping; labels read after retrieval",
+    "latency_policy": "timings are diagnostic only and are not ranked against semantic adapters"
+  },
+  "run": {
+    "started_utc": "2026-09-07T15:53:19Z",
+    "elapsed_s": 112.082,
+    "gbrain_source_snapshot": {
+      "captured_at_utc": "2026-09-07T15:53:19Z",
+      "gbrain_root": "/private/tmp/smriti-competitors-20260905/gbrain",
+      "commit": "8c70f6255047a7647adb30b1d6333a48068d9fa5",
+      "worker_path": "/Users/kshitijvatsa/Downloads/Smriti-main/bench/gbrain_public_semantic_worker.ts",
+      "imported_module_paths": [
+        "/private/tmp/smriti-competitors-20260905/gbrain/src/core/engine-factory.ts",
+        "/private/tmp/smriti-competitors-20260905/gbrain/src/core/import-file.ts",
+        "/private/tmp/smriti-competitors-20260905/gbrain/src/core/search/hybrid.ts",
+        "/private/tmp/smriti-competitors-20260905/gbrain/src/core/ai/gateway.ts",
+        "/private/tmp/smriti-competitors-20260905/gbrain/src/core/ai/recipes/ollama.ts"
+      ],
+      "file_sha256": {
+        "/Users/kshitijvatsa/Downloads/Smriti-main/bench/gbrain_public_semantic_worker.ts": "c4d5420558852a4ff2c9e267015b2a84995a3356d677a20e877f4443913c25a6",
+        "/private/tmp/smriti-competitors-20260905/gbrain/src/core/engine-factory.ts": "a37e8b2c6f8a0eb32b922ea00b42fb0faf001802424dcf9308f3001e2718e6aa",
+        "/private/tmp/smriti-competitors-20260905/gbrain/src/core/import-file.ts": "f2222ca3d63aebc51ff8c2abbc85b8f90364900660775a8ca02a5067cd572461",
+        "/private/tmp/smriti-competitors-20260905/gbrain/src/core/search/hybrid.ts": "6c064401dcc9cde82adb4122eb8882db24f6935a986979a7fef24ae63e3c338b",
+        "/private/tmp/smriti-competitors-20260905/gbrain/src/core/ai/gateway.ts": "441ea6b6751f63df0aec8f1356537e8b991a649e9a9fba6f24eec3dbf6bb71dc",
+        "/private/tmp/smriti-competitors-20260905/gbrain/src/core/ai/recipes/ollama.ts": "d5fc19341f27654bf6ff80212b18fb69c9c0459a755bd46f9ebd2e39441d20e8"
+      }
+    }
+  },
+  "summary": {
+    "requested": 2,
+    "completed": 2,
+    "failures": 0,
+    "cleanup_failures": 0,
+    "failure_inclusive_denominator": 2,
+    "unanswerable_requested": 0,
+    "gbrain": {
+      "mean_recall_at_k": 0.75,
+      "mean_reciprocal_rank": 1.0,
+      "answerable_requested": 2,
+      "answerable_completed": 2
+    },
+    "truncation": {
+      "sessions": 95,
+      "chunks": 1008,
+      "original_chars": 991706,
+      "indexed_chars": 967947,
+      "truncated_session_chars": 23759,
+      "truncated_chunk_chars": 0
+    }
+  },
+  "results": [
+    {
+      "question_id": "f8c5f88b",
+      "question_type": "single-session-user",
+      "question": "Where did I buy my new tennis racket from?",
+      "unanswerable": false,
+      "session_count": 46,
+      "chunk_count": 511,
+      "ingest_s": 47.8322,
+      "query_s": 0.0948,
+      "hits": [
+        {
+          "document_slug": "bench/public-00000300",
+          "session_id": "answer_c3567066",
+          "score": 0.9051835195246042
+        },
+        {
+          "document_slug": "bench/public-00000305",
+          "session_id": "answer_c3567066",
+          "score": 0.5622265889718994
+        },
+        {
+          "document_slug": "bench/public-00000298",
+          "session_id": "answer_c3567066",
+          "score": 0.5439266109074713
+        },
+        {
+          "document_slug": "bench/public-00000303",
+          "session_id": "answer_c3567066",
+          "score": 0.5360612324456129
+        },
+        {
+          "document_slug": "bench/public-00000304",
+          "session_id": "answer_c3567066",
+          "score": 0.5231631205251432
+        }
+      ],
+      "vector_stats": {
+        "page_count": 511,
+        "chunk_count": 512,
+        "embedded_count": 512,
+        "link_count": 0,
+        "tag_count": 0,
+        "timeline_entry_count": 0,
+        "pages_by_type": {
+          "concept": 511
+        }
+      },
+      "search_meta": {
+        "vector_enabled": true,
+        "detail_resolved": null,
+        "expansion_applied": false,
+        "intent": "general",
+        "mode": "balanced",
+        "embedding_column": "embedding",
+        "degraded": [],
+        "retrieved_count": 5,
+        "token_budget": {
+          "budget": 12000,
+          "used": 1270,
+          "dropped": 0,
+          "kept": 5
+        }
+      },
+      "relevance": {
+        "returned_session_ids": [
+          "answer_c3567066"
+        ],
+        "returned_session_count": 1,
+        "relevant_session_ids": [
+          "answer_c3567066"
+        ],
+        "covered_relevant_session_ids": [
+          "answer_c3567066"
+        ],
+        "recall_at_k": 1.0,
+        "reciprocal_rank": 1.0,
+        "empty_retrieval": false
+      }
+    },
+    {
+      "question_id": "dd2973ad",
+      "question_type": "multi-session",
+      "question": "What time did I go to bed on the day before I had a doctor's appointment?",
+      "unanswerable": false,
+      "session_count": 49,
+      "chunk_count": 497,
+      "ingest_s": 58.6608,
+      "query_s": 0.1995,
+      "hits": [
+        {
+          "document_slug": "bench/public-00000247",
+          "session_id": "answer_f9de4602_2",
+          "score": 0.8811626255402427
+        },
+        {
+          "document_slug": "bench/public-00000248",
+          "session_id": "answer_f9de4602_2",
+          "score": 0.8636467321068952
+        },
+        {
+          "document_slug": "bench/public-00000147",
+          "session_id": "56266c38_1",
+          "score": 0.8446490889531488
+        },
+        {
+          "document_slug": "bench/public-00000004",
+          "session_id": "ultrachat_404693",
+          "score": 0.833609076117767
+        },
+        {
+          "document_slug": "bench/public-00000246",
+          "session_id": "answer_f9de4602_2",
+          "score": 0.8231007757005334
+        }
+      ],
+      "vector_stats": {
+        "page_count": 497,
+        "chunk_count": 501,
+        "embedded_count": 501,
+        "link_count": 0,
+        "tag_count": 0,
+        "timeline_entry_count": 0,
+        "pages_by_type": {
+          "concept": 497
+        }
+      },
+      "search_meta": {
+        "vector_enabled": true,
+        "detail_resolved": null,
+        "expansion_applied": false,
+        "intent": "general",
+        "mode": "balanced",
+        "embedding_column": "embedding",
+        "degraded": [],
+        "retrieved_count": 5,
+        "token_budget": {
+          "budget": 12000,
+          "used": 1067,
+          "dropped": 0,
+          "kept": 5
+        },
+        "relaxed_dropped": 50
+      },
+      "relevance": {
+        "returned_session_ids": [
+          "answer_f9de4602_2",
+          "56266c38_1",
+          "ultrachat_404693"
+        ],
+        "returned_session_count": 3,
+        "relevant_session_ids": [
+          "answer_f9de4602_2",
+          "answer_f9de4602_1"
+        ],
+        "covered_relevant_session_ids": [
+          "answer_f9de4602_2"
+        ],
+        "recall_at_k": 0.5,
+        "reciprocal_rank": 1.0,
+        "empty_retrieval": false
+      }
+    }
+  ],
+  "failure_records": [],
+  "cleanup_failure_records": []
+}

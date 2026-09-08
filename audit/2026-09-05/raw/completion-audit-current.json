@@ -1,0 +1,299 @@
+{
+  "schema_version": 1,
+  "audit_date": "2026-09-08",
+  "purpose": "Acceptance matrix for the original Smriti benchmark/cost/growth request and the current ROADMAP. This is an evidence audit, not a completion or release claim.",
+  "source": {
+    "checkout": "/Users/kshitijvatsa/Downloads/Smriti-main",
+    "head_commit": "38bda3d298d895c19d267119b5ca4c4d446a3172",
+    "roadmap": "audit/2026-09-05/ROADMAP.md",
+    "ci_receipt": "audit/2026-09-05/raw/ci-38bda3d.json"
+  },
+  "overall": {
+    "benchmark_cost_speed_scope": "complete_for_measured_local_tracks",
+    "teaser_scope": "complete",
+    "installation_scope": "verified_current_installed_v7_candidate",
+    "model_backed_quality_scope": "complete_for_selected_bounded_tracks",
+    "release_or_completion_status": "planned_candidate_deliverables_complete_no_release",
+    "reason": "Historical installed Mira v3/v4 reviews rejected parts of the scope/temporal quality pass; current installed-v7 bounded checks are recorded with single-run and lexical/semantic limits. The bounded frozen-v4 LongMemEval-S50 and LoCoMo50 pairs are complete for their selected samples, with no superiority or broad dataset-wide quality claim. GBrain held-out20 semantic retrieval and the bounded Hindsight 20-retain/12-recall comparative retrieval probe are complete as descriptive retrieval evidence; Hindsight observations/reranking were disabled and its bank embedding model is not exposed, so no answer-quality, superiority, embedding-parity, or speed claim follows. The root-built social film and separate camera version are rendered and verified; the original exports are preserved. Source and evidence are pushed to PR #2; all four CI jobs passed for the recorded implementation head. The final audit update is documentation only."
+  },
+  "acceptance_matrix": [
+    {
+      "id": "implementation-and-installation",
+      "requirement": "Harden the implementation and prove clean non-editable wheel/source installation, dependency consistency, and CI coverage.",
+      "status": "complete_for_candidate",
+      "evidence": [
+        "audit/2026-09-05/raw/installed-scope-candidate-261.json (historical 261-test candidate; pip check clean; offline scope checks), audit/2026-09-05/raw/installed-scope-candidate-276.json (current installed-v7 candidate; 276 tests, pip check clean)",
+        "audit/2026-09-05/raw/ci-acb1076.json (enterprise and offline Python 3.9/3.12 checks all SUCCESS)",
+        "audit/2026-09-05/VERIFIED-RESULTS.md",
+        "audit/2026-09-05/raw/ci-38bda3d.json (all four checks SUCCESS for the final implementation/film head)"
+      ],
+      "caveat": "ROADMAP Phase 1 records the historical v3/v4 rejection and current installed-v7 bounded Mira/generalization passes; broader semantic quality remains open."
+    },
+    {
+      "id": "temporal-identity-scope-quality",
+      "requirement": "Pass the named-Mira temporal, identity, and applicability-scope contract with a fresh installed model-backed run.",
+      "status": "complete_bounded",
+      "evidence": [
+        "audit/2026-09-05/raw/smriti-mira-root-review.json (historical v3 review: Berlin fact invalidated by unrelated same-date event; scope/transition probe issue)",
+        "audit/2026-09-05/raw/smriti-mira-contract-v3-independent-review.json (historical v3 review: third party rewritten as user; Atlas scope leaked to light preference; event date encoded as scope)",
+        "audit/2026-09-05/raw/smriti-mira-full-scoped-contract-v3-corrected-review.json (historical v3 recorded run rejected)",
+        "audit/2026-09-05/raw/installed-scope-candidate-261.json (historical offline checks accepted), audit/2026-09-05/raw/installed-scope-candidate-276.json (current installed-v7 offline scope candidate; 276 tests, pip check clean)",
+        "audit/2026-09-05/smriti-mira-full-scoped-contract-v4.json (terminal model-backed run; all extracted subjects are Mira, light-mode scope is unscoped, and current Rust/Atlas retrieval is correct, but brittle uses_tool/Aurora assertions fail and unsupported inferred primary Python remains)",
+        "audit/2026-09-05/smriti-mira-full-scoped-contract-v5.json (bounded installed-v7 rerun; 26/26 assertions pass and 8 facts independently reviewed, but the single run does not establish a universal uses_tool policy, has no real-run scope-retry case, and inferred Aurora applicability remains a lexical/semantic limitation; offline installed-v7 correction behavior is covered)",
+        "audit/2026-09-05/raw/smriti-mira-v5-independent-review.json",
+        "audit/2026-09-05/extraction-generalization-installed-v7.json (bounded installed-v7 generalization; 8/8 boolean checks pass across distinct subjects/cities, Figma usage and Sketch transition with project:Cedar, global dark preference, and self-scope handling)",
+        "audit/2026-09-05/raw/extraction-generalization-v7-independent-review.json",
+        "audit/2026-09-05/raw/extraction-tool-transition-v7-corrected-review.json (corrected as-of assertions and negative controls verify Sketch Jan 10\u2013Mar 10 retirement, retained transition, and active Figma after switch; original raw failure was a stale historical assertion)"
+      ],
+      "remaining": "The bounded installed-v7 checks and corrected Sketch-to-Figma retirement review pass. Preserve the single-model-run and lexical/semantic limitations: the generalization run made no real correction retry, this fixture does not establish a universal uses_tool retirement policy, and inferred Aurora applicability is not semantically proven."
+    },
+    {
+      "id": "matched-semantic-growth",
+      "requirement": "Measure Smriti and local Mem0 over the same nomic 768-dimensional route at 100, 1,000, 3,000, 9,000, and 36,500 documents with durable timing, storage, restart/reopen, resubmission, and relevance evidence.",
+      "status": "complete",
+      "evidence": [
+        "audit/2026-09-05/growth-smriti-nomic-schema2.json",
+        "audit/2026-09-05/growth-mem0-nomic-schema2.json",
+        "audit/2026-09-05/growth-matched-final-report.json",
+        "audit/2026-09-05/raw/growth-independent-final-validation.json (100 warm queries and 500 independently topic-relevant hits per track)",
+        "audit/2026-09-05/raw/growth-environment.json"
+      ],
+      "caveat": "These are bounded corpus-growth simulations; 30/90/365-day labels are 100-adds/day corpus equivalents, not elapsed longitudinal observations."
+    },
+    {
+      "id": "gbrain-lexical-maintained",
+      "requirement": "Benchmark persistent official-engine GBrain import/search without per-document CLI startup, and keep default untuned and ANALYZE-maintained observations separate.",
+      "status": "complete",
+      "evidence": [
+        "audit/2026-09-05/growth-gbrain-analyze-overtime-schema2.json",
+        "audit/2026-09-05/raw/independent-gbrain-growth.json",
+        "audit/2026-09-05/raw/independent-gbrain-5000.json (separate untuned observation)",
+        "audit/2026-09-05/raw/independent-gbrain-analyze.json",
+        "audit/2026-09-05/raw/independent-gbrain-analyze-restart.json"
+      ],
+      "caveat": "GBrain lexical has no embedding API cost and is not a semantic parity result."
+    },
+    {
+      "id": "gbrain-semantic-growth",
+      "requirement": "Provide a separate real nomic GBrain semantic route with measured 768-dimensional vectors, metadata/vector-count validation, process-restart cold timing, and the same growth checkpoints.",
+      "status": "complete_as_retrieval_storage_diagnostic",
+      "evidence": [
+        "audit/2026-09-05/growth-gbrain-nomic-schema2.json",
+        "audit/2026-09-05/growth-semantic-final-report.json (three-track effective-config parity verified)",
+        "audit/2026-09-05/raw/gbrain-semantic-growth-independent-review.json (100 queries, 500 relevant hits, passed)",
+        "bench/gbrain_public_semantic_worker.ts"
+      ],
+      "caveat": "This does not close model-backed answer-quality evaluation. The separate held-out20 semantic retrieval result is recorded as a bounded retrieval diagnostic with no answer-quality, superiority, or speed claim."
+    },
+    {
+      "id": "cost-and-time-over-period",
+      "requirement": "Report measured cumulative ingest/query/storage observations and explicit 30/90/365-day cost scenarios, with local API $0 separated from unmeasured hardware cost and managed Mem0 pricing.",
+      "status": "complete_bounded",
+      "evidence": [
+        "audit/2026-09-05/cost-speed-projections.md",
+        "audit/2026-09-05/raw/independent-cost-over-time.json",
+        "audit/2026-09-05/raw/cost-source-snapshot.json",
+        "audit/2026-09-05/raw/growth-independent-final-validation.json"
+      ],
+      "caveat": "The report explicitly says local model/API cost is shared by all tested local routes and hardware/electricity/operator costs were not measured."
+    },
+    {
+      "id": "charts",
+      "requirement": "Render readable standard-matplotlib latency and storage curves for the matched/semantic tracks without inventing missing checkpoints.",
+      "status": "complete",
+      "evidence": [
+        "audit/2026-09-05/charts/growth-query-latency.svg",
+        "audit/2026-09-05/charts/growth-storage.svg",
+        "audit/2026-09-05/charts/semantic/growth-semantic-query-latency.svg",
+        "audit/2026-09-05/charts/semantic/growth-semantic-storage.svg",
+        "bench/growth_charts.py"
+      ],
+      "caveat": "p50/p95 labels identify the empirical nearest-rank method; semantic GBrain and lexical GBrain remain distinct."
+    },
+    {
+      "id": "benchmark-instrumentation",
+      "requirement": "Record first query after ingest, cold reopen/restart boundary, warm p50/p95 sample counts, update/resubmit time, storage sidecars/cache, returned IDs/relevance, and model call/token/failure accounting without mocks.",
+      "status": "complete_for_growth_harness",
+      "evidence": [
+        "bench/growth.py",
+        "audit/2026-09-05/raw/growth-harness-installed-review.json",
+        "audit/2026-09-05/raw/growth-independent-final-validation.json",
+        "audit/2026-09-05/raw/http-retry-installed-verification.json",
+        "audit/2026-09-05/growth-matched-final-report.json"
+      ],
+      "caveat": "Smriti/Mem0 cold timing is a same-process client/database reopen; GBrain cold timing is a worker process restart."
+    },
+    {
+      "id": "paired-public-retrieval",
+      "requirement": "Run a same-ID, same-dataset, same-embedder paired public retrieval comparison with failure-inclusive denominators.",
+      "status": "complete_exploratory",
+      "evidence": [
+        "audit/2026-09-05/public-retrieval-s50-paired-analysis.md",
+        "audit/2026-09-05/raw/multi-session-gap-review.json"
+      ],
+      "caveat": "Smriti and Mem0 each completed 48/50; the result is explicitly exploratory and does not support superiority."
+    },
+    {
+      "id": "longmemeval-preflight",
+      "requirement": "Run a bounded same-reader/judge LongMemEval answer/judge preflight.",
+      "status": "complete_preflight_only",
+      "evidence": [
+        "audit/2026-09-05/public-qa-s6-paired-diagnostic.md",
+        "audit/2026-09-05/public-qa-smriti-s6.json",
+        "audit/2026-09-05/public-qa-mem0-s6.json"
+      ],
+      "caveat": "Six questions only; Smriti 4/6 and Mem0 3/6, with heuristic abstention scoring."
+    },
+    {
+      "id": "longmemeval-smriti-s50",
+      "requirement": "Complete the bounded 50-question Smriti LongMemEval-S answer/judge run with failure-inclusive accounting and preserved provenance.",
+      "status": "complete_exploratory",
+      "evidence": [
+        "audit/2026-09-05/longmemeval-qa-smriti-s50.json (50/50 complete; 0 operational and cleanup failures; 32/50 recorded correct; 14/30 answerable and 18/20 abstention rows correct)",
+        "audit/2026-09-05/raw/longmemeval-smriti-s50-independent-review.json (terminal status, source hash, and summary independently verified)",
+        "audit/2026-09-05/raw/longmemeval-smriti-late-host-load.json (late host-load observation)"
+      ],
+      "result": "32/50 recorded correct (64%); 14/30 answerable correct (46.67%); 18/20 abstention rows correct (90%).",
+      "caveat": "This is a selected 50-question exploratory sample with 40% abstention rows, not a broad accuracy estimate. The paired frozen-v4 result is recorded separately; elapsed 3994.4346 seconds was observed under extreme late host load and is not a controlled speed comparison."
+    },
+    {
+      "id": "longmemeval-paired-answer-judge",
+      "requirement": "Complete a bounded paired 50-question LongMemEval-S answer/judge baseline with identical selected IDs, dataset, models, budgets, and failure-inclusive accounting for Smriti and local Mem0.",
+      "status": "complete_exploratory",
+      "evidence": [
+        "audit/2026-09-05/longmemeval-qa-smriti-s50.json and audit/2026-09-05/longmemeval-qa-mem0-s50.json (frozen-v4 pair; 50/50 each, zero operational/cleanup failures, 32/50 each)",
+        "audit/2026-09-05/raw/longmemeval-pair-final-independent-review.json (identical selection, gold, models, budgets, dataset, and recomputed pair counts verified)",
+        "audit/2026-09-05/raw/longmemeval-smriti-late-host-load.json (uncontrolled late host load)"
+      ],
+      "result": "Smriti and Mem0 each recorded 32/50 (64%), 14/30 answerable (46.67%), and 18/20 abstention (90%); 30 questions were correct for both, 16 for neither, 2 Smriti-only, and 2 Mem0-only.",
+      "caveat": "The selected sample contains 40% abstention rows, so this is exploratory and not a broad 500-question quality claim. Smriti elapsed 3994.4346s and Mem0 20694.5133s under uncontrolled host load are not a speed ranking. Mem0 recorded 50 logical answer calls and 51 HTTP requests; the extra request has no recorded error cause."
+    },
+    {
+      "id": "gbrain-heldout20-retrieval",
+      "requirement": "Complete the bounded held-out20 semantic retrieval comparison with matching selected IDs, source labels, models/budgets, dataset, vector coverage, and failure-inclusive accounting.",
+      "status": "complete_bounded_retrieval",
+      "evidence": [
+        "audit/2026-09-05/public-retrieval-gbrain-semantic-heldout-s20.json",
+        "audit/2026-09-05/raw/gbrain-heldout20-independent-review.json (same 20 IDs, 991 sessions, 10047 input chunks, zero failures, vector coverage and no degraded search verified)"
+      ],
+      "result": "GBrain recall@5 0.8791667 and deduplicated-session reciprocal rank 0.9083333; Smriti default recall@5 0.8458333 / RR 0.8875; Smriti session-diverse recall@5 0.9333333 / RR 0.9041667.",
+      "caveat": "RR is deduplicated-session order within the top five chunks. This is retrieval-only evidence: it does not score answers, establish superiority, or compare speed."
+    },
+    {
+      "id": "hindsight-comparative-retrieval",
+      "requirement": "Complete the bounded Hindsight comparative retrieval probe with preserved source IDs/ranks, configuration, and cleanup evidence.",
+      "status": "complete_bounded_retrieval",
+      "evidence": [
+        "audit/2026-09-05/hindsight-comparative-v1.json (20 retains and 12 recalls; terminal exit 0)",
+        "audit/2026-09-05/raw/hindsight-comparative-independent-review.json (source IDs/ranks, config, coverage, and cleanup independently verified)"
+      ],
+      "result": "20/20 retains and 12/12 recalls succeeded with cleanup; every query returned 20 facts. On the answerable subset, top-five source coverage was 10/10 and the first result was relevant for 9/10; the current-drink query ranked old coffee first and new tea second.",
+      "caveat": "Observations and reranking were disabled. The bank configuration does not expose its embedding model, and no reader/judge answer score was run, so this is descriptive retrieval evidence only and does not establish answer quality, superiority, embedding parity, or speed."
+    },
+    {
+      "id": "locomo-smriti-preflight",
+      "requirement": "Complete the bounded 50-question Smriti LoCoMo answer/judge preflight from the installed candidate with failure-inclusive accounting and preserved provenance.",
+      "status": "complete_exploratory",
+      "evidence": [
+        "audit/2026-09-05/locomo-qa-smriti-s50.json (50/50 complete; 0 failures and 0 cleanup failures; 27/50 recorded correct; 21/40 answerable and 6/10 abstention rows correct; 10 sources)",
+        "audit/2026-09-05/raw/locomo-smriti-s50-independent-review.json (source hash matches; operational counts verified)",
+        "audit/2026-09-05/raw/locomo-date-judge-integrity-review.json (citation checks and strict date audit)",
+        "audit/2026-09-05/raw/locomo-smriti-s50-failure-analysis.json (7 retrieved-supported reader failures, 11 missing-evidence failures, 1 ambiguous; official results unmodified)",
+        "audit/2026-09-05/raw/locomo-qa-smriti-s50-provenance.json"
+      ],
+      "caveat": "This is the Smriti half of a frozen-v4 paired baseline; the paired result is recorded separately. The recorded figures are exploratory, not a quality headline, because the independent review preserves a known judge false-positive date case (conv-30-q0) and shared conversations create dependence between questions."
+    },
+    {
+      "id": "locomo-paired-answer-judge",
+      "requirement": "Complete a bounded paired 50-question LoCoMo answer/judge baseline with identical selected IDs, dataset, reader/judge models, and failure-inclusive accounting for Smriti and local Mem0.",
+      "status": "complete_exploratory",
+      "evidence": [
+        "audit/2026-09-05/locomo-qa-smriti-s50.json (frozen installed v4; 50/50, 27/50 recorded correct, 0 operational or cleanup failures)",
+        "audit/2026-09-05/locomo-qa-mem0-s50.json (frozen installed v4; 50/50, 26/50 recorded correct, 0 operational or cleanup failures)",
+        "audit/2026-09-05/raw/locomo-pair-final-independent-review.json (same selected IDs, gold, models, and dataset; pair counts and bootstrap interval verified)",
+        "audit/2026-09-05/raw/locomo-pair-configuration-review.json"
+      ],
+      "result": "Smriti 27/50 (54%) and Mem0 26/50 (52%); 24 questions were correct for both, 21 for neither, 3 Smriti-only, and 2 Mem0-only. Exploratory paired question bootstrap for Smriti minus Mem0 was [-0.06, 0.10].",
+      "caveat": "The frozen-v4 pair does not establish superiority: questions share conversations, the bootstrap does not model that dependence, and the recorded judge labels include known errors including conv-30-q0."
+    },
+    {
+      "id": "full-model-backed-qa",
+      "requirement": "Run full-history LongMemEval and LoCoMo with one shared answer/judge configuration, plus the requested GBrain held-out20 semantic retrieval QA.",
+      "status": "complete_bounded",
+      "evidence": [
+        "audit/2026-09-05/ROADMAP.md (bounded comparative tracks complete; broader quality limits remain open)",
+        "audit/2026-09-05/longmemeval-qa-smriti-s50.json and audit/2026-09-05/longmemeval-qa-mem0-s50.json (bounded frozen-v4 pair complete; 50/50 each, zero operational/cleanup failures, 32/50 each)",
+        "audit/2026-09-05/raw/longmemeval-pair-final-independent-review.json (identical selection/models/budgets/dataset and pair counts independently verified; elapsed times uncontrolled)",
+        "audit/2026-09-05/public-retrieval-gbrain-semantic-heldout-s20.json and audit/2026-09-05/raw/gbrain-heldout20-independent-review.json (bounded held-out20 semantic retrieval complete; vector coverage, labels, IDs, budgets, dataset, and zero failures verified)",
+        "audit/2026-09-05/locomo-qa-smriti-s50.json and audit/2026-09-05/locomo-qa-mem0-s50.json (bounded frozen-v4 full-history pair complete)",
+        "audit/2026-09-05/raw/locomo-pair-final-independent-review.json (paired counts and configuration identity verified; exploratory result)",
+        "audit/2026-09-05/benchmark-longmemeval-oracle-smriti.json (500-question oracle retrieval only; not full-haystack QA)",
+        "audit/2026-09-05/benchmark-longmemeval-oracle-mem0-pilot.json (10-question oracle pilot only)"
+      ],
+      "remaining": "The selected frozen-v4 LongMemEval-S50 and LoCoMo50 questions use complete per-question haystacks under one shared reader/judge setup, and the bounded GBrain held-out20 and Hindsight 20/12 retrieval probes are complete. These are selected-sample/descriptive results only: they do not establish broad answer quality, superiority, embedding parity, or speed; broader quality evaluation remains open."
+    },
+    {
+      "id": "launch-teaser",
+      "requirement": "Deliver and verify the exact 30-second launch teaser.",
+      "status": "complete",
+      "evidence": [
+        "audit/2026-09-05/video.md",
+        "launch-video/out/smriti-launch-teaser-30s-exact.mp4"
+      ],
+      "caveat": "The film is explicitly free of accuracy or speed-superiority claims."
+    },
+    {
+      "id": "roadmap-and-claim-discipline",
+      "requirement": "Keep ROADMAP and reports aligned with measured evidence, explicit caveats, and open quality gates.",
+      "status": "complete_current_sync",
+      "evidence": [
+        "audit/2026-09-05/ROADMAP.md",
+        "audit/2026-09-05/VERIFIED-RESULTS.md",
+        "audit/2026-09-05/cost-speed-projections.md"
+      ],
+      "caveat": "Bounded planned tracks and both social-film versions are verified. Broader semantic quality remains a future research priority; no release or universal reliability claim."
+    },
+    {
+      "id": "final-social-launch-film",
+      "requirement": "After memory/comparative validation, root personally builds and validates a narrative motion-studio launch film using the supplied references, music and SFX, Smriti four-stream visuals, and final evidence-backed outcomes. Preserve the already completed 30-second teaser.",
+      "status": "complete_with_separate_camera_version",
+      "evidence": [
+        "audit/2026-09-05/FINAL-LAUNCH-FILM-BRIEF.md (user request, local assets verified and sample frames inspected)",
+        "audit/2026-09-05/FINAL-LAUNCH-FILM-PREPRODUCTION-HANDOFF.md (existing composition inventory only)",
+        "audit/2026-09-05/social-film-verification.md",
+        "audit/2026-09-05/raw/social-camera-export-review.json",
+        "launch-video/SOCIAL-FILM.md"
+      ],
+      "remaining": "No film build or render remains. Both 60-second exports are local; source is reproducible with supplied local assets. Audio QA covers levels, decoding and cue timing, not auditory listening."
+    }
+  ],
+  "real_pending_build_work": [
+    {
+      "item": "No additional Mira implementation build task is evidenced by the current installed-v7 bounded results; historical v3/v4 correction evidence remains preserved, while broader semantic-quality evaluation is still open.",
+      "type": "scope_boundary",
+      "status": "confirmed",
+      "evidence": "audit/2026-09-05/raw/smriti-mira-v5-independent-review.json, audit/2026-09-05/raw/extraction-tool-transition-v7-corrected-review.json"
+    },
+    {
+      "item": "All planned bounded benchmark executions, independent reviews, social original and camera variants, and PR synchronization are complete. Broader semantic-quality research remains the explicitly prioritized future roadmap.",
+      "type": "scope_boundary",
+      "status": "confirmed"
+    }
+  ],
+  "running_or_pending_evaluations": [
+    "Paired frozen-v4 LoCoMo50 answer/judge baseline: complete 50/50 for both adapters with 0 operational/cleanup failures; Smriti 27/50 and Mem0 26/50. Same IDs/gold/models/dataset and pair counts were independently verified; exploratory only because of shared-conversation dependence and known judge/date errors.",
+    "Paired frozen-v4 LongMemEval-S50 answer/judge run: complete 50/50 for both adapters with 0 operational/cleanup failures; Smriti and Mem0 each recorded 32/50 overall, 14/30 answerable, and 18/20 abstention rows correct. Pair review verified identical selection/models/budgets/dataset and counts: 30 both correct, 16 both wrong, 2 Smriti-only, 2 Mem0-only. The 40% abstention sample is exploratory; Smriti 3994.4346s and Mem0 20694.5133s elapsed under uncontrolled host load are not speed data; Mem0 had 51 HTTP requests for 50 logical answer calls with no recorded cause for the extra request.",
+    "GBrain held-out20 semantic retrieval QA: complete bounded retrieval result; GBrain recall@5 0.8791667 / deduplicated-session RR 0.9083333, Smriti default 0.8458333 / 0.8875, and Smriti session-diverse 0.9333333 / 0.9041667. Same 20 IDs, 991 sessions, 10047 input chunks, vector coverage, and zero failures independently verified; no answer-quality, superiority, or speed claim.",
+    "Hindsight comparative probe (20/12): complete bounded descriptive retrieval result; 20/20 retains and 12/12 recalls succeeded with cleanup, every query returned 20 facts, answerable top-five source coverage was 10/10, and the first result was relevant for 9/10 answerable queries. The current-drink query ranked old coffee first and new tea second. Observations/reranking were disabled and the bank embedding model is not exposed; no answer-quality, superiority, embedding-parity, or speed claim.",
+    "Installed v7 extraction-generalization probe: complete 8/8 boolean checks with independent review; Leila/Omar remain distinct active cities, Figma usage and the Sketch transition both carry project:Cedar, global dark preference is unscoped, and user self-scope is empty. One bounded run made 4 calls/4 updates, so scope-retry coverage remains unexercised (audit/2026-09-05/extraction-generalization-installed-v7.json).",
+    "Fresh installed model-backed Mira scope/temporal acceptance: bounded v5 installed-v7 run passes 26/26 assertions and v7 generalization passes 8/8; corrected prior-tool review verifies retained Sketch history and active Figma with negative controls. Single-model and lexical/semantic limitations remain; no real correction retry occurred, and no universal retirement policy is claimed."
+  ],
+  "explicit_nonclaims": [
+    "The oracle LongMemEval retrieval files are not full-haystack answer quality.",
+    "The six-question preflight is not a leaderboard or significance result.",
+    "Local API cost $0 is shared across tested local routes and is not hardware cost $0.",
+    "Growth day labels are corpus equivalents at 100 adds/day, not calendar observations.",
+    "No universal Smriti superiority, zero-defect, or live-deployment claim is supported.",
+    "Hindsight is descriptive retrieval evidence only: observations and reranking were disabled, its bank configuration does not expose an embedding model, and no answer-quality, superiority, embedding-parity, or speed claim is supported."
+  ]
+}

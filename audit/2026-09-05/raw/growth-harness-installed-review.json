@@ -1,0 +1,11 @@
+{
+  "checked_utc": "2026-09-07T15:03:39.290244+00:00",
+  "wheel_sha256": "2d34f666abfa85fce39aa108cf458d9d3338315585d4b44d34781a48f0a9a6a1",
+  "installed_tests_passed": 203,
+  "installed_outside_checkout": true,
+  "worker_package_data_present": true,
+  "fault_injection": "Failure during51st ingestion preserved completed50-document checkpoint with partial status; original exception propagated",
+  "repeats_zero": "Rejected with exit2",
+  "relevance": "50docHash smoke returned5 relevant IDs for all10warmqueries",
+  "scope": "Harness validation; matched semantic growth remains pending"
+}

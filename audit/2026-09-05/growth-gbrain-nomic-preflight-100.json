@@ -1,0 +1,1382 @@
+{
+  "schema_version": 2,
+  "status": "complete",
+  "adapter": "gbrain-nomic",
+  "configuration": "gbrain PGLite / persistent hybrid semantic + keyword / Ollama nomic 768d",
+  "measurement": "growing-corpus simulation in one run; checkpoints are not elapsed-day longitudinal observations",
+  "timing_scope": "persistent gbrain engine process; executeRaw('ANALYZE') after each checkpoint; process-restart cold query; semantic hybrid search with real nomic embeddings",
+  "model_cost": {
+    "observed_paid_api_usd": 0,
+    "hardware_electricity_cost_usd": null,
+    "note": "Local/API charge is $0 only for a verified loopback/local route; otherwise paid API cost is unknown. Electricity, hardware purchase/rental, and depreciation were not measured. Shared model cache is excluded."
+  },
+  "verification": {
+    "synthetic_queries": [
+      "passport renewal appointment",
+      "doctor knee recommendation",
+      "project launch date",
+      "invoice due date",
+      "emergency contact"
+    ],
+    "nonempty_and_relevant_definition": "A result is relevant when its synthetic document bucket matches the query topic."
+  },
+  "checkpoints": [
+    {
+      "documents": 100,
+      "incremental_ingest_ms": 2251.413,
+      "same_payload_update_ms": 4.386,
+      "update_definition": "idempotent re-submit of the final record unchanged; adapter dedup/update semantics apply",
+      "gbrain_analyze_maintenance_ms": 49.65,
+      "gbrain_ingest_statuses": [
+        {
+          "id": "n0000000",
+          "status": "imported"
+        },
+        {
+          "id": "n0000001",
+          "status": "imported"
+        },
+        {
+          "id": "n0000002",
+          "status": "imported"
+        },
+        {
+          "id": "n0000003",
+          "status": "imported"
+        },
+        {
+          "id": "n0000004",
+          "status": "imported"
+        },
+        {
+          "id": "n0000005",
+          "status": "imported"
+        },
+        {
+          "id": "n0000006",
+          "status": "imported"
+        },
+        {
+          "id": "n0000007",
+          "status": "imported"
+        },
+        {
+          "id": "n0000008",
+          "status": "imported"
+        },
+        {
+          "id": "n0000009",
+          "status": "imported"
+        },
+        {
+          "id": "n0000010",
+          "status": "imported"
+        },
+        {
+          "id": "n0000011",
+          "status": "imported"
+        },
+        {
+          "id": "n0000012",
+          "status": "imported"
+        },
+        {
+          "id": "n0000013",
+          "status": "imported"
+        },
+        {
+          "id": "n0000014",
+          "status": "imported"
+        },
+        {
+          "id": "n0000015",
+          "status": "imported"
+        },
+        {
+          "id": "n0000016",
+          "status": "imported"
+        },
+        {
+          "id": "n0000017",
+          "status": "imported"
+        },
+        {
+          "id": "n0000018",
+          "status": "imported"
+        },
+        {
+          "id": "n0000019",
+          "status": "imported"
+        },
+        {
+          "id": "n0000020",
+          "status": "imported"
+        },
+        {
+          "id": "n0000021",
+          "status": "imported"
+        },
+        {
+          "id": "n0000022",
+          "status": "imported"
+        },
+        {
+          "id": "n0000023",
+          "status": "imported"
+        },
+        {
+          "id": "n0000024",
+          "status": "imported"
+        },
+        {
+          "id": "n0000025",
+          "status": "imported"
+        },
+        {
+          "id": "n0000026",
+          "status": "imported"
+        },
+        {
+          "id": "n0000027",
+          "status": "imported"
+        },
+        {
+          "id": "n0000028",
+          "status": "imported"
+        },
+        {
+          "id": "n0000029",
+          "status": "imported"
+        },
+        {
+          "id": "n0000030",
+          "status": "imported"
+        },
+        {
+          "id": "n0000031",
+          "status": "imported"
+        },
+        {
+          "id": "n0000032",
+          "status": "imported"
+        },
+        {
+          "id": "n0000033",
+          "status": "imported"
+        },
+        {
+          "id": "n0000034",
+          "status": "imported"
+        },
+        {
+          "id": "n0000035",
+          "status": "imported"
+        },
+        {
+          "id": "n0000036",
+          "status": "imported"
+        },
+        {
+          "id": "n0000037",
+          "status": "imported"
+        },
+        {
+          "id": "n0000038",
+          "status": "imported"
+        },
+        {
+          "id": "n0000039",
+          "status": "imported"
+        },
+        {
+          "id": "n0000040",
+          "status": "imported"
+        },
+        {
+          "id": "n0000041",
+          "status": "imported"
+        },
+        {
+          "id": "n0000042",
+          "status": "imported"
+        },
+        {
+          "id": "n0000043",
+          "status": "imported"
+        },
+        {
+          "id": "n0000044",
+          "status": "imported"
+        },
+        {
+          "id": "n0000045",
+          "status": "imported"
+        },
+        {
+          "id": "n0000046",
+          "status": "imported"
+        },
+        {
+          "id": "n0000047",
+          "status": "imported"
+        },
+        {
+          "id": "n0000048",
+          "status": "imported"
+        },
+        {
+          "id": "n0000049",
+          "status": "imported"
+        },
+        {
+          "id": "n0000050",
+          "status": "imported"
+        },
+        {
+          "id": "n0000051",
+          "status": "imported"
+        },
+        {
+          "id": "n0000052",
+          "status": "imported"
+        },
+        {
+          "id": "n0000053",
+          "status": "imported"
+        },
+        {
+          "id": "n0000054",
+          "status": "imported"
+        },
+        {
+          "id": "n0000055",
+          "status": "imported"
+        },
+        {
+          "id": "n0000056",
+          "status": "imported"
+        },
+        {
+          "id": "n0000057",
+          "status": "imported"
+        },
+        {
+          "id": "n0000058",
+          "status": "imported"
+        },
+        {
+          "id": "n0000059",
+          "status": "imported"
+        },
+        {
+          "id": "n0000060",
+          "status": "imported"
+        },
+        {
+          "id": "n0000061",
+          "status": "imported"
+        },
+        {
+          "id": "n0000062",
+          "status": "imported"
+        },
+        {
+          "id": "n0000063",
+          "status": "imported"
+        },
+        {
+          "id": "n0000064",
+          "status": "imported"
+        },
+        {
+          "id": "n0000065",
+          "status": "imported"
+        },
+        {
+          "id": "n0000066",
+          "status": "imported"
+        },
+        {
+          "id": "n0000067",
+          "status": "imported"
+        },
+        {
+          "id": "n0000068",
+          "status": "imported"
+        },
+        {
+          "id": "n0000069",
+          "status": "imported"
+        },
+        {
+          "id": "n0000070",
+          "status": "imported"
+        },
+        {
+          "id": "n0000071",
+          "status": "imported"
+        },
+        {
+          "id": "n0000072",
+          "status": "imported"
+        },
+        {
+          "id": "n0000073",
+          "status": "imported"
+        },
+        {
+          "id": "n0000074",
+          "status": "imported"
+        },
+        {
+          "id": "n0000075",
+          "status": "imported"
+        },
+        {
+          "id": "n0000076",
+          "status": "imported"
+        },
+        {
+          "id": "n0000077",
+          "status": "imported"
+        },
+        {
+          "id": "n0000078",
+          "status": "imported"
+        },
+        {
+          "id": "n0000079",
+          "status": "imported"
+        },
+        {
+          "id": "n0000080",
+          "status": "imported"
+        },
+        {
+          "id": "n0000081",
+          "status": "imported"
+        },
+        {
+          "id": "n0000082",
+          "status": "imported"
+        },
+        {
+          "id": "n0000083",
+          "status": "imported"
+        },
+        {
+          "id": "n0000084",
+          "status": "imported"
+        },
+        {
+          "id": "n0000085",
+          "status": "imported"
+        },
+        {
+          "id": "n0000086",
+          "status": "imported"
+        },
+        {
+          "id": "n0000087",
+          "status": "imported"
+        },
+        {
+          "id": "n0000088",
+          "status": "imported"
+        },
+        {
+          "id": "n0000089",
+          "status": "imported"
+        },
+        {
+          "id": "n0000090",
+          "status": "imported"
+        },
+        {
+          "id": "n0000091",
+          "status": "imported"
+        },
+        {
+          "id": "n0000092",
+          "status": "imported"
+        },
+        {
+          "id": "n0000093",
+          "status": "imported"
+        },
+        {
+          "id": "n0000094",
+          "status": "imported"
+        },
+        {
+          "id": "n0000095",
+          "status": "imported"
+        },
+        {
+          "id": "n0000096",
+          "status": "imported"
+        },
+        {
+          "id": "n0000097",
+          "status": "imported"
+        },
+        {
+          "id": "n0000098",
+          "status": "imported"
+        },
+        {
+          "id": "n0000099",
+          "status": "imported"
+        }
+      ],
+      "gbrain_update_statuses": [
+        {
+          "id": "n0000099",
+          "status": "skipped"
+        }
+      ],
+      "gbrain_vector_stats": {
+        "page_count": 100,
+        "chunk_count": 100,
+        "embedded_count": 100,
+        "link_count": 0,
+        "tag_count": 0,
+        "timeline_entry_count": 0,
+        "pages_by_type": {
+          "concept": 100
+        }
+      },
+      "first_query_after_ingest_ms": 38.957,
+      "first_query_after_ingest_returned_ids": [
+        "n0000020",
+        "n0000040",
+        "n0000035",
+        "n0000060",
+        "n0000000"
+      ],
+      "first_query_after_ingest_per_hit_relevance": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "first_query_after_ingest_returned": 5,
+      "first_query_after_ingest_relevant_ids": [
+        "n0000020",
+        "n0000040",
+        "n0000035",
+        "n0000060",
+        "n0000000"
+      ],
+      "first_query_after_ingest_relevant": 5,
+      "first_query_after_ingest_search_meta": {
+        "vector_enabled": true,
+        "detail_resolved": null,
+        "expansion_applied": false,
+        "intent": "general",
+        "mode": "balanced",
+        "embedding_column": "embedding",
+        "degraded": [],
+        "retrieved_count": 5,
+        "token_budget": {
+          "budget": 12000,
+          "used": 103,
+          "dropped": 0,
+          "kept": 5
+        }
+      },
+      "cold_query_after_restart_ms": 66.342,
+      "cold_query_boundary": "process_restart",
+      "process_restart_startup_ms": 296.555,
+      "cold_query_returned_ids": [
+        "n0000020",
+        "n0000040",
+        "n0000035",
+        "n0000060",
+        "n0000000"
+      ],
+      "cold_query_per_hit_relevance": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "cold_query_returned": 5,
+      "cold_query_relevant": 5,
+      "cold_query_search_meta": {
+        "vector_enabled": true,
+        "detail_resolved": null,
+        "expansion_applied": false,
+        "intent": "general",
+        "mode": "balanced",
+        "embedding_column": "embedding",
+        "degraded": [],
+        "retrieved_count": 5,
+        "token_budget": {
+          "budget": 12000,
+          "used": 103,
+          "dropped": 0,
+          "kept": 5
+        }
+      },
+      "warm_query_ms_p50": 26.913,
+      "warm_query_ms_p95": 30.588,
+      "timed_query_samples": 20,
+      "warm_nonempty_results": 20,
+      "warm_queries_with_relevant_result": 20,
+      "timed_queries": [
+        {
+          "query": "passport renewal appointment",
+          "returned_ids": [
+            "n0000020",
+            "n0000040",
+            "n0000035",
+            "n0000060",
+            "n0000000"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000020",
+            "n0000040",
+            "n0000035",
+            "n0000060",
+            "n0000000"
+          ],
+          "latency_ms": 35.795,
+          "search_meta": {
+            "vector_enabled": true,
+            "detail_resolved": null,
+            "expansion_applied": false,
+            "intent": "general",
+            "mode": "balanced",
+            "embedding_column": "embedding",
+            "degraded": [],
+            "retrieved_count": 5,
+            "token_budget": {
+              "budget": 12000,
+              "used": 103,
+              "dropped": 0,
+              "kept": 5
+            }
+          }
+        },
+        {
+          "query": "doctor knee recommendation",
+          "returned_ids": [
+            "n0000021",
+            "n0000041",
+            "n0000036",
+            "n0000026",
+            "n0000061"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000021",
+            "n0000041",
+            "n0000036",
+            "n0000026",
+            "n0000061"
+          ],
+          "latency_ms": 30.477,
+          "search_meta": {
+            "vector_enabled": true,
+            "detail_resolved": null,
+            "expansion_applied": false,
+            "intent": "general",
+            "mode": "balanced",
+            "embedding_column": "embedding",
+            "degraded": [],
+            "retrieved_count": 5,
+            "token_budget": {
+              "budget": 12000,
+              "used": 100,
+              "dropped": 0,
+              "kept": 5
+            }
+          }
+        },
+        {
+          "query": "project launch date",
+          "returned_ids": [
+            "n0000017",
+            "n0000022",
+            "n0000042",
+            "n0000002",
+            "n0000012"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000017",
+            "n0000022",
+            "n0000042",
+            "n0000002",
+            "n0000012"
+          ],
+          "latency_ms": 30.524,
+          "search_meta": {
+            "vector_enabled": true,
+            "detail_resolved": "high",
+            "expansion_applied": false,
+            "intent": "event",
+            "mode": "balanced",
+            "embedding_column": "embedding",
+            "degraded": [],
+            "retrieved_count": 5,
+            "token_budget": {
+              "budget": 12000,
+              "used": 90,
+              "dropped": 0,
+              "kept": 5
+            }
+          }
+        },
+        {
+          "query": "invoice due date",
+          "returned_ids": [
+            "n0000018",
+            "n0000023",
+            "n0000008",
+            "n0000013",
+            "n0000048"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000018",
+            "n0000023",
+            "n0000008",
+            "n0000013",
+            "n0000048"
+          ],
+          "latency_ms": 30.588,
+          "search_meta": {
+            "vector_enabled": true,
+            "detail_resolved": null,
+            "expansion_applied": false,
+            "intent": "general",
+            "mode": "balanced",
+            "embedding_column": "embedding",
+            "degraded": [],
+            "retrieved_count": 5,
+            "token_budget": {
+              "budget": 12000,
+              "used": 89,
+              "dropped": 0,
+              "kept": 5
+            }
+          }
+        },
+        {
+          "query": "emergency contact",
+          "returned_ids": [
+            "n0000014",
+            "n0000034",
+            "n0000039",
+            "n0000059",
+            "n0000074"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000014",
+            "n0000034",
+            "n0000039",
+            "n0000059",
+            "n0000074"
+          ],
+          "latency_ms": 24.776,
+          "search_meta": {
+            "vector_enabled": true,
+            "detail_resolved": null,
+            "expansion_applied": false,
+            "intent": "general",
+            "mode": "balanced",
+            "embedding_column": "embedding",
+            "degraded": [],
+            "retrieved_count": 5,
+            "token_budget": {
+              "budget": 12000,
+              "used": 90,
+              "dropped": 0,
+              "kept": 5
+            }
+          }
+        },
+        {
+          "query": "passport renewal appointment",
+          "returned_ids": [
+            "n0000020",
+            "n0000040",
+            "n0000035",
+            "n0000060",
+            "n0000000"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000020",
+            "n0000040",
+            "n0000035",
+            "n0000060",
+            "n0000000"
+          ],
+          "latency_ms": 24.598,
+          "search_meta": {
+            "vector_enabled": true,
+            "detail_resolved": null,
+            "expansion_applied": false,
+            "intent": "general",
+            "mode": "balanced",
+            "embedding_column": "embedding",
+            "degraded": [],
+            "retrieved_count": 5,
+            "token_budget": {
+              "budget": 12000,
+              "used": 103,
+              "dropped": 0,
+              "kept": 5
+            }
+          }
+        },
+        {
+          "query": "doctor knee recommendation",
+          "returned_ids": [
+            "n0000021",
+            "n0000041",
+            "n0000036",
+            "n0000026",
+            "n0000061"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000021",
+            "n0000041",
+            "n0000036",
+            "n0000026",
+            "n0000061"
+          ],
+          "latency_ms": 25.857,
+          "search_meta": {
+            "vector_enabled": true,
+            "detail_resolved": null,
+            "expansion_applied": false,
+            "intent": "general",
+            "mode": "balanced",
+            "embedding_column": "embedding",
+            "degraded": [],
+            "retrieved_count": 5,
+            "token_budget": {
+              "budget": 12000,
+              "used": 100,
+              "dropped": 0,
+              "kept": 5
+            }
+          }
+        },
+        {
+          "query": "project launch date",
+          "returned_ids": [
+            "n0000017",
+            "n0000022",
+            "n0000042",
+            "n0000002",
+            "n0000012"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000017",
+            "n0000022",
+            "n0000042",
+            "n0000002",
+            "n0000012"
+          ],
+          "latency_ms": 24.779,
+          "search_meta": {
+            "vector_enabled": true,
+            "detail_resolved": "high",
+            "expansion_applied": false,
+            "intent": "event",
+            "mode": "balanced",
+            "embedding_column": "embedding",
+            "degraded": [],
+            "retrieved_count": 5,
+            "token_budget": {
+              "budget": 12000,
+              "used": 90,
+              "dropped": 0,
+              "kept": 5
+            }
+          }
+        },
+        {
+          "query": "invoice due date",
+          "returned_ids": [
+            "n0000018",
+            "n0000023",
+            "n0000008",
+            "n0000013",
+            "n0000048"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000018",
+            "n0000023",
+            "n0000008",
+            "n0000013",
+            "n0000048"
+          ],
+          "latency_ms": 27.619,
+          "search_meta": {
+            "vector_enabled": true,
+            "detail_resolved": null,
+            "expansion_applied": false,
+            "intent": "general",
+            "mode": "balanced",
+            "embedding_column": "embedding",
+            "degraded": [],
+            "retrieved_count": 5,
+            "token_budget": {
+              "budget": 12000,
+              "used": 89,
+              "dropped": 0,
+              "kept": 5
+            }
+          }
+        },
+        {
+          "query": "emergency contact",
+          "returned_ids": [
+            "n0000014",
+            "n0000034",
+            "n0000039",
+            "n0000059",
+            "n0000074"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000014",
+            "n0000034",
+            "n0000039",
+            "n0000059",
+            "n0000074"
+          ],
+          "latency_ms": 26.084,
+          "search_meta": {
+            "vector_enabled": true,
+            "detail_resolved": null,
+            "expansion_applied": false,
+            "intent": "general",
+            "mode": "balanced",
+            "embedding_column": "embedding",
+            "degraded": [],
+            "retrieved_count": 5,
+            "token_budget": {
+              "budget": 12000,
+              "used": 90,
+              "dropped": 0,
+              "kept": 5
+            }
+          }
+        },
+        {
+          "query": "passport renewal appointment",
+          "returned_ids": [
+            "n0000020",
+            "n0000040",
+            "n0000035",
+            "n0000060",
+            "n0000000"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000020",
+            "n0000040",
+            "n0000035",
+            "n0000060",
+            "n0000000"
+          ],
+          "latency_ms": 27.546,
+          "search_meta": {
+            "vector_enabled": true,
+            "detail_resolved": null,
+            "expansion_applied": false,
+            "intent": "general",
+            "mode": "balanced",
+            "embedding_column": "embedding",
+            "degraded": [],
+            "retrieved_count": 5,
+            "token_budget": {
+              "budget": 12000,
+              "used": 103,
+              "dropped": 0,
+              "kept": 5
+            }
+          }
+        },
+        {
+          "query": "doctor knee recommendation",
+          "returned_ids": [
+            "n0000021",
+            "n0000041",
+            "n0000036",
+            "n0000026",
+            "n0000061"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000021",
+            "n0000041",
+            "n0000036",
+            "n0000026",
+            "n0000061"
+          ],
+          "latency_ms": 26.582,
+          "search_meta": {
+            "vector_enabled": true,
+            "detail_resolved": null,
+            "expansion_applied": false,
+            "intent": "general",
+            "mode": "balanced",
+            "embedding_column": "embedding",
+            "degraded": [],
+            "retrieved_count": 5,
+            "token_budget": {
+              "budget": 12000,
+              "used": 100,
+              "dropped": 0,
+              "kept": 5
+            }
+          }
+        },
+        {
+          "query": "project launch date",
+          "returned_ids": [
+            "n0000017",
+            "n0000022",
+            "n0000042",
+            "n0000002",
+            "n0000012"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000017",
+            "n0000022",
+            "n0000042",
+            "n0000002",
+            "n0000012"
+          ],
+          "latency_ms": 26.913,
+          "search_meta": {
+            "vector_enabled": true,
+            "detail_resolved": "high",
+            "expansion_applied": false,
+            "intent": "event",
+            "mode": "balanced",
+            "embedding_column": "embedding",
+            "degraded": [],
+            "retrieved_count": 5,
+            "token_budget": {
+              "budget": 12000,
+              "used": 90,
+              "dropped": 0,
+              "kept": 5
+            }
+          }
+        },
+        {
+          "query": "invoice due date",
+          "returned_ids": [
+            "n0000018",
+            "n0000023",
+            "n0000008",
+            "n0000013",
+            "n0000048"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000018",
+            "n0000023",
+            "n0000008",
+            "n0000013",
+            "n0000048"
+          ],
+          "latency_ms": 29.003,
+          "search_meta": {
+            "vector_enabled": true,
+            "detail_resolved": null,
+            "expansion_applied": false,
+            "intent": "general",
+            "mode": "balanced",
+            "embedding_column": "embedding",
+            "degraded": [],
+            "retrieved_count": 5,
+            "token_budget": {
+              "budget": 12000,
+              "used": 89,
+              "dropped": 0,
+              "kept": 5
+            }
+          }
+        },
+        {
+          "query": "emergency contact",
+          "returned_ids": [
+            "n0000014",
+            "n0000034",
+            "n0000039",
+            "n0000059",
+            "n0000074"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000014",
+            "n0000034",
+            "n0000039",
+            "n0000059",
+            "n0000074"
+          ],
+          "latency_ms": 25.328,
+          "search_meta": {
+            "vector_enabled": true,
+            "detail_resolved": null,
+            "expansion_applied": false,
+            "intent": "general",
+            "mode": "balanced",
+            "embedding_column": "embedding",
+            "degraded": [],
+            "retrieved_count": 5,
+            "token_budget": {
+              "budget": 12000,
+              "used": 90,
+              "dropped": 0,
+              "kept": 5
+            }
+          }
+        },
+        {
+          "query": "passport renewal appointment",
+          "returned_ids": [
+            "n0000020",
+            "n0000040",
+            "n0000035",
+            "n0000060",
+            "n0000000"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000020",
+            "n0000040",
+            "n0000035",
+            "n0000060",
+            "n0000000"
+          ],
+          "latency_ms": 26.921,
+          "search_meta": {
+            "vector_enabled": true,
+            "detail_resolved": null,
+            "expansion_applied": false,
+            "intent": "general",
+            "mode": "balanced",
+            "embedding_column": "embedding",
+            "degraded": [],
+            "retrieved_count": 5,
+            "token_budget": {
+              "budget": 12000,
+              "used": 103,
+              "dropped": 0,
+              "kept": 5
+            }
+          }
+        },
+        {
+          "query": "doctor knee recommendation",
+          "returned_ids": [
+            "n0000021",
+            "n0000041",
+            "n0000036",
+            "n0000026",
+            "n0000061"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000021",
+            "n0000041",
+            "n0000036",
+            "n0000026",
+            "n0000061"
+          ],
+          "latency_ms": 26.309,
+          "search_meta": {
+            "vector_enabled": true,
+            "detail_resolved": null,
+            "expansion_applied": false,
+            "intent": "general",
+            "mode": "balanced",
+            "embedding_column": "embedding",
+            "degraded": [],
+            "retrieved_count": 5,
+            "token_budget": {
+              "budget": 12000,
+              "used": 100,
+              "dropped": 0,
+              "kept": 5
+            }
+          }
+        },
+        {
+          "query": "project launch date",
+          "returned_ids": [
+            "n0000017",
+            "n0000022",
+            "n0000042",
+            "n0000002",
+            "n0000012"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000017",
+            "n0000022",
+            "n0000042",
+            "n0000002",
+            "n0000012"
+          ],
+          "latency_ms": 27.517,
+          "search_meta": {
+            "vector_enabled": true,
+            "detail_resolved": "high",
+            "expansion_applied": false,
+            "intent": "event",
+            "mode": "balanced",
+            "embedding_column": "embedding",
+            "degraded": [],
+            "retrieved_count": 5,
+            "token_budget": {
+              "budget": 12000,
+              "used": 90,
+              "dropped": 0,
+              "kept": 5
+            }
+          }
+        },
+        {
+          "query": "invoice due date",
+          "returned_ids": [
+            "n0000018",
+            "n0000023",
+            "n0000008",
+            "n0000013",
+            "n0000048"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000018",
+            "n0000023",
+            "n0000008",
+            "n0000013",
+            "n0000048"
+          ],
+          "latency_ms": 28.782,
+          "search_meta": {
+            "vector_enabled": true,
+            "detail_resolved": null,
+            "expansion_applied": false,
+            "intent": "general",
+            "mode": "balanced",
+            "embedding_column": "embedding",
+            "degraded": [],
+            "retrieved_count": 5,
+            "token_budget": {
+              "budget": 12000,
+              "used": 89,
+              "dropped": 0,
+              "kept": 5
+            }
+          }
+        },
+        {
+          "query": "emergency contact",
+          "returned_ids": [
+            "n0000014",
+            "n0000034",
+            "n0000039",
+            "n0000059",
+            "n0000074"
+          ],
+          "per_hit_relevance": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relevant_ids": [
+            "n0000014",
+            "n0000034",
+            "n0000039",
+            "n0000059",
+            "n0000074"
+          ],
+          "latency_ms": 23.622,
+          "search_meta": {
+            "vector_enabled": true,
+            "detail_resolved": null,
+            "expansion_applied": false,
+            "intent": "general",
+            "mode": "balanced",
+            "embedding_column": "embedding",
+            "degraded": [],
+            "retrieved_count": 5,
+            "token_budget": {
+              "budget": 12000,
+              "used": 90,
+              "dropped": 0,
+              "kept": 5
+            }
+          }
+        }
+      ],
+      "storage_bytes": 45253153,
+      "storage_mb": 45.253
+    }
+  ],
+  "gbrain_analyze": true,
+  "model_calls": {
+    "successful_calls": null,
+    "successful_tokens": null,
+    "failed_attempts": "unknown",
+    "note": "Embedding client counters are not exposed; failed/retried attempts may be unobserved."
+  },
+  "storage_scope": {
+    "paths": [
+      "/var/folders/by/y_2s1gdx27g16cy8lv236s340000gn/T/gbrain-semantic-fknck22x/db"
+    ],
+    "shared_model_cache_included": false,
+    "shared_model_cache_paths": [],
+    "shared_model_cache_note": "Model cache location/size was not measured and is excluded from storage_bytes.",
+    "hardware_and_electricity_measured": false
+  },
+  "process_startup_ms": 1365.783,
+  "effective_embedder": {
+    "provider": "ollama",
+    "model": "nomic-embed-text:v1.5",
+    "configured_embedding_dims": 768,
+    "measured_embedding_dims": 768,
+    "endpoint": "http://127.0.0.1:11436",
+    "endpoint_api_path": "/v1",
+    "raw_model": "ollama:nomic-embed-text:v1.5",
+    "raw_endpoint": "http://127.0.0.1:11436"
+  }
+}

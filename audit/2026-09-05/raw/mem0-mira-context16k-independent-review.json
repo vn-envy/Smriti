@@ -1,0 +1,21 @@
+{
+  "source": "mem0-mira-full-context16k.json",
+  "root_validation": "completed_smoke_context_verified",
+  "status": "ok",
+  "prompt_token_counts": [
+    8032,
+    8097,
+    8166
+  ],
+  "verified_runtime_context": 16384,
+  "prompt_tokens_below_context_limit": true,
+  "elapsed_s": 70.2275,
+  "llm_usage": {
+    "calls": 3,
+    "tokens_in": 24295,
+    "tokens_out": 189,
+    "usage_missing": 0,
+    "usage_observable": true
+  },
+  "limitations": "Native Mem0 extraction/retrieval smoke with custom explicit think=False/num_ctx wrapper; no answer/judge score. Timing includes model loading and prefix-cache effects and is not a speed ranking. Three dated memories and three ADD history records retained."
+}

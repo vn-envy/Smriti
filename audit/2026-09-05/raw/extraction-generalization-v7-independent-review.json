@@ -1,0 +1,20 @@
+{
+  "status": "bounded_generalization_pass",
+  "source": "audit/2026-09-05/extraction-generalization-installed-v7.json",
+  "sha256": "a6e6e1d6b9e829787d51d5e8f34feb3d34a5123b2070f0aed41ec70524e2b8f1",
+  "checks": {
+    "leila_kyoto_active": true,
+    "omar_nairobi_active": true,
+    "distinct_named_subjects": true,
+    "no_crossperson_city_invalidation": true,
+    "scoped_destination_state": true,
+    "historical_scoped_transition_retained": true,
+    "global_preference_is_unscoped": true,
+    "self_reference_is_user_scoped_empty": true
+  },
+  "raw_structured_evidence_review": "Leila/Kyoto and Omar/Nairobi remain active with distinct subjects. Figma usage and Sketch transition both have project:Cedar, transition validity begins March10. Explicit global dark mode and user concise answers have empty scope.",
+  "limitations": [
+    "One model run of four updates, not broad reliability proof.",
+    "No preexisting Sketch usage in this fixture; separate prior-tool retirement test is running."
+  ]
+}

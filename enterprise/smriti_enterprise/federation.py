@@ -21,6 +21,11 @@ def retrieve_multi(stores: List[Tuple[str, object]], embedder, query: str,
     Runs core retrieval per store, then reciprocal-rank-fuses across stores.
     Fusing ranked lists across stores is the same operation as fusing
     channels; no new math, no server."""
+    names = [name for name, _store in stores]
+    if any(not isinstance(name, str) or not name.strip() for name in names):
+        raise ValueError("federated store names must be non-empty strings")
+    if len(names) != len(set(names)):
+        raise ValueError("federated store names must be unique")
     per_store_k = per_store_k or max(k, 12)
     ranked: Dict[Tuple[str, str, int], Tuple[float, RetrievalResult, int]] = {}
     for order, (name, store) in enumerate(stores):

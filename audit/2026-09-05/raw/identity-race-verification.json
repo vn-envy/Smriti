@@ -1,0 +1,12 @@
+[
+  {
+    "scenario": "same",
+    "attempts": 300,
+    "failed_rounds": []
+  },
+  {
+    "scenario": "different",
+    "attempts": 300,
+    "failed_rounds": []
+  }
+]

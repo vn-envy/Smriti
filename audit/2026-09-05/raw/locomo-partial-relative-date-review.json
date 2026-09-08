@@ -1,0 +1,209 @@
+{
+  "schema_version": 1,
+  "status": "partial_review",
+  "review_type": "read_only_locomo_relative_date_diagnostic",
+  "captured_at_utc": "2026-09-07T18:35:15.964617+00:00",
+  "source_artifact": {
+    "path": "audit/2026-09-05/locomo-qa-smriti-s50.json",
+    "sha256_at_capture": "d951759461443b599798040e5fdfbeea7be8d119dc7d2d67a7e8e32d3219b171",
+    "status": "running",
+    "progress": {
+      "processed_questions": 9,
+      "requested_questions": 50,
+      "failed_questions": 0,
+      "cleanup_failures": 0,
+      "last_question_id": "conv-30-q2"
+    },
+    "adapter": "smriti"
+  },
+  "dataset": {
+    "path": "/private/tmp/smriti-public-data/locomo10.json",
+    "sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+    "sample_ids": [
+      "conv-26",
+      "conv-30"
+    ],
+    "official_fixture_rows": 2
+  },
+  "models": {
+    "answer": {
+      "class": "LLM",
+      "model": "qwen3:8b",
+      "provider": null,
+      "endpoint": "http://127.0.0.1:11436/v1",
+      "temperature": 0.0,
+      "max_tokens": 2048,
+      "extra_body": {
+        "reasoning_effort": "none",
+        "think": false
+      }
+    },
+    "judge": {
+      "class": "LLM",
+      "model": "qwen3:8b",
+      "provider": null,
+      "endpoint": "http://127.0.0.1:11436/v1",
+      "temperature": 0.0,
+      "max_tokens": 2048,
+      "extra_body": {
+        "reasoning_effort": "none",
+        "think": false
+      }
+    }
+  },
+  "reviewed_question_ids": [
+    "conv-26-q0",
+    "conv-30-q0"
+  ],
+  "rows": [
+    {
+      "sample_id": "conv-26",
+      "question_id": "conv-26-q0",
+      "question_type": "2",
+      "question": "When did Caroline go to the LGBTQ support group?",
+      "gold": "7 May 2023",
+      "hypothesis": "Caroline went to the LGBTQ support group on May 8, 2023.",
+      "recorded_correct": false,
+      "dataset_unanswerable": false,
+      "dataset_evidence_ids": [
+        "D1:3"
+      ],
+      "dataset_evidence_dialogues": [
+        {
+          "session_key": "session_1",
+          "session_date_time": "1:56 pm on 8 May, 2023",
+          "speaker": "Caroline",
+          "text": "I went to a LGBTQ support group yesterday and it was so powerful.",
+          "dia_id": "D1:3"
+        }
+      ],
+      "source_citations": {
+        "cited_source_labels": [
+          "source-0001"
+        ],
+        "cited_rank_positions": [
+          1
+        ],
+        "returned_source_labels_in_order": [
+          "source-0001",
+          "source-0010",
+          "source-0005",
+          "source-0004",
+          "source-0012",
+          "source-0015",
+          "source-0002",
+          "source-0015",
+          "source-0007",
+          "source-0018",
+          "source-0019",
+          "source-0007"
+        ],
+        "cited_return_record": {
+          "source_label": "source-0001",
+          "session_id": "c0-session_1",
+          "chunk_index": 0,
+          "timestamp": "2023-05-08T00:00:00Z",
+          "match": "exact"
+        },
+        "source_map_entries": [
+          {
+            "source_label": "source-0001",
+            "session_id": "c0-session_1",
+            "timestamps": [
+              "2023-05-08T00:00:00Z"
+            ]
+          }
+        ]
+      },
+      "classification": {
+        "retrieval": "supported: evidence source was returned and included in reader_context",
+        "reader": "relative-date resolution error: the answer uses the session date rather than subtracting one day from the explicit relative phrase",
+        "judge": "consistent_false: the date mismatch was marked incorrect"
+      },
+      "reader_context": "[source-0001 @ 2023-05-08T00:00:00Z] Caroline: Hey Mel! Good to see you! How have you been?\nMelanie: Hey Caroline! Good to see you! I'm swamped with the kids & work. What's up with you? Anything new?\nCaroline: I went to a LGBTQ support group yesterday and it was so powerful.\nMelanie: Wow, that's cool, Caroline! What happened that was so awesome? Did you hear any inspiring stories?\nCaroline: The transgender stories were so inspiring! I was so happy and thankful for all the support. [shared an image: a photo of a dog walking past a wall with a painting of a woman]\nMelanie: Wow, love that painting! So cool you found such a helpful group. What's it done for you?\nCaroline: The support group has made me feel accepted and given me courage to embrace myself.\nMelanie: That's really cool. You've got guts. What now?\nCaroline: Gonna continue my edu and check out career options, which is pretty exciting!\nMelanie: Wow, Caroline! What kinda jobs are you thinkin' of? Anything that stands out?\nCaroline: I'm keen on counseling or working i\n[source-0010 @ 2023-07-20T00:00:00Z] Caroline: Hey Melanie! Just wanted to say hi!\nMelanie: Hey Caroline! Good to talk to you again. What's up? Anything new since last time?\nCaroline: Hey Mel! A lot's happened since we last chatted - I just joined a new LGBTQ activist group last Tues. I'm meeting so many cool people who are as passionate as I am about rights and community support. I'm giving my voice and making a real difference, plus it's fulfilling in so many ways. It's just great, you know?\nMelanie: That's awesome, Caroline! Glad to hear you found a great group where you can have an impact. Bet it feels great to be able to speak your truth and stand up for what's right. Want to tell me a bit more about it?\nCaroline: Thanks, Melanie! It's awesome to have our own platform to be ourselves and support others' rights. Our group, 'Connected LGBTQ Activists', is made of all kinds of people investing in positive changes. We have regular meetings, plan events and campaigns, to get together and support each other.\nMelanie: Wow, \n[source-0005 @ 2023-07-03T00:00:00Z] Caroline: Since we last spoke, some big things have happened. Last week I went to an LGBTQ+ pride parade. Everyone was so happy and it made me feel like I belonged. It showed me how much our community has grown, it was amazing!\nMelanie: Wow, Caroline, sounds like the parade was an awesome experience! It's great to see the love and support for the LGBTQ+ community. Congrats! Has this experience influenced your goals at all?\nCaroline: Thanks, Mel! It really motivated me for sure. Talking to the community made me want to use my story to help others too - I'm still thinking that counseling and mental health is the way to go. I'm super excited to give back. \nMelanie: Wow, Caroline! That's great! I just signed up for a pottery class yesterday. It's like therapy for me, letting me express myself and get creative. Have you found any activities that make you feel the same way? [shared an image: a photo of a person holding a frisbee in their hand]\nCaroline: Wow, Melanie! I'm getting creative too\n[source-0004 @ 2023-06-27T00:00:00Z] any books on it]\nMelanie: Sounds great! What kind of counseling and mental health services do you want to persue?\nCaroline: I'm still figuring out the details, but I'm thinking of working with trans people, helping them accept themselves and supporting their mental health. Last Friday, I went to an LGBTQ+ counseling workshop and it was really enlightening. They talked about different therapeutic methods and how to best work with trans people. Seeing how passionate these pros were about making a safe space for people like me was amazing.\nMelanie: Woah, Caroline, it sounds like you're doing some impressive work. It's inspiring to see your dedication to helping others. What motivated you to pursue counseling?\nCaroline: Thanks, Melanie. It really mattered. My own journey and the support I got made a huge difference. Now I want to help people go through it too. I saw how counseling and support groups improved my life, so I started caring more about mental health and understanding myself. No\n[source-0012 @ 2023-08-17T00:00:00Z] Caroline: Hey Mel! How're ya doin'? Recently, I had a not-so-great experience on a hike. I ran into a group of religious conservatives who said something that really upset me. It made me think how much work we still have to do for LGBTQ rights. It's been so helpful to have people around me who accept and support me, so I know I'll be ok!\nMelanie: Hey Caroline, sorry about the hike. It sucks when people are so closed-minded. Strong support really helps. FYI, I finished another pottery project - want to see a pic?\nCaroline: Sure thing, Melanie! Can't wait to see your pottery project.  I'm happy you found something that makes you happy. Show me when you can!\nMelanie: Here it is. Pretty proud of it! It was a great experience. Thoughts? [shared an image: a photo of a bowl with a colorful design on it]\nCaroline: That bowl is awesome, Mel! What gave you the idea for all the colors and patterns?\nMelanie: Thanks, Caroline! I'm obsessed with those, so I made something to catch the eye and make p\n[source-0015 @ 2023-08-28T00:00:00Z] the young people were, with all the challenges they face. I felt fulfilled guiding and supporting them. I even got to let them know they're not alone by sharing my story. Such a powerful, emotional experience. [shared an image: a photo of a table with a black table cloth and a group of people]\nMelanie: Was connecting with those young folks meaningful for you? \nCaroline: It was so special to me. It reminded me of my own struggles in the past and how I felt alone. I was glad I could share my story and offer them support - it felt like I could make a difference.\nMelanie: That's great. Sharing your story and support might make a difference for a long time. What do you hope to do next time?\nCaroline: I'm definitely carrying on volunteering at the youth center. It's an important part of my life and I've made strong connections with people there. I really believe in community and supporting each other. So I wanna keep making a difference.\nMelanie: That's great news, Caroline! Love seeing your\n[source-0002 @ 2023-05-25T00:00:00Z] ?\nCaroline: I chose them 'cause they help LGBTQ+ folks with adoption. Their inclusivity and support really spoke to me.\nMelanie: That's great, Caroline! Loving the inclusivity and support. Anything you're excited for in the adoption process?\nCaroline: I'm thrilled to make a family for kids who need one. It'll be tough as a single parent, but I'm up for the challenge!\nMelanie: You're doing something amazing! Creating a family for those kids is so lovely. You'll be an awesome mom! Good luck!\nCaroline: Thanks, Melanie! Your kind words really mean a lot. I'll do my best to make sure these kids have a safe and loving home.\nMelanie: No doubts, Caroline. You have such a caring heart - they'll get all the love and stability they need! Excited for this new chapter!\n[source-0015 @ 2023-08-28T00:00:00Z] Caroline: Hey Melanie, great to hear from you. What's been up since we talked?\nMelanie: Hey Caroline! Since we last spoke, I took my kids to a park yesterday. They had fun exploring and playing. It was nice seeing them have a good time outdoors. Time flies, huh? What's new with you? [shared an image: a photo of a playground with a climbing net and a slide]\nCaroline: Wow, your kids had so much fun at the park! Being outdoors can be really enjoyable. A lot happened since our last chat. I've been chasing my ambitions and had the chance to volunteer at an LGBTQ+ youth center. It was so gratifying to talk to similar young people. It made me remember how essential it is to be kind and show support.\nMelanie: That sounds great, Caroline. Volunteering is a great way to meet people. Creating community and supporting each other, especially for kids, is really important. How did you feel about your time there? Anything that sticks out to you?\nCaroline: I loved it. It was awesome to see how strong \n[source-0007 @ 2023-07-12T00:00:00Z] otivate me and help me discover who I am. They're a huge part of my journey, and this one's reminding me to keep going and never give up!\nMelanie: Wow, Caroline! Books have such an awesome power! Which one has been your favorite guide?\nCaroline: I loved \"Becoming Nicole\" by Amy Ellis Nutt. It's a real inspiring true story about a trans girl and her family. It made me feel connected and gave me a lot of hope for my own path. Highly recommend it for sure! [shared an image: a photo of a dog sitting in a boat on the water]\nMelanie: That sounds awesome! What did you take away from it to use in your life?\nCaroline: It taught me self-acceptance and how to find support. It also showed me that tough times don't last - hope and love exist. Pets bring so much joy too, though.\nMelanie: Caroline, those lessons are great - self-acceptance and finding support are key. Plus pets are awesome for j",
+      "errors": []
+    },
+    {
+      "sample_id": "conv-30",
+      "question_id": "conv-30-q0",
+      "question_type": "2",
+      "question": "When Jon has lost his job as a banker?",
+      "gold": "19 January, 2023",
+      "hypothesis": "Jon lost his job as a banker on 2023-01-20.",
+      "recorded_correct": true,
+      "dataset_unanswerable": false,
+      "dataset_evidence_ids": [
+        "D1:2"
+      ],
+      "dataset_evidence_dialogues": [
+        {
+          "session_key": "session_1",
+          "session_date_time": "4:04 pm on 20 January, 2023",
+          "speaker": "Jon",
+          "text": "Hey Gina! Good to see you too. Lost my job as a banker yesterday, so I'm gonna take a shot at starting my own business.",
+          "dia_id": "D1:2"
+        }
+      ],
+      "source_citations": {
+        "cited_source_labels": [
+          "source-0001"
+        ],
+        "cited_rank_positions": [
+          1
+        ],
+        "returned_source_labels_in_order": [
+          "source-0001",
+          "source-0014",
+          "source-0005",
+          "source-0006",
+          "source-0004",
+          "source-0016",
+          "source-0008",
+          "source-0011",
+          "source-0010",
+          "source-0010",
+          "source-0017",
+          "source-0018"
+        ],
+        "cited_return_record": {
+          "source_label": "source-0001",
+          "session_id": "c1-session_1",
+          "chunk_index": 0,
+          "timestamp": "2023-01-20T00:00:00Z",
+          "match": "exact"
+        },
+        "source_map_entries": [
+          {
+            "source_label": "source-0001",
+            "session_id": "c1-session_1",
+            "timestamps": [
+              "2023-01-20T00:00:00Z"
+            ]
+          }
+        ]
+      },
+      "classification": {
+        "retrieval": "supported: evidence source was returned and included in reader_context",
+        "reader": "relative-date resolution error: the answer uses the session date rather than subtracting one day from the explicit relative phrase",
+        "judge": "inconsistent_true: the date mismatch was marked correct"
+      },
+      "reader_context": "[source-0001 @ 2023-01-20T00:00:00Z] Gina: Hey Jon! Good to see you. What's up? Anything new?\nJon: Hey Gina! Good to see you too. Lost my job as a banker yesterday, so I'm gonna take a shot at starting my own business.\nGina: Sorry about your job Jon, but starting your own business sounds awesome! Unfortunately, I also lost my job at Door Dash this month. What business are you thinking of?\nJon: Sorry to hear that! I'm starting a dance studio 'cause I'm passionate about dancing and it'd be great to share it with others.\nGina: That's cool, Jon! What got you into this biz?\nJon: I've been into dancing since I was a kid and it's been my passion and escape. I wanna start a dance studio so I can teach others the joy that dancing brings me.\nGina: Wow Jon, same here! Dance is pretty much my go-to for stress relief. Got any fave styles?\nJon: Cool, Gina! I love all dances, but contemporary is my top pick. It's so expressive and powerful! What's your fave?\nGina: Yeah, me too! Contemporary dance is so expressive and graceful - it reall\n[source-0014 @ 2023-06-16T00:00:00Z] Jon: Gina, you won't believe it - I got mentored by this amazing business dude yesterday! It was really inspiring and now I'm even more pumped to chase my dreams. What's been up with you lately?\nGina: Wow, Jon! Mentors can really help. I'm working on my online store, growing the customer base. It's tough but I'm determined. How about you? Any new things happening?\nJon: Been doing some promotion for my business. Crazy ride so far, but I'm hanging in there. Got any tips for marketing?\nGina: Awesome! Marketing is key. Use social media channels and work with influencers for bigger reach.\nJon: Thanks for the advice, Gina! I already started doing what you said about social media and posted some of my dance videos. It's creating a bit of a stir.\nGina: Nice! Glad your dance vids are doing well online. Keep it up!\nJon: Your help really helps. Hey, have you thought about being an entrepreneur?\nGina: Ha, yeah, Jon. I've been one 'cause I lost my job. I opened an online clothing store and it's bee\n[source-0005 @ 2023-02-08T00:00:00Z]  It's made me grow, and even got me out of my secure 9-5 as a banker. Now, I'm aiming to turn my dancing passion into a business. I'm determined to make it work, I just know it! That being said, I definitely don't underestimate the difficulties - it ain't been a walk in the park, that's for sure.\nGina: It's tough starting a biz, but don't let it get you down. You can make your studio work, I'm sure. And remember, I'm always here for you.\nJon: Thanks, Gina. Your help means a lot. I'll keep plugging away and stay optimistic. [shared an image: a photography of a cartoon character with a quote about fear]\nGina: This quote kept me positive through tough times. We all need a push sometimes, right? Even made a tattoo to remind myself about it. [shared an image: a photo of a woman standing on a balcony with a blue dress]\nJon: Love the tattoo, did you just get it?\nGina: Thanks! Got the tattoo a few years ago, it stands for freedom - dancing without worrying what people think. A reminder to foll\n[source-0006 @ 2023-03-16T00:00:00Z] Jon: Hi Gina! Been hectic for me lately. Started hitting the gym last week to stay on track with the venture. Gotta figure out how to balance it all, but it's going well. How about you?\nGina: Hey Jon! Great to hear from you. Been having some tough times lately.\nJon: Oof, sorry to hear that. What's up? Is there anything I can do to help?\nGina: Thanks, Jon! Appreciate your offer. Since I lost my job at Door Dash, things have been tough. But here's some good news - I've got something to share!\nJon: Wow, that's awesome! Can't wait to hear it!\nGina: Yay! My online clothes store is open! I've been dreaming of this for a while now - can't wait to see what happens! [shared an image: a photo of a computer screen showing a book and a pair of shoes]\nJon: Congrats! That's awesome! What gave you the idea to start the online store?\nGina: Thanks! I'm passionate about fashion trends and finding unique pieces. Plus, I wanted to blend my love for dance and fashion, so it was a perfect match.\nJon: Wow, t\n[source-0004 @ 2023-02-04T00:00:00Z] Jon: Hey Gina! What's up? How's the store going? I gotta tell you about this thing with my biz.\nGina: Hey Jon! The store's doing great! It's a wild ride. How's the biz?\nJon: Hey Gina! I'm putting in a lot of work on my business even with the obstacles. I'm gonna make it happen!\nGina: Wow! You've got drive! Keep it up and you'll definitely make a splash.\nJon: Thanks Gina! Your help really means a lot. Sometimes it's hard when things don't go my way, but I'm sure if I keep pushing, I'll reach my dreams!\nGina: Understand where you're at, Jon. Setbacks are just opportunities for comebacks. You got the skills, passion, and drive. Plus my full support. Don't give up, buddy!\nJon: Thanks! Setbacks can be tough, but with your support, I can handle anything. Appreciate you having my back!\nGina: I'm here for you no matter what! Anything you want to say about your biz?\nJon: Searching for a dance studio location has been tricky, but I'm determined to find the right spot - when I do, I'm sure the re\n[source-0016 @ 2023-06-21T00:00:00Z] Gina: Hey Jon, what's been up? Some pretty cool stuff happened since we talked. I have acquired some new unique pieces for my store. [shared an image: a photo of a woman in a black hoodie posing for a picture]\nJon: Congrats on your store, Gina! Happy for you! It looks sick - is it a unique piece you're selling?\nGina: Thanks! This hoodie isn't for sale, it's from my own collection. I made a limited edition line last week to show off my style and creativity - it was tough but worth it! [shared an image: a photo of a hoodie with a camouflage print on it]\nJon: What gave you the idea?\nGina: This design reminds me of the grit it takes to stand out and face challenges.\nJon: That's awesome, Gina! Yesterday I chose to go to networking events to make things happen. It's been tough but I'm staying determined and focused.\nGina: Way to go, Jon! Attending those networking events takes guts and drive. Keep it up!\nJon: Thanks! It's been tough going since I lost my job, but I'm sure investing my time i\n[source-0008 @ 2023-04-03T00:00:00Z] Jon: Hey Gina, I had to shut down my bank account. It was tough, but I needed to do it for my biz.\nGina: Oh no, Jon! Sorry to hear that. Tough decision for you? How're you handling the changes?\nJon: It was a tough call, but I thought it'd help my biz grow. Handling changes has been hard, but I'm staying positive and looking ahead. Anything new for you?\nGina: Oof, that's tough, Jon. I got some new offers and promotions going on my online store to try and bring in new customers. It's been a wild ride starting my business, but I'm not giving up!\nJon: Nice one, Gina! Love how you never give up. What helps you stay motivated?\nGina: Thanks Jon! Dance is my stress relief and fashion fuels my creativity. I love finding new trends for my store. It keeps me motivated to keep growing. Check out this pic of my fave dance session! [shared an image: a photo of a man and woman doing a yoga pose]\nJon: Wow, that's great! What made you combine clothing biz and dance?\nGina: Thanks! I'm passionate about d\n[source-0011 @ 2023-05-11T00:00:00Z] Jon: Hi! Since we last spoke I am still working on the dance studio and things are looking up! [shared an image: a photo of a woman in a short skirt with her hands on her hips]\nGina: Hi! You're so inspiring taking it on and opening your own studio!\nJon: Thanks! Losing my job gave me the push to finally start my dream business: my own dance studio! Now I'm stepping into the unknown and hoping for the best.\nGina: It must be scary stepping into the unknown but I know you can do it, Jon. With your determination and drive, your dance studio will be a huge success. Keep that positive outlook and keep going!\nJon: Thanks! It's a bit scary, but I just think about my love for dance and how it makes me feel. It's been my stress-buster since childhood!\nGina: Gotcha, Jon! Dance is my stress fix too. As soon as I start, all my worries vanish. It's amazing what we can do for our own mental health with something we enjoy.\nJon: Yeah, Gina! Dancing helps me de-stress. It's where I'm most alive. It's a m\n[source-0010 @ 2023-04-25T00:00:00Z] Jon: Hi Gina! I just wanted to fill you in on my business. Yesterday, I went to a fair to show off my studio, it was both stressful and great! I got some possible leads, so that was awesome. But overall, I've learned that this biz is no cakewalk and having confidence in yourself is important for making it successful! [shared an image: a photo of a group of women performing a dance on a stage]\nGina: Hey Jon, congrats on the fair! It's awesome to see your hard work paying off. Keep on pushing, pal, you're headed for greatness. Oh, and BTW, I started my own online clothing store not so long ago - pretty cool, huh? [shared an image: a photography of a lap",
+      "errors": []
+    }
+  ],
+  "summary": {
+    "reviewed": 2,
+    "retrieval_supported": 2,
+    "reader_relative_date_errors": 2,
+    "judge_consistent_false": 1,
+    "judge_inconsistent_true": 1,
+    "headline_allowed": false,
+    "interpretation": "Two completed rows from a running 50-question LoCoMo preflight; no quality headline or aggregate score should be inferred."
+  },
+  "limitations": [
+    "The running source artifact was read without modification; its status/progress may advance after this snapshot.",
+    "The stored artifact records judge booleans but not raw judge responses, so the judge inconsistency is diagnosed from the gold answer and recorded hypothesis.",
+    "Both reviewed questions are category 2 relative-date questions with an evidence dialogue using “yesterday”; this is not representative LoCoMo coverage.",
+    "Retrieval support means the labeled evidence source was returned in reader_context; it does not establish that the full ranking is otherwise optimal."
+  ]
+}

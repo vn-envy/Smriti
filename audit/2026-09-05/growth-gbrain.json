@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "adapter": "gbrain",
+  "configuration": "gbrain PGLite / keyless keyword-only / raw pages",
+  "measurement": "growing-corpus simulation in one run, not elapsed-day longitudinal data",
+  "timing_scope": "gbrain includes a new CLI process per operation",
+  "model_cost": {
+    "observed_paid_api_usd": 0,
+    "note": "local compute/electricity and hardware depreciation unmeasured; shared model-cache bytes excluded"
+  },
+  "checkpoints": [
+    {
+      "documents": 20,
+      "incremental_ingest_ms": 12737.79,
+      "cold_query_ms": 578.615,
+      "warm_query_ms_p50": 586.857,
+      "warm_query_ms_p95": 645.318,
+      "storage_bytes": 44212841
+    }
+  ]
+}

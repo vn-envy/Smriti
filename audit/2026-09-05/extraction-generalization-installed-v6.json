@@ -1,0 +1,526 @@
+{
+  "track": "installed Smriti extraction generalization probe; not a benchmark",
+  "status": "completed_with_failures",
+  "config": {
+    "mode": "full",
+    "model": "qwen3:8b",
+    "embed_model": "nomic-embed-text:v1.5",
+    "llm_endpoint": "http://127.0.0.1:11436/v1",
+    "embed_endpoint": "http://127.0.0.1:11436",
+    "extra_body": {
+      "reasoning_effort": "none",
+      "think": false
+    },
+    "extract_max_tokens": 2048,
+    "now": "2025-05-01T12:00:00Z",
+    "database": ":memory:"
+  },
+  "updates": [
+    {
+      "timestamp": "2025-01-10T12:00:00Z",
+      "content": "Leila lives in Kyoto and works on the Juniper project."
+    },
+    {
+      "timestamp": "2025-02-10T12:00:00Z",
+      "content": "Omar lives in Nairobi and works on the Kestrel project."
+    },
+    {
+      "timestamp": "2025-03-10T12:00:00Z",
+      "content": "Leila switched from Sketch to Figma for project Cedar. Separately, Leila prefers dark mode globally."
+    },
+    {
+      "timestamp": "2025-04-10T12:00:00Z",
+      "content": "I prefer concise answers."
+    }
+  ],
+  "facts": [
+    {
+      "id": 1,
+      "statement": "Leila lives in Kyoto",
+      "subject": "leila",
+      "predicate": "lives_in",
+      "object": "Kyoto",
+      "kind": "profile",
+      "event_date": null,
+      "ingested_at": "2026-09-07T19:01:57Z",
+      "valid_from": "2025-01-10T12:00:00Z",
+      "invalid_at": null,
+      "superseded_by": null,
+      "episode_id": 1,
+      "session_id": "generalization-update-1",
+      "scope": ""
+    },
+    {
+      "id": 2,
+      "statement": "Leila works on the Juniper project",
+      "subject": "leila",
+      "predicate": "works_on",
+      "object": "Juniper project",
+      "kind": "profile",
+      "event_date": null,
+      "ingested_at": "2026-09-07T19:01:57Z",
+      "valid_from": "2025-01-10T12:00:00Z",
+      "invalid_at": null,
+      "superseded_by": null,
+      "episode_id": 1,
+      "session_id": "generalization-update-1",
+      "scope": ""
+    },
+    {
+      "id": 3,
+      "statement": "Omar lives in Nairobi",
+      "subject": "omar",
+      "predicate": "lives_in",
+      "object": "Nairobi",
+      "kind": "profile",
+      "event_date": null,
+      "ingested_at": "2026-09-07T19:02:09Z",
+      "valid_from": "2025-02-10T12:00:00Z",
+      "invalid_at": null,
+      "superseded_by": null,
+      "episode_id": 2,
+      "session_id": "generalization-update-2",
+      "scope": ""
+    },
+    {
+      "id": 4,
+      "statement": "Omar works on the Kestrel project",
+      "subject": "omar",
+      "predicate": "works_on",
+      "object": "Kestrel project",
+      "kind": "profile",
+      "event_date": null,
+      "ingested_at": "2026-09-07T19:02:09Z",
+      "valid_from": "2025-02-10T12:00:00Z",
+      "invalid_at": null,
+      "superseded_by": null,
+      "episode_id": 2,
+      "session_id": "generalization-update-2",
+      "scope": ""
+    },
+    {
+      "id": 5,
+      "statement": "Leila currently uses Figma for project Cedar",
+      "subject": "leila",
+      "predicate": "uses_tool",
+      "object": "Figma",
+      "kind": "knowledge",
+      "event_date": null,
+      "ingested_at": "2026-09-07T19:02:27Z",
+      "valid_from": "2025-03-10T12:00:00Z",
+      "invalid_at": null,
+      "superseded_by": null,
+      "episode_id": 3,
+      "session_id": "generalization-update-3",
+      "scope": "project:Cedar"
+    },
+    {
+      "id": 6,
+      "statement": "Leila switched from Sketch to Figma for project Cedar",
+      "subject": "leila",
+      "predicate": "switched_from",
+      "object": "Sketch",
+      "kind": "event",
+      "event_date": null,
+      "ingested_at": "2026-09-07T19:02:27Z",
+      "valid_from": "2025-03-10T12:00:00Z",
+      "invalid_at": null,
+      "superseded_by": null,
+      "episode_id": 3,
+      "session_id": "generalization-update-3",
+      "scope": "project:Ceder"
+    },
+    {
+      "id": 7,
+      "statement": "Leila prefers dark mode globally",
+      "subject": "leila",
+      "predicate": "prefers",
+      "object": "dark mode",
+      "kind": "preference",
+      "event_date": null,
+      "ingested_at": "2026-09-07T19:02:27Z",
+      "valid_from": "2025-03-10T12:00:00Z",
+      "invalid_at": null,
+      "superseded_by": null,
+      "episode_id": 3,
+      "session_id": "generalization-update-3",
+      "scope": ""
+    },
+    {
+      "id": 8,
+      "statement": "The user prefers concise answers",
+      "subject": "user",
+      "predicate": "prefers",
+      "object": "concise answers",
+      "kind": "preference",
+      "event_date": null,
+      "ingested_at": "2026-09-07T19:02:31Z",
+      "valid_from": "2025-04-10T12:00:00Z",
+      "invalid_at": null,
+      "superseded_by": null,
+      "episode_id": 4,
+      "session_id": "generalization-update-4",
+      "scope": ""
+    }
+  ],
+  "steps": [
+    {
+      "name": "ingest_update_1",
+      "timestamp": "2025-01-10T12:00:00Z",
+      "ok": true,
+      "add_result": {
+        "session_id": "generalization-update-1",
+        "episodes": 1,
+        "facts": 2
+      },
+      "extraction_diagnostics": {
+        "raw_chars": 538,
+        "status": "ok",
+        "items": 2,
+        "accepted": 2,
+        "skipped": 0,
+        "normalized_predicates": 0
+      },
+      "elapsed_s": 18.0737,
+      "usage_delta": {
+        "calls": 1,
+        "attempts": 1,
+        "http_attempts": 1,
+        "tokens_in": 1057,
+        "tokens_out": 162,
+        "usage_missing": 0
+      },
+      "usage_after": {
+        "calls": 1,
+        "attempts": 1,
+        "http_attempts": 1,
+        "tokens_in": 1057,
+        "tokens_out": 162,
+        "usage_missing": 0
+      }
+    },
+    {
+      "name": "ingest_update_2",
+      "timestamp": "2025-02-10T12:00:00Z",
+      "ok": true,
+      "add_result": {
+        "session_id": "generalization-update-2",
+        "episodes": 1,
+        "facts": 2
+      },
+      "extraction_diagnostics": {
+        "raw_chars": 532,
+        "status": "ok",
+        "items": 2,
+        "accepted": 2,
+        "skipped": 0,
+        "normalized_predicates": 0
+      },
+      "elapsed_s": 11.659,
+      "usage_delta": {
+        "calls": 1,
+        "attempts": 1,
+        "http_attempts": 1,
+        "tokens_in": 1057,
+        "tokens_out": 165,
+        "usage_missing": 0
+      },
+      "usage_after": {
+        "calls": 2,
+        "attempts": 2,
+        "http_attempts": 2,
+        "tokens_in": 2114,
+        "tokens_out": 327,
+        "usage_missing": 0
+      }
+    },
+    {
+      "name": "ingest_update_3",
+      "timestamp": "2025-03-10T12:00:00Z",
+      "ok": true,
+      "add_result": {
+        "session_id": "generalization-update-3",
+        "episodes": 1,
+        "facts": 3
+      },
+      "extraction_diagnostics": {
+        "raw_chars": 891,
+        "status": "ok",
+        "items": 3,
+        "accepted": 3,
+        "skipped": 0,
+        "normalized_predicates": 0
+      },
+      "elapsed_s": 18.0351,
+      "usage_delta": {
+        "calls": 1,
+        "attempts": 1,
+        "http_attempts": 1,
+        "tokens_in": 1066,
+        "tokens_out": 264,
+        "usage_missing": 0
+      },
+      "usage_after": {
+        "calls": 3,
+        "attempts": 3,
+        "http_attempts": 3,
+        "tokens_in": 3180,
+        "tokens_out": 591,
+        "usage_missing": 0
+      }
+    },
+    {
+      "name": "ingest_update_4",
+      "timestamp": "2025-04-10T12:00:00Z",
+      "ok": true,
+      "add_result": {
+        "session_id": "generalization-update-4",
+        "episodes": 1,
+        "facts": 1
+      },
+      "extraction_diagnostics": {
+        "raw_chars": 278,
+        "status": "ok",
+        "items": 1,
+        "accepted": 1,
+        "skipped": 0,
+        "normalized_predicates": 0
+      },
+      "elapsed_s": 4.8084,
+      "usage_delta": {
+        "calls": 1,
+        "attempts": 1,
+        "http_attempts": 1,
+        "tokens_in": 1049,
+        "tokens_out": 80,
+        "usage_missing": 0
+      },
+      "usage_after": {
+        "calls": 4,
+        "attempts": 4,
+        "http_attempts": 4,
+        "tokens_in": 4229,
+        "tokens_out": 671,
+        "usage_missing": 0
+      }
+    }
+  ],
+  "failures": [],
+  "assertions": {
+    "leila_kyoto_active": true,
+    "omar_nairobi_active": true,
+    "distinct_named_subjects": true,
+    "no_crossperson_city_invalidation": true,
+    "scoped_destination_state": true,
+    "historical_scoped_transition_retained": false,
+    "global_preference_is_unscoped": true,
+    "self_reference_is_user_scoped_empty": true,
+    "leila_city_facts": [
+      {
+        "id": 1,
+        "statement": "Leila lives in Kyoto",
+        "subject": "leila",
+        "predicate": "lives_in",
+        "object": "Kyoto",
+        "kind": "profile",
+        "event_date": null,
+        "ingested_at": "2026-09-07T19:01:57Z",
+        "valid_from": "2025-01-10T12:00:00Z",
+        "invalid_at": null,
+        "superseded_by": null,
+        "episode_id": 1,
+        "session_id": "generalization-update-1",
+        "scope": ""
+      }
+    ],
+    "omar_city_facts": [
+      {
+        "id": 3,
+        "statement": "Omar lives in Nairobi",
+        "subject": "omar",
+        "predicate": "lives_in",
+        "object": "Nairobi",
+        "kind": "profile",
+        "event_date": null,
+        "ingested_at": "2026-09-07T19:02:09Z",
+        "valid_from": "2025-02-10T12:00:00Z",
+        "invalid_at": null,
+        "superseded_by": null,
+        "episode_id": 2,
+        "session_id": "generalization-update-2",
+        "scope": ""
+      }
+    ],
+    "scoped_destination_facts": [
+      {
+        "id": 5,
+        "statement": "Leila currently uses Figma for project Cedar",
+        "subject": "leila",
+        "predicate": "uses_tool",
+        "object": "Figma",
+        "kind": "knowledge",
+        "event_date": null,
+        "ingested_at": "2026-09-07T19:02:27Z",
+        "valid_from": "2025-03-10T12:00:00Z",
+        "invalid_at": null,
+        "superseded_by": null,
+        "episode_id": 3,
+        "session_id": "generalization-update-3",
+        "scope": "project:Cedar"
+      }
+    ],
+    "scoped_transition_facts": [],
+    "global_preference_facts": [
+      {
+        "id": 7,
+        "statement": "Leila prefers dark mode globally",
+        "subject": "leila",
+        "predicate": "prefers",
+        "object": "dark mode",
+        "kind": "preference",
+        "event_date": null,
+        "ingested_at": "2026-09-07T19:02:27Z",
+        "valid_from": "2025-03-10T12:00:00Z",
+        "invalid_at": null,
+        "superseded_by": null,
+        "episode_id": 3,
+        "session_id": "generalization-update-3",
+        "scope": ""
+      }
+    ],
+    "scoped_preference_facts": [],
+    "self_reference_facts": [
+      {
+        "id": 8,
+        "statement": "The user prefers concise answers",
+        "subject": "user",
+        "predicate": "prefers",
+        "object": "concise answers",
+        "kind": "preference",
+        "event_date": null,
+        "ingested_at": "2026-09-07T19:02:31Z",
+        "valid_from": "2025-04-10T12:00:00Z",
+        "invalid_at": null,
+        "superseded_by": null,
+        "episode_id": 4,
+        "session_id": "generalization-update-4",
+        "scope": ""
+      }
+    ],
+    "observed_subjects": [
+      "leila",
+      "omar",
+      "user"
+    ]
+  },
+  "usage": {
+    "extract": {
+      "calls": 4,
+      "attempts": 4,
+      "http_attempts": 4,
+      "tokens_in": 4229,
+      "tokens_out": 671,
+      "usage_missing": 0
+    }
+  },
+  "metrics_scope": "Cumulative counters on this probe's extraction LLM object; failed-call usage is unknown.",
+  "provenance": {
+    "smriti_version": "0.3.2",
+    "smriti_module": "/private/tmp/smriti-qa-20260905/lib/python3.11/site-packages/smriti/__init__.py",
+    "python": "3.11.15 (main, Jun 11 2026, 04:04:09) [Clang 22.1.3 ]",
+    "distribution_version": "0.3.2"
+  },
+  "offline_contract_checks": {
+    "wrong_destination_relation_rejected": true,
+    "future_destination_state_rejected": true,
+    "current_sketch_not_destination_state": true,
+    "wrong_transition_relation_rejected": true,
+    "wrong_transition_date_rejected": true
+  },
+  "provider": {
+    "endpoint": "http://127.0.0.1:11436/v1",
+    "runtime_endpoint": "http://127.0.0.1:11436",
+    "version": {
+      "version": "0.24.0"
+    },
+    "tags": {
+      "models": [
+        {
+          "name": "nomic-embed-text:v1.5",
+          "model": "nomic-embed-text:v1.5",
+          "modified_at": "2026-09-06T01:27:59.961284792+05:30",
+          "size": 274302450,
+          "digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "nomic-bert",
+            "families": [
+              "nomic-bert"
+            ],
+            "parameter_size": "137M",
+            "quantization_level": "F16"
+          }
+        },
+        {
+          "name": "qwen3:8b",
+          "model": "qwen3:8b",
+          "modified_at": "2026-09-06T01:27:36.039328439+05:30",
+          "size": 5225388164,
+          "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen3",
+            "families": [
+              "qwen3"
+            ],
+            "parameter_size": "8.2B",
+            "quantization_level": "Q4_K_M"
+          }
+        }
+      ]
+    },
+    "models": {
+      "qwen3:8b": [
+        {
+          "name": "qwen3:8b",
+          "model": "qwen3:8b",
+          "modified_at": "2026-09-06T01:27:36.039328439+05:30",
+          "size": 5225388164,
+          "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen3",
+            "families": [
+              "qwen3"
+            ],
+            "parameter_size": "8.2B",
+            "quantization_level": "Q4_K_M"
+          }
+        }
+      ],
+      "nomic-embed-text:v1.5": [
+        {
+          "name": "nomic-embed-text:v1.5",
+          "model": "nomic-embed-text:v1.5",
+          "modified_at": "2026-09-06T01:27:59.961284792+05:30",
+          "size": 274302450,
+          "digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "nomic-bert",
+            "families": [
+              "nomic-bert"
+            ],
+            "parameter_size": "137M",
+            "quantization_level": "F16"
+          }
+        }
+      ]
+    },
+    "errors": []
+  }
+}

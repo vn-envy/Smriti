@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -7,7 +7,7 @@ name = "smriti-enterprise"
 version = "0.1.0"
 description = "Enterprise modules for SMRITI: tri-temporal semantics, lineage, evidence receipts, retention/holds, verified knowledge packs, multi-store federation. Replaceable modules over an untouched core."
 readme = "README.md"
-license = { text = "Apache-2.0" }
+license = "Apache-2.0"
 requires-python = ">=3.9"
 dependencies = ["smriti-agents>=0.3.2"]
 keywords = ["agents", "memory", "enterprise", "audit", "temporal", "sovereign"]

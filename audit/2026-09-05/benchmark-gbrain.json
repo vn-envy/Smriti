@@ -1,0 +1,286 @@
+{
+  "schema_version": 2,
+  "status": "complete",
+  "error": null,
+  "adapter": "gbrain",
+  "configuration": "gbrain PGLite / keyless keyword-only / raw pages",
+  "track": "diagnostic matched raw-document retrieval (extraction bypassed; 20 documents / 12 queries)",
+  "dataset": {
+    "path": "/Users/kshitijvatsa/Downloads/Smriti-main/bench/comparative_dataset.json",
+    "sha256": "277d1bf48b2dea7babb1459841be1a0af4deb74820eb01f1d74ad61fe3436944",
+    "documents": 20,
+    "queries": 12
+  },
+  "run": {
+    "utc_started": "2026-09-06T13:20:45Z",
+    "python": "3.14.5 (main, May 10 2026, 10:21:34) [Clang 21.0.0 (clang-2100.0.123.102)]",
+    "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+    "k": 5,
+    "warmups": 0,
+    "timed_repeats": 1,
+    "clock": "time.perf_counter_ns",
+    "pid": 11630,
+    "latency_scope": "end-to-end CLI subprocess startup + query"
+  },
+  "summary": {
+    "mean_recall_at_k": 0.95,
+    "mrr": 0.9,
+    "abstention_precision": 0.0,
+    "latency_ms_p50": 587.825,
+    "latency_ms_p95": 619.676,
+    "ingest_ms_total": 13054.857,
+    "storage_bytes": 44139113,
+    "errors": 0
+  },
+  "results": [
+    {
+      "id": "q01",
+      "category": "single-hop",
+      "query": "Where is my passport renewal appointment?",
+      "relevant": [
+        "d05"
+      ],
+      "returned": [
+        "d05"
+      ],
+      "scores": [
+        1.0
+      ],
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "abstention_success": null,
+      "latency_ms": [
+        597.058917
+      ]
+    },
+    {
+      "id": "q02",
+      "category": "paraphrase",
+      "query": "Which nut must Priya avoid?",
+      "relevant": [
+        "d07"
+      ],
+      "returned": [
+        "d07"
+      ],
+      "scores": [
+        1.0
+      ],
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "abstention_success": null,
+      "latency_ms": [
+        587.825083
+      ]
+    },
+    {
+      "id": "q03",
+      "category": "single-hop",
+      "query": "Who treats Pixel?",
+      "relevant": [
+        "d09"
+      ],
+      "returned": [
+        "d09"
+      ],
+      "scores": [
+        1.0
+      ],
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "abstention_success": null,
+      "latency_ms": [
+        585.392083
+      ]
+    },
+    {
+      "id": "q04",
+      "category": "single-hop",
+      "query": "Where will the design review happen?",
+      "relevant": [
+        "d11"
+      ],
+      "returned": [
+        "d11"
+      ],
+      "scores": [
+        1.0
+      ],
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "abstention_success": null,
+      "latency_ms": [
+        593.07775
+      ]
+    },
+    {
+      "id": "q05",
+      "category": "multi-hop",
+      "query": "What field does Arun's mentor study?",
+      "relevant": [
+        "d03",
+        "d04"
+      ],
+      "returned": [
+        "d03"
+      ],
+      "scores": [
+        1.0
+      ],
+      "recall_at_k": 0.5,
+      "reciprocal_rank": 1.0,
+      "abstention_success": null,
+      "latency_ms": [
+        591.704042
+      ]
+    },
+    {
+      "id": "q06",
+      "category": "current-state",
+      "query": "What drink does Maya currently prefer?",
+      "relevant": [
+        "d02"
+      ],
+      "returned": [
+        "d02",
+        "d01"
+      ],
+      "scores": [
+        1.2999994088746216,
+        1.2786879184894053
+      ],
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "abstention_success": null,
+      "latency_ms": [
+        585.486417
+      ]
+    },
+    {
+      "id": "q07",
+      "category": "as-of",
+      "query": "What drink did Maya prefer in January 2024?",
+      "relevant": [
+        "d01"
+      ],
+      "returned": [
+        "d02",
+        "d01",
+        "d08"
+      ],
+      "scores": [
+        1.0,
+        0.9836065573770493,
+        0.967741935483871
+      ],
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.5,
+      "abstention_success": null,
+      "latency_ms": [
+        595.091458
+      ]
+    },
+    {
+      "id": "q08",
+      "category": "temporal",
+      "query": "What was scheduled for 18 June 2024?",
+      "relevant": [
+        "d08"
+      ],
+      "returned": [
+        "d08"
+      ],
+      "scores": [
+        1.0
+      ],
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "abstention_success": null,
+      "latency_ms": [
+        585.85375
+      ]
+    },
+    {
+      "id": "q09",
+      "category": "paraphrase",
+      "query": "Who should be called if Omar has an emergency?",
+      "relevant": [
+        "d12"
+      ],
+      "returned": [
+        "d12"
+      ],
+      "scores": [
+        1.0
+      ],
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "abstention_success": null,
+      "latency_ms": [
+        587.03925
+      ]
+    },
+    {
+      "id": "q10",
+      "category": "single-hop",
+      "query": "Where are the tax records stored?",
+      "relevant": [
+        "d13"
+      ],
+      "returned": [
+        "d06",
+        "d13"
+      ],
+      "scores": [
+        1.0,
+        0.9836065573770493
+      ],
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.5,
+      "abstention_success": null,
+      "latency_ms": [
+        619.676417
+      ]
+    },
+    {
+      "id": "q11",
+      "category": "abstention",
+      "query": "What is Maya's passport number?",
+      "relevant": [],
+      "returned": [
+        "d01",
+        "d02",
+        "d05"
+      ],
+      "scores": [
+        2.0,
+        1.9672131147540985,
+        1.935483870967742
+      ],
+      "recall_at_k": null,
+      "reciprocal_rank": null,
+      "abstention_success": false,
+      "latency_ms": [
+        590.884667
+      ]
+    },
+    {
+      "id": "q12",
+      "category": "abstention",
+      "query": "Which university did Arun attend?",
+      "relevant": [],
+      "returned": [
+        "d03"
+      ],
+      "scores": [
+        1.0
+      ],
+      "recall_at_k": null,
+      "reciprocal_rank": null,
+      "abstention_success": false,
+      "latency_ms": [
+        574.268875
+      ]
+    }
+  ]
+}

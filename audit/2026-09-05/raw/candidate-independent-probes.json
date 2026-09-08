@@ -1,0 +1,62 @@
+[
+  {
+    "name": "cross_connection_cache",
+    "got": true,
+    "expected": true,
+    "passed": true
+  },
+  {
+    "name": "redaction_direct_fact",
+    "got": false,
+    "expected": false,
+    "passed": true
+  },
+  {
+    "name": "late_middle_chain",
+    "got": [
+      [
+        "2026-01-01",
+        "2026-03-01"
+      ],
+      [
+        "2026-03-01",
+        "2026-06-01"
+      ],
+      [
+        "2026-06-01",
+        null
+      ]
+    ],
+    "expected": [
+      [
+        "2026-01-01",
+        "2026-03-01"
+      ],
+      [
+        "2026-03-01",
+        "2026-06-01"
+      ],
+      [
+        "2026-06-01",
+        null
+      ]
+    ],
+    "passed": true
+  },
+  {
+    "name": "restore_history",
+    "got": 3,
+    "expected": 3,
+    "passed": true
+  },
+  {
+    "name": "known_aug_world_feb",
+    "got": [
+      "User lives Hyderabad"
+    ],
+    "expected": [
+      "User lives Hyderabad"
+    ],
+    "passed": true
+  }
+]

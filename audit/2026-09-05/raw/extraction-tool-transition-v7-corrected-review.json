@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "status": "completed_corrected_offline_review",
+  "review_type": "installed_tool_transition_v7_asof_assertion_and_negative_controls",
+  "captured_at_utc": "2026-09-07T19:42:31.273470+00:00",
+  "model_calls": false,
+  "product_edits": false,
+  "original_artifact": {
+    "path": "audit/2026-09-05/extraction-tool-transition-installed-v7.json",
+    "sha256": "6362b10dd0d84015ae4379b63a6b3d29d8ed7ae1dded55cf5fa7b65df781d2d7",
+    "status": "completed_with_failures",
+    "recorded_status_reason": "The raw v7 run marked sketch_active_before_switch false and added a MissingExpectedFact failure despite storing one Sketch fact valid Jan 10 and invalid Mar 10."
+  },
+  "assertion_bug": {
+    "old_logic": "evaluate_transition filtered the before-switch as-of rows and then tested interval_contains(fact, NOW), so a fact valid before the switch but invalid at NOW was incorrectly rejected.",
+    "corrected_logic": "Evaluate each as-of projection at its own point: interval_contains(fact, before_switch) for the historical Sketch assertion and interval_contains(fact, after_switch) for destination/current assertions.",
+    "product_behavior_implication": "The persisted raw v7 facts already show correct retirement: Sketch is valid Jan 10 through Mar 10 with superseded_by=2; Figma is active from Mar 10; switched_from is retained. This review corrects only probe interpretation.",
+    "corrected_actual_assertions": {
+      "sketch_active_before_switch": true,
+      "figma_active_after_switch": true,
+      "sketch_active_after_switch": false,
+      "historical_transition_present": true,
+      "asof_fact_counts": {
+        "before_switch": 1,
+        "after_switch": 2
+      }
+    },
+    "corrected_quality_failures": []
+  },
+  "negative_controls": {
+    "valid_prior_retired_at_switch": {
+      "assertions": {
+        "sketch_active_before_switch": true,
+        "figma_active_after_switch": true,
+        "sketch_active_after_switch": false,
+        "historical_transition_present": true,
+        "asof_fact_counts": {
+          "before_switch": 1,
+          "after_switch": 2
+        }
+      },
+      "expected": {
+        "sketch_active_before_switch": true,
+        "figma_active_after_switch": true,
+        "sketch_active_after_switch": false,
+        "quality_failure": false
+      },
+      "quality_failure_emitted": false
+    },
+    "missing_old_fact": {
+      "assertions": {
+        "sketch_active_before_switch": false,
+        "figma_active_after_switch": true,
+        "sketch_active_after_switch": false,
+        "historical_transition_present": true,
+        "asof_fact_counts": {
+          "before_switch": 0,
+          "after_switch": 2
+        }
+      },
+      "expected": {
+        "sketch_active_before_switch": false,
+        "quality_failure": false
+      },
+      "quality_failure_emitted": false
+    },
+    "wrong_interval_prior_starts_after_switch": {
+      "assertions": {
+        "sketch_active_before_switch": false,
+        "figma_active_after_switch": true,
+        "sketch_active_after_switch": false,
+        "historical_transition_present": true,
+        "asof_fact_counts": {
+          "before_switch": 0,
+          "after_switch": 2
+        }
+      },
+      "expected": {
+        "sketch_active_before_switch": false,
+        "quality_failure": false
+      },
+      "quality_failure_emitted": false
+    },
+    "current_sketch_remains_active": {
+      "assertions": {
+        "sketch_active_before_switch": true,
+        "figma_active_after_switch": true,
+        "sketch_active_after_switch": true,
+        "historical_transition_present": true,
+        "asof_fact_counts": {
+          "before_switch": 1,
+          "after_switch": 3
+        }
+      },
+      "expected": {
+        "sketch_active_before_switch": true,
+        "sketch_active_after_switch": true,
+        "quality_failure": true
+      },
+      "quality_failure_emitted": true
+    },
+    "wrong_scope_prior": {
+      "assertions": {
+        "sketch_active_before_switch": false,
+        "figma_active_after_switch": true,
+        "sketch_active_after_switch": false,
+        "historical_transition_present": true,
+        "asof_fact_counts": {
+          "before_switch": 1,
+          "after_switch": 2
+        }
+      },
+      "expected": {
+        "sketch_active_before_switch": false,
+        "sketch_active_after_switch": false,
+        "quality_failure": false
+      },
+      "quality_failure_emitted": false
+    }
+  },
+  "interpretation": {
+    "historical_assertion_now_passes": true,
+    "current_retirement_observed_in_raw_artifact": true,
+    "quality_failure_condition": "Only active Sketch and active Figma together after the explicit switch emit a quality failure.",
+    "scope_and_interval_guarded": true,
+    "no_single_valued_contract_added": true
+  },
+  "provenance": {
+    "corrected_probe_script": "audit/2026-09-05/qa/extraction_tool_transition_probe.py",
+    "corrected_probe_script_sha256": "45ca0bd6a16d48281cdfa9cd80ab6540450a6be7c1933ede93c23326f1469da5",
+    "runtime_package_from_v7": "/private/tmp/smriti-qa-20260905/lib/python3.11/site-packages/smriti/__init__.py",
+    "runtime_version_from_v7": "0.3.2"
+  },
+  "limitations": [
+    "The corrected assertions and controls are offline evaluation of persisted v7 rows; this artifact does not rerun Ollama.",
+    "The raw v7 model result remains unchanged and retains its original status/failure field.",
+    "This fixture demonstrates one explicit transition and does not establish a universal uses_tool retirement policy."
+  ]
+}

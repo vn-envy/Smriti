@@ -1,0 +1,13 @@
+{
+  "source": "public-retrieval-smriti-s50.json",
+  "scope": "Independent analysis of bounded raw-session retrieval, 9 multi-session questions; no answer generation",
+  "multi_session_recall_at_5": 0.6111111111111112,
+  "top5_unique_session_recall_ceiling": 1.0,
+  "returned_fewer_than_5_unique_sessions": 7,
+  "hypotheses_to_test": [
+    "Chunk-level top-k may spend multiple slots on a single session; test session diversity with matched retrieval budgets.",
+    "Compare broader candidate retrieval and reranking on held-out questions; preserve baseline and measure regressions.",
+    "Measure evidence lost to the shared session truncation budget before attributing all misses to ranking."
+  ],
+  "not_claimed": "These observations do not establish that any proposed retrieval change improves held-out quality."
+}

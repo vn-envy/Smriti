@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "status": "complete",
+  "scope": "qa_comparison judge sanity preflight only; no dataset QA run",
+  "model": {
+    "name": "qwen3:8b",
+    "endpoint": "http://127.0.0.1:11436/v1"
+  },
+  "thinking_mode_probe": {
+    "route": "OpenAI-compatible /v1/chat/completions",
+    "flags": {
+      "reasoning_effort": "none",
+      "think": false
+    },
+    "retry_policy": "0 transport retries, 20s request timeout"
+  },
+  "sanity": {
+    "enabled": true,
+    "status": "passed",
+    "request": {
+      "reasoning_effort": "none",
+      "think": false
+    },
+    "checks": [
+      {
+        "expected": "yes",
+        "raw": "yes",
+        "ok": true
+      },
+      {
+        "expected": "no",
+        "raw": "no",
+        "ok": true
+      }
+    ]
+  },
+  "calls": [
+    {
+      "request": {
+        "model": "qwen3:8b",
+        "messages": [
+          {
+            "role": "system",
+            "content": "Return exactly yes or no. Do not include reasoning or any other text."
+          },
+          {
+            "role": "user",
+            "content": "Question: What color?\nGold answer: blue\nAssistant response: The answer is blue.\nCorrect?"
+          }
+        ],
+        "temperature": 0.0,
+        "max_tokens": 8,
+        "reasoning_effort": "none",
+        "think": false
+      },
+      "response": "yes",
+      "elapsed_ms": 4433.666,
+      "status": "ok",
+      "usage": {
+        "calls": 1,
+        "attempts": 1,
+        "http_attempts": 1,
+        "tokens_in": 56,
+        "tokens_out": 2,
+        "usage_missing": 0
+      }
+    },
+    {
+      "request": {
+        "model": "qwen3:8b",
+        "messages": [
+          {
+            "role": "system",
+            "content": "Return exactly yes or no. Do not include reasoning or any other text."
+          },
+          {
+            "role": "user",
+            "content": "Question: What color?\nGold answer: blue\nAssistant response: I don't have enough information.\nCorrect?"
+          }
+        ],
+        "temperature": 0.0,
+        "max_tokens": 8,
+        "reasoning_effort": "none",
+        "think": false
+      },
+      "response": "no",
+      "elapsed_ms": 366.943,
+      "status": "ok",
+      "usage": {
+        "calls": 2,
+        "attempts": 2,
+        "http_attempts": 2,
+        "tokens_in": 114,
+        "tokens_out": 4,
+        "usage_missing": 0
+      }
+    }
+  ],
+  "elapsed_s": 4.801,
+  "usage": {
+    "calls": 2,
+    "attempts": 2,
+    "http_attempts": 2,
+    "tokens_in": 114,
+    "tokens_out": 4,
+    "usage_missing": 0
+  }
+}

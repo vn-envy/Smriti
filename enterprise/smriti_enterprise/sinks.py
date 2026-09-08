@@ -60,7 +60,9 @@ class JSONLSink:
                        json.dumps(r["checkpoint"]) if "checkpoint" in r else None)
 
     def verify(self, signer=None) -> dict:
-        return verify_chain(self.rows(), signer=signer or self.signer)
+        active_signer = signer or self.signer
+        return verify_chain(self.rows(), signer=active_signer,
+                            checkpoint_every=self.every if active_signer else None)
 
 
 class SidecarSQLiteSink:
@@ -105,4 +107,6 @@ class SidecarSQLiteSink:
             "SELECT seq, body, hash, prev_hash, checkpoint FROM receipts ORDER BY seq")
 
     def verify(self, signer=None) -> dict:
-        return verify_chain(self.rows(), signer=signer or self.signer)
+        active_signer = signer or self.signer
+        return verify_chain(self.rows(), signer=active_signer,
+                            checkpoint_every=self.every if active_signer else None)

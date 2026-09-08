@@ -19,7 +19,10 @@ jobs:
       - name: Install
         run: |
           python -m pip install --upgrade pip
-          pip install -e .
-          pip install pytest
-      - name: Run offline test suite (no network, no keys)
-        run: python -m pytest tests/ -q
+          pip install build pytest
+          python -m build --wheel --outdir /tmp/smriti-dist
+          pip install /tmp/smriti-dist/smriti_agents-*.whl
+          cp -R tests /tmp/smriti-installed-tests
+      - name: Run installed-wheel test suite (no network, no keys)
+        working-directory: /tmp
+        run: python -m pytest smriti-installed-tests/ --import-mode=importlib -q

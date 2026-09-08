@@ -1,0 +1,16 @@
+{
+  "status": "rejected",
+  "artifact": "smriti-mira-full-scoped-contract-v3.json",
+  "sha256": "d43e1a9c5795757d1567cddd31b989cf1d7e2d794844c863bb842ce58ce39b82",
+  "improvements": [
+    "Berlin is current; unrelated project event no longer invalidates it.",
+    "Separate current uses_language=Rust, scope project:Atlas, correct switch interval."
+  ],
+  "probe_defect": "Current usage predicate uses_language incorrectly excluded by preference-only validator. Preserve original rejection; independently reviewed raw facts.",
+  "product_defects": [
+    "Named third-party Mira rewritten as user throughout extracted facts; subject identity not preserved.",
+    "Light-mode preference inherited project:Atlas scope from adjacent transition clause.",
+    "First event encodes date in applicability scope despite dedicated event_date."
+  ],
+  "acceptance": "Not accepted; generic prompt correction and stronger identity/scope regression probe required."
+}

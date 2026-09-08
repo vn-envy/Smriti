@@ -49,7 +49,11 @@ def check_egress(profile: str, adapters: Iterable, allowlist: Optional[set] = No
             raise EgressError(
                 f"profile 'local' forbids non-loopback endpoint {url!r} "
                 f"({type(a).__name__}); use an allowlisted 'team' profile instead")
-        if allowlist is not None and host not in allowlist:
+        if allowlist is None:
+            raise EgressError(
+                f"profile {profile!r} requires an allowlist for non-loopback "
+                f"endpoint {url!r}")
+        if host not in {str(item).lower() for item in allowlist}:
             raise EgressError(
                 f"endpoint {url!r} is not in the {profile} allowlist")
 

@@ -19,7 +19,9 @@ import hashlib
 import json as _json
 import re as _re
 import uuid
+from dataclasses import replace
 from typing import List, Optional
+from urllib.parse import urlsplit
 
 # Secret redaction (opt-in, hardening 0.3.0): scrub common credential shapes
 # BEFORE anything is persisted or sent to an extraction model. Conservative
@@ -42,15 +44,53 @@ def redact_secrets(text: str) -> str:
 from .consolidation import consolidate, heuristic_conflicts
 from .embedder import HashEmbedder
 from .extraction import (build_extraction_prompt, build_followup_prompt,
-                         build_observation_prompt, compute_numeric_totals, parse_facts)
+                         build_observation_prompt, build_scope_correction_prompt,
+                         compute_numeric_totals, merge_scope_valid_facts, parse_facts,
+                         reject_scope_erasure_retry, validate_fact_scopes)
 from .llm import LLM
 from .profiles import RetrievalProfile, get_profile
 from .retrieval import is_aggregation_query, pack_context, retrieve
-from .store import Store, utcnow
+from .store import Store, normalize_scope, utcnow
 from .types import Episode, Fact, RetrievalResult
 
 # Sanskrit aliases: laghu (लघु, "light") and purna (पूर्ण, "complete")
 MODE_ALIASES = {"laghu": "lite", "purna": "full"}
+
+
+def _embedder_identity(embedder) -> str:
+    """Stable, secret-free identity for persistent vector compatibility."""
+    data = {"class": f"{type(embedder).__module__}.{type(embedder).__qualname__}"}
+    for name in ("model", "provider", "dim"):
+        value = getattr(embedder, name, None)
+        if isinstance(value, (str, int, float, bool)) and value != "":
+            data[name] = value
+    base_url = getattr(embedder, "base_url", None)
+    if isinstance(base_url, str) and base_url:
+        parsed = urlsplit(base_url)
+        host = parsed.hostname or ""
+        if ":" in host:
+            host = f"[{host}]"
+        try:
+            port = f":{parsed.port}" if parsed.port is not None else ""
+        except ValueError:
+            port = ""
+        data["endpoint"] = f"{parsed.scheme}://{host}{port}{parsed.path}".rstrip("/")
+    return _json.dumps(data, sort_keys=True, separators=(",", ":"))
+
+
+def _embed_many(embedder, texts: List[str], context: str) -> List[list]:
+    """Embed a batch without allowing zip() to silently drop writes."""
+    try:
+        vectors = list(embedder.embed(texts))
+    except BaseException:
+        raise
+    if len(vectors) != len(texts):
+        raise ValueError(
+            f"{context} embedder returned {len(vectors)} vectors for {len(texts)} texts"
+        )
+    if any(vector is None for vector in vectors):
+        raise ValueError(f"{context} embedder returned a null vector")
+    return vectors
 
 
 class Smriti:
@@ -59,7 +99,8 @@ class Smriti:
                  expand_keys: bool = True, aggregate: bool = True, k_agg: int = 40,
                  stem: bool = False, semantic_entities: bool = False,
                  semantic_threshold: float = 0.3,
-                 redact: bool = False, dedupe: bool = True):
+                 redact: bool = False, dedupe: bool = True,
+                 adopt_legacy_embedder: bool = False):
         """mode: "full"/"purna" (LLM extraction+consolidation), "lite"/"laghu"
         (episodic only), or "auto" (full if an llm is provided, else lite).
         reranker: optional cross-encoder (any .rerank(query, docs)->scores) applied
@@ -75,8 +116,23 @@ class Smriti:
         embeddings to reach entities lexical token matching misses (mem0's
         'entity linking' lever). Zero-dependency; uses the existing embedder.
         semantic_threshold: cosine cutoff for the semantic-entity channel."""
-        self.store = Store(path, stem=stem)
         self.embedder = embedder or HashEmbedder()
+        if not isinstance(mode, str):
+            raise ValueError("mode must be 'auto', 'lite'/'laghu', or 'full'/'purna'")
+        mode = MODE_ALIASES.get(mode, mode)
+        if mode == "auto":
+            mode = "full" if llm is not None else "lite"
+        if mode not in ("lite", "full"):
+            raise ValueError("mode must be 'auto', 'lite'/'laghu', or 'full'/'purna'")
+        if mode == "full" and llm is None:
+            raise ValueError("full mode requires an llm")
+        self.store = Store(path, stem=stem)
+        try:
+            self.store.ensure_embedder(_embedder_identity(self.embedder),
+                                       adopt_legacy=adopt_legacy_embedder)
+        except BaseException:
+            self.store.close()
+            raise
         self.llm = llm
         self.reranker = reranker
         self.expand_keys = expand_keys
@@ -85,18 +141,25 @@ class Smriti:
         self.stem = stem
         self.semantic_entities = semantic_entities
         self.semantic_threshold = semantic_threshold
+        self.last_extraction_diagnostics = None
         # hardening (0.3.0): redact scrubs credential-shaped strings before
         # persistence/extraction (opt-in); dedupe makes ingestion idempotent —
         # replaying an identical (messages, timestamp, session) is a no-op.
         self.redact = redact
         self.dedupe = dedupe
-        mode = MODE_ALIASES.get(mode, mode)
-        if mode == "auto":
-            mode = "full" if llm is not None else "lite"
-        if mode == "full" and llm is None:
-            raise ValueError("full mode requires an llm")
         self.mode = mode
         self.embed_episodes = embed_episodes
+
+    def close(self) -> None:
+        """Close the underlying SQLite connection."""
+        self.store.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        self.close()
+        return False
 
     # ------------------------------------------------------------------ add
     def add(self, messages: List[dict], session_id: Optional[str] = None,
@@ -125,20 +188,119 @@ class Smriti:
 
         # -- expensive, side-effect-free work happens BEFORE the transaction --
         contents = [m.get("content", "")[:4000] for m in messages]
-        embs = self.embedder.embed(contents) if (self.embed_episodes and contents) else [None] * len(contents)
+        embs = (_embed_many(self.embedder, contents, "episode")
+                if (self.embed_episodes and contents) else [None] * len(contents))
         facts, fembs = [], []
+        # Keep diagnostics local to this call.  The public property is the
+        # detailed audit trail, while the return value below must never reuse
+        # a previous full-mode ingest after a mode/configuration change.
+        scope_diagnostics = None
         if self.mode == "full":
             raw = self.llm.complete(
                 build_extraction_prompt(messages, timestamp), json_mode=False
             )
-            facts = parse_facts(raw, session_id, timestamp)
+            diagnostics = {}
+            facts = parse_facts(raw, session_id, timestamp, diagnostics=diagnostics)
+            diagnostics["accepted_before_scope"] = len(facts)
+            valid_facts, invalid_scopes = validate_fact_scopes(facts, messages)
+            scope_diagnostics = {
+                "attempts": 1,
+                "retry_used": False,
+                "accepted_before_scope": len(facts),
+                "first_invalid": invalid_scopes,
+                "second_invalid": [],
+                "rejected_candidates": list(invalid_scopes),
+                "facts_dropped_after_retry": [],
+                "unresolved_candidates": [],
+                "replacement_matches": [],
+                "retry_status": "not_needed",
+                "input_roles": [str(turn.get("role", "user")) for turn in messages],
+                "semantic_scope_guarantee": False,
+                "limitation": "Lexical source/fact-statement evidence only; this guard does not prove cross-person, quotation, or adjacent-clause semantics.",
+            }
+            if invalid_scopes:
+                scope_diagnostics["retry_used"] = True
+                retry_parse_diagnostics = {}
+                scope_diagnostics["retry_parse"] = retry_parse_diagnostics
+                retry_valid = []
+                try:
+                    retry_raw = self.llm.complete(
+                        build_scope_correction_prompt(messages, timestamp, invalid_scopes),
+                        json_mode=False,
+                    )
+                    retry_facts = parse_facts(
+                        retry_raw, session_id, timestamp,
+                        diagnostics=retry_parse_diagnostics,
+                    )
+                    retry_valid, retry_invalid = validate_fact_scopes(retry_facts, messages)
+                    retry_valid, erased_scope = reject_scope_erasure_retry(
+                        retry_valid, invalid_scopes)
+                    retry_invalid.extend(erased_scope)
+                    scope_diagnostics["attempts"] = 2
+                    scope_diagnostics["second_invalid"] = retry_invalid
+                    # Keep validated first facts if the correction omitted
+                    # them; exact duplicate facts are deduplicated below.
+                    # Invalid scopes never enter this merge.
+                    facts = merge_scope_valid_facts(valid_facts, retry_valid)
+                except Exception as exc:
+                    # A failed correction is bounded and fail-closed for the
+                    # invalid scopes while preserving any valid first facts and
+                    # the raw episode that is written below.
+                    facts = valid_facts
+                    scope_diagnostics["attempts"] = 2
+                    scope_diagnostics["retry_error"] = {
+                        "type": type(exc).__name__, "error": str(exc)
+                    }
+            if invalid_scopes:
+                retry_keys = {
+                    (fact.subject.casefold().strip(), fact.predicate.casefold().strip(),
+                     fact.object.casefold().strip())
+                    for fact in retry_valid if fact.scope.strip()
+                }
+                replacement_matches = [
+                    item for item in invalid_scopes
+                    if (str(item.get("subject", "")).casefold().strip(),
+                        str(item.get("predicate", "")).casefold().strip(),
+                        str(item.get("object", "")).casefold().strip()) in retry_keys
+                ]
+                unresolved = [item for item in invalid_scopes
+                              if item not in replacement_matches]
+                scope_diagnostics["replacement_matches"] = replacement_matches
+                scope_diagnostics["unresolved_candidates"] = unresolved
+                scope_diagnostics["rejected_candidates"] = (
+                    list(invalid_scopes) + list(scope_diagnostics.get("second_invalid", []))
+                )
+                # This is based on structured-identity matches against the
+                # validated correction, rather than counting rejected output
+                # candidates.  A corrected candidate is therefore not called
+                # a lost fact; an omitted or still-invalid initial candidate
+                # is retained in the raw episode and reported here.
+                scope_diagnostics["facts_dropped_after_retry"] = unresolved
+                if scope_diagnostics.get("retry_error"):
+                    scope_diagnostics["retry_status"] = "retry_failed"
+                elif (scope_diagnostics.get("retry_parse", {}).get("status")
+                      not in (None, "ok")):
+                    scope_diagnostics["retry_status"] = "retry_parse_failed"
+                elif scope_diagnostics["second_invalid"] and not unresolved:
+                    scope_diagnostics["retry_status"] = "corrected_with_rejections"
+                elif unresolved:
+                    scope_diagnostics["retry_status"] = (
+                        "rejected" if scope_diagnostics["second_invalid"] else
+                        "retry_completed"
+                    )
+                else:
+                    scope_diagnostics["retry_status"] = "corrected"
+            diagnostics["accepted"] = len(facts)
+            scope_diagnostics["accepted_final"] = len(facts)
+            diagnostics["scope_validation"] = scope_diagnostics
+            self.last_extraction_diagnostics = diagnostics
             if facts:
                 if not self.expand_keys:
                     for f in facts:
                         f.search_keys = []
                 # embed the clean statement only; expansion keys live in the
                 # separate key index (Build 10) so they can't dilute precision.
-                fembs = self.embedder.embed([f.statement for f in facts])
+                fembs = _embed_many(self.embedder, [self._index_text(f) for f in facts], "fact")
 
         # -- atomic ingest: hash claim + all writes commit or roll back as one.
         # Two concurrent ingests serialize on BEGIN IMMEDIATE; the loser's
@@ -170,28 +332,90 @@ class Smriti:
         except BaseException:
             self.store.rollback()
             raise
-        return {"session_id": session_id, "episodes": len(episode_ids), "facts": facts_added}
+        result = {"session_id": session_id, "episodes": len(episode_ids), "facts": facts_added}
+        if scope_diagnostics and scope_diagnostics.get("retry_used"):
+            retry_status = scope_diagnostics.get("retry_status", "retry_completed")
+            outcome = {
+                "corrected": "corrected",
+                "corrected_with_rejections": "corrected_with_rejections",
+                "rejected": "rejected",
+                "retry_completed": "retry_completed",
+                "retry_failed": "retry_failed",
+                "retry_parse_failed": "retry_parse_failed",
+            }.get(retry_status, "retry_completed")
+            warning = {
+                "corrected": "Invalid first-pass scopes were persisted only after a validated correction; inspect last_extraction_diagnostics for details.",
+                "corrected_with_rejections": "Some correction candidates remained invalid and were not persisted; inspect last_extraction_diagnostics for details.",
+                "retry_completed": "The correction completed but did not replace every rejected candidate; no unverified scope was globalized.",
+                "rejected": "Rejected scoped candidates were not globalized; inspect last_extraction_diagnostics for details.",
+                "retry_failed": "The correction failed and rejected scoped candidates were not globalized; inspect last_extraction_diagnostics for details.",
+                "retry_parse_failed": "The correction response was malformed and rejected scoped candidates were not globalized; inspect last_extraction_diagnostics for details.",
+            }[outcome]
+            result["scope_validation"] = {
+                "outcome": outcome,
+                "attempts": scope_diagnostics.get("attempts"),
+                "accepted_before_scope": scope_diagnostics.get("accepted_before_scope", 0),
+                "accepted_final": scope_diagnostics.get("accepted_final", 0),
+                # Final invalid candidates and identity-proven omissions are
+                # separate counts; the former is not presented as lost facts.
+                "rejected_candidates": len(scope_diagnostics.get("second_invalid", [])),
+                "validation_rejections": len(scope_diagnostics.get("rejected_candidates", [])),
+                "facts_dropped_after_retry": len(scope_diagnostics.get(
+                    "facts_dropped_after_retry", [])),
+                "unresolved_candidates": len(scope_diagnostics.get("unresolved_candidates", [])),
+                "warning": warning,
+            }
+        return result
 
     @staticmethod
     def _index_text(fact: Fact) -> str:
-        """Text used for embedding/FTS: statement plus expansion keys (Build 9 A)."""
-        if fact.search_keys:
-            return fact.statement + " " + " ".join(fact.search_keys)
-        return fact.statement
+        """Text used for vector indexing; raw statements remain unchanged.
+
+        Scope is included only in the embedding input so a scoped query can
+        distinguish identical statements without laundering scope into the
+        persisted fact text or answer context.
+        """
+        scoped = fact.statement
+        if fact.scope:
+            scoped += " scope:" + fact.scope
+        return scoped
 
     def add_fact(self, fact: Fact, resolve_conflicts: bool = True) -> Optional[int]:
         """Directly insert a fact (e.g. from an agent's own observations)."""
+        if fact.scope is not None and not isinstance(fact.scope, str):
+            raise ValueError("fact scope must be a string or None")
+        fact.scope = normalize_scope(fact.scope)
+        if self.redact:
+            fact = replace(
+                fact,
+                statement=redact_secrets(fact.statement),
+                subject=redact_secrets(fact.subject),
+                predicate=redact_secrets(fact.predicate),
+                object=redact_secrets(fact.object),
+                entities=[redact_secrets(e) for e in fact.entities],
+                search_keys=[redact_secrets(k) for k in fact.search_keys],
+                scope=redact_secrets(fact.scope or ""),
+            )
         if not self.expand_keys:
             fact.search_keys = []
-        emb = self.embedder.embed([fact.statement])[0]
-        if resolve_conflicts:
-            return consolidate(self.store, fact, emb, self.embedder,
-                               self.llm if self.mode == "full" else None)
-        return self.store.add_fact(fact, emb)
+        emb = _embed_many(self.embedder, [self._index_text(fact)], "fact")[0]
+        self.store.begin()
+        try:
+            if resolve_conflicts:
+                fid = consolidate(self.store, fact, emb, self.embedder,
+                                  self.llm if self.mode == "full" else None)
+            else:
+                fid = self.store.add_fact(fact, emb)
+            self.store.commit()
+            return fid
+        except BaseException:
+            self.store.rollback()
+            raise
 
     # --------------------------------------------------------------- search
     def _profiled(self, query: str, profile, k: Optional[int], now: Optional[str],
-                  channels=None) -> tuple:
+                  channels=None, session_diverse: Optional[bool] = None,
+                  session_overfetch: Optional[int] = None) -> tuple:
         """Resolve a profile (name / 'auto' / RetrievalProfile) and run
         retrieval with its policy. Returns (profile, results). Explicit k and
         channels args override the profile — knobs beat presets."""
@@ -206,30 +430,43 @@ class Smriti:
             use_key_channel=p.use_key_channel and self.expand_keys,
             include_observations=p.include_observations,
             channels=channels if channels is not None else p.channels,
-            current_first=p.current_first)
+            current_first=p.current_first,
+            session_diverse=(p.session_diverse if session_diverse is None else session_diverse),
+            session_overfetch=(p.session_overfetch if session_overfetch is None else session_overfetch))
         return p, results
 
     def search(self, query: str, k: Optional[int] = None, now: Optional[str] = None,
-               profile=None, channels=None) -> List[RetrievalResult]:
+               profile=None, channels=None, session_diverse: Optional[bool] = None,
+               session_overfetch: Optional[int] = None) -> List[RetrievalResult]:
         """profile: None (legacy default), a name ("facts" / "relations" /
         "timeline" / "deep" / "precision"), "auto" (v2 router), or a custom
         RetrievalProfile. channels: optional mask — {"lexical","semantic",
-        "entity","temporal"} or Sanskrit aliases — orthogonal to profiles."""
+        "entity","temporal"} or Sanskrit aliases — orthogonal to profiles.
+        session_diverse optionally favors evidence from distinct conversation
+        sessions after bounded overfetch; it is disabled by default."""
         if profile is not None:
-            return self._profiled(query, profile, k, now, channels=channels)[1]
+            return self._profiled(query, profile, k, now, channels=channels,
+                                  session_diverse=session_diverse,
+                                  session_overfetch=session_overfetch)[1]
         return retrieve(self.store, self.embedder, query, now=now, k=k or 12,
                         reranker=self.reranker,
                         semantic_entities=self.semantic_entities,
                         semantic_threshold=self.semantic_threshold,
-                        channels=channels)
+                        channels=channels,
+                        session_diverse=bool(session_diverse),
+                        session_overfetch=(session_overfetch if session_overfetch is not None else 3))
 
     def context(self, query: str, k: Optional[int] = None, now: Optional[str] = None,
-                char_budget: int = 9000, profile=None, channels=None) -> str:
+                char_budget: int = 9000, profile=None, channels=None,
+                session_diverse: Optional[bool] = None,
+                session_overfetch: Optional[int] = None) -> str:
         # Explicit profile (drishti): named policy, evidence attached. The
         # legacy path below stays byte-identical when profile is None, so the
         # Build 10 A/B evidence keeps describing the default behavior.
         if profile is not None:
-            p, results = self._profiled(query, profile, k, now, channels=channels)
+            p, results = self._profiled(query, profile, k, now, channels=channels,
+                                        session_diverse=session_diverse,
+                                        session_overfetch=session_overfetch)
             return pack_context(results, now=now, char_budget=char_budget,
                                 aggregate=p.aggregate_pack,
                                 current_first=p.current_first)
@@ -247,17 +484,22 @@ class Smriti:
                                semantic_entities=True,
                                semantic_threshold=self.semantic_threshold,
                                include_observations=True,
-                               channels=channels)
+                               channels=channels,
+                               session_diverse=bool(session_diverse),
+                               session_overfetch=(session_overfetch if session_overfetch is not None else 3))
             return pack_context(results, now=now, char_budget=char_budget, aggregate=True)
         # precision path: exclude observation summaries — they launder stale
         # values on current-state questions (knowledge-update diagnostic, -5.1pts).
         results = retrieve(self.store, self.embedder, query, now=now, k=k or 12,
                            reranker=self.reranker, include_observations=False,
-                           channels=channels)
+                           channels=channels,
+                           session_diverse=bool(session_diverse),
+                           session_overfetch=(session_overfetch if session_overfetch is not None else 3))
         return pack_context(results, now=now, char_budget=char_budget)
 
     def search_iterative(self, query: str, k: int = 12, now: Optional[str] = None,
-                         rounds: int = 2) -> List[RetrievalResult]:
+                         rounds: int = 2, session_diverse: bool = False,
+                         session_overfetch: int = 3) -> List[RetrievalResult]:
         """Multi-step retrieval for multi-hop questions (DualRAG-style).
 
         After the first pass, ask the LLM what's still missing, issue a
@@ -266,7 +508,12 @@ class Smriti:
         mentor, then the mentor's field) get a second look. Full mode only;
         with no llm or rounds<2 it degrades to a normal single-pass search.
         """
-        results = self.search(query, k=k, now=now)
+        if session_diverse:
+            raise ValueError(
+                "session_diverse is not supported by iterative retrieval; "
+                "use search() or context() until merged-result selection is defined")
+        results = self.search(query, k=k, now=now,
+                              session_overfetch=session_overfetch)
         if self.llm is None or rounds < 2:
             return results
         seen = {(r.kind, r.id) for r in results}
@@ -287,15 +534,24 @@ class Smriti:
         return results
 
     def context_iterative(self, query: str, k: int = 12, now: Optional[str] = None,
-                          char_budget: int = 9000, rounds: int = 2) -> str:
-        return pack_context(self.search_iterative(query, k=k, now=now, rounds=rounds),
+                          char_budget: int = 9000, rounds: int = 2,
+                          session_diverse: bool = False,
+                          session_overfetch: int = 3) -> str:
+        if session_diverse:
+            raise ValueError(
+                "session_diverse is not supported by iterative retrieval; "
+                "use context() until merged-result selection is defined")
+        return pack_context(self.search_iterative(
+            query, k=k, now=now, rounds=rounds,
+            session_overfetch=session_overfetch),
                             now=now, char_budget=char_budget)
 
     # -------------------------------------------------------- observations
     def _write_observation(self, subject: str, predicate: str, label: str,
-                           facts: List[Fact]) -> bool:
+                           facts: List[Fact], scope: str = "") -> bool:
         """Synthesize one observation/digest fact from `facts`, superseding any
-        prior one with the same (subject, predicate). Returns True if written."""
+        prior one with the same (subject, predicate, scope). Returns True if written."""
+        scope = normalize_scope(scope)
         summary = self.llm.complete(
             build_observation_prompt(label, facts), max_tokens=256
         ).strip()
@@ -308,9 +564,10 @@ class Smriti:
             return False
         ents = self.store.entities_of_facts([f.id for f in facts if f.id])[:10]
         obs = Fact(id=None, statement=summary, subject=subject, predicate=predicate,
-                   object="", kind="observation", entities=ents, valid_from=utcnow())
-        emb = self.embedder.embed([summary])[0]
-        prior = self.store.similar_valid_facts(subject, predicate)
+                   object="", kind="observation", entities=ents, valid_from=utcnow(),
+                   scope=scope)
+        emb = _embed_many(self.embedder, [self._index_text(obs)], "observation")[0]
+        prior = self.store.similar_valid_facts(subject, predicate, scope)
         new_id = self.store.add_fact(obs, emb)
         for p in prior:
             self.store.invalidate_fact(p.id, new_id)
@@ -343,18 +600,25 @@ class Smriti:
                        if entities is not None else self.store.all_entities())
             for ent in targets:
                 facts = self.store.facts_for_entity(ent, valid_only=True)
-                if len(facts) >= min_facts and self._write_observation(ent, "observation", ent, facts):
-                    made["entity"] += 1
+                by_scope = {}
+                for fact in facts:
+                    by_scope.setdefault(normalize_scope(fact.scope), []).append(fact)
+                for scope, scoped_facts in by_scope.items():
+                    if (len(scoped_facts) >= min_facts
+                            and self._write_observation(
+                                ent, "observation", ent, scoped_facts, scope=scope)):
+                        made["entity"] += 1
 
         # predicate digests are global; skip when caller targets specific entities
         if "predicate" in granularity and entities is None:
-            for subj, pred, _c in self.store.predicate_groups(min_facts=min_facts):
-                facts = [f for f in self.store.similar_valid_facts(subj, pred)
+            for subj, pred, scope, _c in self.store.predicate_groups_scoped(min_facts=min_facts):
+                facts = [f for f in self.store.similar_valid_facts(subj, pred, scope)
                          if f.kind != "observation"]
                 if len(facts) < min_facts:
                     continue
                 label = f"{subj} — {pred.replace('_', ' ')}"
-                if self._write_observation(subj, f"digest:{pred}", label, facts):
+                if self._write_observation(subj, f"digest:{pred}", label, facts,
+                                            scope=scope):
                     made["predicate"] += 1
 
         made["observations"] = made["entity"] + made["predicate"]
@@ -390,11 +654,12 @@ class Smriti:
         return {"episodes": len(data["episodes"]), "facts": len(data["facts"]),
                 "path": path}
 
-    def import_json(self, path: str) -> dict:
+    def import_json(self, path: str, adopt_legacy_embedder: bool = False) -> dict:
         """Restore an export into this (empty) store. IDs are preserved, so
         supersession chains and episode links survive the round trip."""
         with open(path, encoding="utf-8") as fh:
-            self.store.import_data(_json.load(fh))
+            self.store.import_data(_json.load(fh),
+                                   adopt_legacy_embedder=adopt_legacy_embedder)
         return self.stats()
 
     # ---------------------------------------------------------------- misc

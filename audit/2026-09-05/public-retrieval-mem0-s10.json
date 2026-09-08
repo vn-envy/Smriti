@@ -1,0 +1,303 @@
+{
+  "schema_version": 2,
+  "status": "partial",
+  "track": "official LongMemEval-S full-haystack raw-session retrieval; extraction bypassed",
+  "adapter": "mem0",
+  "configuration": "mem0 OSS / infer=False / configured Ollama nomic-embed-text:v1.5",
+  "dataset": {
+    "source": "https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned/resolve/main/longmemeval_s_cleaned.json",
+    "sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
+    "total_items": 500,
+    "selected_items": [
+      "e47becba",
+      "0a995998",
+      "8a2466db",
+      "gpt4_59149c77",
+      "6a1eabeb",
+      "7161e7e2",
+      "118b2229",
+      "6d550036",
+      "06878be2",
+      "gpt4_f49edff3"
+    ]
+  },
+  "embedding": {
+    "provider": "Ollama",
+    "model": "nomic-embed-text:v1.5",
+    "dimensions": 768,
+    "base_url": "http://127.0.0.1:11436"
+  },
+  "budgets": {
+    "sample": 10,
+    "k": 5,
+    "session_char_budget": 16000,
+    "chunk_char_budget": 4000
+  },
+  "run": {
+    "started_utc": "2026-09-07T13:56:20Z",
+    "platform": "macOS-26.5.1-arm64-arm-64bit",
+    "python": "3.11.15 (main, Jun 11 2026, 04:04:09) [Clang 22.1.3 ]",
+    "clock": "time.perf_counter_ns",
+    "failure_policy": "raw failures remain in denominator as zero"
+  },
+  "summary": {
+    "requested": 10,
+    "completed": 9,
+    "failures": 1,
+    "cleanup_failures": 0,
+    "failure_inclusive_denominator": 10,
+    "mean_recall_at_k": 0.75,
+    "mrr": 0.75,
+    "latency_ms_p50": 21.899,
+    "latency_ms_p95": 57.506,
+    "truncation": {
+      "sessions": 470,
+      "chunks": 1382,
+      "original_chars": 4922415,
+      "indexed_chars": 4773805,
+      "truncated_session_chars": 148610,
+      "truncated_chunk_chars": 0
+    },
+    "per_question_type": {
+      "knowledge-update": {
+        "requested": 1,
+        "completed": 1,
+        "failures": 0,
+        "mean_recall_at_k": 1.0,
+        "mrr": 1.0
+      },
+      "multi-session": {
+        "requested": 2,
+        "completed": 2,
+        "failures": 0,
+        "mean_recall_at_k": 0.75,
+        "mrr": 0.75
+      },
+      "single-session-assistant": {
+        "requested": 1,
+        "completed": 1,
+        "failures": 0,
+        "mean_recall_at_k": 1.0,
+        "mrr": 1.0
+      },
+      "single-session-preference": {
+        "requested": 2,
+        "completed": 2,
+        "failures": 0,
+        "mean_recall_at_k": 0.5,
+        "mrr": 0.5
+      },
+      "single-session-user": {
+        "requested": 2,
+        "completed": 2,
+        "failures": 0,
+        "mean_recall_at_k": 1.0,
+        "mrr": 1.0
+      },
+      "temporal-reasoning": {
+        "requested": 2,
+        "completed": 1,
+        "failures": 1,
+        "mean_recall_at_k": 0.5,
+        "mrr": 0.5
+      }
+    }
+  },
+  "results": [
+    {
+      "question_id": "e47becba",
+      "question_type": "single-session-user",
+      "session_count": 53,
+      "chunk_count": 147,
+      "ingest_ms": 14098.288,
+      "latency_ms": 17.488,
+      "returned": [
+        "answer_280352e9",
+        "ultrachat_214101",
+        "sharegpt_QZMeA7V_17",
+        "41abc171_4"
+      ],
+      "relevant": [
+        "answer_280352e9"
+      ],
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "unanswerable": false
+    },
+    {
+      "question_id": "0a995998",
+      "question_type": "multi-session",
+      "session_count": 44,
+      "chunk_count": 135,
+      "ingest_ms": 16205.772,
+      "latency_ms": 21.899,
+      "returned": [
+        "answer_afa9873b_1",
+        "answer_afa9873b_2",
+        "85846900_2",
+        "answer_afa9873b_3"
+      ],
+      "relevant": [
+        "answer_afa9873b_1",
+        "answer_afa9873b_2",
+        "answer_afa9873b_3"
+      ],
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "unanswerable": false
+    },
+    {
+      "question_id": "8a2466db",
+      "question_type": "single-session-preference",
+      "session_count": 50,
+      "chunk_count": 137,
+      "ingest_ms": 16781.92,
+      "latency_ms": 20.726,
+      "returned": [
+        "answer_edb03329",
+        "6a5b5a78",
+        "6dcf5fa0_1"
+      ],
+      "relevant": [
+        "answer_edb03329"
+      ],
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "unanswerable": false
+    },
+    {
+      "question_id": "6a1eabeb",
+      "question_type": "knowledge-update",
+      "session_count": 40,
+      "chunk_count": 128,
+      "ingest_ms": 23911.506,
+      "latency_ms": 29.381,
+      "returned": [
+        "answer_a25d4a91_2",
+        "answer_a25d4a91_1",
+        "4aaf678f_3"
+      ],
+      "relevant": [
+        "answer_a25d4a91_1",
+        "answer_a25d4a91_2"
+      ],
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "unanswerable": false
+    },
+    {
+      "question_id": "7161e7e2",
+      "question_type": "single-session-assistant",
+      "session_count": 48,
+      "chunk_count": 142,
+      "ingest_ms": 25094.292,
+      "latency_ms": 37.669,
+      "returned": [
+        "answer_sharegpt_5Lzox6N_0",
+        "5aed819f",
+        "sharegpt_yguSguz_0",
+        "dba97bb1_4"
+      ],
+      "relevant": [
+        "answer_sharegpt_5Lzox6N_0"
+      ],
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "unanswerable": false
+    },
+    {
+      "question_id": "118b2229",
+      "question_type": "single-session-user",
+      "session_count": 45,
+      "chunk_count": 137,
+      "ingest_ms": 31748.493,
+      "latency_ms": 20.267,
+      "returned": [
+        "answer_40a90d51",
+        "db73b7e4_4",
+        "5dce60dd"
+      ],
+      "relevant": [
+        "answer_40a90d51"
+      ],
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "unanswerable": false
+    },
+    {
+      "question_id": "6d550036",
+      "question_type": "multi-session",
+      "session_count": 47,
+      "chunk_count": 135,
+      "ingest_ms": 32776.908,
+      "latency_ms": 19.811,
+      "returned": [
+        "2e4430d8_2",
+        "answer_ec904b3c_1",
+        "answer_ec904b3c_4"
+      ],
+      "relevant": [
+        "answer_ec904b3c_1",
+        "answer_ec904b3c_2",
+        "answer_ec904b3c_3",
+        "answer_ec904b3c_4"
+      ],
+      "recall_at_k": 0.5,
+      "reciprocal_rank": 0.5,
+      "unanswerable": false
+    },
+    {
+      "question_id": "06878be2",
+      "question_type": "single-session-preference",
+      "session_count": 48,
+      "chunk_count": 143,
+      "ingest_ms": 32555.56,
+      "latency_ms": 44.084,
+      "returned": [
+        "8fcfbe43_2",
+        "a6074da9_1",
+        "465e7ef9",
+        "ultrachat_448784"
+      ],
+      "relevant": [
+        "answer_555dfb94"
+      ],
+      "recall_at_k": 0.0,
+      "reciprocal_rank": 0.0,
+      "unanswerable": false
+    },
+    {
+      "question_id": "gpt4_f49edff3",
+      "question_type": "temporal-reasoning",
+      "session_count": 47,
+      "chunk_count": 141,
+      "ingest_ms": 46943.115,
+      "latency_ms": 57.506,
+      "returned": [
+        "answer_3e9fce53_1",
+        "answer_3e9fce53_2",
+        "answer_3e9fce53_3",
+        "ultrachat_257206"
+      ],
+      "relevant": [
+        "answer_3e9fce53_1",
+        "answer_3e9fce53_2",
+        "answer_3e9fce53_3"
+      ],
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "unanswerable": false
+    }
+  ],
+  "failure_records": [
+    {
+      "question_id": "gpt4_59149c77",
+      "question_type": "temporal-reasoning",
+      "error": {
+        "type": "ResponseError",
+        "message": "the input length exceeds the context length (status code: 400)"
+      }
+    }
+  ],
+  "cleanup_failure_records": []
+}

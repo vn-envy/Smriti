@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "status": "bounded_conditional_behavior_note",
+  "review_type": "uses_tool_transition_retirement_design_review",
+  "review_date": "2026-09-08",
+  "model_calls": false,
+  "product_edits": false,
+  "source_artifact": "audit/2026-09-05/extraction-generalization-installed-v6.json",
+  "source_artifact_status": "completed_with_failures",
+  "current_probe_limit": "The v6 fixture contains a destination uses_tool=Figma fact and a switched_from=Sketch fact, but it does not first establish an explicit uses_tool=Sketch fact. It therefore cannot establish historical retirement of an old uses_tool value.",
+  "observed_v6_facts": {
+    "destination": {
+      "fact_id": 5,
+      "predicate": "uses_tool",
+      "object": "Figma",
+      "scope": "project:Cedar",
+      "active_in_source_artifact": true
+    },
+    "transition": {
+      "fact_id": 6,
+      "predicate": "switched_from",
+      "object": "Sketch",
+      "scope": "project:Ceder",
+      "note": "The misspelled scope was retained as a known scope-validation failure; it is not evidence of a valid Cedar transition."
+    },
+    "prior_uses_tool_sketch": false
+  },
+  "code_path_review": {
+    "file": "smriti/consolidation.py",
+    "exact_key_rule": "uses_tool is not in SINGLE_VALUED, so an exact-key destination does not categorically invalidate an earlier uses_tool fact.",
+    "same_predicate_semantic_rule": "uses_tool with uses_tool is semantically compatible and may enter vector-similarity plus LLM-arbiter consolidation when the candidates are sufficiently similar and share subject/scope.",
+    "cross_predicate_transition_rule": "switched_from is not a uses_tool-compatible semantic pair, so the transition fact alone does not retire a uses_tool fact."
+  },
+  "behavior_classification": {
+    "retirement": "conditional",
+    "categorically_absent": false,
+    "conditions_for_observing_retirement": [
+      "An explicit prior uses_tool=Sketch fact and destination uses_tool=Figma fact exist for the same subject and project scope.",
+      "The same-predicate candidates reach semantic consolidation rather than being filtered by similarity, scope, or extraction failure.",
+      "The LLM arbiter selects a supersession outcome."
+    ],
+    "paired_switched_from_effect": "The paired switched_from fact does not itself establish or guarantee uses_tool retirement."
+  },
+  "existing_test_coverage": {
+    "covered": [
+      "Scoped single-valued primary_programming_language behavior",
+      "Semantic employer arbitration",
+      "Scope validation and correction/retry behavior for uses_tool"
+    ],
+    "missing": "No historical two-step uses_tool Sketch-to-Figma fixture checks current and as-of state while recording semantic LLM counters."
+  },
+  "follow_up_fixture": {
+    "script": "audit/2026-09-05/qa/extraction_tool_transition_probe.py",
+    "steps": [
+      "2025-01-10: Leila currently uses Sketch for project Cedar.",
+      "2025-03-10: Leila switched from Sketch to Figma for project Cedar."
+    ],
+    "checks": [
+      "Persisted raw facts after each add",
+      "Read-only as-of projections before and after the switch",
+      "Cumulative extraction/arbitration provider counters",
+      "A nonzero quality_failures entry if active Sketch coexists with active Figma after the explicit switch"
+    ],
+    "interpretation": "This fixture diagnoses conditional behavior; it does not assume that uses_tool is single-valued and does not implement a new transition rule."
+  }
+}

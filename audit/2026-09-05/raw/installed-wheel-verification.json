@@ -1,0 +1,31 @@
+{
+  "recorded_at": "2026-09-06T18:30:24.812918+00:00",
+  "wheels": {
+    "smriti_enterprise-0.1.0-py3-none-any.whl": "e6a8fda187d65014bf469cb3da71f6a4427df0f2a938dec2fe9baba6e129d645",
+    "smriti_agents-0.3.2-py3-none-any.whl": "f82436cc6451ef5df41792db2b6c5c7bfb5be4fb8f5db1d8b8de15689e5cff0f"
+  },
+  "checks": [
+    {
+      "platform": "macOS arm64",
+      "python": "3.11",
+      "tests_passed": 154,
+      "installation": "fresh venv, non-editable wheels, outside checkout"
+    },
+    {
+      "platform": "Linux arm64 Docker python:3.9-slim",
+      "image_digest": "sha256:2d97f6910b16bd338d3060f261f53f144965f755599aab1acda1e13cf1731b1b",
+      "tests_passed": 154,
+      "installation": "non-editable wheels, read-only tests, cwd /tmp"
+    },
+    {
+      "platform": "Linux arm64 Docker python:3.12-slim",
+      "image_digest": "sha256:78387bc3881b8273120a12ebe6c1ab22b018ccc2c9adf565ae1ac9b536e184ea",
+      "tests_passed": 154,
+      "installation": "non-editable wheels, read-only tests, cwd /tmp"
+    }
+  ],
+  "pip_check": "passed on all three",
+  "mcp_sdk": "2.1.1: initialize, all six tools, duplicate replay, structured content, restart persistence passed",
+  "known_open_defect": "Late-middle enterprise correction destroys earlier knowledge-time interval; reported to Sol. Passing suite does not establish full temporal correctness.",
+  "scope": "Candidate snapshot before embedding metadata and enterprise version-history follow-ups; not a release certificate."
+}

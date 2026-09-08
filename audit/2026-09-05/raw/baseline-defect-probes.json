@@ -1,0 +1,16 @@
+{
+  "b_before": [
+    "orchid project owner is Alice"
+  ],
+  "b_after": [
+    "orchid project owner is Alice"
+  ],
+  "b_lexical": [
+    "zebra project secret codename is Flamenco"
+  ],
+  "redaction_fact": [
+    "api_key=FAKE_AUDIT_SECRET_12345"
+  ],
+  "invalid_mode": "typo",
+  "out_of_order": "KNOWN FACTS (each with validity window; CURRENT means still true, SUPERSEDED means it was true then but later changed):\n- [2026-01-01 | CURRENT] User lives in Hyderabad\n- [2026-06-01 | SUPERSEDED on 2026-01-01] User lives in Bengaluru\n"
+}

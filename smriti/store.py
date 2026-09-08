@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS facts(
     id INTEGER PRIMARY KEY,
     statement TEXT, subject TEXT, predicate TEXT, object TEXT, kind TEXT,
     event_date TEXT, ingested_at TEXT, valid_from TEXT, invalid_at TEXT,
-    superseded_by INTEGER, episode_id INTEGER, session_id TEXT, emb BLOB
+    superseded_by INTEGER, episode_id INTEGER, session_id TEXT, scope TEXT NOT NULL DEFAULT '', emb BLOB
 );
 CREATE TABLE IF NOT EXISTS entities(
     name TEXT, fact_id INTEGER
@@ -52,6 +52,9 @@ CREATE TABLE IF NOT EXISTS entity_aliases(
 );
 CREATE TABLE IF NOT EXISTS ingest_log(
     hash TEXT PRIMARY KEY, session_id TEXT, ingested_at TEXT
+);
+CREATE TABLE IF NOT EXISTS metadata(
+    key TEXT PRIMARY KEY, value TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_entities_name ON entities(name);
 CREATE INDEX IF NOT EXISTS idx_facts_subj_pred ON facts(subject, predicate);
@@ -78,6 +81,14 @@ def _fts_ddl(stem: bool) -> str:
 
 def utcnow() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def normalize_scope(scope) -> str:
+    if scope is None:
+        return ""
+    if not isinstance(scope, str):
+        raise ValueError("fact scope must be a string or None")
+    return scope.strip()
 
 
 def _fts_query(text: str) -> str:
@@ -122,6 +133,19 @@ class Store:
                 self.db.execute("PRAGMA journal_mode=WAL")
                 self.db.execute("PRAGMA synchronous=NORMAL")
                 self.db.executescript(_SCHEMA_BASE)
+                columns = {row[1] for row in self.db.execute("PRAGMA table_info(facts)")}
+                if "scope" not in columns:
+                    try:
+                        self.db.execute("ALTER TABLE facts ADD COLUMN scope TEXT NOT NULL DEFAULT ''")
+                    except sqlite3.OperationalError as exc:
+                        # Two processes may open a legacy database together.
+                        # One ALTER wins; accept only the duplicate-column race
+                        # and verify the column now exists before continuing.
+                        if "duplicate column name" not in str(exc).lower():
+                            raise
+                        columns = {row[1] for row in self.db.execute("PRAGMA table_info(facts)")}
+                        if "scope" not in columns:
+                            raise
                 self.db.executescript(_fts_ddl(stem))
                 last_err = None
                 break
@@ -139,9 +163,54 @@ class Store:
         # cached the same way as episode/fact vectors and invalidated on write.
         self._dirty = {"episode": True, "fact": True, "entity": True}
         self._pending: Dict[str, list] = {"episode": [], "fact": []}
+        self._data_version = self.db.execute("PRAGMA data_version").fetchone()[0]
+
+    def close(self) -> None:
+        self.db.close()
+
+    def ensure_embedder(self, identity: str, adopt_legacy: bool = False) -> None:
+        """Bind a database's vectors to one stable embedder identity."""
+        row = self.db.execute(
+            "SELECT value FROM metadata WHERE key='embedder_identity'"
+        ).fetchone()
+        if row:
+            if row[0] != identity:
+                raise ValueError(
+                    "embedder is incompatible with this database; "
+                    f"stored={row[0]}, requested={identity}"
+                )
+            return
+        vector_count = sum(self.db.execute(
+            f"SELECT COUNT(*) FROM {table} WHERE emb IS NOT NULL"
+        ).fetchone()[0] for table in ("episodes", "facts"))
+        if vector_count and not adopt_legacy:
+            raise ValueError(
+                "legacy database has embeddings but no embedder identity; "
+                "verify the configured embedder, then reopen with "
+                "adopt_legacy_embedder=True"
+            )
+        # The initial SELECT above is only an optimization. Multiple
+        # connections can pass it concurrently on a newly-created database;
+        # INSERT OR IGNORE makes the metadata claim itself atomic. The
+        # post-insert read is authoritative, so competing identities receive
+        # the same compatibility error as an already-bound database rather
+        # than leaking a UNIQUE constraint failure or silently sharing vectors.
+        self.db.execute(
+            "INSERT OR IGNORE INTO metadata(key, value) VALUES('embedder_identity', ?)",
+            (identity,),
+        )
+        row = self.db.execute(
+            "SELECT value FROM metadata WHERE key='embedder_identity'"
+        ).fetchone()
+        if row and row[0] != identity:
+            raise ValueError(
+                "embedder is incompatible with this database; "
+                f"stored={row[0]}, requested={identity}"
+            )
 
     # ------------------------------------------------------------- episodes
     def add_episode(self, ep: Episode, emb=None) -> int:
+        self._validate_embedding("episodes", emb)
         cur = self.db.execute(
             "INSERT INTO episodes(session_id, role, content, ts, emb) VALUES(?,?,?,?,?)",
             (ep.session_id, ep.role, ep.content, ep.ts, _to_blob(emb)),
@@ -162,17 +231,19 @@ class Store:
 
     # ---------------------------------------------------------------- facts
     def add_fact(self, f: Fact, emb=None) -> int:
+        scope = normalize_scope(f.scope)
+        self._validate_embedding("facts", emb)
         cur = self.db.execute(
             """INSERT INTO facts(statement, subject, predicate, object, kind,
                event_date, ingested_at, valid_from, invalid_at, superseded_by,
-               episode_id, session_id)
-               VALUES(?,?,?,?,?,?,?,?,?,?,?,?)""",
+               episode_id, session_id, scope)
+               VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)""",
             (
                 f.statement, f.subject.lower().strip(), f.predicate.lower().strip(),
                 f.object, f.kind, f.event_date,
                 f.ingested_at or utcnow(),
                 f.valid_from or f.event_date or f.ingested_at or utcnow(),
-                f.invalid_at, f.superseded_by, f.episode_id, f.session_id,
+                f.invalid_at, f.superseded_by, f.episode_id, f.session_id, scope,
             ),
         )
         rowid = cur.lastrowid
@@ -201,9 +272,11 @@ class Store:
         return rowid
 
     def get_fact(self, fid: int) -> Optional[Fact]:
+        scope_column = self._scope_column()
         row = self.db.execute(
             """SELECT id, statement, subject, predicate, object, kind, event_date,
-               ingested_at, valid_from, invalid_at, superseded_by, episode_id, session_id
+               ingested_at, valid_from, invalid_at, superseded_by, episode_id, session_id, """
+               + scope_column + """
                FROM facts WHERE id=?""",
             (fid,),
         ).fetchone()
@@ -213,7 +286,7 @@ class Store:
             id=row[0], statement=row[1], subject=row[2], predicate=row[3],
             object=row[4], kind=row[5], event_date=row[6], ingested_at=row[7],
             valid_from=row[8], invalid_at=row[9], superseded_by=row[10],
-            episode_id=row[11], session_id=row[12],
+            episode_id=row[11], session_id=row[12], scope=row[13] or "",
         )
 
     def invalidate_fact(self, fid: int, superseded_by: int, invalid_at: Optional[str] = None):
@@ -223,12 +296,44 @@ class Store:
             (invalid_at or utcnow(), superseded_by, fid),
         )  # embeddings unchanged; vector cache stays valid
 
-    def similar_valid_facts(self, subject: str, predicate: str) -> List[Fact]:
+    def _scope_column(self) -> str:
+        """Return a safe SQL projection for core and pre-scope databases.
+
+        Enterprise read-only packs intentionally skip migrations.  A pack
+        created before scope was added therefore needs an empty-scope
+        projection rather than a write or a failing SELECT.
+        """
+        column = getattr(self, "_scope_column_cache", None)
+        if column is None:
+            columns = {row[1] for row in self.db.execute("PRAGMA table_info(facts)")}
+            column = "scope" if "scope" in columns else "''"
+            self._scope_column_cache = column
+        return column
+
+    def similar_valid_facts(self, subject: str, predicate: str, scope: str = "") -> List[Fact]:
+        scope_column = self._scope_column()
         rows = self.db.execute(
-            "SELECT id FROM facts WHERE subject=? AND predicate=? AND invalid_at IS NULL",
-            (subject.lower().strip(), predicate.lower().strip()),
+            "SELECT id FROM facts WHERE subject=? AND predicate=? AND " + scope_column + "=? AND invalid_at IS NULL",
+            (subject.lower().strip(), predicate.lower().strip(), normalize_scope(scope)),
         ).fetchall()
         return [self.get_fact(r[0]) for r in rows]
+
+    def facts_for_key(self, subject: str, predicate: str, scope: str = "") -> List[Fact]:
+        """Return the complete validity history for a fact key."""
+        scope_column = self._scope_column()
+        rows = self.db.execute(
+            "SELECT id FROM facts WHERE subject=? AND predicate=? AND " + scope_column + "=?",
+            (subject.lower().strip(), predicate.lower().strip(), normalize_scope(scope)),
+        ).fetchall()
+        return [self.get_fact(r[0]) for r in rows]
+
+    def set_fact_successor(self, fid: int, successor: Optional[Fact]) -> None:
+        """Set one link in a validity chain, or mark its tail current."""
+        self.db.execute(
+            "UPDATE facts SET invalid_at=?, superseded_by=? WHERE id=?",
+            ((successor.valid_from if successor else None),
+             (successor.id if successor else None), fid),
+        )
 
     def facts_for_entity(self, name: str, valid_only: bool = True,
                          include_observations: bool = False) -> List[Fact]:
@@ -256,12 +361,29 @@ class Store:
         Excludes observation/digest rows so digests aren't summarized again."""
         cond = "AND invalid_at IS NULL" if valid_only else ""
         rows = self.db.execute(
-            f"SELECT subject, predicate, COUNT(*) c FROM facts "
+            "SELECT subject, predicate, COUNT(*) c FROM facts "
             f"WHERE kind != 'observation' AND subject != '' AND predicate != '' {cond} "
-            f"GROUP BY subject, predicate HAVING COUNT(*) >= ?",
+            "GROUP BY subject, predicate HAVING COUNT(*) >= ?",
             (min_facts,),
         ).fetchall()
         return [(r[0], r[1], r[2]) for r in rows]
+
+    def predicate_groups_scoped(self, min_facts: int = 2, valid_only: bool = True) -> List[Tuple[str, str, str, int]]:
+        """Return predicate groups partitioned by applicability scope.
+
+        ``predicate_groups`` retains its legacy three-column API; observation
+        refresh uses this scoped form so a digest cannot combine unrelated
+        project or tenant facts.
+        """
+        cond = "AND invalid_at IS NULL" if valid_only else ""
+        scope_column = self._scope_column()
+        rows = self.db.execute(
+            f"SELECT subject, predicate, {scope_column} AS scope, COUNT(*) c FROM facts "
+            f"WHERE kind != 'observation' AND subject != '' AND predicate != '' {cond} "
+            f"GROUP BY subject, predicate, {scope_column} HAVING COUNT(*) >= ?",
+            (min_facts,),
+        ).fetchall()
+        return [(r[0], r[1], r[2] or "", r[3]) for r in rows]
 
     def entities_of_facts(self, fact_ids: Sequence[int]) -> List[str]:
         """Entities mentioned by the given facts (for graph-lite multi-hop)."""
@@ -314,7 +436,41 @@ class Store:
         else:
             self._dirty[kind] = True
 
+    def _validate_embedding(self, table: str, emb) -> None:
+        """Reject an adapter dimension change before a persistent row is written."""
+        if emb is None:
+            return
+        if np is not None:
+            vec = np.asarray(emb, dtype="float32")
+            if vec.ndim != 1 or vec.size == 0:
+                raise ValueError("embedding must be a non-empty one-dimensional vector")
+            if not np.isfinite(vec).all():
+                raise ValueError("embedding must contain only finite values")
+        else:  # pragma: no cover - numpy is a required runtime dependency
+            import math
+            if not emb or any(not math.isfinite(float(v)) for v in emb):
+                raise ValueError("embedding must contain only finite values")
+        blob = _to_blob(emb)
+        row = self.db.execute(
+            f"SELECT length(emb) FROM {table} WHERE emb IS NOT NULL LIMIT 1"
+        ).fetchone()
+        if row and row[0] != len(blob):
+            raise ValueError(
+                f"embedding dimension mismatch for {table}: "
+                f"database uses {row[0] // 4}, adapter returned {len(blob) // 4}"
+            )
+
+    def _notice_external_writes(self):
+        """Invalidate process-local caches after another connection commits."""
+        version = self.db.execute("PRAGMA data_version").fetchone()[0]
+        previous = getattr(self, "_data_version", version)
+        self._data_version = version
+        if version != previous:
+            self._dirty = {"episode": True, "fact": True, "entity": True}
+            self._pending = {"episode": [], "fact": []}
+
     def _vectors(self, kind: str):
+        self._notice_external_writes()
         if not self._dirty[kind] and kind in self._vec_cache:
             if self._pending[kind] and np is not None:
                 ids, mat = self._vec_cache[kind]
@@ -378,6 +534,7 @@ class Store:
         call covers every known entity, so the cost is amortized across a
         run. This is the mem0 'entity linking' lever done with the embedder
         SMRITI already has — no Qdrant, no separate index service."""
+        self._notice_external_writes()
         if not self._dirty.get("entity") and "entity" in self._vec_cache:
             return self._vec_cache["entity"]
         names = self.all_entities()
@@ -617,17 +774,18 @@ class Store:
                     for r in self.db.execute(
                         "SELECT id, session_id, role, content, ts, emb FROM episodes")]
         facts = []
+        scope_column = self._scope_column()
         for r in self.db.execute(
                 """SELECT id, statement, subject, predicate, object, kind,
                    event_date, ingested_at, valid_from, invalid_at,
-                   superseded_by, episode_id, session_id, emb FROM facts"""):
+                   superseded_by, episode_id, session_id, """ + scope_column + ", emb FROM facts"):
             krow = self.db.execute(
                 "SELECT keys FROM fact_keys_fts WHERE rowid=?", (r[0],)).fetchone()
             facts.append(dict(
                 id=r[0], statement=r[1], subject=r[2], predicate=r[3],
                 object=r[4], kind=r[5], event_date=r[6], ingested_at=r[7],
                 valid_from=r[8], invalid_at=r[9], superseded_by=r[10],
-                episode_id=r[11], session_id=r[12], emb=b64(r[13]),
+                episode_id=r[11], session_id=r[12], scope=r[13] or "", emb=b64(r[14]),
                 search_keys=krow[0] if krow else None))
         entities = [dict(name=r[0], fact_id=r[1]) for r in
                     self.db.execute("SELECT name, fact_id FROM entities")]
@@ -635,50 +793,109 @@ class Store:
                    self.db.execute("SELECT alias, canonical FROM entity_aliases")]
         ingest_log = [dict(hash=r[0], session_id=r[1], ingested_at=r[2]) for r in
                       self.db.execute("SELECT hash, session_id, ingested_at FROM ingest_log")]
-        return {"format": "smriti-export", "version": 2, "exported_at": utcnow(),
+        identity = self.db.execute(
+            "SELECT value FROM metadata WHERE key='embedder_identity'"
+        ).fetchone()
+        return {"format": "smriti-export", "version": 3, "exported_at": utcnow(),
+                "embedder_identity": identity[0] if identity else None,
                 "episodes": episodes, "facts": facts, "entities": entities,
                 "aliases": aliases, "ingest_log": ingest_log}
 
-    def import_data(self, data: dict):
+    def import_data(self, data: dict, adopt_legacy_embedder: bool = False):
         """Restore an export into an EMPTY store (strict, lossless restore —
         ids are preserved so supersession chains and episode links survive)."""
         import base64
+        if not isinstance(data, dict):
+            raise ValueError("export must be a JSON object")
         if data.get("format") != "smriti-export":
             raise ValueError("not a smriti export")
+        export_version = data.get("version")
+        if export_version not in (1, 2, 3):
+            raise ValueError(f"unsupported smriti export version: {data.get('version')!r}")
+        if export_version == 1 and not adopt_legacy_embedder:
+            raise ValueError(
+                "version 1 export predates embedder identity; verify the configured "
+                "embedder, then retry with adopt_legacy_embedder=True"
+            )
+        for key in ("episodes", "facts", "entities", "aliases", "ingest_log"):
+            if not isinstance(data.get(key, []), list):
+                raise ValueError(f"export field {key!r} must be an array")
         s = self.stats()
         if s["episodes"] or s["facts"]:
             raise ValueError("import requires an empty store (restore semantics)")
-        unb64 = lambda t: base64.b64decode(t) if t else None
-        for e in data.get("episodes", []):
-            self.db.execute(
-                "INSERT INTO episodes(id, session_id, role, content, ts, emb) VALUES(?,?,?,?,?,?)",
-                (e["id"], e["session_id"], e["role"], e["content"], e["ts"], unb64(e.get("emb"))))
-            self.db.execute("INSERT INTO episodes_fts(rowid, content) VALUES(?,?)",
-                            (e["id"], e["content"]))
-        for f in data.get("facts", []):
-            self.db.execute(
-                """INSERT INTO facts(id, statement, subject, predicate, object, kind,
-                   event_date, ingested_at, valid_from, invalid_at, superseded_by,
-                   episode_id, session_id, emb) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
-                (f["id"], f["statement"], f["subject"], f["predicate"], f["object"],
-                 f["kind"], f["event_date"], f["ingested_at"], f["valid_from"],
-                 f["invalid_at"], f["superseded_by"], f["episode_id"],
-                 f["session_id"], unb64(f.get("emb"))))
-            self.db.execute("INSERT INTO facts_fts(rowid, statement) VALUES(?,?)",
-                            (f["id"], f["statement"]))
-            if f.get("search_keys"):
-                self.db.execute("INSERT INTO fact_keys_fts(rowid, keys) VALUES(?,?)",
-                                (f["id"], f["search_keys"]))
-        for ent in data.get("entities", []):
-            self.db.execute("INSERT INTO entities(name, fact_id) VALUES(?,?)",
-                            (ent["name"], ent["fact_id"]))
-        for al in data.get("aliases", []):
-            self.db.execute(
-                "INSERT OR REPLACE INTO entity_aliases(alias, canonical) VALUES(?,?)",
-                (al["alias"], al["canonical"]))
-        for il in data.get("ingest_log", []):
-            self.db.execute(
-                "INSERT OR IGNORE INTO ingest_log(hash, session_id, ingested_at) VALUES(?,?,?)",
-                (il["hash"], il["session_id"], il["ingested_at"]))
+        current = self.db.execute(
+            "SELECT value FROM metadata WHERE key='embedder_identity'"
+        ).fetchone()
+        exported = data.get("embedder_identity")
+        has_exported_vectors = any(
+            item.get("emb") for key in ("episodes", "facts")
+            for item in data.get(key, []) if isinstance(item, dict)
+        )
+        if exported is not None and (not isinstance(exported, str) or not exported):
+            raise ValueError("invalid exported embedder identity")
+        if exported and current and exported != current[0]:
+            raise ValueError(
+                "export embedder is incompatible with this database; "
+                f"exported={exported}, requested={current[0]}"
+            )
+        if has_exported_vectors and not exported and not adopt_legacy_embedder:
+            raise ValueError(
+                "legacy export has vectors but no embedder identity; verify the "
+                "configured embedder, then retry with adopt_legacy_embedder=True"
+            )
+        def unb64(value):
+            if value is None:
+                return None
+            if not isinstance(value, str):
+                raise ValueError("embedding payload must be base64 text or null")
+            try:
+                blob = base64.b64decode(value, validate=True)
+            except (ValueError, base64.binascii.Error) as exc:
+                raise ValueError("invalid base64 embedding payload") from exc
+            if len(blob) % 4:
+                raise ValueError("embedding payload is not float32-aligned")
+            return blob
+
+        self.begin()
+        try:
+            for e in data.get("episodes", []):
+                self.db.execute(
+                    "INSERT INTO episodes(id, session_id, role, content, ts, emb) VALUES(?,?,?,?,?,?)",
+                    (e["id"], e["session_id"], e["role"], e["content"], e["ts"], unb64(e.get("emb"))))
+                self.db.execute("INSERT INTO episodes_fts(rowid, content) VALUES(?,?)",
+                                (e["id"], e["content"]))
+            for f in data.get("facts", []):
+                scope = f.get("scope", "")
+                if scope is None:
+                    scope = ""
+                scope = normalize_scope(scope)
+                self.db.execute(
+                    """INSERT INTO facts(id, statement, subject, predicate, object, kind,
+                       event_date, ingested_at, valid_from, invalid_at, superseded_by,
+                       episode_id, session_id, scope, emb) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                    (f["id"], f["statement"], f["subject"], f["predicate"], f["object"],
+                     f["kind"], f["event_date"], f["ingested_at"], f["valid_from"],
+                     f["invalid_at"], f["superseded_by"], f["episode_id"],
+                     f.get("session_id"), scope, unb64(f.get("emb"))))
+                self.db.execute("INSERT INTO facts_fts(rowid, statement) VALUES(?,?)",
+                                (f["id"], f["statement"]))
+                if f.get("search_keys"):
+                    self.db.execute("INSERT INTO fact_keys_fts(rowid, keys) VALUES(?,?)",
+                                    (f["id"], f["search_keys"]))
+            for ent in data.get("entities", []):
+                self.db.execute("INSERT INTO entities(name, fact_id) VALUES(?,?)",
+                                (ent["name"], ent["fact_id"]))
+            for al in data.get("aliases", []):
+                self.db.execute(
+                    "INSERT OR REPLACE INTO entity_aliases(alias, canonical) VALUES(?,?)",
+                    (al["alias"], al["canonical"]))
+            for il in data.get("ingest_log", []):
+                self.db.execute(
+                    "INSERT OR IGNORE INTO ingest_log(hash, session_id, ingested_at) VALUES(?,?,?)",
+                    (il["hash"], il["session_id"], il["ingested_at"]))
+            self.commit()
+        except BaseException:
+            self.rollback()
+            raise
         self._dirty = {"episode": True, "fact": True, "entity": True}
         self._pending = {"episode": [], "fact": []}

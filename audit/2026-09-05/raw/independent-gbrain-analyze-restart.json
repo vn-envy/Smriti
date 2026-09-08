@@ -1,0 +1,116 @@
+{
+  "track": "Fresh process on maintained copy of 5000-document GBrain database",
+  "startup_ms": 372.297709,
+  "rows": [
+    {
+      "query": "passport renewal appointment",
+      "ms": 28.663666999999975,
+      "slugs": [
+        "bench/n0000000",
+        "bench/n0000005",
+        "bench/n0000010",
+        "bench/n0000015",
+        "bench/n0000020"
+      ]
+    },
+    {
+      "query": "doctor knee recommendation",
+      "ms": 11.640750000000025,
+      "slugs": [
+        "bench/n0000001",
+        "bench/n0000006",
+        "bench/n0000011",
+        "bench/n0000016",
+        "bench/n0000021"
+      ]
+    },
+    {
+      "query": "project launch date",
+      "ms": 10.089583000000005,
+      "slugs": [
+        "bench/n0000002",
+        "bench/n0000007",
+        "bench/n0000012",
+        "bench/n0000017",
+        "bench/n0000022"
+      ]
+    },
+    {
+      "query": "invoice due date",
+      "ms": 10.161707999999976,
+      "slugs": [
+        "bench/n0000003",
+        "bench/n0000008",
+        "bench/n0000013",
+        "bench/n0000018",
+        "bench/n0000023"
+      ]
+    },
+    {
+      "query": "emergency contact",
+      "ms": 8.938750000000027,
+      "slugs": [
+        "bench/n0000004",
+        "bench/n0000009",
+        "bench/n0000014",
+        "bench/n0000019",
+        "bench/n0000024"
+      ]
+    },
+    {
+      "query": "passport renewal appointment",
+      "ms": 7.225332999999978,
+      "slugs": [
+        "bench/n0000000",
+        "bench/n0000005",
+        "bench/n0000010",
+        "bench/n0000015",
+        "bench/n0000020"
+      ]
+    },
+    {
+      "query": "doctor knee recommendation",
+      "ms": 7.627834000000007,
+      "slugs": [
+        "bench/n0000001",
+        "bench/n0000006",
+        "bench/n0000011",
+        "bench/n0000016",
+        "bench/n0000021"
+      ]
+    },
+    {
+      "query": "project launch date",
+      "ms": 7.191083000000049,
+      "slugs": [
+        "bench/n0000002",
+        "bench/n0000007",
+        "bench/n0000012",
+        "bench/n0000017",
+        "bench/n0000022"
+      ]
+    },
+    {
+      "query": "invoice due date",
+      "ms": 7.171124999999961,
+      "slugs": [
+        "bench/n0000003",
+        "bench/n0000008",
+        "bench/n0000013",
+        "bench/n0000018",
+        "bench/n0000023"
+      ]
+    },
+    {
+      "query": "emergency contact",
+      "ms": 7.7511670000000095,
+      "slugs": [
+        "bench/n0000004",
+        "bench/n0000009",
+        "bench/n0000014",
+        "bench/n0000019",
+        "bench/n0000024"
+      ]
+    }
+  ]
+}

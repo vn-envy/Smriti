@@ -66,6 +66,10 @@ class RetrievalProfile:
     current_first: bool = True
     # provenance: the evidence that justified this configuration
     evidence: str = ""
+    # Optional evidence coverage lever. Kept off in every built-in profile
+    # until held-out ablation establishes a quality benefit.
+    session_diverse: bool = False
+    session_overfetch: int = 3
 
     def with_overrides(self, **kw) -> "RetrievalProfile":
         kw = {k: v for k, v in kw.items() if v is not None}

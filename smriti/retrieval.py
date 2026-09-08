@@ -124,6 +124,71 @@ CHANNEL_GROUPS = {
 CHANNEL_ALIASES = {"shabda": "lexical", "artha": "semantic",
                    "sambandha": "entity", "kala": "temporal"}
 
+MAX_SESSION_OVERFETCH = 8
+
+
+def _validate_session_diversity(session_diverse: bool,
+                                session_overfetch: int) -> None:
+    if not session_diverse:
+        return
+    if (isinstance(session_overfetch, bool)
+            or not isinstance(session_overfetch, int)
+            or session_overfetch < 1):
+        raise ValueError("session_overfetch must be a positive integer")
+
+
+def _session_key(session_id: Optional[str], result_id: int) -> Tuple[str, object]:
+    """Return a stable key without collapsing episodes missing a session ID."""
+    if session_id:
+        return ("session", session_id)
+    return ("episode", result_id)
+
+
+def _select_session_diverse(results: List[RetrievalResult], k: int,
+                            episode_sessions: Dict[int, Optional[str]]) -> List[RetrievalResult]:
+    """Replace duplicate episode sessions with bounded overfetch candidates.
+
+    Facts and observations are never replaced. The input is already ranked
+    (including any reranker), so replacements preserve ranked order as much as
+    possible while making use of otherwise-unused episode sessions.
+    """
+    baseline = results[:k]
+    if len(baseline) < 2:
+        return baseline
+
+    seen: set[Tuple[str, object]] = set()
+    duplicate_positions: List[int] = []
+    for index, result in enumerate(baseline):
+        if result.kind != "episode":
+            continue
+        key = _session_key(episode_sessions.get(result.id), result.id)
+        if key in seen:
+            duplicate_positions.append(index)
+        else:
+            seen.add(key)
+
+    if not duplicate_positions:
+        return baseline
+
+    selected = list(baseline)
+    used_extra_ids: set[int] = set()
+    for position in duplicate_positions:
+        for candidate in results[k:]:
+            if candidate.kind != "episode" or candidate.id in used_extra_ids:
+                continue
+            key = _session_key(episode_sessions.get(candidate.id), candidate.id)
+            if key in seen:
+                continue
+            selected[position] = candidate
+            used_extra_ids.add(candidate.id)
+            seen.add(key)
+            break
+    # A replacement may have a lower score than retained baseline entries.
+    # Restore the ranked order before the existing validity-aware sort runs.
+    rank = {(result.kind, result.id): index for index, result in enumerate(results)}
+    selected.sort(key=lambda result: rank[(result.kind, result.id)])
+    return selected
+
 
 def expand_channels(channels) -> Optional[set]:
     """Normalize a user-facing channel selection into internal ranking keys.
@@ -156,7 +221,9 @@ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
              semantic_threshold: float = 0.3,
              use_key_channel: bool = False,
              include_observations: bool = True,
-             channels=None, current_first: bool = True) -> List[RetrievalResult]:
+             channels=None, current_first: bool = True,
+             session_diverse: bool = False, session_overfetch: int = 3) -> List[RetrievalResult]:
+    _validate_session_diversity(session_diverse, session_overfetch)
     weights = weights or DEFAULT_WEIGHTS
     # channel gating (drishti): each ranking block below is independent, so a
     # disabled channel is simply never built — and never billed (a lexical-only
@@ -219,11 +286,15 @@ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
 
     # Materialize a larger pool when a reranker will re-sort it, else just k.
     pool = max(k, rerank_top) if reranker is not None else k
+    candidate_limit = (min(len(ordered), max(pool, k * min(session_overfetch, MAX_SESSION_OVERFETCH)))
+                       if session_diverse else pool)
     results: List[RetrievalResult] = []
     observations: List[RetrievalResult] = []
     seen_sessions_text = set()
+    episode_sessions: Dict[int, Optional[str]] = {}
     for (kind, rid), (score, chans) in ordered:
-        if len(results) >= pool and len(observations) >= obs_k:
+        observations_done = not include_observations or len(observations) >= obs_k
+        if len(results) >= candidate_limit and observations_done:
             break
         if kind == "fact":
             f = store.get_fact(rid)
@@ -238,23 +309,31 @@ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
                     continue
                 observations.append(RetrievalResult(
                     kind="observation", id=rid, text=f.statement, score=score,
-                    valid_from=f.valid_from, invalid_at=f.invalid_at, channels=chans))
+                    valid_from=f.valid_from, invalid_at=f.invalid_at, channels=chans,
+                    scope=f.scope))
                 continue
-            if len(results) >= pool:
+            if len(results) >= candidate_limit:
                 continue
             results.append(RetrievalResult(
                 kind="fact", id=rid, text=f.statement, score=score,
-                valid_from=f.valid_from, invalid_at=f.invalid_at, channels=chans))
+                valid_from=f.valid_from, invalid_at=f.invalid_at, channels=chans,
+                scope=f.scope))
         else:
-            if len(results) >= pool:
+            if len(results) >= candidate_limit:
                 continue
             e = store.get_episode(rid)
             if not e:
                 continue
-            key = (e.session_id, e.content[:80])
+            # Legacy mode keeps its content-prefix de-duplication unchanged.
+            # In the opt-in mode, missing session IDs must not collapse distinct
+            # episodes that happen to share the same prefix.
+            key = ((e.session_id, e.content[:80]) if e.session_id or not session_diverse
+                   else ("episode", rid))
             if key in seen_sessions_text:
                 continue
             seen_sessions_text.add(key)
+            if session_diverse:
+                episode_sessions[rid] = e.session_id
             results.append(RetrievalResult(
                 kind="episode", id=rid, text=e.content, score=score,
                 ts=e.ts, role=e.role, channels=chans))
@@ -267,6 +346,9 @@ def retrieve(store: Store, embedder, query: str, now: Optional[str] = None,
             if "rerank" not in r.channels:
                 r.channels = r.channels + ["rerank"]
         results.sort(key=lambda r: -r.score)
+    if session_diverse:
+        results = _select_session_diverse(results, k, episode_sessions)
+    elif reranker is not None:
         results = results[:k]
     # Validity-aware ranking (0.3.2 audit): a SUPERSEDED fact must never
     # outrank the CURRENT one in structured results — search() and the MCP
@@ -321,14 +403,16 @@ def pack_context(results: List[RetrievalResult], now: Optional[str] = None,
                       "entities; useful for spotting counts/totals, but confirm the specifics "
                       "against the FACTS and EVIDENCE below):")
         for r in observations:
-            lines.append(f"- {r.text}")
+            scope = f" [scope={r.scope}]" if r.scope else ""
+            lines.append(f"- {r.text}{scope}")
         lines.append("")
     if facts:
         lines.append("KNOWN FACTS (each with validity window; CURRENT means still true, "
                       "SUPERSEDED means it was true then but later changed):")
         for r in facts:
             status = "CURRENT" if r.invalid_at is None else f"SUPERSEDED on {_fmt_date(r.invalid_at)}"
-            lines.append(f"- [{_fmt_date(r.valid_from)} | {status}] {r.text}")
+            scope = f" | scope={r.scope}" if r.scope else ""
+            lines.append(f"- [{_fmt_date(r.valid_from)} | {status}{scope}] {r.text}")
         lines.append("")
     if episodes:
         lines.append("RAW CONVERSATION EVIDENCE (timestamped):")

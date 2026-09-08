@@ -1,0 +1,9 @@
+{
+  "capture_scope": "Root capture while semantic preflight running; these four harness files are frozen during this run. Core module edits are concurrent but GBrain uses its own engine, not Smriti core.",
+  "sha256": {
+    "bench/public_retrieval_gbrain_semantic.py": "88c353dc380462dbc52544b581383eac0f91653356c06b9ce9ffe30822373f13",
+    "bench/gbrain_public_semantic_worker.ts": "c4d5420558852a4ff2c9e267015b2a84995a3356d677a20e877f4443913c25a6",
+    "bench/public_retrieval.py": "8ef79434d8e0171c014ad1f72d742d883dd266b2a02e4a2dac45ac65a032ab2f",
+    "bench/public_retrieval_ablation.py": "0c8b6d9b97d99ee96815e270966ff32450827c21ee7d6fd5b829bf463f78ae64"
+  }
+}
