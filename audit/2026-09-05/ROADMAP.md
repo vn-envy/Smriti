@@ -1,9 +1,9 @@
 # Smriti: evidence-led build roadmap
 
 Status checked 2026-09-08. Baseline: GitHub main `a2afb3d` (core 0.3.2,
-enterprise 0.1.0). The current candidate has completed the hardening and launch
-film work described below. This document remains a build plan and status record,
-not a release certificate or benchmark leaderboard.
+enterprise 0.1.0). The current candidate has completed the hardening work; the
+root-owned launch film and separate camera version are rendered and verified. This document remains a build plan and
+status record, not a release certificate or benchmark leaderboard.
 
 ## Product decision
 
@@ -115,7 +115,7 @@ historical transition retained; negative controls pass. The original raw v7
 artifact remains unchanged and retains its obsolete historical-assertion failure
 status. See [`raw/extraction-tool-transition-v7-corrected-review.json`](raw/extraction-tool-transition-v7-corrected-review.json).
 
-## Phase 2 — Reproducible evaluation (P0, in progress)
+## Phase 2 — Reproducible evaluation (P0, bounded planned tracks complete)
 
 - [x] Pin versions, data hashes, runtime and retrieval configuration for the
   completed synthetic and oracle tracks; retain raw per-query results and errors.
@@ -133,7 +133,7 @@ status. See [`raw/extraction-tool-transition-v7-corrected-review.json`](raw/extr
   same selected IDs, dataset hash, nomic embedding, retrieval budgets, and
   failure-inclusive denominator. Smriti and Mem0 each completed 48/50; the
   results do not establish superiority.
-- [~] Measure targeted Smriti temporal correctness independently of answer-model
+- [x] Measure targeted Smriti temporal correctness independently of answer-model
   skill, including stale facts and late arrivals. The targeted probes are
   preserved, but the historical v3/v4 installed Mira review rejected that quality
   pass after finding temporal/consolidation errors; the current v7 bounded checks
@@ -200,7 +200,15 @@ budgets, dataset, actual vector coverage, source mapping, and absence of
 degraded search were verified. These are bounded retrieval results, not
 answer-quality or speed rankings. See
 [`raw/gbrain-heldout20-independent-review.json`](raw/gbrain-heldout20-independent-review.json).
-Hindsight comparative probes (20/12) are running.
+The bounded Hindsight comparative probe is terminal-complete: 20 retains and
+12 recalls succeeded with cleanup; every query returned 20 facts, answerable
+top-five source coverage was 10/10, and the first result was relevant for 9/10
+answerable queries. The current-drink query ranked old coffee first and new tea
+second. Observations and reranking were disabled, and the bank configuration
+does not expose its embedding model, so this is descriptive retrieval evidence
+only; it does not establish answer quality, superiority, embedding parity, or
+speed. See [`hindsight-comparative-v1.json`](hindsight-comparative-v1.json) and
+[`raw/hindsight-comparative-independent-review.json`](raw/hindsight-comparative-independent-review.json).
 
 The final matched growth report covers 100, 1,000, 3,000, 9,000, and 36,500
 documents for Smriti and Mem0 with the same local Ollama nomic model and for a
@@ -219,8 +227,12 @@ growth speed/storage comparison is complete for these routes; the separate
 GBrain nomic semantic growth artifact is complete as a retrieval/storage
 diagnostic but excluded from the matched three-track report. The six-question
 QA preflight and bounded paired LongMemEval-S50/LoCoMo50 answer/judge results are
-recorded. GBrain held-out20 semantic retrieval is complete and independently
-reviewed; Hindsight comparative retrieval probes remain in progress.
+recorded. GBrain held-out20 semantic retrieval and the bounded Hindsight
+comparative retrieval probe are complete and independently reviewed. Hindsight
+is recorded as descriptive retrieval evidence only: observations and reranking
+were disabled, the bank embedding model is not exposed, and no answer-quality,
+superiority, embedding-parity, or speed claim is supported. Broader quality
+limitations remain open.
 
 The paired public50 review found a multi-session recall gap (Smriti 0.6111,
 Mem0 0.7407 across nine questions) and seven questions with fewer than five
@@ -314,10 +326,11 @@ implementation above.
 
 ## Final social launch film — added user requirement
 
-After memory-system and comparative validation, root will personally build a new narrative motion-studio launch film. It will use the supplied reference films, music and SFX, Smriti's four retrieval streams, and completed evidence to explain developer pain points, the product opportunity, and concrete outcomes. The existing verified 30-second teaser remains preserved.
+After memory-system and comparative validation, root personally built the 60-second narrative social film and a separate camera-motion version. The supplied reference films informed the action/hold rhythm; the supplied music and SFX support the four-stream architecture and completed, qualified retrieval measurements. Both the original social video and the verified 30-second teaser remain preserved.
 
-- [ ] Finalize narrative and claims against completed comparisons.
-- [ ] Root builds the composition, animation, and supplied audio mix.
-- [ ] Render and validate timing, readability, motion, sound, and final export.
+- [x] Finalize narrative and claims against completed comparisons.
+- [x] Root builds the composition, animation, and supplied audio mix.
+- [x] Render and validate timing, sampled readability/motion, audio levels/cue alignment, and final export.
+- [x] Add a separate camera version with smooth pushes, pullbacks and transitions; verify the original export remains byte-identical.
 
-See [final film brief](FINAL-LAUNCH-FILM-BRIEF.md) and [preproduction inventory](FINAL-LAUNCH-FILM-PREPRODUCTION-HANDOFF.md). The provisional duration is 60 seconds, pending optional user preference. This new deliverable remains required before marking the overall goal complete.
+See [final film verification](social-film-verification.md) and [reproduction/storyboard](../../launch-video/SOCIAL-FILM.md). Both social exports are exactly 60 seconds at 1920×1080/30fps. Audio checks are measured and source-aligned; they do not claim auditory listening. Broader quality research above remains a future priority, not evidence of universal reliability.

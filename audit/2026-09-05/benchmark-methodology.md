@@ -69,8 +69,15 @@ questions share 991 sessions and 10,047 input chunks, with matching IDs, source
 labels, models/budgets, dataset, vector coverage, and zero failures independently
 verified. RR is deduplicated-session order within the top five chunks. This is
 retrieval-only evidence and makes no answer-quality, superiority, or speed claim.
-Hindsight comparative probes (20/12) are running under controller 61364 (PID
-20563). Each
+The bounded Hindsight comparative probe is terminal-complete: 20 retains and
+12 recalls succeeded with cleanup; every query returned 20 facts, answerable
+top-five source coverage was 10/10, and the first result was relevant for 9/10
+answerable queries. The current-drink query ranked old coffee first and new tea
+second. Observations and reranking were disabled, and the bank configuration
+does not expose its embedding model, so this remains descriptive retrieval
+evidence rather than an answer-quality, superiority, embedding-parity, or speed
+comparison. See `hindsight-comparative-v1.json` and
+`raw/hindsight-comparative-independent-review.json`. Each
 full-history question must use its complete haystack under the pinned retrieval
 and context budgets; this does not require scoring every question in a source
 dataset. All runs need one pinned dataset file and hash, identical embedding and

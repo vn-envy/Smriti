@@ -6,7 +6,7 @@ Requested after the memory-system build and comparative validation finish. This 
 
 Motion-studio product storytelling: show developer pain points and the priorities of larger memory systems, introduce the opportunity Smriti addresses, explain its architecture visually, and demonstrate outcomes from the completed evidence. Use the four retrieval streams: shabda/word (lexical), artha/meaning (semantic), sambandha/relation (entity), kala/time (temporal), converging through sangama. Maintain Smriti's paper/ink/amber identity while improving depth, composition, pacing, and sound design.
 
-Provisional length: 60 seconds, awaiting optional user preference between 30/60/90. The user authorized Remotion or Hyperframes at our discretion. Favor existing Remotion project and reusable Three.js elements after reference timing review. User subsequently requested root personally build the social launch film. Root owns storyboard, implementation, animation, sound design, rendering, and review; do not delegate film implementation to Luna. Existing Luna-high delegation remains applicable to memory-system implementation.
+Selected length: 60 seconds, following the initial proposed default. The user authorized Remotion or Hyperframes at our discretion. Favor existing Remotion project and reusable Three.js elements after reference timing review. User subsequently requested root personally build the social launch film. Root owns storyboard, implementation, animation, sound design, rendering, and review; do not delegate film implementation to Luna. Existing Luna-high delegation remains applicable to memory-system implementation.
 
 ## User-supplied assets (local, do not publish source assets to Git)
 
@@ -31,3 +31,7 @@ Asset availability and video metadata verified. Initial contact sheets inspected
 ## Final acceptance
 
 Lock claims against terminal raw results and source-linked comparison research. Select and mix supplied music/SFX to picture. Review readable type, transitions, four-stream continuity, evidence qualifications, and audio clipping/loudness. Render and inspect beginning/middle/end and scene boundaries, duration, resolution, codec, sound synchronization, and an export playable by the user. Preserve reproducible composition source and deliver the final MP4.
+
+## Additional camera version
+
+The user requested a separate pass with intentional camera motion and smoother transitions, preserving the current video. Root implemented `SmritiSocialCamera60` alongside the original composition. Both use the same 60-second narrative and supplied audio mix. See `launch-video/SOCIAL-FILM.md` and the final social-film verification report.

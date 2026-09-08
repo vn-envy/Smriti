@@ -29,8 +29,16 @@ questions share 991 sessions and 10,047 input chunks; independent review
 verified matching IDs, labels, budgets, dataset, vector coverage, and zero
 failures. RR is deduplicated-session order within the top five chunks. This is
 retrieval-only evidence and makes no answer-quality, superiority, or speed
-claim. See `raw/gbrain-heldout20-independent-review.json`. Hindsight 20/12
-probes are running under controller 61364 (PID 20563).
+claim. See `raw/gbrain-heldout20-independent-review.json`. The bounded Hindsight
+comparative probe is terminal-complete: 20 retains and 12 recalls succeeded
+with cleanup; every query returned 20 facts, answerable top-five source
+coverage was 10/10, and the first result was relevant for 9/10 answerable
+queries. The current-drink query ranked old coffee first and new tea second.
+Observations and reranking were disabled, and the bank configuration does not
+expose its embedding model, so this is descriptive retrieval evidence only;
+it does not establish answer quality, superiority, embedding parity, or speed.
+See `hindsight-comparative-v1.json` and
+`raw/hindsight-comparative-independent-review.json`.
 
 Luna (high) owns the follow-up implementation. Parent acceptance requires direct review of configuration, raw outputs, and the implemented measurement boundary, followed by independent checks. The historical 169 passing package tests are evidence for the package changes, not validation of these benchmark claims.
 

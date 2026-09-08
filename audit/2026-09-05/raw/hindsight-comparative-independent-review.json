@@ -1,0 +1,554 @@
+{
+  "status": "root_terminal_source_and_cleanup_review_complete",
+  "artifact_sha256": "b5728bea69c0f09fb5e9c8d5004e203e54fc44be7ebd9b9c9d21380c3d4eef5d",
+  "controller_exit_code": 0,
+  "retains_completed": 20,
+  "recalls_completed": 12,
+  "cleanup_success": true,
+  "ranked_evidence_source": "recalls[].response.results only; trace candidates excluded",
+  "observed_bank_configuration": {
+    "config": {
+      "retain_chunk_size": 3000,
+      "retain_structured_chunk_size": null,
+      "retain_extraction_mode": "concise",
+      "enable_observations": false,
+      "enable_auto_consolidation": true,
+      "enable_temporal_retrieval": true,
+      "enable_graph_retrieval": true,
+      "enable_reranking": false
+    },
+    "overrides": {
+      "enable_reranking": false,
+      "enable_observations": false,
+      "enable_graph_retrieval": true,
+      "enable_temporal_retrieval": true
+    }
+  },
+  "api_version": "0.9.2",
+  "reader_judge_calls": 0,
+  "answerable_source_coverage_top5": 1.0,
+  "answerable_source_coverage_all_returned": 1.0,
+  "answerable_first_result_relevant": 9,
+  "empty_retrieval_on_unanswerable": 0,
+  "rows": [
+    {
+      "query_id": "q01",
+      "category": "single-hop",
+      "result_count": 20,
+      "ranked_source_ids": [
+        "d05",
+        "d11",
+        "d17",
+        "d15",
+        "d13",
+        "d03",
+        "d20",
+        "d08",
+        "d10",
+        "d14",
+        "d18",
+        "d09",
+        "d12",
+        "d02",
+        "d19",
+        "d16",
+        "d07",
+        "d01",
+        "d04",
+        "d06"
+      ],
+      "relevant": [
+        "d05"
+      ],
+      "relevant_ranks": {
+        "d05": 1
+      },
+      "coverage_top5": 1.0,
+      "coverage_all_returned": 1.0,
+      "empty_retrieval": false,
+      "top5_text": [
+        "Passport renewal appointment scheduled at Begumpet office | When: 2024-02-02",
+        "Leena booked the Cedar Room for the design review | When: 2024-02-13 | Involving: Leena",
+        "Invoice for Northstar Labs is due | When: 2024-04-30",
+        "Team lunch reservation at Saffron Table | When: 2024-02-21 | Involving: user",
+        "Quarterly tax documents are stored in the green archive box | When: 2024-02-17"
+      ]
+    },
+    {
+      "query_id": "q02",
+      "category": "paraphrase",
+      "result_count": 20,
+      "ranked_source_ids": [
+        "d07",
+        "d01",
+        "d02",
+        "d19",
+        "d15",
+        "d20",
+        "d16",
+        "d18",
+        "d09",
+        "d03",
+        "d14",
+        "d17",
+        "d10",
+        "d08",
+        "d11",
+        "d06",
+        "d04",
+        "d12",
+        "d13",
+        "d05"
+      ],
+      "relevant": [
+        "d07"
+      ],
+      "relevant_ranks": {
+        "d07": 1
+      },
+      "coverage_top5": 1.0,
+      "coverage_all_returned": 1.0,
+      "empty_retrieval": false,
+      "top5_text": [
+        "Priya is allergic to cashews | When: 2024-02-05 | Involving: Priya",
+        "Maya prefers flat white coffee | When: 2024-01-10 | Involving: Maya",
+        "Maya stopped drinking coffee and now prefers jasmine tea | When: 2024-03-02 | Involving: Maya",
+        "Book club selected The Left Hand of Darkness | When: 2024-02-28 | Involving: book club",
+        "Team lunch reservation at Saffron Table | When: 2024-02-21 | Involving: user"
+      ]
+    },
+    {
+      "query_id": "q03",
+      "category": "single-hop",
+      "result_count": 20,
+      "ranked_source_ids": [
+        "d09",
+        "d15",
+        "d07",
+        "d14",
+        "d19",
+        "d01",
+        "d02",
+        "d18",
+        "d16",
+        "d17",
+        "d03",
+        "d20",
+        "d12",
+        "d08",
+        "d11",
+        "d04",
+        "d10",
+        "d06",
+        "d05",
+        "d13"
+      ],
+      "relevant": [
+        "d09"
+      ],
+      "relevant_ranks": {
+        "d09": 1
+      },
+      "coverage_top5": 1.0,
+      "coverage_all_returned": 1.0,
+      "empty_retrieval": false,
+      "top5_text": [
+        "Pixel's veterinarian is Dr. Nwosu | Involving: Dr. Nwosu (Pixel's veterinarian)",
+        "Team lunch reservation at Saffron Table | When: 2024-02-21 | Involving: user",
+        "Priya is allergic to cashews | When: 2024-02-05 | Involving: Priya",
+        "Ravi's running shoes are size 10 and brand is Asics | When: 2024-02-19 | Involving: Ravi",
+        "Book club selected The Left Hand of Darkness | When: 2024-02-28 | Involving: book club"
+      ]
+    },
+    {
+      "query_id": "q04",
+      "category": "single-hop",
+      "result_count": 20,
+      "ranked_source_ids": [
+        "d11",
+        "d19",
+        "d17",
+        "d08",
+        "d04",
+        "d05",
+        "d01",
+        "d14",
+        "d03",
+        "d16",
+        "d15",
+        "d07",
+        "d18",
+        "d20",
+        "d09",
+        "d13",
+        "d12",
+        "d06",
+        "d02",
+        "d10"
+      ],
+      "relevant": [
+        "d11"
+      ],
+      "relevant_ranks": {
+        "d11": 1
+      },
+      "coverage_top5": 1.0,
+      "coverage_all_returned": 1.0,
+      "empty_retrieval": false,
+      "top5_text": [
+        "Leena booked the Cedar Room for the design review | When: 2024-02-13 | Involving: Leena",
+        "Book club selected The Left Hand of Darkness | When: 2024-02-28 | Involving: book club",
+        "Invoice for Northstar Labs is due | When: 2024-04-30",
+        "Project Lantern is set to launch on 18 June 2024 | When: 2024-06-18",
+        "Dr. Imani Cole researches marine robotics | Involving: Dr. Imani Cole"
+      ]
+    },
+    {
+      "query_id": "q05",
+      "category": "multi-hop",
+      "result_count": 20,
+      "ranked_source_ids": [
+        "d03",
+        "d09",
+        "d20",
+        "d12",
+        "d04",
+        "d18",
+        "d19",
+        "d14",
+        "d07",
+        "d15",
+        "d16",
+        "d11",
+        "d01",
+        "d10",
+        "d05",
+        "d02",
+        "d17",
+        "d08",
+        "d13",
+        "d06"
+      ],
+      "relevant": [
+        "d03",
+        "d04"
+      ],
+      "relevant_ranks": {
+        "d03": 1,
+        "d04": 5
+      },
+      "coverage_top5": 1.0,
+      "coverage_all_returned": 1.0,
+      "empty_retrieval": false,
+      "top5_text": [
+        "Arun's mentor is Dr. Imani Cole | Involving: Arun, Dr. Imani Cole",
+        "Pixel's veterinarian is Dr. Nwosu | Involving: Dr. Nwosu (Pixel's veterinarian)",
+        "Asha's physiotherapist recommended swimming twice weekly | When: 2024-03-01 | Involving: Asha's physiotherapist",
+        "Omar's emergency contact is his sister Salma | When: 2024-02-15 | Involving: Omar, Salma (Omar's sister)",
+        "Dr. Imani Cole researches marine robotics | Involving: Dr. Imani Cole"
+      ]
+    },
+    {
+      "query_id": "q06",
+      "category": "current-state",
+      "result_count": 20,
+      "ranked_source_ids": [
+        "d01",
+        "d02",
+        "d19",
+        "d15",
+        "d03",
+        "d09",
+        "d20",
+        "d14",
+        "d08",
+        "d18",
+        "d16",
+        "d07",
+        "d12",
+        "d17",
+        "d11",
+        "d10",
+        "d05",
+        "d04",
+        "d06",
+        "d13"
+      ],
+      "relevant": [
+        "d02"
+      ],
+      "relevant_ranks": {
+        "d02": 2
+      },
+      "coverage_top5": 1.0,
+      "coverage_all_returned": 1.0,
+      "empty_retrieval": false,
+      "top5_text": [
+        "Maya prefers flat white coffee | When: 2024-01-10 | Involving: Maya",
+        "Maya stopped drinking coffee and now prefers jasmine tea | When: 2024-03-02 | Involving: Maya",
+        "Book club selected The Left Hand of Darkness | When: 2024-02-28 | Involving: book club",
+        "Team lunch reservation at Saffron Table | When: 2024-02-21 | Involving: user",
+        "Arun's mentor is Dr. Imani Cole | Involving: Arun, Dr. Imani Cole"
+      ]
+    },
+    {
+      "query_id": "q07",
+      "category": "as-of",
+      "result_count": 20,
+      "ranked_source_ids": [
+        "d01",
+        "d02",
+        "d03",
+        "d08",
+        "d15",
+        "d14",
+        "d07",
+        "d19",
+        "d04",
+        "d16",
+        "d06",
+        "d11",
+        "d17",
+        "d05",
+        "d10",
+        "d20",
+        "d12",
+        "d18",
+        "d13",
+        "d09"
+      ],
+      "relevant": [
+        "d01"
+      ],
+      "relevant_ranks": {
+        "d01": 1
+      },
+      "coverage_top5": 1.0,
+      "coverage_all_returned": 1.0,
+      "empty_retrieval": false,
+      "top5_text": [
+        "Maya prefers flat white coffee | When: 2024-01-10 | Involving: Maya",
+        "Maya stopped drinking coffee and now prefers jasmine tea | When: 2024-03-02 | Involving: Maya",
+        "Arun's mentor is Dr. Imani Cole | Involving: Arun, Dr. Imani Cole",
+        "Project Lantern is set to launch on 18 June 2024 | When: 2024-06-18",
+        "Team lunch reservation at Saffron Table | When: 2024-02-21 | Involving: user"
+      ]
+    },
+    {
+      "query_id": "q08",
+      "category": "temporal",
+      "result_count": 20,
+      "ranked_source_ids": [
+        "d08",
+        "d05",
+        "d14",
+        "d11",
+        "d15",
+        "d17",
+        "d16",
+        "d06",
+        "d19",
+        "d07",
+        "d12",
+        "d01",
+        "d13",
+        "d10",
+        "d18",
+        "d02",
+        "d20",
+        "d03",
+        "d09",
+        "d04"
+      ],
+      "relevant": [
+        "d08"
+      ],
+      "relevant_ranks": {
+        "d08": 1
+      },
+      "coverage_top5": 1.0,
+      "coverage_all_returned": 1.0,
+      "empty_retrieval": false,
+      "top5_text": [
+        "Project Lantern is set to launch on 18 June 2024 | When: 2024-06-18",
+        "Passport renewal appointment scheduled at Begumpet office | When: 2024-02-02",
+        "Ravi's running shoes are size 10 and brand is Asics | When: 2024-02-19 | Involving: Ravi",
+        "Leena booked the Cedar Room for the design review | When: 2024-02-13 | Involving: Leena",
+        "Team lunch reservation at Saffron Table | When: 2024-02-21 | Involving: user"
+      ]
+    },
+    {
+      "query_id": "q09",
+      "category": "paraphrase",
+      "result_count": 20,
+      "ranked_source_ids": [
+        "d12",
+        "d17",
+        "d08",
+        "d09",
+        "d18",
+        "d11",
+        "d03",
+        "d20",
+        "d15",
+        "d07",
+        "d14",
+        "d19",
+        "d16",
+        "d05",
+        "d01",
+        "d02",
+        "d06",
+        "d04",
+        "d10",
+        "d13"
+      ],
+      "relevant": [
+        "d12"
+      ],
+      "relevant_ranks": {
+        "d12": 1
+      },
+      "coverage_top5": 1.0,
+      "coverage_all_returned": 1.0,
+      "empty_retrieval": false,
+      "top5_text": [
+        "Omar's emergency contact is his sister Salma | When: 2024-02-15 | Involving: Omar, Salma (Omar's sister)",
+        "Invoice for Northstar Labs is due | When: 2024-04-30",
+        "Project Lantern is set to launch on 18 June 2024 | When: 2024-06-18",
+        "Pixel's veterinarian is Dr. Nwosu | Involving: Dr. Nwosu (Pixel's veterinarian)",
+        "Kabir keeps spare apartment key with neighbor Elena | When: 2024-02-27 | Involving: Kabir (user), Elena (neighbor)"
+      ]
+    },
+    {
+      "query_id": "q10",
+      "category": "single-hop",
+      "result_count": 20,
+      "ranked_source_ids": [
+        "d13",
+        "d06",
+        "d18",
+        "d11",
+        "d05",
+        "d16",
+        "d10",
+        "d14",
+        "d15",
+        "d19",
+        "d17",
+        "d01",
+        "d09",
+        "d08",
+        "d02",
+        "d04",
+        "d07",
+        "d12",
+        "d03",
+        "d20"
+      ],
+      "relevant": [
+        "d13"
+      ],
+      "relevant_ranks": {
+        "d13": 1
+      },
+      "coverage_top5": 1.0,
+      "coverage_all_returned": 1.0,
+      "empty_retrieval": false,
+      "top5_text": [
+        "Quarterly tax documents are stored in the green archive box | When: 2024-02-17",
+        "Blue bicycle is stored in locker 17 | When: 2024-02-03",
+        "Kabir keeps spare apartment key with neighbor Elena | When: 2024-02-27 | Involving: Kabir (user), Elena (neighbor)",
+        "Leena booked the Cedar Room for the design review | When: 2024-02-13 | Involving: Leena",
+        "Passport renewal appointment scheduled at Begumpet office | When: 2024-02-02"
+      ]
+    },
+    {
+      "query_id": "q11",
+      "category": "abstention",
+      "result_count": 20,
+      "ranked_source_ids": [
+        "d05",
+        "d01",
+        "d02",
+        "d12",
+        "d09",
+        "d03",
+        "d18",
+        "d14",
+        "d10",
+        "d17",
+        "d15",
+        "d20",
+        "d19",
+        "d16",
+        "d11",
+        "d08",
+        "d13",
+        "d04",
+        "d07",
+        "d06"
+      ],
+      "relevant": [],
+      "relevant_ranks": {},
+      "coverage_top5": null,
+      "coverage_all_returned": null,
+      "empty_retrieval": false,
+      "top5_text": [
+        "Passport renewal appointment scheduled at Begumpet office | When: 2024-02-02",
+        "Maya prefers flat white coffee | When: 2024-01-10 | Involving: Maya",
+        "Maya stopped drinking coffee and now prefers jasmine tea | When: 2024-03-02 | Involving: Maya",
+        "Omar's emergency contact is his sister Salma | When: 2024-02-15 | Involving: Omar, Salma (Omar's sister)",
+        "Pixel's veterinarian is Dr. Nwosu | Involving: Dr. Nwosu (Pixel's veterinarian)"
+      ]
+    },
+    {
+      "query_id": "q12",
+      "category": "abstention",
+      "result_count": 20,
+      "ranked_source_ids": [
+        "d03",
+        "d09",
+        "d12",
+        "d15",
+        "d19",
+        "d11",
+        "d14",
+        "d16",
+        "d17",
+        "d04",
+        "d01",
+        "d02",
+        "d20",
+        "d18",
+        "d07",
+        "d08",
+        "d05",
+        "d10",
+        "d13",
+        "d06"
+      ],
+      "relevant": [],
+      "relevant_ranks": {},
+      "coverage_top5": null,
+      "coverage_all_returned": null,
+      "empty_retrieval": false,
+      "top5_text": [
+        "Arun's mentor is Dr. Imani Cole | Involving: Arun, Dr. Imani Cole",
+        "Pixel's veterinarian is Dr. Nwosu | Involving: Dr. Nwosu (Pixel's veterinarian)",
+        "Omar's emergency contact is his sister Salma | When: 2024-02-15 | Involving: Omar, Salma (Omar's sister)",
+        "Team lunch reservation at Saffron Table | When: 2024-02-21 | Involving: user",
+        "Book club selected The Left Hand of Darkness | When: 2024-02-28 | Involving: book club"
+      ]
+    }
+  ],
+  "limits": [
+    "Every query returned all twenty corpus facts under the high/1200-token budget; full-return coverage is therefore not selective retrieval quality.",
+    "Top-five coverage is descriptive post-hoc analysis, not the API return budget or a matched answer-quality benchmark.",
+    "Current-drink query ranked old coffee first and new tea second; as-of query ranked old coffee first. Both facts are available, so this is not an answer correctness score.",
+    "Both unanswerable queries returned twenty facts; no answer model was run, so no claim about generated hallucinations is supported.",
+    "Observations and reranking disabled; not maximum-capability Hindsight.",
+    "Observed bank config exposes retrieval/extraction flags but does not expose the effective embedding model. Launcher hints are absent; do not claim model parity from this artifact alone.",
+    "LLM metrics are cumulative service counters; isolate before/after deltas and retain API usage, not whole-server totals."
+  ]
+}

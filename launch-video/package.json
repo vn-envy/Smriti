@@ -2,7 +2,7 @@
   "name": "smriti-launch",
   "version": "1.0.0",
   "private": true,
-  "description": "SMRITI launch film — Remotion + three.js + Paper Shaders",
+  "description": "SMRITI launch film \u2014 Remotion + three.js + Paper Shaders",
   "scripts": {
     "postinstall": "node scripts/copy-fonts.mjs",
     "dev": "remotion studio",
@@ -10,7 +10,12 @@
     "render:teaser": "remotion render SmritiLaunch30 out/smriti-launch-teaser-30s.mp4 --codec=h264 --crf=18",
     "bundle:webgpu": "esbuild webgpu/preview.ts --bundle --format=esm --outfile=public/webgpu-preview.js",
     "still": "remotion still SmritiLaunch",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "render:social": "remotion render SmritiSocial60 out/smriti-social-launch-60s.mp4 --codec=h264 --crf=18 && python3 scripts/finalize-social.py",
+    "stills:social": "node scripts/social-stills.mjs",
+    "audio:social": "python3 scripts/prepare-social-audio.py",
+    "render:camera": "remotion render SmritiSocialCamera60 out/smriti-social-launch-60s-camera.mp4 --codec=h264 --crf=18 && python3 scripts/finalize-social.py --camera",
+    "stills:camera": "node scripts/social-stills.mjs --camera"
   },
   "dependencies": {
     "@fontsource/inter": "^5.0.20",
@@ -21,7 +26,9 @@
     "@react-three/fiber": "^8.17.10",
     "@remotion/cli": "4.0.481",
     "@remotion/fonts": "4.0.481",
+    "@remotion/media": "4.0.481",
     "@remotion/three": "4.0.481",
+    "@remotion/transitions": "4.0.481",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "remotion": "4.0.481",
