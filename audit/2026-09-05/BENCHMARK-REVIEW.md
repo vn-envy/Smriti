@@ -22,9 +22,15 @@ these times are not a speed ranking. Mem0 recorded 50 logical answer calls and
 51 HTTP requests; the extra request has no recorded error cause. See
 `raw/longmemeval-pair-final-independent-review.json`. The LongMemEval oracle
 result remains an evidence-only sanity check and must not substitute for the
-bounded answer/judge comparison or support a dataset-wide claim. GBrain
-held-out20 semantic retrieval QA is running under controller 61364; Hindsight
-20/12 probes remain queued.
+bounded answer/judge comparison or support a dataset-wide claim. The bounded GBrain held-out20 semantic retrieval run is now complete: GBrain
+recall@5 0.8791667 / deduplicated-session RR 0.9083333; Smriti default
+0.8458333 / 0.8875; Smriti session-diverse 0.9333333 / 0.9041667. All 20
+questions share 991 sessions and 10,047 input chunks; independent review
+verified matching IDs, labels, budgets, dataset, vector coverage, and zero
+failures. RR is deduplicated-session order within the top five chunks. This is
+retrieval-only evidence and makes no answer-quality, superiority, or speed
+claim. See `raw/gbrain-heldout20-independent-review.json`. Hindsight 20/12
+probes are running under controller 61364 (PID 20563).
 
 Luna (high) owns the follow-up implementation. Parent acceptance requires direct review of configuration, raw outputs, and the implemented measurement boundary, followed by independent checks. The historical 169 passing package tests are evidence for the package changes, not validation of these benchmark claims.
 

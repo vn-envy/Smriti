@@ -191,8 +191,16 @@ this an exploratory selected-sample result rather than a broad 500-question
 quality estimate. Mem0 recorded 50 logical answer calls and 51 HTTP requests;
 the extra request has no recorded error cause. Smriti elapsed 3994.4346 seconds
 and Mem0 elapsed 20694.5133 seconds under uncontrolled host load, so neither is
-a controlled speed comparison. GBrain held-out20 semantic retrieval QA is
-running and Hindsight comparative probes (20/12) are queued.
+a controlled speed comparison. GBrain held-out20 semantic retrieval completed all 20 questions with zero
+operational/cleanup failures. Independently recomputed source-session recall
+within five returned chunks is 0.8792 for GBrain, 0.8458 for Smriti default,
+and 0.9333 for Smriti opt-in session diversity. Deduplicated-session reciprocal
+rank is 0.9083, 0.8875, and 0.9042 respectively. The same selected IDs,
+budgets, dataset, actual vector coverage, source mapping, and absence of
+degraded search were verified. These are bounded retrieval results, not
+answer-quality or speed rankings. See
+[`raw/gbrain-heldout20-independent-review.json`](raw/gbrain-heldout20-independent-review.json).
+Hindsight comparative probes (20/12) are running.
 
 The final matched growth report covers 100, 1,000, 3,000, 9,000, and 36,500
 documents for Smriti and Mem0 with the same local Ollama nomic model and for a
@@ -211,9 +219,8 @@ growth speed/storage comparison is complete for these routes; the separate
 GBrain nomic semantic growth artifact is complete as a retrieval/storage
 diagnostic but excluded from the matched three-track report. The six-question
 QA preflight and bounded paired LongMemEval-S50/LoCoMo50 answer/judge results are
-recorded, but remaining comparative retrieval checks are unfinished while
-GBrain held-out20 semantic retrieval QA is running and Hindsight probes are
-queued.
+recorded. GBrain held-out20 semantic retrieval is complete and independently
+reviewed; Hindsight comparative retrieval probes remain in progress.
 
 The paired public50 review found a multi-session recall gap (Smriti 0.6111,
 Mem0 0.7407 across nine questions) and seven questions with fewer than five
@@ -299,6 +306,11 @@ accuracy or speed-superiority claim.
 The current documentation records completed evidence without closing these
 engineering priorities. Each future feature requires workload evidence, tests,
 and a stated migration boundary before it is described as shipped.
+
+The completed paired answer-quality findings and concrete future acceptance
+criteria are consolidated in [Quality next steps](QUALITY-NEXT-STEPS.md). These
+are future evaluation and improvement priorities, separate from the completed
+implementation above.
 
 ## Final social launch film — added user requirement
 

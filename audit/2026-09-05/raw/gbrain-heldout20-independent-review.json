@@ -1,0 +1,382 @@
+{
+  "status": "root_source_labels_vectors_and_pair_counts_verified",
+  "artifacts": {
+    "gbrain": {
+      "path": "audit/2026-09-05/public-retrieval-gbrain-semantic-heldout-s20.json",
+      "sha256": "7daf6576345b8153f4c31d9a4cb94257d05de3cb90362bdc0091cdee7050f1d4"
+    },
+    "smriti": {
+      "path": "audit/2026-09-05/public-retrieval-heldout-diversity-s20.json",
+      "sha256": "dea92227cf090fe745803a582c9316c5d336d80377b51df9e8438ae4ff597d9d"
+    },
+    "dataset": {
+      "path": "/private/tmp/smriti-public-data/longmemeval_s_cleaned.json",
+      "sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442"
+    }
+  },
+  "questions": 20,
+  "means": {
+    "gbrain": {
+      "recall_at_5_chunks": 0.8791666666666667,
+      "deduplicated_session_reciprocal_rank": 0.9083333333333334
+    },
+    "default": {
+      "recall_at_5_chunks": 0.8458333333333334,
+      "deduplicated_session_reciprocal_rank": 0.8875
+    },
+    "session_diverse": {
+      "recall_at_5_chunks": 0.9333333333333333,
+      "deduplicated_session_reciprocal_rank": 0.9041666666666666
+    }
+  },
+  "rows": [
+    {
+      "question_id": "f8c5f88b",
+      "scores": {
+        "gbrain": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "default": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "session_diverse": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        }
+      }
+    },
+    {
+      "question_id": "dd2973ad",
+      "scores": {
+        "gbrain": {
+          "recall_at_5_chunks": 0.5,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "default": {
+          "recall_at_5_chunks": 0.5,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "session_diverse": {
+          "recall_at_5_chunks": 0.5,
+          "deduplicated_session_reciprocal_rank": 1.0
+        }
+      }
+    },
+    {
+      "question_id": "caf03d32",
+      "scores": {
+        "gbrain": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "default": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "session_diverse": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        }
+      }
+    },
+    {
+      "question_id": "gpt4_b5700ca9",
+      "scores": {
+        "gbrain": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "default": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "session_diverse": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        }
+      }
+    },
+    {
+      "question_id": "ce6d2d27",
+      "scores": {
+        "gbrain": {
+          "recall_at_5_chunks": 0.5,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "default": {
+          "recall_at_5_chunks": 0.5,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "session_diverse": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        }
+      }
+    },
+    {
+      "question_id": "ceb54acb",
+      "scores": {
+        "gbrain": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "default": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "session_diverse": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        }
+      }
+    },
+    {
+      "question_id": "5d3d2817",
+      "scores": {
+        "gbrain": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 0.5
+        },
+        "default": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 0.25
+        },
+        "session_diverse": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 0.25
+        }
+      }
+    },
+    {
+      "question_id": "c4a1ceb8",
+      "scores": {
+        "gbrain": {
+          "recall_at_5_chunks": 0.75,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "default": {
+          "recall_at_5_chunks": 0.75,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "session_diverse": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        }
+      }
+    },
+    {
+      "question_id": "54026fce",
+      "scores": {
+        "gbrain": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "default": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "session_diverse": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        }
+      }
+    },
+    {
+      "question_id": "9a707b81",
+      "scores": {
+        "gbrain": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "default": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "session_diverse": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        }
+      }
+    },
+    {
+      "question_id": "9ea5eabc",
+      "scores": {
+        "gbrain": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "default": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "session_diverse": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        }
+      }
+    },
+    {
+      "question_id": "f523d9fe",
+      "scores": {
+        "gbrain": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "default": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "session_diverse": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        }
+      }
+    },
+    {
+      "question_id": "7527f7e2",
+      "scores": {
+        "gbrain": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "default": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "session_diverse": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        }
+      }
+    },
+    {
+      "question_id": "gpt4_a56e767c",
+      "scores": {
+        "gbrain": {
+          "recall_at_5_chunks": 0.3333333333333333,
+          "deduplicated_session_reciprocal_rank": 0.3333333333333333
+        },
+        "default": {
+          "recall_at_5_chunks": 0.6666666666666666,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "session_diverse": {
+          "recall_at_5_chunks": 0.6666666666666666,
+          "deduplicated_session_reciprocal_rank": 1.0
+        }
+      }
+    },
+    {
+      "question_id": "06f04340",
+      "scores": {
+        "gbrain": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 0.3333333333333333
+        },
+        "default": {
+          "recall_at_5_chunks": 0.0,
+          "deduplicated_session_reciprocal_rank": 0
+        },
+        "session_diverse": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 0.3333333333333333
+        }
+      }
+    },
+    {
+      "question_id": "gpt4_1d4ab0c9",
+      "scores": {
+        "gbrain": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "default": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "session_diverse": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        }
+      }
+    },
+    {
+      "question_id": "07741c44",
+      "scores": {
+        "gbrain": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "default": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "session_diverse": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        }
+      }
+    },
+    {
+      "question_id": "0e5e2d1a",
+      "scores": {
+        "gbrain": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "default": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "session_diverse": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        }
+      }
+    },
+    {
+      "question_id": "c960da58",
+      "scores": {
+        "gbrain": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "default": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "session_diverse": {
+          "recall_at_5_chunks": 1.0,
+          "deduplicated_session_reciprocal_rank": 1.0
+        }
+      }
+    },
+    {
+      "question_id": "6cb6f249",
+      "scores": {
+        "gbrain": {
+          "recall_at_5_chunks": 0.5,
+          "deduplicated_session_reciprocal_rank": 1.0
+        },
+        "default": {
+          "recall_at_5_chunks": 0.5,
+          "deduplicated_session_reciprocal_rank": 0.5
+        },
+        "session_diverse": {
+          "recall_at_5_chunks": 0.5,
+          "deduplicated_session_reciprocal_rank": 0.5
+        }
+      }
+    }
+  ],
+  "limits": [
+    "Raw-session retrieval coverage, not reader/judge answer accuracy.",
+    "Reciprocal rank uses deduplicated session order within five returned chunks, not chunk rank.",
+    "Smriti session diversity is opt-in; its default comparison is reported separately.",
+    "Pinned local configurations and a selected twenty-question sample are not full-product rankings.",
+    "GBrain graph enrichment, expansion and reranking are outside this raw-session track.",
+    "Elapsed times were not controlled for a speed comparison."
+  ]
+}

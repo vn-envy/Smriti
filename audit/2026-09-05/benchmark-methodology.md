@@ -62,9 +62,15 @@ HTTP requests; the extra request has no recorded error cause. Smriti elapsed
 3994.4346 seconds and Mem0 elapsed 20694.5133 seconds under uncontrolled host
 load, so these durations are unsuitable for speed comparison.
 
-The remaining comparative retrieval evidence needs GBrain held-out20 semantic retrieval
-QA, which is running, and Hindsight comparative probes (20/12), which are
-queued. Each
+The bounded GBrain held-out20 semantic retrieval result is complete: GBrain
+recall@5 0.8791667 / deduplicated-session RR 0.9083333; Smriti default
+0.8458333 / 0.8875; Smriti session-diverse 0.9333333 / 0.9041667. All 20
+questions share 991 sessions and 10,047 input chunks, with matching IDs, source
+labels, models/budgets, dataset, vector coverage, and zero failures independently
+verified. RR is deduplicated-session order within the top five chunks. This is
+retrieval-only evidence and makes no answer-quality, superiority, or speed claim.
+Hindsight comparative probes (20/12) are running under controller 61364 (PID
+20563). Each
 full-history question must use its complete haystack under the pinned retrieval
 and context budgets; this does not require scoring every question in a source
 dataset. All runs need one pinned dataset file and hash, identical embedding and

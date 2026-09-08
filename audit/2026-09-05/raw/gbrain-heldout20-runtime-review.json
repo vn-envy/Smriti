@@ -1,0 +1,22 @@
+{
+  "status": "root_terminal_runtime_and_source_review_complete",
+  "controller_session": 61364,
+  "child_exit_code": 0,
+  "artifact_sha256": "7daf6576345b8153f4c31d9a4cb94257d05de3cb90362bdc0091cdee7050f1d4",
+  "frozen_files_verified": 26,
+  "selected_ids_match_frozen_manifest": true,
+  "input_chunks": 10047,
+  "engine_chunks": 10146,
+  "embedded_chunks": 10146,
+  "questions_with_graph_edges": 0,
+  "actual_engine_source_hashes_verified": true,
+  "independent_checker_negative_controls": [
+    "Active partial result rejected",
+    "Corrupted hit source mapping rejected"
+  ],
+  "limits": [
+    "No graph enrichment was added to this raw-session track.",
+    "Expansion and reranking disabled; not a maximum-capability comparison.",
+    "Twenty selected questions, not full-dataset answer accuracy."
+  ]
+}
