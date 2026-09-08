@@ -50,18 +50,21 @@ Mem0 was [-0.06, 0.10]. This is not a superiority result because questions share
 conversations, the bootstrap does not model that dependence, and the labels
 include known judge errors such as `conv-30-q0`.
 
-The bounded Smriti LongMemEval-S50 side is now terminal-complete: 50/50
-selected questions, zero operational/cleanup failures, 32/50 recorded correct,
-14/30 answerable correct, and 18/20 abstention rows correct. Forty percent of
-this selected sample is abstention, so the 64% headline is not a broad
-answerable-accuracy estimate. Late host load makes its 3994.4346-second elapsed
-time uncontrolled and unsuitable for speed comparison. The paired frozen-v4
-Mem0 run remains active under the same harness, reader/judge models, and
-budgets.
+The bounded paired frozen-v4 LongMemEval-S50 answer/judge run is now
+terminal-complete: both adapters completed 50/50 selected questions with zero
+operational/cleanup failures; each recorded 32/50 overall, 14/30 answerable,
+and 18/20 abstention rows correct. Pair review verified identical selected IDs,
+gold labels, reader/judge models, budgets, and dataset: 30 questions were
+correct for both, 16 for neither, 2 Smriti-only, and 2 Mem0-only. Forty percent
+of this selected sample is abstention, so the 64% headline is not a broad
+500-question quality estimate. Mem0 recorded 50 logical answer calls and 51
+HTTP requests; the extra request has no recorded error cause. Smriti elapsed
+3994.4346 seconds and Mem0 elapsed 20694.5133 seconds under uncontrolled host
+load, so these durations are unsuitable for speed comparison.
 
-The remaining answer-quality evidence needs the paired frozen-v4
-LongMemEval-S50 full-history QA, GBrain held-out20 semantic retrieval QA, and
-Hindsight comparative probes (20/12). Each
+The remaining comparative retrieval evidence needs GBrain held-out20 semantic retrieval
+QA, which is running, and Hindsight comparative probes (20/12), which are
+queued. Each
 full-history question must use its complete haystack under the pinned retrieval
 and context budgets; this does not require scoring every question in a source
 dataset. All runs need one pinned dataset file and hash, identical embedding and

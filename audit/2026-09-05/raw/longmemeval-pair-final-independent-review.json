@@ -1,0 +1,174 @@
+{
+  "status": "root_completed_pair_integrity_verified",
+  "captured_at_utc": "2026-09-08T02:35:04.351278+00:00",
+  "benchmark": "LongMemEval-S",
+  "artifacts": {
+    "left": {
+      "path": "audit/2026-09-05/longmemeval-qa-smriti-s50.json",
+      "sha256": "ec192606fa89134004366d0eed30866b303d5103b9fb78c2a89dcf1676d80768"
+    },
+    "right": {
+      "path": "audit/2026-09-05/longmemeval-qa-mem0-s50.json",
+      "sha256": "9b7e15222f02e2e03c158b1d74697229116563cf91f743fcedf57012dfcdc505"
+    }
+  },
+  "checker_sha256": "7d5c6b89bbf78a1a1ba5ea5b945c9497499b35d6e4c4f976f6e6130cd26f8032",
+  "verified": [
+    "Terminal complete artifacts",
+    "Unique selected IDs in identical order",
+    "Identical gold/question/type/abstention labels",
+    "Identical dataset hash",
+    "Identical reader/judge, embedding, and context budgets",
+    "Recomputed score and answerable/abstention partitions",
+    "Zero operational errors and all cleanup records successful"
+  ],
+  "left_summary": {
+    "benchmark": "LongMemEval-S",
+    "adapter": "smriti",
+    "requested": 50,
+    "completed": 50,
+    "failures": 0,
+    "cleanup_failures": 0,
+    "failure_inclusive_denominator": 50,
+    "correct": 32,
+    "accuracy": 0.64,
+    "answerable_requested": 30,
+    "abstention_requested": 20,
+    "answerable_completed": 30,
+    "abstention_completed": 20,
+    "answerable_correct": 14,
+    "abstention_correct": 18,
+    "answerable_accuracy": 0.4667,
+    "abstention_accuracy": 0.9,
+    "source_count": 50,
+    "question_type_counts": {
+      "single-session-user": 10,
+      "multi-session": 10,
+      "single-session-preference": 5,
+      "temporal-reasoning": 10,
+      "knowledge-update": 10,
+      "single-session-assistant": 5
+    },
+    "elapsed_s": 3994.4346,
+    "usage": {
+      "answer": {
+        "calls": 50,
+        "attempts": 50,
+        "http_attempts": 50,
+        "tokens_in": 116397,
+        "tokens_out": 899,
+        "usage_missing": 0
+      },
+      "judge": {
+        "calls": 32,
+        "attempts": 32,
+        "http_attempts": 32,
+        "tokens_in": 4890,
+        "tokens_out": 64,
+        "usage_missing": 0
+      }
+    }
+  },
+  "right_summary": {
+    "benchmark": "LongMemEval-S",
+    "adapter": "mem0",
+    "requested": 50,
+    "completed": 50,
+    "failures": 0,
+    "cleanup_failures": 0,
+    "failure_inclusive_denominator": 50,
+    "correct": 32,
+    "accuracy": 0.64,
+    "answerable_requested": 30,
+    "abstention_requested": 20,
+    "answerable_completed": 30,
+    "abstention_completed": 20,
+    "answerable_correct": 14,
+    "abstention_correct": 18,
+    "answerable_accuracy": 0.4667,
+    "abstention_accuracy": 0.9,
+    "source_count": 50,
+    "question_type_counts": {
+      "single-session-user": 10,
+      "multi-session": 10,
+      "single-session-preference": 5,
+      "temporal-reasoning": 10,
+      "knowledge-update": 10,
+      "single-session-assistant": 5
+    },
+    "elapsed_s": 20694.5133,
+    "usage": {
+      "answer": {
+        "calls": 50,
+        "attempts": 50,
+        "http_attempts": 51,
+        "tokens_in": 116479,
+        "tokens_out": 822,
+        "usage_missing": 0
+      },
+      "judge": {
+        "calls": 32,
+        "attempts": 32,
+        "http_attempts": 32,
+        "tokens_in": 4810,
+        "tokens_out": 64,
+        "usage_missing": 0
+      }
+    }
+  },
+  "pair_counts": {
+    "both_correct": 30,
+    "both_wrong": 16,
+    "left_only_correct": 2,
+    "right_only_correct": 2
+  },
+  "disagreements": [
+    {
+      "question_id": "118b2229",
+      "question_type": "single-session-user",
+      "unanswerable": false,
+      "gold": "45 minutes each way",
+      "left_hypothesis": "I don't have enough information to answer that.",
+      "right_hypothesis": "45 minutes each way.",
+      "left_recorded_correct": false,
+      "right_recorded_correct": true
+    },
+    {
+      "question_id": "6d550036",
+      "question_type": "multi-session",
+      "unanswerable": false,
+      "gold": "2",
+      "left_hypothesis": "I don't have enough information to answer that.",
+      "right_hypothesis": "2",
+      "left_recorded_correct": false,
+      "right_recorded_correct": true
+    },
+    {
+      "question_id": "75832dbd",
+      "question_type": "single-session-preference",
+      "unanswerable": false,
+      "gold": "The user would prefer suggestions related to recent research papers, articles, or conferences that focus on artificial intelligence in healthcare, particularly those that involve deep learning for medical image analysis. They would not be interested in general AI topics or those unrelated to healthcare.",
+      "left_hypothesis": "1. **Conference**: NeurIPS (Conference on Neural Information Processing Systems) \u2013 holds annual meetings with cutting-edge research in deep learning, including applications in medical imaging.  \n2. **Conference**: MICCAI (Medical Image Computing and Computer-Assisted Intervention) \u2013 focuses specifically on medical image analysis and AI applications in healthcare.  \n3. **Publication**: *Nature Machine Intelligence* \u2013 publishes recent advancements in AI, including deep learning for medical imaging.  \n4. **Publication**: *IEEE Transactions on Medical Imaging* \u2013 a leading journal in the field of medical image analysis and related technologies.",
+      "right_hypothesis": "NeurIPS, CVPR, ICML, and ICLR are recent and highly regarded conferences in the field of AI.",
+      "left_recorded_correct": true,
+      "right_recorded_correct": false
+    },
+    {
+      "question_id": "852ce960",
+      "question_type": "knowledge-update",
+      "unanswerable": false,
+      "gold": "$400,000",
+      "left_hypothesis": "$400,000",
+      "right_hypothesis": "$350,000",
+      "left_recorded_correct": true,
+      "right_recorded_correct": false
+    }
+  ],
+  "model_calls": 0,
+  "scores_changed": false,
+  "limits": [
+    "This verifies the recorded labels and counts, not the correctness of every judge decision.",
+    "Scores describe the selected sample and pinned modes; they are not dataset-wide or universal rankings.",
+    "Elapsed time is preserved but is not accepted as a controlled speed comparison."
+  ]
+}

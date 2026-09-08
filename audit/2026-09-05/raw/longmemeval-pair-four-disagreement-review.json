@@ -1,0 +1,349 @@
+{
+  "schema_version": 1,
+  "status": "completed_bounded_longmemeval_disagreement_review",
+  "benchmark": "LongMemEval-S",
+  "review_scope": "exactly four paired disagreements",
+  "captured_at_utc": "2026-09-08T02:41:05.096050+00:00",
+  "model_calls": false,
+  "official_scores_modified": false,
+  "artifacts": {
+    "pair_review": {
+      "path": "audit/2026-09-05/raw/longmemeval-pair-final-independent-review.json",
+      "sha256": "53094027d8e9ff65184e8a350956e62bea27f608b99e16ed7e125b603c574383"
+    },
+    "smriti": {
+      "path": "audit/2026-09-05/longmemeval-qa-smriti-s50.json",
+      "sha256": "ec192606fa89134004366d0eed30866b303d5103b9fb78c2a89dcf1676d80768"
+    },
+    "mem0": {
+      "path": "audit/2026-09-05/longmemeval-qa-mem0-s50.json",
+      "sha256": "9b7e15222f02e2e03c158b1d74697229116563cf91f743fcedf57012dfcdc505"
+    },
+    "dataset": {
+      "path": "/private/tmp/smriti-public-data/longmemeval_s_cleaned.json",
+      "sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442"
+    }
+  },
+  "method": {
+    "official_source_unit": "dataset haystack_sessions addressed by answer_session_ids/session_index/message_index",
+    "reader_context_unit": "stored adapter reader_context strings; offsets are zero-based character offsets with exclusive end",
+    "evidence_rule": "exact source quotes are preserved as full messages or exact substrings; reader excerpts are exact context slices",
+    "causal_limit": "availability of source text is reported; no retrieval, reader, or judge causality is inferred from availability alone"
+  },
+  "rows": [
+    {
+      "question_id": "118b2229",
+      "question_type": "single-session-user",
+      "question": "How long is my daily commute to work?",
+      "gold": "45 minutes each way",
+      "left_adapter": "smriti",
+      "right_adapter": "mem0",
+      "hypotheses": {
+        "smriti": "I don't have enough information to answer that.",
+        "mem0": "45 minutes each way."
+      },
+      "recorded_correct": {
+        "smriti": false,
+        "mem0": true
+      },
+      "finding_class": "missing_necessary_evidence",
+      "finding": "The official answer utterance gives 45 minutes each way. Smriti selected only a later assistant approximation saying \u201can hour ... each way\u201d and omitted the exact user utterance; Mem0 included the exact user utterance. This supports a context-evidence difference, without attributing causality beyond availability.",
+      "official_source_evidence": [
+        {
+          "session_id": "answer_40a90d51",
+          "session_index": 7,
+          "message_index": 8,
+          "source_label": "source-0008",
+          "role": "user",
+          "exact_content": "I've been listening to audiobooks during my daily commute, which takes 45 minutes each way.",
+          "quote": "I've been listening to audiobooks during my daily commute, which takes 45 minutes each way.",
+          "quote_kind": "full_message"
+        },
+        {
+          "session_id": "answer_40a90d51",
+          "session_index": 7,
+          "message_index": 9,
+          "source_label": "source-0008",
+          "role": "assistant",
+          "quote": "With an hour of commute time each way",
+          "quote_kind": "exact_substring"
+        }
+      ],
+      "reader_context_evidence": {
+        "smriti": [
+          {
+            "phrase": "With an hour of commute time each way",
+            "present": true,
+            "offset_start": 76,
+            "offset_end": 473,
+            "text": "opment, entertainment, or relaxation. Audiobooks are an excellent choice for commutes, as they allow you to multitask while still enjoying a good story or learning something new.\n\nWith an hour of commute time each way, you can easily get through a significant portion of an audiobook. You might even find yourself looking forward to your commute, knowing that you'll have some dedicated time to im"
+          },
+          {
+            "phrase": "45 minutes each way",
+            "present": false,
+            "offset_start": null,
+            "offset_end": null,
+            "text": null
+          }
+        ],
+        "mem0": [
+          {
+            "phrase": "45 minutes each way",
+            "present": true,
+            "offset_start": 2798,
+            "offset_end": 3177,
+            "text": "ion you're on.\n\nIt's great that you're looking to share your thoughts and quotes from your audiobooks!\nuser: I've been listening to audiobooks during my daily commute, which takes 45 minutes each way.\nassistant: That's a great way to make the most of your commute time! An hour each way is a significant amount of time th\n[source-0008 @ 2023/05/22 (Mon) 21:18] user: I'm looking "
+          }
+        ]
+      }
+    },
+    {
+      "question_id": "6d550036",
+      "question_type": "multi-session",
+      "question": "How many projects have I led or am currently leading?",
+      "gold": 2,
+      "hypotheses": {
+        "smriti": "I don't have enough information to answer that.",
+        "mem0": "2"
+      },
+      "recorded_correct": {
+        "smriti": false,
+        "mem0": true
+      },
+      "finding_class": "missing_or_partial_evidence_with_gold_interpretation_caveat",
+      "finding": "The official answer sessions contain an explicit project where the user led the data-analysis team and a separate solo Data Mining project. Mem0 includes the exact led-project utterance and also a current-project/leading-team utterance from a non-answer session; Smriti includes the latter but omits the exact led-project utterance. Neither adapter context contains the solo-project utterance. The gold count of 2 therefore has an interpretation caveat: the solo-project wording does not itself say \u201cled\u201d or \u201cleading.\u201d",
+      "official_source_evidence": [
+        {
+          "session_id": "answer_ec904b3c_1",
+          "session_index": 6,
+          "message_index": 0,
+          "source_label": "source-0007",
+          "role": "user",
+          "exact_content": "I'm working on a project that involves analyzing customer data to identify trends and patterns. I was thinking of using clustering analysis, but I'm not sure which type of clustering method to use. Can you help me decide between k-means and hierarchical clustering? By the way, I've had some experience with data analysis from my Marketing Research class project, where I led the data analysis team and we did a comprehensive market analysis for a new product launch.",
+          "quote": "I'm working on a project that involves analyzing customer data to identify trends and patterns. I was thinking of using clustering analysis, but I'm not sure which type of clustering method to use. Can you help me decide between k-means and hierarchical clustering? By the way, I've had some experience with data analysis from my Marketing Research class project, where I led the data analysis team and we did a comprehensive market analysis for a new product launch.",
+          "quote_kind": "full_message"
+        },
+        {
+          "session_id": "answer_ec904b3c_2",
+          "session_index": 39,
+          "message_index": 2,
+          "source_label": "source-0040",
+          "role": "user",
+          "exact_content": "I've been working on a solo project for my Data Mining class, and I'm really interested in applying some of these techniques to my customer purchase data. I'm trying to identify patterns and trends, and I think feature engineering will really help me with that. Do you have any specific tips on how to handle high cardinality categorical variables in my dataset?",
+          "quote": "I've been working on a solo project for my Data Mining class, and I'm really interested in applying some of these techniques to my customer purchase data. I'm trying to identify patterns and trends, and I think feature engineering will really help me with that. Do you have any specific tips on how to handle high cardinality categorical variables in my dataset?",
+          "quote_kind": "full_message"
+        },
+        {
+          "session_id": "2e4430d8_2",
+          "session_index": 35,
+          "message_index": 0,
+          "source_label": "source-0036",
+          "role": "user",
+          "exact_content": "I'm planning to launch a new product feature in June and I need to create a project timeline. Can you help me create a Gantt chart or recommend a tool to do so? By the way, I've been pretty busy lately, especially since I was promoted to a senior software engineer position three months ago and have been leading a team of five engineers.",
+          "quote": "I'm planning to launch a new product feature in June and I need to create a project timeline. Can you help me create a Gantt chart or recommend a tool to do so? By the way, I've been pretty busy lately, especially since I was promoted to a senior software engineer position three months ago and have been leading a team of five engineers.",
+          "quote_kind": "full_message"
+        }
+      ],
+      "reader_context_evidence": {
+        "smriti": [
+          {
+            "phrase": "I'm planning to launch a new product feature",
+            "present": true,
+            "offset_start": 2125,
+            "offset_end": 2463,
+            "text": "I'm planning to launch a new product feature in June and I need to create a project timeline. Can you help me create a Gantt chart or recommend a tool to do so? By the way, I've been pretty busy lately, especially since I was promoted to a senior software engineer position three months ago and have been leading a team of five engineers."
+          },
+          {
+            "phrase": "led the data analysis team",
+            "present": false,
+            "offset_start": null,
+            "offset_end": null,
+            "text": null
+          },
+          {
+            "phrase": "solo project for my Data Mining class",
+            "present": false,
+            "offset_start": null,
+            "offset_end": null,
+            "text": null
+          }
+        ],
+        "mem0": [
+          {
+            "phrase": "I'm planning to launch a new product feature",
+            "present": true,
+            "offset_start": 2125,
+            "offset_end": 2463,
+            "text": "I'm planning to launch a new product feature in June and I need to create a project timeline. Can you help me create a Gantt chart or recommend a tool to do so? By the way, I've been pretty busy lately, especially since I was promoted to a senior software engineer position three months ago and have been leading a team of five engineers."
+          },
+          {
+            "phrase": "led the data analysis team",
+            "present": true,
+            "offset_start": 3357,
+            "offset_end": 3743,
+            "text": " use. Can you help me decide between k-means and hierarchical clustering? By the way, I've had some experience with data analysis from my Marketing Research class project, where I led the data analysis team and we did a comprehensive market analysis for a new product launch.\nassistant: With your background in marketing research and experience leading a data analysis team, you're off "
+          },
+          {
+            "phrase": "solo project for my Data Mining class",
+            "present": false,
+            "offset_start": null,
+            "offset_end": null,
+            "text": null
+          }
+        ]
+      }
+    },
+    {
+      "question_id": "75832dbd",
+      "question_type": "single-session-preference",
+      "question": "Can you recommend some recent publications or conferences that I might find interesting?",
+      "gold": "The user would prefer suggestions related to recent research papers, articles, or conferences that focus on artificial intelligence in healthcare, particularly those that involve deep learning for medical image analysis. They would not be interested in general AI topics or those unrelated to healthcare.",
+      "hypotheses": {
+        "smriti": "1. **Conference**: NeurIPS (Conference on Neural Information Processing Systems) \u2013 holds annual meetings with cutting-edge research in deep learning, including applications in medical imaging.  \n2. **Conference**: MICCAI (Medical Image Computing and Computer-Assisted Intervention) \u2013 focuses specifically on medical image analysis and AI applications in healthcare.  \n3. **Publication**: *Nature Machine Intelligence* \u2013 publishes recent advancements in AI, including deep learning for medical imaging.  \n4. **Publication**: *IEEE Transactions on Medical Imaging* \u2013 a leading journal in the field of medical image analysis and related technologies.",
+        "mem0": "NeurIPS, CVPR, ICML, and ICLR are recent and highly regarded conferences in the field of AI."
+      },
+      "recorded_correct": {
+        "smriti": true,
+        "mem0": false
+      },
+      "finding_class": "missing_domain_specific_evidence",
+      "finding": "Smriti context includes the official answer-session request about advanced deep learning for medical image analysis and its healthcare/XAI context, matching the accepted answer direction. Mem0 context does not contain that answer-session text; it contains a generic NeurIPS/CVPR/ICML/ICLR conference preference excerpt from another session. The disagreement is consistent with missing domain-specific evidence, with no judge-label defect identified.",
+      "official_source_evidence": [
+        {
+          "session_id": "answer_d87a6ef8",
+          "session_index": 7,
+          "message_index": 8,
+          "source_label": "source-0008",
+          "role": "user",
+          "exact_content": "I'd like to explore some more advanced topics in deep learning for medical image analysis. Can you recommend some research papers or articles on topics like multi-modal image fusion, transfer learning, and domain adaptation in medical imaging?",
+          "quote": "I'd like to explore some more advanced topics in deep learning for medical image analysis. Can you recommend some research papers or articles on topics like multi-modal image fusion, transfer learning, and domain adaptation in medical imaging?",
+          "quote_kind": "full_message"
+        },
+        {
+          "session_id": "sharegpt_xni9yYO_6",
+          "session_index": 18,
+          "message_index": 0,
+          "source_label": "source-0019",
+          "role": "user",
+          "quote": "Also I would like to publish papers in peer reviewed Ai conferences such as NeurIPS, CVPR, ICML, ICLR, ICCV etc.",
+          "quote_kind": "exact_substring"
+        }
+      ],
+      "reader_context_evidence": {
+        "smriti": [
+          {
+            "phrase": "I'd like to explore some more advanced topics in deep learning for medical image analysis",
+            "present": true,
+            "offset_start": 2645,
+            "offset_end": 3094,
+            "text": "re directions.\n\nThese papers and articles should provide a good starting point for understanding the concepts, techniques, and applications of XAI in medical image analysis.\nuser: I'd like to explore some more advanced topics in deep learning for medical image analysis. Can you recommend some research papers or articles on topics like multi-modal image fusion, transfer learning, and domain adaptation in medical imaging?\nassistant: Here are some "
+          }
+        ],
+        "mem0": [
+          {
+            "phrase": "Also I would like to publish papers in peer reviewed Ai conferences such as NeurIPS",
+            "present": true,
+            "offset_start": 6829,
+            "offset_end": 7272,
+            "text": " University of Edinburgh School of Informatics with CISA, ANC and IPAB will provide me with opportunities for personal and professional growth that may not be available elsewhere. Also I would like to publish papers in peer reviewed Ai conferences such as NeurIPS, CVPR, ICML, ICLR, ICCV etc. \nI always keep a growth mindset and is a continuous learner. I have made several contributions to open source software and maintains a blog. I give ba"
+          },
+          {
+            "phrase": "I'd like to explore some more advanced topics in deep learning for medical image analysis",
+            "present": false,
+            "offset_start": null,
+            "offset_end": null,
+            "text": null
+          }
+        ]
+      }
+    },
+    {
+      "question_id": "852ce960",
+      "question_type": "knowledge-update",
+      "question": "What was the amount I was pre-approved for when I got my mortgage from Wells Fargo?",
+      "gold": "$400,000",
+      "hypotheses": {
+        "smriti": "$400,000",
+        "mem0": "$350,000"
+      },
+      "recorded_correct": {
+        "smriti": true,
+        "mem0": false
+      },
+      "finding_class": "reader_temporal_interpretation",
+      "finding": "Both reader contexts contain both exact Wells Fargo pre-approval utterances: $350,000 in the earlier session and $400,000 in the later session. Smriti answered the later $400,000 value; Mem0 answered the earlier $350,000 value. The stored evidence supports a temporal/update selection disagreement, not missing necessary evidence or an obvious judge-label problem.",
+      "official_source_evidence": [
+        {
+          "session_id": "answer_3a6f1e82_1",
+          "session_index": 2,
+          "message_index": 2,
+          "source_label": "source-0003",
+          "role": "user",
+          "exact_content": "I'm actually buying a $325,000 house, and I got pre-approved for $350,000 from Wells Fargo. What would be the estimated closing costs for my situation?",
+          "quote": "I'm actually buying a $325,000 house, and I got pre-approved for $350,000 from Wells Fargo. What would be the estimated closing costs for my situation?",
+          "quote_kind": "full_message"
+        },
+        {
+          "session_id": "answer_3a6f1e82_2",
+          "session_index": 36,
+          "message_index": 0,
+          "source_label": "source-0037",
+          "role": "user",
+          "exact_content": "I'm planning to move into my new home soon and I need to set up cable and TV services. Can you recommend some providers in my area and their prices? By the way, I'm really looking forward to finally owning a home, it's been a long process, but it'll be worth it to have a backyard like the one I'll have - remember when I got pre-approved for $400,000 from Wells Fargo?",
+          "quote": "I'm planning to move into my new home soon and I need to set up cable and TV services. Can you recommend some providers in my area and their prices? By the way, I'm really looking forward to finally owning a home, it's been a long process, but it'll be worth it to have a backyard like the one I'll have - remember when I got pre-approved for $400,000 from Wells Fargo?",
+          "quote_kind": "full_message"
+        }
+      ],
+      "reader_context_evidence": {
+        "smriti": [
+          {
+            "phrase": "pre-approved for $350,000 from Wells Fargo",
+            "present": true,
+            "offset_start": 144,
+            "offset_end": 546,
+            "text": "ly to get a more accurate estimate of your closing costs.\n\nI hope this helps you plan your budget for your new home purchase!\nuser: I'm actually buying a $325,000 house, and I got pre-approved for $350,000 from Wells Fargo. What would be the estimated closing costs for my situation?\nassistant: Congratulations on your pre-approval!\n\nBased on your pre-approval amount of $350,000 and the purchase price"
+          },
+          {
+            "phrase": "pre-approved for $400,000 from Wells Fargo",
+            "present": true,
+            "offset_start": 2271,
+            "offset_end": 2673,
+            "text": "s? By the way, I'm really looking forward to finally owning a home, it's been a long process, but it'll be worth it to have a backyard like the one I'll have - remember when I got pre-approved for $400,000 from Wells Fargo?\nassistant: Congratulations on your new home! I'm happy to help you with setting up cable and TV services.\n\nHowever, I need to clarify a few things. As a digital AI assistant, I d"
+          }
+        ],
+        "mem0": [
+          {
+            "phrase": "pre-approved for $350,000 from Wells Fargo",
+            "present": true,
+            "offset_start": 1184,
+            "offset_end": 1586,
+            "text": "ly to get a more accurate estimate of your closing costs.\n\nI hope this helps you plan your budget for your new home purchase!\nuser: I'm actually buying a $325,000 house, and I got pre-approved for $350,000 from Wells Fargo. What would be the estimated closing costs for my situation?\nassistant: Congratulations on your pre-approval!\n\nBased on your pre-approval amount of $350,000 and the purchase price"
+          },
+          {
+            "phrase": "pre-approved for $400,000 from Wells Fargo",
+            "present": true,
+            "offset_start": 2271,
+            "offset_end": 2673,
+            "text": "s? By the way, I'm really looking forward to finally owning a home, it's been a long process, but it'll be worth it to have a backyard like the one I'll have - remember when I got pre-approved for $400,000 from Wells Fargo?\nassistant: Congratulations on your new home! I'm happy to help you with setting up cable and TV services.\n\nHowever, I need to clarify a few things. As a digital AI assistant, I d"
+          }
+        ]
+      }
+    }
+  ],
+  "limitations": [
+    "This reviews the four pair disagreements only and does not rescore any row.",
+    "The q6 gold wording counts two projects although one official phrase says solo project rather than explicitly led/currently leading; this is recorded as an interpretation caveat.",
+    "Exact text availability does not establish model attention or explain why a judge/reader selected an answer."
+  ],
+  "root_review": {
+    "status": "source_quotes_context_slices_and_recorded_labels_verified",
+    "source_quotes": 9,
+    "context_slices": 11,
+    "corrections": [
+      "Removed contradictory claim that Mem0 omitted the led-project utterance.",
+      "Replaced tangential source quote with exact current-project/team-lead utterance and expanded reader excerpts to include it."
+    ],
+    "model_calls": 0,
+    "scores_changed": false
+  }
+}

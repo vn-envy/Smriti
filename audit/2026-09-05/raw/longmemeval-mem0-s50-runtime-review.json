@@ -1,0 +1,32 @@
+{
+  "status": "root_terminal_runtime_review_complete",
+  "captured_at_utc": "2026-09-08T02:36:37.034836+00:00",
+  "session_id": 68479,
+  "observed_exit_code": 0,
+  "artifact": "audit/2026-09-05/longmemeval-qa-mem0-s50.json",
+  "sha256": "9b7e15222f02e2e03c158b1d74697229116563cf91f743fcedf57012dfcdc505",
+  "completed": 50,
+  "operational_failures": 0,
+  "cleanup_failures": 0,
+  "reader_usage": {
+    "calls": 50,
+    "attempts": 50,
+    "http_attempts": 51,
+    "tokens_in": 116479,
+    "tokens_out": 822,
+    "usage_missing": 0
+  },
+  "judge_usage": {
+    "calls": 32,
+    "attempts": 32,
+    "http_attempts": 32,
+    "tokens_in": 4810,
+    "tokens_out": 64,
+    "usage_missing": 0
+  },
+  "elapsed_s": 20694.5133,
+  "timing_interpretation": "Uncontrolled host load was observed during the paired runs. Preserve elapsed time but do not interpret it as a controlled cross-system speed comparison.",
+  "attempt_interpretation": "Reader counters record 51 HTTP attempts for 50 logical calls; every selected question completed. The aggregate does not identify the cause of the extra HTTP attempt.",
+  "paired_review": "raw/longmemeval-pair-final-independent-review.json",
+  "mode_scope": "Frozen installed-v4 raw-session QA versus Mem0 OSS infer=False, with shared qwen3:8b reader/judge and pinned nomic embeddings. Not the managed Mem0 platform or maximum-capability comparison."
+}

@@ -1,6 +1,8 @@
-# Parent verification of pending benchmark claims
+# Parent verification of benchmark claims
 
-PR snapshot: 9351ec5, reviewed 2026-09-07.
+PR snapshot: 9351ec5; status updated 2026-09-08. This review preserves historical findings and current bounded evidence; it is not a release or leaderboard claim.
+
+The next three paragraphs describe the initial artifacts, not the final growth comparison. Later matched nomic runs cover five checkpoints through 36,500 records, including a separate GBrain semantic route; see `VERIFIED-RESULTS.md` and `raw/gbrain-semantic-growth-independent-review.json`. The initial failures remain documented below.
 
 The filenames of growth-mem0-nomic.json and growth-smriti-nomic.json suggest a matched embedding comparison, but the former records FastEmbed BGE-small in its configuration label. The recorded data does not independently establish model parity. Do not publish a speedup ratio from this pair until effective runtime configuration is captured and matching runs are verified.
 
@@ -8,9 +10,23 @@ The existing growth artifacts use cold_query_ms for the first query after ingest
 
 The GBrain growth result contains one 20-document checkpoint and includes a new CLI process per operation. It does not prove database scaling or persistent-server latency. The requested comparison over time requires multiple matched checkpoints and explicit process boundaries.
 
-The current LongMemEval oracle result is an evidence-only sanity check. A full-haystack comparison needs distractors, identical input limits, validated dataset arrays, and failure-inclusive metrics. It remains outstanding.
+The bounded paired frozen-v4 LongMemEval-S50 answer/judge run is now complete for
+both adapters: 50/50 selected questions, zero operational/cleanup failures, and
+32/50 recorded correct for each (14/30 answerable; 18/20 abstention). Independent
+review verified identical selected IDs, gold labels, reader/judge models,
+embedding/context budgets, and dataset; 30 questions were correct for both, 16
+for neither, 2 Smriti-only, and 2 Mem0-only. Forty percent of the selected sample
+is abstention, so 64% is exploratory and not a broad 500-question quality claim.
+Smriti elapsed 3994.4346s and Mem0 20694.5133s under uncontrolled host load, so
+these times are not a speed ranking. Mem0 recorded 50 logical answer calls and
+51 HTTP requests; the extra request has no recorded error cause. See
+`raw/longmemeval-pair-final-independent-review.json`. The LongMemEval oracle
+result remains an evidence-only sanity check and must not substitute for the
+bounded answer/judge comparison or support a dataset-wide claim. GBrain
+held-out20 semantic retrieval QA is running under controller 61364; Hindsight
+20/12 probes remain queued.
 
-Luna (high) owns the follow-up implementation. Parent acceptance requires direct review of configuration, raw outputs, and the implemented measurement boundary, followed by independent checks. The existing 169 passing package tests are evidence for the package changes, not validation of these benchmark claims.
+Luna (high) owns the follow-up implementation. Parent acceptance requires direct review of configuration, raw outputs, and the implemented measurement boundary, followed by independent checks. The historical 169 passing package tests are evidence for the package changes, not validation of these benchmark claims.
 
 ## Additional installed-path checks (September 7)
 
@@ -24,5 +40,5 @@ Luna (high) owns the follow-up implementation. Parent acceptance requires direct
 - A full-mode three-update Smriti probe timed out on its first ingestion while
   other local-model work was active. Root interrupted the remaining probe to
   remove that extra contention; this is an incomplete run, not an accuracy
-  score. See `raw/smriti-mira-full-smoke.json`. Repeat this quality check after
-  the timed benchmark workloads finish.
+  score. See `raw/smriti-mira-full-smoke.json`. Later installed-v7 Mira and independent generalization checks passed; see
+  `ROADMAP.md` for the raw artifacts and bounded acceptance.
