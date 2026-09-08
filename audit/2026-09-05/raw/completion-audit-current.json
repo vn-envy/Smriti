@@ -4,17 +4,17 @@
   "purpose": "Acceptance matrix for the original Smriti benchmark/cost/growth request and the current ROADMAP. This is an evidence audit, not a completion or release claim.",
   "source": {
     "checkout": "/Users/kshitijvatsa/Downloads/Smriti-main",
-    "head_commit": "acb10761f0a90e18c0e8272c05450bc3876246f4",
+    "head_commit": "38bda3d298d895c19d267119b5ca4c4d446a3172",
     "roadmap": "audit/2026-09-05/ROADMAP.md",
-    "ci_receipt": "audit/2026-09-05/raw/ci-acb1076.json"
+    "ci_receipt": "audit/2026-09-05/raw/ci-38bda3d.json"
   },
   "overall": {
     "benchmark_cost_speed_scope": "complete_for_measured_local_tracks",
     "teaser_scope": "complete",
     "installation_scope": "verified_current_installed_v7_candidate",
     "model_backed_quality_scope": "complete_for_selected_bounded_tracks",
-    "release_or_completion_status": "planned_deliverables_verified_pending_final_pr_sync",
-    "reason": "Historical installed Mira v3/v4 reviews rejected parts of the scope/temporal quality pass; current installed-v7 bounded checks are recorded with single-run and lexical/semantic limits. The bounded frozen-v4 LongMemEval-S50 and LoCoMo50 pairs are complete for their selected samples, with no superiority or broad dataset-wide quality claim. GBrain held-out20 semantic retrieval and the bounded Hindsight 20-retain/12-recall comparative retrieval probe are complete as descriptive retrieval evidence; Hindsight observations/reranking were disabled and its bank embedding model is not exposed, so no answer-quality, superiority, embedding-parity, or speed claim follows. The root-built social film and separate camera version are rendered and verified; the original exports are preserved. Final PR synchronization remains."
+    "release_or_completion_status": "planned_candidate_deliverables_complete_no_release",
+    "reason": "Historical installed Mira v3/v4 reviews rejected parts of the scope/temporal quality pass; current installed-v7 bounded checks are recorded with single-run and lexical/semantic limits. The bounded frozen-v4 LongMemEval-S50 and LoCoMo50 pairs are complete for their selected samples, with no superiority or broad dataset-wide quality claim. GBrain held-out20 semantic retrieval and the bounded Hindsight 20-retain/12-recall comparative retrieval probe are complete as descriptive retrieval evidence; Hindsight observations/reranking were disabled and its bank embedding model is not exposed, so no answer-quality, superiority, embedding-parity, or speed claim follows. The root-built social film and separate camera version are rendered and verified; the original exports are preserved. Source and evidence are pushed to PR #2; all four CI jobs passed for the recorded implementation head. The final audit update is documentation only."
   },
   "acceptance_matrix": [
     {
@@ -24,7 +24,8 @@
       "evidence": [
         "audit/2026-09-05/raw/installed-scope-candidate-261.json (historical 261-test candidate; pip check clean; offline scope checks), audit/2026-09-05/raw/installed-scope-candidate-276.json (current installed-v7 candidate; 276 tests, pip check clean)",
         "audit/2026-09-05/raw/ci-acb1076.json (enterprise and offline Python 3.9/3.12 checks all SUCCESS)",
-        "audit/2026-09-05/VERIFIED-RESULTS.md"
+        "audit/2026-09-05/VERIFIED-RESULTS.md",
+        "audit/2026-09-05/raw/ci-38bda3d.json (all four checks SUCCESS for the final implementation/film head)"
       ],
       "caveat": "ROADMAP Phase 1 records the historical v3/v4 rejection and current installed-v7 bounded Mira/generalization passes; broader semantic quality remains open."
     },
@@ -274,7 +275,7 @@
       "evidence": "audit/2026-09-05/raw/smriti-mira-v5-independent-review.json, audit/2026-09-05/raw/extraction-tool-transition-v7-corrected-review.json"
     },
     {
-      "item": "All planned bounded benchmark executions and independent reviews are complete. Social original and camera variants are rendered and verified; final PR synchronization remains.",
+      "item": "All planned bounded benchmark executions, independent reviews, social original and camera variants, and PR synchronization are complete. Broader semantic-quality research remains the explicitly prioritized future roadmap.",
       "type": "scope_boundary",
       "status": "confirmed"
     }
