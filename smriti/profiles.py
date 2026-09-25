@@ -36,6 +36,7 @@ import re
 from dataclasses import dataclass, field, replace
 from typing import Dict, Optional, Set
 
+from .recall import RecallConfig
 from .retrieval import extract_dates, is_aggregation_query, query_entities
 
 # Conceptual channels (user-facing) with Sanskrit aliases. Internal ranking
@@ -70,6 +71,10 @@ class RetrievalProfile:
     # until held-out ablation establishes a quality benefit.
     session_diverse: bool = False
     session_overfetch: int = 3
+    # Read engine: "fusion" is the rank-fusion path above; "evidence" is the
+    # evidence-first recall path (smriti.recall) configured by ``recall``.
+    engine: str = "fusion"
+    recall: Optional[RecallConfig] = None
 
     def with_overrides(self, **kw) -> "RetrievalProfile":
         kw = {k: v for k, v in kw.items() if v is not None}
@@ -115,6 +120,16 @@ PROFILES: Dict[str, RetrievalProfile] = {
         include_observations=True, aggregate_pack=True,
         evidence="the Build 10 recall configuration: multi-session +10.3 "
                  "(McNemar p=0.046), knowledge-update regression eliminated.",
+    ),
+    "evidence": RetrievalProfile(
+        name="evidence",
+        channels=None,
+        k=12, include_observations=False,
+        engine="evidence", recall=RecallConfig(),
+        evidence="evidence-first recall (smriti.recall): score-level hybrid "
+                 "fusion, session roll-up, time-window prior, budget-adaptive "
+                 "packing with query-focused excerpts; bench/lab evidence "
+                 "survival results in audit/2026-09-25.",
     ),
     "precision": RetrievalProfile(
         name="precision",

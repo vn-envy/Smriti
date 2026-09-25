@@ -412,6 +412,20 @@ class Store:
         # bm25(): lower is better -> negate so higher is better
         return [(r[0], -r[1]) for r in rows]
 
+    def fts_match(self, expr: str, table: str, limit: int = 20) -> List[Tuple[int, float]]:
+        """BM25 search with a caller-built FTS5 MATCH expression (for example
+        prefix terms ``"attend"*``). Returns [(rowid, score)], higher = better."""
+        if not expr:
+            return []
+        fts = "episodes_fts" if table == "episode" else "facts_fts"
+        try:
+            rows = self.db.execute(
+                f"SELECT rowid, bm25({fts}) FROM {fts} WHERE {fts} MATCH ? "
+                f"ORDER BY bm25({fts}) LIMIT ?", (expr, limit)).fetchall()
+        except sqlite3.OperationalError:
+            return []
+        return [(r[0], -r[1]) for r in rows]
+
     def key_fts_search(self, query: str, limit: int = 20) -> List[Tuple[int, float]]:
         """Lexical search over fact expansion keys (separate index). Consulted
         only on the aggregation/recall profile so it never affects precision
@@ -509,6 +523,60 @@ class Store:
         sims = mat @ (q / n)
         order = np.argsort(-sims)[:limit]
         return [(ids[i], float(sims[i])) for i in order]
+
+    def vector_all(self, query_vec, kind: str = "episode"):
+        """Cosine similarity of ``query_vec`` against every cached vector.
+
+        Returns ``(ids, sims)`` (sims a numpy array aligned with ids) so a
+        caller can both rank and look up the score of any candidate from
+        another channel without a second scan. Same O(N) cost as
+        :meth:`vector_search`."""
+        if query_vec is None or np is None:
+            return [], None
+        ids, mat = self._vectors(kind)
+        if not ids or mat is None:
+            return [], None
+        q = np.asarray(query_vec, dtype="float32")
+        n = np.linalg.norm(q)
+        if n == 0:
+            return [], None
+        return ids, mat @ (q / n)
+
+    def episodes_by_ids(self, ids: Sequence[int]) -> Dict[int, Episode]:
+        """Batch fetch episodes (one query instead of one per id)."""
+        out: Dict[int, Episode] = {}
+        ids = list(dict.fromkeys(int(i) for i in ids))
+        for start in range(0, len(ids), 500):
+            chunk = ids[start:start + 500]
+            marks = ",".join("?" for _ in chunk)
+            for row in self.db.execute(
+                    f"SELECT id, session_id, role, content, ts FROM episodes WHERE id IN ({marks})",
+                    chunk):
+                out[row[0]] = Episode(*row)
+        return out
+
+    def episode_neighbors(self, episode: Episode, n: int = 1) -> List[Episode]:
+        """Up to ``n`` turns before and after ``episode`` in its own session,
+        in conversation order (the episode itself excluded)."""
+        if n < 1 or not episode.session_id:
+            return []
+        before = self.db.execute(
+            "SELECT id, session_id, role, content, ts FROM episodes "
+            "WHERE session_id=? AND id<? ORDER BY id DESC LIMIT ?",
+            (episode.session_id, episode.id, n)).fetchall()
+        after = self.db.execute(
+            "SELECT id, session_id, role, content, ts FROM episodes "
+            "WHERE session_id=? AND id>? ORDER BY id ASC LIMIT ?",
+            (episode.session_id, episode.id, n)).fetchall()
+        return [Episode(*r) for r in reversed(before)] + [Episode(*r) for r in after]
+
+    def episodes_in_range(self, start_iso: str, end_iso: str, limit: int = 200) -> List[int]:
+        """Episode ids whose event time falls in [start_iso, end_iso] (ISO
+        strings compare chronologically; uses idx_episodes_ts)."""
+        rows = self.db.execute(
+            "SELECT id FROM episodes WHERE ts IS NOT NULL AND ts >= ? AND ts <= ? "
+            "ORDER BY ts LIMIT ?", (start_iso, end_iso, limit)).fetchall()
+        return [r[0] for r in rows]
 
     def entity_facts(self, entities: Sequence[str], limit: int = 20) -> List[Tuple[int, float]]:
         """Graph-lite channel: facts linked to entities mentioned in the query."""

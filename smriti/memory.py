@@ -48,8 +48,9 @@ from .extraction import (build_extraction_prompt, build_followup_prompt,
                          compute_numeric_totals, merge_scope_valid_facts, parse_facts,
                          reject_scope_erasure_retry, validate_fact_scopes)
 from .llm import LLM
-from .profiles import RetrievalProfile, get_profile
-from .retrieval import is_aggregation_query, pack_context, retrieve
+from .profiles import PROFILES, RetrievalProfile, get_profile
+from .recall import DEFAULT_RECALL, pack_evidence, rank_episodes
+from .retrieval import expand_channels, is_aggregation_query, pack_context, retrieve
 from .store import Store, normalize_scope, utcnow
 from .types import Episode, Fact, RetrievalResult
 
@@ -100,7 +101,9 @@ class Smriti:
                  stem: bool = False, semantic_entities: bool = False,
                  semantic_threshold: float = 0.3,
                  redact: bool = False, dedupe: bool = True,
-                 adopt_legacy_embedder: bool = False):
+                 adopt_legacy_embedder: bool = False,
+                 contextual_embeddings: int = 0,
+                 read_engine: str = "evidence"):
         """mode: "full"/"purna" (LLM extraction+consolidation), "lite"/"laghu"
         (episodic only), or "auto" (full if an llm is provided, else lite).
         reranker: optional cross-encoder (any .rerank(query, docs)->scores) applied
@@ -149,6 +152,16 @@ class Smriti:
         self.dedupe = dedupe
         self.mode = mode
         self.embed_episodes = embed_episodes
+        # >0: each turn's *vector* also sees the tail (this many chars) of the
+        # previous turn in its session, so short replies ("the kids loved
+        # it!") are findable by what they respond to. Stored text is unchanged.
+        self.contextual_embeddings = max(0, int(contextual_embeddings))
+        # Default read path for search()/context() without a profile:
+        # "evidence" (smriti.recall, evidence-first packing) or "fusion" (the
+        # 0.3.x rank-fusion path, byte-identical to earlier releases).
+        if read_engine not in ("evidence", "fusion"):
+            raise ValueError("read_engine must be 'evidence' or 'fusion'")
+        self.read_engine = read_engine
 
     def close(self) -> None:
         """Close the underlying SQLite connection."""
@@ -188,6 +201,10 @@ class Smriti:
 
         # -- expensive, side-effect-free work happens BEFORE the transaction --
         contents = [m.get("content", "")[:4000] for m in messages]
+        if self.contextual_embeddings:
+            n = self.contextual_embeddings
+            contents = [(contents[i - 1][-n:] + "\n" if i and contents[i - 1] else "") + c
+                        for i, c in enumerate(contents)]
         embs = (_embed_many(self.embedder, contents, "episode")
                 if (self.embed_episodes and contents) else [None] * len(contents))
         facts, fembs = [], []
@@ -420,6 +437,14 @@ class Smriti:
         retrieval with its policy. Returns (profile, results). Explicit k and
         channels args override the profile — knobs beat presets."""
         p = get_profile(profile, query=query, store=self.store)
+        if p.engine == "evidence":
+            facts, hits = self._evidence(query, p, k, now, channels)
+            results = list(facts) + [
+                RetrievalResult(kind="episode", id=h.episode.id, text=h.episode.content,
+                                score=h.score, ts=h.episode.ts, role=h.episode.role,
+                                channels=list(h.channels))
+                for h in hits[:k or p.k]]
+            return p, results
         results = retrieve(
             self.store, self.embedder, query, now=now,
             k=k or p.k, weights=p.weights,
@@ -435,11 +460,70 @@ class Smriti:
             session_overfetch=(p.session_overfetch if session_overfetch is None else session_overfetch))
         return p, results
 
+    def _evidence(self, query: str, p, k: Optional[int], now: Optional[str],
+                  channels=None) -> tuple:
+        """Facts (via the fusion engine, fact channels only) + ranked episodes
+        (via the evidence-first recall engine)."""
+        cfg = p.recall or DEFAULT_RECALL
+        chset = expand_channels(channels) if channels is not None else None
+        facts: List[RetrievalResult] = []
+        if p.name == "evidence" and self.aggregate and is_aggregation_query(query):
+            # the vetted Build 10 recall routing, applied to the fact block only
+            p = p.with_overrides(k=self.k_agg, per_channel=max(24, self.k_agg),
+                                 use_key_channel=True, semantic_entities=True,
+                                 include_observations=True, aggregate_pack=True)
+        if self.store.db.execute("SELECT 1 FROM facts LIMIT 1").fetchone():
+            fact_channels = {"bm25_fact", "vec_fact", "entity", "entity_hop2", "key_expansion"}
+            if chset is not None:
+                fact_channels &= chset
+            if fact_channels:
+                facts = [r for r in retrieve(
+                    self.store, self.embedder, query, now=now, k=k or p.k,
+                    reranker=self.reranker,
+                    weights=p.weights, per_channel=p.per_channel,
+                    entity_hops=p.entity_hops, obs_k=p.obs_k,
+                    semantic_entities=p.semantic_entities,
+                    semantic_threshold=self.semantic_threshold,
+                    use_key_channel=p.use_key_channel and self.expand_keys,
+                    include_observations=p.include_observations,
+                    channels=fact_channels, current_first=p.current_first)
+                    if r.kind in ("fact", "observation")]
+        if chset is not None:
+            cfg = cfg.with_overrides(
+                w_lexical=cfg.w_lexical if "bm25_episode" in chset else 0.0,
+                w_semantic=cfg.w_semantic if "vec_episode" in chset else 0.0,
+                time_boost=cfg.time_boost if "temporal" in chset else 0.0)
+        hits = rank_episodes(self.store, self.embedder, query, now=now, config=cfg)
+        if self.reranker is not None and hits:
+            # cross-encoder re-examination of the fused head; the tail keeps
+            # its fused order behind the re-ranked pool
+            pool, tail = hits[:48], hits[48:]
+            scores = self.reranker.rerank(query, [h.episode.content for h in pool])
+            for h, sc in zip(pool, scores):
+                h.score = float(sc)
+                if "rerank" not in h.channels:
+                    h.channels.append("rerank")
+            pool.sort(key=lambda h: -h.score)
+            hits = pool + tail
+        return facts, hits
+
+    def _evidence_context(self, query: str, profile, k: Optional[int], now: Optional[str],
+                          char_budget: int, channels=None) -> str:
+        p = get_profile(profile, query=query, store=self.store)
+        facts, hits = self._evidence(query, p, k, now, channels)
+        agg = p.aggregate_pack or (p.name == "evidence" and self.aggregate
+                                   and is_aggregation_query(query))
+        return pack_evidence(self.store, hits, query, char_budget=char_budget, now=now,
+                             config=p.recall or DEFAULT_RECALL, facts=facts,
+                             aggregate=agg)
+
     def search(self, query: str, k: Optional[int] = None, now: Optional[str] = None,
                profile=None, channels=None, session_diverse: Optional[bool] = None,
                session_overfetch: Optional[int] = None) -> List[RetrievalResult]:
-        """profile: None (legacy default), a name ("facts" / "relations" /
-        "timeline" / "deep" / "precision"), "auto" (v2 router), or a custom
+        """profile: None (the default read engine — evidence-first recall unless
+        the instance was built with read_engine="fusion"), a name ("evidence" /
+        "facts" / "relations" / "timeline" / "deep" / "precision"), "auto"
+        (v2 router), or a custom
         RetrievalProfile. channels: optional mask — {"lexical","semantic",
         "entity","temporal"} or Sanskrit aliases — orthogonal to profiles.
         session_diverse optionally favors evidence from distinct conversation
@@ -448,6 +532,11 @@ class Smriti:
             return self._profiled(query, profile, k, now, channels=channels,
                                   session_diverse=session_diverse,
                                   session_overfetch=session_overfetch)[1]
+        if self.read_engine == "evidence" and not session_diverse:
+            # structured search keeps the 0.3.x contract: observation summaries
+            # ride in their own additive slots next to raw facts
+            return self._profiled(query, PROFILES["evidence"].with_overrides(
+                include_observations=True), k, now, channels=channels)[1]
         return retrieve(self.store, self.embedder, query, now=now, k=k or 12,
                         reranker=self.reranker,
                         semantic_entities=self.semantic_entities,
@@ -464,12 +553,17 @@ class Smriti:
         # legacy path below stays byte-identical when profile is None, so the
         # Build 10 A/B evidence keeps describing the default behavior.
         if profile is not None:
-            p, results = self._profiled(query, profile, k, now, channels=channels,
+            p = get_profile(profile, query=query, store=self.store)
+            if p.engine == "evidence":
+                return self._evidence_context(query, p, k, now, char_budget, channels)
+            p, results = self._profiled(query, p, k, now, channels=channels,
                                         session_diverse=session_diverse,
                                         session_overfetch=session_overfetch)
             return pack_context(results, now=now, char_budget=char_budget,
                                 aggregate=p.aggregate_pack,
                                 current_first=p.current_first)
+        if self.read_engine == "evidence" and not session_diverse:
+            return self._evidence_context(query, "evidence", k, now, char_budget, channels)
         # Build 10 — per-type router. Each query class uses the config that
         # tested best for it (agile: adjust a profile as new A/B evidence lands):
         #   * aggregation  -> RECALL profile: high-k + key-expansion channel +
