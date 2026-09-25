@@ -186,7 +186,36 @@ Recall@5 rises from 79.9% to 86.6%. Jev captures about 42% of the
 perfect-judge headroom at 1,500 and 3,000 characters. It costs about $0.37
 per 1,000 questions and sends each candidate memory to a hosted API.
 
-**Official Laya** (`convaiinnovations/laya`, 421M ModernBERT-large, CPU): see below.
+**Official Laya** (`convaiinnovations/laya`, rev `55cf4c4`, 421M
+ModernBERT-large, English checkpoint, CPU, 4 threads), zero-shot on a
+60-question dev sample (52 with both classes):
+
+| Same 52 questions | AUC | Right memory first |
+|---|---:|---:|
+| Jev | **0.962** | **80.8%** |
+| Smriti 0.4.1 order | 0.915 | 71.2% |
+| Official Laya | 0.824 | 55.8% |
+
+Laya beats Smriti on 9 questions and loses on 32; 1.15 s per judgement,
+23 s per question on CPU, $0. A large step up from the round 1 community
+fine-tune (0.47), but zero-shot it does not beat Smriti's own order, so the
+full dev run and the end-to-end test were not spent on it.
+
+**Verdicts after round 3**
+
+- *Default read path (consumer and enterprise):* unchanged; no judge by
+  default. The 0.4.1 prior change is the shipped improvement.
+- *Hosted Jev:* the only judge that helps out of the box: +9.2 / +3.4 points
+  of evidence at 1,500 / 3,000 characters, $0.37 per 1,000 questions,
+  1.4 s per question. Every candidate memory leaves the machine, so it can
+  only be an explicit opt-in (enterprise egress checks block
+  `api.typesafe.ai` unless allowlisted).
+- *Local judges (Laya family):* need task training (round 2: Laya-family
+  encoder + head reached 0.928 held-out) and a GPU to be interactive.
+  Next: train a head on the official encoder on a GPU.
+- *CLM-8B:* untested; needs a GPU host for its Qwen3-8B encoder.
+
+The Jev API key used for these runs was deleted after testing.
 
 ## Run once access opens
 

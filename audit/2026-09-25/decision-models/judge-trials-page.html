@@ -196,6 +196,26 @@ table.data td { font-variant-numeric: tabular-nums; }
     </div>
   </header>
 
+  <section aria-labelledby="h-round3">
+    <div class="sec-head">
+      <p class="eyebrow">Round 3 · official Laya vs hosted Jev · zero-shot · Smriti 0.4.1</p>
+      <h2 id="h-round3">Hosted Jev is the only judge that helps out of the box</h2>
+      <p>With the network opened, the real models judged Smriti 0.4.1's top 20 memories. Jev ranks the right memory first 72.5% of the time on held-out questions, against 63.6% for Smriti's own order, and adds 9.2 points of evidence in a 1,500-character context for $0.37 per 1,000 questions. Official Laya, run locally for free, beats a coin flip but not Smriti's ranking yet. Jev's catch: every candidate memory is sent to a hosted API.</p>
+    </div>
+    <div class="two">
+      <div class="panel" style="display:grid; gap:12px">
+        <div><div class="chart-title">Ranking skill, zero-shot (AUC)</div>
+          <div class="chart-sub">same 52 LME-X dev questions · Smriti 0.4.1 top 20</div></div>
+        <div id="round3-auc"></div>
+      </div>
+      <div class="panel" style="display:grid; gap:12px">
+        <div><div class="chart-title">Evidence reaching the LLM with Jev</div>
+          <div class="chart-sub">232 held-out questions · 35% Jev blend chosen on dev</div></div>
+        <div id="round3-e2e"></div>
+      </div>
+    </div>
+  </section>
+
   <section aria-labelledby="h-round2">
     <div class="sec-head">
       <p class="eyebrow">Round 2 · trained judge · LME-X held-out test</p>
@@ -309,7 +329,7 @@ table.data td { font-variant-numeric: tabular-nums; }
 
 <script>
 const DATA = {
-  updated: "2026-09-25 19:50 UTC",
+  updated: "2026-09-25 20:40 UTC",
   series: [
     { id: "smriti", name: "Smriti today", color: "--s1" },
     { id: "oracle", name: "Perfect judge (ceiling)", color: "--ceiling" },
@@ -322,8 +342,21 @@ const DATA = {
     locomo: { title: "LoCoMo", sub: "786 questions · dev", budgets: [1500, 3000, 9000],
       smriti: [69.0, 77.9, 88.8], oracle: [88.0, 88.1, 89.0], overlap: [57.6, 71.0, 88.7] },
     lmex: { title: "LME-X (LongMemEval questions + distractors)", sub: "238 questions · dev", budgets: [1500, 3000, 9000],
-      smriti: [67.4, 82.8, 93.2], oracle: [93.1, 97.9, 97.9], overlap: [36.6, 50.9, 68.6] }
+      smriti: [67.4, 82.8, 93.2], oracle: [91.9, 97.9, 97.9], overlap: [36.6, 50.3, 68.8] }
   },
+  round3auc: [
+    { name: "Jev (hosted)", value: 0.962, color: "--s4" },
+    { name: "Smriti 0.4.1 order", value: 0.915, color: "--s1" },
+    { name: "Official Laya (local)", value: 0.824, color: "--s3" }
+  ],
+  round3e2e: [
+    { name: "1,500 · perfect judge", value: 87.1, color: "--ceiling" },
+    { name: "1,500 · with Jev", value: 74.8, color: "--s4" },
+    { name: "1,500 · Smriti 0.4.1", value: 65.6, color: "--s1" },
+    { name: "3,000 · perfect judge", value: 91.3, color: "--ceiling" },
+    { name: "3,000 · with Jev", value: 86.5, color: "--s4" },
+    { name: "3,000 · Smriti 0.4.1", value: 83.2, color: "--s1" }
+  ],
   round2auc: [
     { name: "Laya + Smriti head", value: 0.928, color: "--s3" },
     { name: "Smriti signals head", value: 0.897, color: "--s1" },
@@ -332,11 +365,11 @@ const DATA = {
     { name: "Laya zero-shot", value: 0.47, color: "--s3" }
   ],
   round2e2e: [
-    { name: "1,500 · Laya + Smriti head", value: 72.5, color: "--s3" },
-    { name: "1,500 · prior 0.2", value: 67.4, color: "--s1" },
+    { name: "1,500 · Laya + Smriti head", value: 71.0, color: "--s3" },
+    { name: "1,500 · prior 0.2", value: 65.6, color: "--s1" },
     { name: "1,500 · before", value: 64.8, color: "--ceiling" },
     { name: "3,000 · Laya + Smriti head", value: 84.5, color: "--s3" },
-    { name: "3,000 · prior 0.2", value: 83.4, color: "--s1" },
+    { name: "3,000 · prior 0.2", value: 83.2, color: "--s1" },
     { name: "3,000 · before", value: 78.5, color: "--ceiling" },
     { name: "9,000 · Laya + Smriti head", value: 89.4, color: "--s3" },
     { name: "9,000 · prior 0.2", value: 93.0, color: "--s1" },
@@ -345,10 +378,10 @@ const DATA = {
   round1: [
     { name: "Perfect judge (top 20)", value: 93.9, color: "--ceiling" },
     { name: "Smriti today", value: 82.8, color: "--s1" },
-    { name: "Laya-family judge, 25% blend", value: 79.1, color: "--s3" },
-    { name: "Laya-family judge, 50% blend", value: 68.4, color: "--s3" },
-    { name: "Word-overlap judge (top 48)", value: 50.9, color: "--s2" },
-    { name: "Laya-family judge alone", value: 8.0, color: "--s3" }
+    { name: "Laya-family judge, 25% blend", value: 78.6, color: "--s3" },
+    { name: "Laya-family judge, 50% blend", value: 68.1, color: "--s3" },
+    { name: "Word-overlap judge (top 48)", value: 50.3, color: "--s2" },
+    { name: "Laya-family judge alone", value: 7.9, color: "--s3" }
   ],
   top5: [
     { dataset: "LoCoMo", smriti: 62.6, oracle: 88.0, overlap: 53.1 },
@@ -374,12 +407,12 @@ const DATA = {
     { name: "Smriti engine", color: "--s1", status: ["win", "Baseline"],
       facts: [["Runs", "In process, CPU"], ["Size", "SQLite + MiniLM"], ["License", "Apache-2.0"], ["Measured", "8–14 ms / query"]],
       note: "Evidence-first ranking and packing. Every judge must beat this." },
-    { name: "Laya", color: "--s3", status: ["win", "Round 2: wins when trained"],
+    { name: "Laya", color: "--s3", status: ["info", "Helps only when trained"],
       facts: [["Runs", "Local, CPU or GPU"], ["Tested", "322M community fine-tune"], ["License", "Apache-2.0"], ["Measured", "0.4 s / decision on CPU"]],
-      note: "Zero-shot it guessed (AUC 0.47). With a head trained on our labels: 0.928 with Smriti's signals, best at tight budgets. Official Laya is still blocked." },
-    { name: "Jev", color: "--s4", status: ["blocked", "Waiting for network"],
-      facts: [["Runs", "Hosted API"], ["Size", "Closed"], ["Price", "$0.042 / 1M input tokens"], ["Claimed", "70–500 ms / call"]],
-      note: "TypeSafe's hosted System One model. Memories would leave the machine, so it can only ever be opt-in." },
+      note: "Official Laya zero-shot: AUC 0.824, below Smriti's 0.915, 23 s per question on CPU. A community fine-tune plus a trained head reached 0.928." },
+    { name: "Jev", color: "--s4", status: ["win", "Round 3: wins zero-shot"],
+      facts: [["Runs", "Hosted API"], ["Size", "Closed"], ["Measured", "$0.37 / 1,000 questions"], ["Speed", "1.4 s / question"]],
+      note: "Held-out AUC 0.954 vs Smriti 0.891; +9.2 points of evidence at 1,500 characters. Memories leave the machine, so it can only be opt-in." },
     { name: "CLM-8B", color: "--s5", status: ["blocked", "Needs a GPU"],
       facts: [["Runs", "Local GPU + vLLM"], ["Size", "75 MB heads on Qwen3-8B"], ["License", "Apache-2.0"], ["Claimed", "16.5 ms / decision"]],
       note: "Contrastive-LM's state/action model. Memory embeddings could be cached at write time, which suits a memory store." }
@@ -391,6 +424,14 @@ const DATA = {
     ["CLM-8B", "16.5 ms per decision on T-Rex, up to 9× faster than Jev", "1 NVIDIA GPU", "Contrastive-LM release"]
   ],
   posts: [
+    { when: "20:33 UTC", kind: ["win", "Round 3"],
+      text: "Round 3 verdict. Zero-shot, same 52 questions: hosted Jev 0.962, Smriti's own ranking 0.915, official Laya 0.824. Laya is far better than the community fine-tune (0.47) but not better than Smriti yet, at 23 s per question on CPU. Out of the box, only the hosted judge helps." },
+    { when: "20:19 UTC", kind: ["loss", "Correction"],
+      text: "Correction: we overstated one number. Our lab variants skipped a 150-character header the shipped path adds, which flattered tight budgets. Smriti 0.4.1 vs 0.4.0, fixed: +0.9 at 1,500 chars (not significant), +4.7 at 3,000, +5.4 at 9,000. Release notes corrected." },
+    { when: "20:18 UTC", kind: ["win", "Jev"],
+      text: "Jev plugged into Smriti 0.4.1: in a tight 1,500-character context, 74.8% of the evidence reaches the LLM vs 65.6% (+9.2, 41 questions better, 3 worse). At 3,000: +3.4. At 9,000: no change, because everything already fits. $0.37 per 1,000 questions." },
+    { when: "20:08 UTC", kind: ["win", "Held out"],
+      text: "It held on questions Jev had never seen: AUC 0.954 vs Smriti's 0.891, right memory first 72.5% vs 63.8%, better on 104 questions and worse on 49 (p = 1×10⁻⁵). 4,880 judgements, zero errors, 9 cents." },
     { when: "19:45 UTC", kind: ["win", "Free win"],
       text: "Best result of the day came from reading the judge's weights, not running it. Its strongest lesson: demote the assistant's long replies harder. One number in Smriti, 0.55 → 0.2: +5.4 points of evidence reaching the LLM, 26 questions better, 0 worse, no model needed." },
     { when: "19:38 UTC", kind: ["win", "Plugged in"],
@@ -598,6 +639,14 @@ function hbars(rootId, rows, opts) {
     hit.addEventListener("pointerleave", hideTip); hit.addEventListener("blur", hideTip);
   });
 }
+
+/* round 3 */
+hbars("round3-auc", DATA.round3auc.map((r) => ({ ...r, label: r.value.toFixed(3) })),
+  { max: 1, ticks: [0, 0.25, 0.5, 0.75, 1], axis: true, fmtTick: (t) => t.toFixed(2), labelW: 170, right: 60,
+    aria: "Zero-shot ranking skill by judge", tipTitle: "Zero-shot AUC" });
+hbars("round3-e2e", DATA.round3e2e.map((r) => ({ ...r, label: r.value.toFixed(1) + "%" })),
+  { max: 100, ticks: [0, 25, 50, 75, 100], axis: true, fmtTick: (t) => t + "%", labelW: 190, right: 60, rowH: 26,
+    aria: "Evidence reaching the LLM with and without Jev", tipTitle: "Evidence reaching the LLM" });
 
 /* round 2 */
 hbars("round2-auc", DATA.round2auc.map((r) => ({ ...r, label: r.value.toFixed(3).replace(/0+$/, "").replace(/\.$/, "") })),

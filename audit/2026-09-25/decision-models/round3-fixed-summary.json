@@ -1664,5 +1664,20 @@
    "ev(rerank=jev,rerank_depth=20,rerank_weight=0.35)": 0.927,
    "ev(rerank=jev,rerank_depth=20,rerank_weight=0.25)": 0.9209
   }
+ },
+ "round3_laya_official": {
+  "judge": "laya",
+  "split": "dev",
+  "questions": 60,
+  "depth": 20,
+  "auc_judge": 0.824,
+  "auc_smriti": 0.9146,
+  "top1_judge": 0.5577,
+  "top1_smriti": 0.7115,
+  "ms_per_judgement_p50": 1147.71,
+  "ms_per_question_p50": 22954.2,
+  "tokens_per_judgement": 0.0,
+  "usd": 0.0,
+  "errors": 0
  }
 }
