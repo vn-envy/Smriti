@@ -143,3 +143,23 @@ def test_rerank_weight_blends_with_fused_score():
     assert rr.seen <= 5
     # a blend never lifts a turn the reranker scores 0 above the fused score alone
     assert all(0.0 <= h.score <= 1.0 for h in hits[:5])
+
+
+class _HitAware:
+    """Uses Smriti's own rank signal: reverses the pool to prove it was consulted."""
+
+    def __init__(self):
+        self.pool = []
+
+    def rerank_hits(self, query, hits):
+        self.pool = list(hits)
+        return [float(i) for i in range(len(hits))]   # higher = later in fused order
+
+
+def test_hit_aware_reranker_sees_scores_and_roles():
+    rr = _HitAware()
+    mem = _mem(rr)
+    hits = mem.search("garden hose shed", profile=PROFILES["evidence"].with_overrides(
+        recall=RecallConfig(rerank_depth=5)))
+    assert len(rr.pool) == 5 and all(hasattr(h, "score") and h.episode.role for h in rr.pool)
+    assert hits[0].id == rr.pool[-1].episode.id       # the reversed order was applied
