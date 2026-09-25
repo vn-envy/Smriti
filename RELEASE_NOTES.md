@@ -22,12 +22,18 @@ on labelled memories put its largest weight on exactly this signal.
 
 | Held-out LME-X questions (232) | 0.4.0 | **0.4.1** | Questions better / worse |
 |---|---:|---:|---:|
-| Evidence complete in context, 1,500 characters | 64.8% | **67.4%** | 13 / 1 |
-| Evidence complete in context, 3,000 characters | 78.5% | **83.4%** | 25 / 1 |
+| Evidence complete in context, 1,500 characters | 64.8% | 65.6% | 5 / 1 (not significant) |
+| Evidence complete in context, 3,000 characters | 78.5% | **83.2%** | 23 / 1 |
 | Evidence complete in context, 9,000 characters | 87.6% | **93.0%** | 26 / 0 |
 
 The value was chosen on the dev split and tested once on held-out questions
-(p = 3×10⁻⁸ at 9,000 characters). LoCoMo, which has no assistant turns, is
+(3,000 characters: +4.7 points, 95% CI +2.5 to +7.0, p = 3×10⁻⁶; 9,000
+characters: +5.4 points, p = 3×10⁻⁸). *Correction (2026-09-25):* the first
+version of these notes reported +2.6 / +4.9 points at 1,500 / 3,000
+characters. Those runs compared the shipped profile against a lab variant
+that skipped the aggregation-question header, which saves about 150
+characters of budget; with the harness fixed, the like-for-like changes are
+the ones above. LoCoMo, which has no assistant turns, is
 unchanged at every budget. It costs nothing: no model, no extra latency.
 Questions that address the assistant ("what did you recommend…") are not
 affected. Answer-accuracy (QA) runs were not repeated for this release.

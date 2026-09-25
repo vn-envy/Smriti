@@ -4,7 +4,8 @@
 
 See the [release notes](RELEASE_NOTES.md#smriti-041--sharper-evidence-from-chat-logs).
 
-- **Stronger assistant-turn demotion** (`RecallConfig.assistant_prior` 0.55 → 0.2). Chosen on the LME-X dev split, tested once on held-out questions: evidence complete in context +2.6 / +4.9 / +5.4 points at 1,500 / 3,000 / 9,000 characters (26 questions better, 0 worse at 9,000; p = 3×10⁻⁸); LoCoMo unchanged. Questions that ask what the assistant said still lift the prior.
+- **Stronger assistant-turn demotion** (`RecallConfig.assistant_prior` 0.55 → 0.2). Chosen on the LME-X dev split, tested once on held-out questions: evidence complete in context +4.7 / +5.4 points at 3,000 / 9,000 characters (p = 3×10⁻⁶ / 3×10⁻⁸; +0.9 at 1,500, not significant); LoCoMo unchanged. (Corrected: first reported as +2.6 / +4.9 / +5.4 from a lab variant that skipped the aggregation header.)
+- Lab fix: `ev(...)` variants now run the shipped `evidence` profile (including aggregation routing) plus their overrides. Questions that ask what the assistant said still lift the prior.
 - **Decision-model rerankers** (`smriti/decision.py`, optional): `SystemOneReranker` for any TypeSafe `/v1/systemone` endpoint (hosted Jev, `laya-serve`, `clm-serve`) and in-process `LayaReranker`, with call/token/latency/cost accounting. `RecallConfig.rerank_depth` and `rerank_weight` control how many turns a reranker judges and how its score blends with Smriti's.
 - **Hit-aware reranker hook**: a reranker exposing `rerank_hits(query, hits)` sees Smriti's fused score, rank and role for each candidate.
 - Lab: oracle/overlap/dry-run/decision-model/learned-head reranker arms, a persistent judgement cache and `bench/lab/judge_head/` (frozen-encoder head training). Results: `audit/2026-09-25/decision-models/NOTES.md`.
