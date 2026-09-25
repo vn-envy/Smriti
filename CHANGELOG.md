@@ -11,6 +11,9 @@ Research-driven read-path overhaul. Package metadata remains 0.3.2.
 - MCP: `evidence` profile, `now` anchor (defaults to today) and channel masks on the default engine; fixed `_profile_args` referencing `self` from a staticmethod. `context_iterative()` packs with the evidence engine.
 - **pariksha-lab** (`bench/lab/`): LLM-free turn-level evidence recall and context-survival benchmark on LoCoMo10 and a LongMemEval distractor haystack (LME-X), dev/test splits, Mem0 OSS / BM25 / dense adapters, a blinded reader/judge QA pipeline and a scale probe. Results and method: `audit/2026-09-25/`.
 - Research survey of 2025–2026 memory architectures: `audit/2026-09-25/RESEARCH-SURVEY.md`.
+- **Measured** (held-out test splits, `audit/2026-09-25/LAB-REPORT.md`): evidence turns complete in context 55.9% → 84.7% (LoCoMo) and 43.2% → 87.6% (LME-X). Blinded QA with the same Claude Haiku reader and Claude Sonnet judge, pooled over two reads: 46.0% → 65.5% (LoCoMo) and 47.5% → 70.4% (LME-X), against 62.7% and 61.7% for Mem0 OSS 2.2.0 (`infer=False`) on the same turns. Search p50 at 100k turns: 131.6 ms → 32.2 ms.
+- Assistant-reference detection also covers "remind me…", "we talked about…" and "our previous … game/session".
+- Lab QA tooling: `rebatch` (re-read saved contexts in one blinded run), `pool` (question-level sign test and bootstrap across repeated reads) and `report pooled`.
 
 ## Unreleased — PR #2: scoped temporal memory and comparative evidence (2026-09-08)
 

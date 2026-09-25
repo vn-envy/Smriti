@@ -2,6 +2,7 @@
 
 ``python -m bench.lab.report retrieval RUN.json [test|dev|all]``
 ``python -m bench.lab.report qa SCORED.json``
+``python -m bench.lab.report pooled POOLED.json``
 """
 from __future__ import annotations
 
@@ -14,6 +15,7 @@ LABELS = {
     "smriti_fusion": "Smriti 0.3.x read path (fusion)",
     "smriti": "Smriti 0.3.x read path (fusion)",
     "evidence": "**Smriti evidence-first (new default)**",
+    "evidence_v1": "Smriti evidence-first, first cut",
     "ev(ctx_embed=150)": "Smriti evidence-first + contextual embeddings",
     "bm25": "BM25 (rank-order packer)",
     "dense": "Dense MiniLM (rank-order packer)",
@@ -69,9 +71,30 @@ def qa_table(path: str) -> str:
     return "\n".join(out)
 
 
+def pooled_table(path: str) -> str:
+    rep = json.load(open(path))
+    n_runs = len(rep["runs"])
+    out = ["| System | Pooled accuracy | " + " | ".join(f"Run {i + 1}" for i in range(n_runs)) + " |",
+           "|---|---:|" + "---:|" * n_runs]
+    for name, s in rep["systems"].items():
+        out.append(f"| {LABELS.get(name, name)} | {_pct(s['accuracy'])} | "
+                   + " | ".join(_pct(v) for v in rep["per_run"][name]) + " |")
+    out.append(f"\n_n = {rep['n_questions']} questions, each read {n_runs} times per system._")
+    out.append("\n| Pair | Difference (pts) | 95% CI | first better | second better | sign-test p |")
+    out.append("|---|---:|---:|---:|---:|---:|")
+    for pair, v in rep["pairs"].items():
+        a, b = pair.split(" vs ")
+        out.append(f"| {LABELS.get(a, a).strip('*')} vs {LABELS.get(b, b).strip('*')} | "
+                   f"{100 * v['diff']:+.1f} | {100 * v['ci95'][0]:+.1f} to {100 * v['ci95'][1]:+.1f} | "
+                   f"{v['first_better']} | {v['second_better']} | {v['sign_p']:.4f} |")
+    return "\n".join(out)
+
+
 if __name__ == "__main__":
     kind, path = sys.argv[1], sys.argv[2]
     if kind == "retrieval":
         print(retrieval_table(path, sys.argv[3] if len(sys.argv) > 3 else "test"))
+    elif kind == "pooled":
+        print(pooled_table(path))
     else:
         print(qa_table(path))

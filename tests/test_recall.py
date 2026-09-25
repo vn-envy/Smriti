@@ -66,6 +66,8 @@ def test_query_terms_drop_filler():
 def test_addresses_assistant():
     assert addresses_assistant("What did you recommend for my trip?")
     assert addresses_assistant("In our previous chat, what was the recipe?")
+    assert addresses_assistant("Remind me of that dessert shop we talked about last time?")
+    assert addresses_assistant("Looking back at our previous chess game, what move did you make?")
     assert not addresses_assistant("Can you tell me where I live?")
 
 

@@ -237,6 +237,97 @@ def judge_export(argv=None):
     print(f"wrote {len(rows)} judge rows in {nb} batches; missing answers: {len(key) - len(rows)}")
 
 
+def merge(argv=None):
+    """Combine export dirs over the same questions for one paired scoring.
+
+    ``--src DIR[:old=new,...]`` may repeat; system names can be renamed per
+    source (e.g. an earlier default kept as ``evidence_v1``). Item ids are
+    unique per export seed, so answers and verdicts are copied as-is."""
+    import shutil
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--src", action="append", required=True)
+    ap.add_argument("--out", required=True)
+    a = ap.parse_args(argv)
+    os.makedirs(a.out, exist_ok=True)
+    merged, systems, meta0 = {}, [], None
+    for n, spec in enumerate(a.src):
+        path, _, ren = spec.partition(":")
+        renames = dict(p.split("=", 1) for p in ren.split(",") if p)
+        meta = json.load(open(os.path.join(path, "key.json")))
+        meta0 = meta0 or meta
+        for iid, m in meta["items"].items():
+            m = dict(m)
+            m["system"] = renames.get(m["system"], m["system"])
+            merged[iid] = m
+        for sname in meta["systems"]:
+            sname = renames.get(sname, sname)
+            if sname not in systems:
+                systems.append(sname)
+        for fn in os.listdir(path):
+            if fn.endswith(".jsonl") and fn.startswith(("answers_", "verdicts_")):
+                kind, rest = fn.split("_", 1)
+                shutil.copy(os.path.join(path, fn), os.path.join(a.out, f"{kind}_m{n}_{rest}"))
+    out = dict(meta0)
+    out.update({"items": merged, "systems": systems})
+    with open(os.path.join(a.out, "key.json"), "w") as f:
+        json.dump(out, f, indent=1)
+    print(f"merged {len(merged)} items, systems={systems} -> {a.out}")
+
+
+def rebatch(argv=None):
+    """Re-read saved contexts together in ONE shuffled, blinded run.
+
+    Reader behaviour drifts between separate runs, so only arms read in the
+    same run are properly paired. ``--src DIR:system[=newname],...`` pulls the
+    saved contexts of the named systems from earlier exports (nothing is
+    recomputed); every item gets a fresh opaque id and all are shuffled."""
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--src", action="append", required=True)
+    ap.add_argument("--seed", default="qa-rebatch-v1")
+    ap.add_argument("--batch", type=int, default=40)
+    ap.add_argument("--out", required=True)
+    a = ap.parse_args(argv)
+    os.makedirs(a.out, exist_ok=True)
+    items, key, systems, meta0 = [], {}, [], None
+    for spec in a.src:
+        path, _, sel = spec.partition(":")
+        meta = json.load(open(os.path.join(path, "key.json")))
+        meta0 = meta0 or meta
+        want = {}
+        for part in filter(None, sel.split(",")):
+            old, _, new = part.partition("=")
+            want[old] = new or old
+        saved = _load_jsonl_glob(path, "batch_")
+        for iid, m in meta["items"].items():
+            if m["system"] not in want or iid not in saved:
+                continue
+            name = want[m["system"]]
+            nid = _opaque(a.seed, name, m["qid"])
+            it = dict(saved[iid])
+            it["id"] = nid
+            items.append(it)
+            key[nid] = {**m, "system": name}
+            if name not in systems:
+                systems.append(name)
+    items.sort(key=lambda it: it["id"])
+    random.Random(a.seed).shuffle(items)
+    nb = 0
+    for start in range(0, len(items), a.batch):
+        chunk = items[start:start + a.batch]
+        with open(os.path.join(a.out, f"batch_{nb:02d}.jsonl"), "w") as f:
+            for it in chunk:
+                f.write(json.dumps(it) + "\n")
+        with open(os.path.join(a.out, f"batch_{nb:02d}.txt"), "w") as f:
+            f.write(render_batch(chunk))
+        nb += 1
+    out = {k: meta0[k] for k in ("dataset", "split", "budget")}
+    out.update({"systems": systems, "n_questions": len({m["qid"] for m in key.values()}),
+                "items": key})
+    with open(os.path.join(a.out, "key.json"), "w") as f:
+        json.dump(out, f, indent=1)
+    print(f"rebatched {len(items)} items into {nb} batches; systems={systems}")
+
+
 def _load_jsonl_glob(d: str, prefix: str) -> Dict[str, dict]:
     out = {}
     for fn in sorted(os.listdir(d)):
@@ -324,9 +415,59 @@ def score(argv=None):
             json.dump(report, f, indent=1)
 
 
+def _sign_test(pos: int, neg: int) -> float:
+    return _mcnemar(pos, neg)
+
+
+def pool(argv=None):
+    """Pool several scored runs over the same questions (repeated reads).
+
+    Each question contributes its number of correct reads per system; pairs
+    are compared with an exact sign test over questions whose totals differ
+    and a question-level bootstrap CI on the accuracy difference, so a
+    question read twice is never counted as two independent samples."""
+    ap = argparse.ArgumentParser()
+    ap.add_argument("files", nargs="+")
+    ap.add_argument("--out", default="")
+    a = ap.parse_args(argv)
+    reports = [json.load(open(p)) for p in a.files]
+    systems = [s for s in reports[0]["systems"] if all(s in r["systems"] for r in reports)]
+    hits: Dict[str, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
+    reads: Dict[str, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
+    for r in reports:
+        for row in r["rows"]:
+            if row["system"] in systems:
+                hits[row["system"]][row["qid"]] += int(bool(row["correct"]))
+                reads[row["system"]][row["qid"]] += 1
+    qids = sorted(set.intersection(*(set(reads[s]) for s in systems)))
+    out = {"runs": a.files, "n_questions": len(qids), "systems": {}, "pairs": {},
+           "per_run": {s: [r["systems"][s]["accuracy"] for r in reports] for s in systems}}
+    for s in systems:
+        n = sum(reads[s][q] for q in qids)
+        out["systems"][s] = {"accuracy": round(sum(hits[s][q] for q in qids) / max(1, n), 4),
+                             "reads": n}
+    rng = random.Random(11)
+    for i, s1 in enumerate(systems):
+        for s2 in systems[i + 1:]:
+            diff = [hits[s1][q] / reads[s1][q] - hits[s2][q] / reads[s2][q] for q in qids]
+            pos = sum(1 for d in diff if d > 0)
+            neg = sum(1 for d in diff if d < 0)
+            boots = sorted(sum(diff[rng.randrange(len(diff))] for _ in diff) / len(diff)
+                           for _ in range(2000))
+            out["pairs"][f"{s1} vs {s2}"] = {
+                "diff": round(sum(diff) / len(diff), 4),
+                "ci95": [round(boots[50], 4), round(boots[1949], 4)],
+                "first_better": pos, "second_better": neg,
+                "sign_p": round(_sign_test(pos, neg), 5)}
+    print(json.dumps(out, indent=1))
+    if a.out:
+        with open(a.out, "w") as f:
+            json.dump(out, f, indent=1)
+
+
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else ""
     rest = sys.argv[2:]
     {"export": export, "export-fullctx": export_fullctx, "judge-export": judge_export,
-     "score": score}.get(
+     "score": score, "merge": merge, "rebatch": rebatch, "pool": pool}.get(
         cmd, lambda _r: sys.exit("usage: python -m bench.lab.qa export|judge-export|score ..."))(rest)

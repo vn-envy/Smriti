@@ -76,7 +76,10 @@ _ASSISTANT_REF = re.compile(
     r"showed|answered|responded|included)\b"
     r"|\byour\s+(?:suggestion|recommendation|advice|answer|response|list|"
     r"explanation|previous|earlier|last|reply|idea|tip)s?\b"
-    r"|\b(?:our|the)\s+(?:previous|last|earlier)\s+(?:chat|conversation|discussion)\b",
+    r"|\byou\s+(?:made|played|used|picked|chose)\b"
+    r"|\bremind me\b|\bwe\s+(?:talked|discussed|chatted|spoke|went over)\b"
+    r"|\b(?:our|the)\s+(?:previous|last|earlier)\s+(?:\w+\s+)?"
+    r"(?:chat|conversation|discussion|game|session)\b",
     re.IGNORECASE)
 
 _AGG = re.compile(

@@ -11,7 +11,7 @@
   <a href="LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-4c9?style=flat-square"></a>
   <img alt="Python 3.9+" src="https://img.shields.io/badge/python-3.9%2B-3776AB?style=flat-square&logo=python&logoColor=white">
   <img alt="Dependencies: stdlib + numpy" src="https://img.shields.io/badge/deps-stdlib%20%2B%20numpy-F4A43C?style=flat-square">
-  <img alt="Tests: 276 installed core and enterprise tests" src="https://img.shields.io/badge/tests-276%20installed%20tests-success?style=flat-square">
+  <img alt="Tests: 310 core and enterprise tests" src="https://img.shields.io/badge/tests-310%20core%20%2B%20enterprise-success?style=flat-square">
   <img alt="Storage: one SQLite file" src="https://img.shields.io/badge/storage-one%20SQLite%20file-blue?style=flat-square">
   <img alt="MCP: ready" src="https://img.shields.io/badge/MCP-ready-B794E0?style=flat-square">
   <a href="https://github.com/vn-envy/Smriti/pulls"><img alt="PRs welcome" src="https://img.shields.io/badge/PRs-welcome-E08AA0?style=flat-square"></a>
@@ -23,7 +23,78 @@
 
 The core is a zero-infrastructure, local-first, Apache-2.0 memory layer for AI agents. It uses one SQLite file: no Neo4j, Postgres, Docker, cloud account, or paid tier is required. Stdlib HTTP + numpy is the core dependency surface. The optional enterprise package adds governance metadata and can write a separate audit sink or verified pack.
 
-**Jump to:** [PR #2 highlights](#pr-2--where-smriti-stands) · [Since v0.3.2](#what-changed-since-v032) · [Benchmarks](#benchmarks) · [Architecture](#architecture) · [Install](#install--try-it-in-60-seconds) · [MCP](#drop-it-into-your-agent-mcp) · [Roadmap](#roadmap) · [Release notes](RELEASE_NOTES.md)
+**Jump to:** [Evidence-first recall](#new-evidence-first-recall-september-25-2026) · [PR #2 highlights](#pr-2--where-smriti-stands) · [Since v0.3.2](#what-changed-since-v032) · [Benchmarks](#benchmarks) · [Architecture](#architecture) · [Install](#install--try-it-in-60-seconds) · [MCP](#drop-it-into-your-agent-mcp) · [Roadmap](#roadmap) · [Release notes](RELEASE_NOTES.md)
+
+## New: evidence-first recall (September 25, 2026)
+
+**The old read path usually found the right turn, then lost it while packing.**
+On held-out LongMemEval questions, the 0.3.x path ranked the supporting turn in
+its top 10 for 78% of questions, but only 43% of evidence turns reached the
+reader intact: 12 items, each cut at 700 characters. The new default read
+engine keeps that evidence. It is local, deterministic, and makes no LLM calls
+at query time.
+
+| Held-out test split | Smriti 0.3.x path | **Smriti evidence-first** | Mem0 OSS 2.2.0, same turns |
+|---|---:|---:|---:|
+| Evidence turns complete in context: LoCoMo | 55.9% | **84.7%** | 79.4% |
+| Evidence turns complete in context: LME-X | 43.2% | **87.6%** | 69.1% |
+| Blinded QA accuracy: LoCoMo, 200 questions × 2 reads | 46.0% | **65.5%** | 62.7% |
+| Blinded QA accuracy: LME-X, 120 questions × 2 reads | 47.5% | **70.4%** | 61.7% |
+| Search + context p50 on the lab datasets | 4–8 ms | 10–15 ms | 60–91 ms |
+| Search p50 at 100,000 stored turns (synthetic) | 131.6 ms | **32.2 ms** | not measured |
+
+Against Mem0 the difference is **+8.8 points on LME-X** (bootstrap 95% CI
++1.7 to +15.4, sign test p = 0.07) and a **statistical tie on LoCoMo** (+2.8,
+CI −1.8 to +7.2). Against the 0.3.x path it is **+19.5 and +22.9 points**
+(p < 0.0001). Every system received the same turns, timestamps, MiniLM
+vectors and 9,000-character budget, and was scored by the same blinded reader
+(Claude Haiku) and strict judge (Claude Sonnet). Mem0 ran with `infer=False`,
+its own hybrid semantic + BM25 retrieval over the verbatim turns. LME-X is
+the LongMemEval questions with 48 cross-question distractor sessions each; it
+is **not** the official LongMemEval-S haystack. None of these numbers is
+comparable with published leaderboard scores. Reading identical contexts a
+second time moved one system by 10 points, so the table pools two reads.
+[Full lab report, method and null results](audit/2026-09-25/LAB-REPORT.md) ·
+[2025–2026 research survey](audit/2026-09-25/RESEARCH-SURVEY.md)
+
+What changed, in `smriti/recall.py` and `smriti/temporal.py`:
+
+- **Score-level hybrid fusion.** BM25 (with light-stem prefix terms) and exact
+  cosine are fused by score rather than rank, and turn scores roll up to their
+  sessions.
+- **Question-aware priors.** Assistant turns are down-weighted unless the
+  question asks what the assistant said; there are named-speaker and "when"
+  priors, and "X or Y first?" questions are split into sub-queries.
+- **Dates everywhere.** Relative dates are resolved inline
+  (`yesterday [2023-05-07]`), the question's time window becomes a soft
+  prior, and sessions carry dated headers.
+- **Budget-adaptive packing.** Whole turns are kept while they fit, with
+  query-focused excerpts in place of prefix cuts, grouped by session in
+  chronological order.
+- **`OnnxEmbedder`.** Semantic memory with no embedding server:
+  `pip install -e '.[onnx]'`, then point it at any folder that holds
+  `model.onnx` and `tokenizer.json`, for example the ONNX export of
+  `sentence-transformers/all-MiniLM-L6-v2`.
+
+```python
+from smriti import Smriti, OnnxEmbedder
+
+mem = Smriti(path="memory.db", embedder=OnnxEmbedder("models/all-MiniLM-L6-v2"))
+mem.add([{"role": "user", "content": "I went to a support group yesterday."}],
+        timestamp="2023-05-08T13:56:00Z", session_id="s1")
+print(mem.context("When did I go to the support group?", now="2023-07-01"))
+# (Current date: 2023-07-01 Sat)
+# CONVERSATION EVIDENCE (grouped by session, oldest first; ...):
+# [Session 2023-05-08 Mon]
+#   user: I went to a support group yesterday [2023-05-07].
+
+Smriti(path="memory.db", read_engine="fusion")  # the previous 0.3.x read path
+```
+
+The named profiles (`facts`, `relations`, `timeline`, `deep`, `auto`) and
+`read_engine="fusion"` keep their 0.3.x behaviour. The PR #2 comparisons below
+were measured on that earlier path. Reproduce everything with the
+LLM-free lab in [`bench/lab/`](bench/lab/README.md).
 
 ## PR #2 — where Smriti stands
 
@@ -282,7 +353,7 @@ Add it to your agent's MCP config:
 { "mcpServers": { "smriti": { "command": "smriti-mcp", "args": ["--db", "memory.db"] } } }
 ```
 
-It exposes six typed tools returning structured JSON — `remember`, `recall`, `search`, `facts_about`, `add_fact`, `stats`. The read tools take `profile` (`facts` / `relations` / `timeline` / `deep` / `auto`) and `channels` arguments, so agents shape retrieval per call. Offline by default (no key); set `SMRITI_LLM_MODEL` / `SMRITI_LLM_PROVIDER` / `SMRITI_API_KEY` for full extraction mode.
+It exposes six typed tools returning structured JSON — `remember`, `recall`, `search`, `facts_about`, `add_fact`, `stats`. The read tools take `profile` (`evidence` / `facts` / `relations` / `timeline` / `deep` / `auto`), `channels` and a `now` date (defaults to today), so agents shape retrieval per call. With no profile they use the evidence-first engine. Offline by default (no key); set `SMRITI_LLM_MODEL` / `SMRITI_LLM_PROVIDER` / `SMRITI_API_KEY` for full extraction mode.
 
 ### Benchmark it on *your* data
 
@@ -293,6 +364,9 @@ bash bench/ab.sh   # fixed-judge A/B, prints the accuracy delta
 ```
 
 ## Benchmarks
+
+> [!NOTE]
+> The tables in this section were measured on the 0.3.x read path. The evidence-first default added on September 25, 2026 is benchmarked in [its own section](#new-evidence-first-recall-september-25-2026) and the [lab report](audit/2026-09-25/LAB-REPORT.md).
 
 **Measured through September 8, 2026.** These are self-run, independently checked
 within this project, selected-workload results—not an external certification or

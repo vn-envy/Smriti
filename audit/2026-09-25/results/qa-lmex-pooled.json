@@ -1,0 +1,105 @@
+{
+ "runs": [
+  "audit/2026-09-25/results/qa-lmex-run1.json",
+  "audit/2026-09-25/results/qa-lmex-run2-paired.json"
+ ],
+ "n_questions": 120,
+ "systems": {
+  "smriti_fusion": {
+   "accuracy": 0.475,
+   "reads": 240
+  },
+  "evidence_v1": {
+   "accuracy": 0.7083,
+   "reads": 240
+  },
+  "mem0": {
+   "accuracy": 0.6167,
+   "reads": 240
+  },
+  "evidence": {
+   "accuracy": 0.7042,
+   "reads": 240
+  }
+ },
+ "pairs": {
+  "smriti_fusion vs evidence_v1": {
+   "diff": -0.2333,
+   "ci95": [
+    -0.3083,
+    -0.1583
+   ],
+   "first_better": 9,
+   "second_better": 46,
+   "sign_p": 0.0
+  },
+  "smriti_fusion vs mem0": {
+   "diff": -0.1417,
+   "ci95": [
+    -0.2208,
+    -0.0583
+   ],
+   "first_better": 14,
+   "second_better": 39,
+   "sign_p": 0.0008
+  },
+  "smriti_fusion vs evidence": {
+   "diff": -0.2292,
+   "ci95": [
+    -0.3125,
+    -0.15
+   ],
+   "first_better": 10,
+   "second_better": 46,
+   "sign_p": 0.0
+  },
+  "evidence_v1 vs mem0": {
+   "diff": 0.0917,
+   "ci95": [
+    0.0208,
+    0.1667
+   ],
+   "first_better": 25,
+   "second_better": 15,
+   "sign_p": 0.15386
+  },
+  "evidence_v1 vs evidence": {
+   "diff": 0.0042,
+   "ci95": [
+    -0.0417,
+    0.0542
+   ],
+   "first_better": 13,
+   "second_better": 13,
+   "sign_p": 1.0
+  },
+  "mem0 vs evidence": {
+   "diff": -0.0875,
+   "ci95": [
+    -0.1542,
+    -0.0167
+   ],
+   "first_better": 13,
+   "second_better": 25,
+   "sign_p": 0.07295
+  }
+ },
+ "per_run": {
+  "smriti_fusion": [
+   0.4917,
+   0.4583
+  ],
+  "evidence_v1": [
+   0.725,
+   0.6917
+  ],
+  "mem0": [
+   0.6417,
+   0.5917
+  ],
+  "evidence": [
+   0.65,
+   0.7583
+  ]
+ }
+}

@@ -1,0 +1,67 @@
+{
+ "runs": [
+  "audit/2026-09-25/results/qa-locomo-run1.json",
+  "audit/2026-09-25/results/qa-locomo-run2-paired.json"
+ ],
+ "n_questions": 200,
+ "systems": {
+  "smriti_fusion": {
+   "accuracy": 0.46,
+   "reads": 400
+  },
+  "mem0": {
+   "accuracy": 0.6275,
+   "reads": 400
+  },
+  "evidence": {
+   "accuracy": 0.655,
+   "reads": 400
+  }
+ },
+ "pairs": {
+  "smriti_fusion vs mem0": {
+   "diff": -0.1675,
+   "ci95": [
+    -0.2225,
+    -0.11
+   ],
+   "first_better": 14,
+   "second_better": 58,
+   "sign_p": 0.0
+  },
+  "smriti_fusion vs evidence": {
+   "diff": -0.195,
+   "ci95": [
+    -0.2525,
+    -0.14
+   ],
+   "first_better": 11,
+   "second_better": 64,
+   "sign_p": 0.0
+  },
+  "mem0 vs evidence": {
+   "diff": -0.0275,
+   "ci95": [
+    -0.0725,
+    0.0175
+   ],
+   "first_better": 23,
+   "second_better": 31,
+   "sign_p": 0.34089
+  }
+ },
+ "per_run": {
+  "smriti_fusion": [
+   0.475,
+   0.445
+  ],
+  "mem0": [
+   0.64,
+   0.615
+  ],
+  "evidence": [
+   0.67,
+   0.64
+  ]
+ }
+}

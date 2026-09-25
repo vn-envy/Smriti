@@ -1,0 +1,57 @@
+{
+ "platform": "Linux-6.18.44-fc-v37-x86_64-with-glibc2.39",
+ "embedder": "all-MiniLM-L6-v2",
+ "checkpoints": [
+  {
+   "episodes": 10000,
+   "store_mb": 36.0,
+   "cumulative_ingest_s": 2.3,
+   "evidence": {
+    "search_ms_p50": 9.09,
+    "search_ms_p95": 21.899,
+    "context_ms_p50": 11.378,
+    "context_ms_p95": 20.05
+   },
+   "fusion": {
+    "search_ms_p50": 12.695,
+    "search_ms_p95": 17.578,
+    "context_ms_p50": 13.056,
+    "context_ms_p95": 21.147
+   }
+  },
+  {
+   "episodes": 36500,
+   "store_mb": 134.7,
+   "cumulative_ingest_s": 10.9,
+   "evidence": {
+    "search_ms_p50": 15.677,
+    "search_ms_p95": 33.82,
+    "context_ms_p50": 21.792,
+    "context_ms_p95": 33.822
+   },
+   "fusion": {
+    "search_ms_p50": 48.883,
+    "search_ms_p95": 65.321,
+    "context_ms_p50": 47.792,
+    "context_ms_p95": 61.942
+   }
+  },
+  {
+   "episodes": 100000,
+   "store_mb": 371.0,
+   "cumulative_ingest_s": 33.5,
+   "evidence": {
+    "search_ms_p50": 32.209,
+    "search_ms_p95": 66.786,
+    "context_ms_p50": 32.943,
+    "context_ms_p95": 65.32
+   },
+   "fusion": {
+    "search_ms_p50": 131.603,
+    "search_ms_p95": 204.871,
+    "context_ms_p50": 128.276,
+    "context_ms_p95": 163.559
+   }
+  }
+ ]
+}

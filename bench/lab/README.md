@@ -58,6 +58,7 @@ Smriti tree with the same harness.
 python -m bench.lab.run --dataset locomo --split dev --systems "smriti_fusion,evidence,ev(session_weight=0.5)"
 python -m bench.lab.run --dataset lmex --split test --systems "smriti_fusion,evidence,bm25,dense,mem0" --out lmex.json
 python -m bench.lab.summarize lmex.json test
+python -m bench.lab.report retrieval lmex.json test   # markdown tables
 
 # blinded answer quality: export -> read -> judge -> score
 python -m bench.lab.qa export --dataset locomo --split test --sample 200 --systems "smriti_fusion,evidence,mem0" --out qa/locomo
@@ -66,6 +67,14 @@ python -m bench.lab.qa export-fullctx --dir qa/locomo          # LoCoMo full-con
 python -m bench.lab.qa judge-export --dir qa/locomo
 #   judge writes qa/locomo/verdicts_XX.jsonl for every judge_XX.jsonl
 python -m bench.lab.qa score --dir qa/locomo --out qa-locomo.json
+python -m bench.lab.report qa qa-locomo.json
+
+# reader drift between runs is large (identical contexts moved 10 points):
+# re-read saved contexts in one fresh blinded run, then pool the reads
+python -m bench.lab.qa rebatch --src qa/locomo:smriti_fusion,evidence,mem0 --out qa/locomo_rerun
+#   read + judge qa/locomo_rerun as above, score -> qa-locomo-rerun.json
+python -m bench.lab.qa pool qa-locomo.json qa-locomo-rerun.json --out qa-locomo-pooled.json
+python -m bench.lab.report pooled qa-locomo-pooled.json
 
 # latency / footprint as the store grows
 python -m bench.lab.scale --sizes 10000,36500,100000 --out scale.json
