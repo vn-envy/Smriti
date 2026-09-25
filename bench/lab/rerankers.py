@@ -89,6 +89,48 @@ class DryRunReranker:
         return self.stats.input_tokens / 1e6 * self.price_per_mtok
 
 
+class DiskCachedJudge:
+    """Persists each (judge, question, memory) score in SQLite so budgets and
+    blend weights reuse one judgement. Only uncached candidates reach the
+    model, so ``stats`` (and latency) describe real model work alone."""
+
+    def __init__(self, inner, path: str, tag: str):
+        import sqlite3
+        self.inner, self.tag = inner, tag
+        self.stats = inner.stats
+        self.db = sqlite3.connect(path, timeout=60, check_same_thread=False)
+        self.db.execute("PRAGMA journal_mode=WAL")
+        self.db.execute("CREATE TABLE IF NOT EXISTS judge(k TEXT PRIMARY KEY, v REAL)")
+        self.db.commit()
+
+    def _key(self, query: str, doc: str) -> str:
+        import hashlib
+        return hashlib.sha1(f"{self.tag}\x00{query}\x00{doc}".encode()).hexdigest()
+
+    def rerank(self, query: str, docs: Sequence[str]) -> List[float]:
+        keys = [self._key(query, d) for d in docs]
+        have = {}
+        for i in range(0, len(keys), 500):
+            chunk = keys[i:i + 500]
+            marks = ",".join("?" * len(chunk))
+            have.update(self.db.execute(f"SELECT k, v FROM judge WHERE k IN ({marks})", chunk))
+        todo = [i for i, k in enumerate(keys) if k not in have]
+        if todo:
+            errors_before = self.stats.errors
+            vals = self.inner.rerank(query, [docs[i] for i in todo])
+            if self.stats.errors == errors_before:        # never cache a failed batch
+                self.db.executemany("INSERT OR REPLACE INTO judge VALUES (?, ?)",
+                                    [(keys[i], float(v)) for i, v in zip(todo, vals)])
+                self.db.commit()
+            for i, v in zip(todo, vals):
+                have[keys[i]] = float(v)
+        return [have[k] for k in keys]
+
+    @property
+    def cost_usd(self) -> float:
+        return getattr(self.inner, "cost_usd", 0.0)
+
+
 class CachedReranker:
     """Memoises the last judgement so search() and context() share one call."""
 
@@ -134,10 +176,18 @@ _MODELS: Dict[tuple, object] = {}
 
 
 def make_reranker(name: str, mode: Optional[str] = None):
-    """One instance per (name, mode) per process: model weights load once."""
+    """One instance per (name, mode) per process: model weights load once.
+
+    With ``SMRITI_LAB_JUDGE_CACHE`` set, model judges persist their scores
+    there (keyed by judge, mode and model id)."""
     key = (name, mode)
     if key not in _MODELS:
-        _MODELS[key] = _build(name, mode)
+        judge = _build(name, mode)
+        path = os.environ.get("SMRITI_LAB_JUDGE_CACHE")
+        if path and name in ("laya", "laya_http", "jev", "clm"):
+            model = os.environ.get("SMRITI_LAB_LAYA", "") if name == "laya" else ""
+            judge = DiskCachedJudge(judge, path, f"{name}:{mode}:{model}")
+        _MODELS[key] = judge
     return _MODELS[key]
 
 
