@@ -6,7 +6,9 @@ smriti (स्मृति): Sanskrit for "that which is remembered".
 from .embedder import HashEmbedder, OllamaEmbedder, OpenAICompatEmbedder
 from .llm import LLM, MockLLM
 from .memory import Smriti, redact_secrets
+from .onnx_embedder import OnnxEmbedder
 from .profiles import PROFILES, RetrievalProfile, resolve as resolve_profile
+from .recall import RecallConfig
 from .rerank import HTTPReranker, MockReranker
 from .types import Episode, Fact, RetrievalResult
 
@@ -14,6 +16,7 @@ __version__ = "0.3.2"
 __all__ = [
     "Smriti", "Fact", "Episode", "RetrievalResult",
     "LLM", "MockLLM", "HashEmbedder", "OllamaEmbedder", "OpenAICompatEmbedder",
+    "OnnxEmbedder", "RecallConfig",
     "HTTPReranker", "MockReranker",
     "RetrievalProfile", "PROFILES", "resolve_profile", "redact_secrets",
 ]

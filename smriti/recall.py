@@ -40,6 +40,11 @@ from functools import lru_cache
 from datetime import date
 from typing import Dict, List, Optional, Sequence, Tuple
 
+try:  # numpy is a core dependency; mirror store.py's import style
+    import numpy as np
+except ImportError:  # pragma: no cover
+    np = None
+
 from .temporal import annotate, find_mentions, parse_anchor, query_window
 from .types import Episode, RetrievalResult
 
@@ -267,7 +272,6 @@ def rank_episodes(store, embedder, query: str, now: Optional[str] = None,
             qvec = embedder.embed([query])[0]
         all_ids, all_sims = store.vector_all(qvec, "episode")
         if all_ids and cfg.prf > 0:
-            import numpy as np
             _ids, mat = store._vectors("episode")
             seed = np.argsort(-all_sims)[:3]
             q = np.asarray(qvec, dtype="float32")
@@ -275,7 +279,6 @@ def rank_episodes(store, embedder, query: str, now: Optional[str] = None,
             q2 = q + cfg.prf * mat[seed].mean(axis=0)
             all_sims = mat @ (q2 / (np.linalg.norm(q2) or 1.0))
         if all_ids:
-            import numpy as np
             top = np.argsort(-all_sims)[:cfg.depth]
             semantic = {all_ids[i]: float(all_sims[i]) for i in top}
     window = query_window(query, now) if cfg.time_boost > 0 else None
@@ -349,14 +352,15 @@ def rank_episodes(store, embedder, query: str, now: Optional[str] = None,
         if named and speaker_of(ep) not in named:
             fused[rid] *= cfg.speaker_prior
 
-    if cfg.session_weight > 0:
+    session_weight = cfg.session_weight
+    if session_weight > 0:
         best: Dict[str, float] = {}
         for rid, v in fused.items():
             sid = eps[rid].session_id or f"#{rid}"
             best[sid] = max(best.get(sid, 0.0), v)
         for rid in fused:
             sid = eps[rid].session_id or f"#{rid}"
-            fused[rid] += cfg.session_weight * best[sid]
+            fused[rid] += session_weight * best[sid]
 
     ranked = sorted(fused, key=lambda r: (-fused[r], r))
     return [Hit(eps[r], fused[r], chans[r]) for r in ranked]

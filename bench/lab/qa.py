@@ -50,9 +50,58 @@ def _opaque(seed: str, *parts) -> str:
     return hashlib.sha256("|".join([seed, *map(str, parts)]).encode()).hexdigest()[:10]
 
 
+def _wrap(line: str, width: int = 1200) -> List[str]:
+    """Hard-wrap very long lines (some file viewers truncate them); the
+    continuation is indented so the reader sees one logical line."""
+    if len(line) <= width:
+        return [line]
+    out, rest = [], line
+    while len(rest) > width:
+        cut = rest.rfind(" ", 0, width)
+        cut = cut if cut > width // 2 else width
+        out.append(rest[:cut])
+        rest = "      " + rest[cut:].lstrip()
+    out.append(rest)
+    return out
+
+
+def render_batch(items: List[dict]) -> str:
+    """Human/LLM-readable batch: one delimited block per item."""
+    blocks = []
+    for it in items:
+        lines = [f"=== ITEM {it['id']} ===",
+                 f"TODAY'S DATE: {it['question_date'] or 'unknown'}",
+                 f"QUESTION: {it['question']}", "MEMORY CONTEXT:"]
+        for raw in it["context"].splitlines():
+            lines.extend(_wrap(raw))
+        lines.append(f"=== END ITEM {it['id']} ===")
+        blocks.append("\n".join(lines))
+    return "\n\n".join(blocks) + "\n"
+
+
+def _export_case(job):
+    from .run import make_system
+    case, qids, names, budget, seed = job
+    qs = [q for q in case.questions if q.qid in set(qids)]
+    items, key = [], {}
+    for name in names:
+        sysm = make_system(name)
+        sysm.build(case)
+        for q in qs:
+            _ranked, ctx = sysm.query(q, budget)
+            iid = _opaque(seed, name, q.qid)
+            items.append({"id": iid, "question": q.question,
+                          "question_date": (q.question_date or "")[:10], "context": ctx})
+            key[iid] = {"system": name, "qid": q.qid, "category": q.category,
+                        "gold": q.answer, "abstention": q.abstention, "question": q.question}
+        if hasattr(sysm, "close"):
+            sysm.close()
+    return items, key
+
+
 def export(argv=None):
     from .data import load_locomo, load_lmex, stratified
-    from .run import LME_PATH, LOCOMO_PATH, in_split, make_system, split_systems
+    from .run import LME_PATH, LOCOMO_PATH, in_split, split_systems
     ap = argparse.ArgumentParser()
     ap.add_argument("--dataset", choices=["locomo", "lmex"], required=True)
     ap.add_argument("--split", default="test")
@@ -62,6 +111,7 @@ def export(argv=None):
     ap.add_argument("--batch", type=int, default=25)
     ap.add_argument("--seed", default="qa-v1")
     ap.add_argument("--out", required=True)
+    ap.add_argument("--workers", type=int, default=4)
     a = ap.parse_args(argv)
     names = split_systems(a.systems)
     os.makedirs(a.out, exist_ok=True)
@@ -89,29 +139,23 @@ def export(argv=None):
     for c, q in chosen:
         wanted[c.case_id].add(q.qid)
     items, key = [], {}
-    for c in cases:
-        if c.case_id not in wanted:
-            continue
-        qs = [q for q in c.questions if q.qid in wanted[c.case_id]]
-        for name in names:
-            sysm = make_system(name)
-            sysm.build(c)
-            for q in qs:
-                _ranked, ctx = sysm.query(q, a.budget)
-                iid = _opaque(a.seed, name, q.qid)
-                items.append({"id": iid, "question": q.question,
-                              "question_date": (q.question_date or "")[:10], "context": ctx})
-                key[iid] = {"system": name, "qid": q.qid, "category": q.category,
-                            "gold": q.answer, "abstention": q.abstention,
-                            "question": q.question}
-            if hasattr(sysm, "close"):
-                sysm.close()
+    jobs = [(c, sorted(wanted[c.case_id]), names, a.budget, a.seed)
+            for c in cases if c.case_id in wanted]
+    import multiprocessing as mp
+    with mp.get_context("fork").Pool(a.workers) as pool:
+        for part_items, part_key in pool.imap_unordered(_export_case, jobs):
+            items.extend(part_items)
+            key.update(part_key)
+    items.sort(key=lambda it: it["id"])
     random.Random(a.seed).shuffle(items)
     nb = 0
     for start in range(0, len(items), a.batch):
+        chunk = items[start:start + a.batch]
         with open(os.path.join(a.out, f"batch_{nb:02d}.jsonl"), "w") as f:
-            for it in items[start:start + a.batch]:
+            for it in chunk:
                 f.write(json.dumps(it) + "\n")
+        with open(os.path.join(a.out, f"batch_{nb:02d}.txt"), "w") as f:
+            f.write(render_batch(chunk))
         nb += 1
     with open(os.path.join(a.out, "key.json"), "w") as f:
         json.dump({"dataset": a.dataset, "split": a.split, "systems": names,

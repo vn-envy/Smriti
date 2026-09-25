@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import sqlite3
 import sys
 from typing import Optional
@@ -32,6 +33,7 @@ from .embedder import HashEmbedder, OllamaEmbedder, OpenAICompatEmbedder
 from .llm import LLM
 from .memory import Smriti
 from .retrieval import expand_channels
+from .store import utcnow
 from .types import Fact
 
 PROTOCOL_VERSION = "2025-06-18"
@@ -63,12 +65,16 @@ TOOL_DEFS = [
                     "for the search type: 'facts' for current-state lookups, "
                     "'relations' for who/how-connected questions, 'timeline' for "
                     "when/before/after questions, 'deep' for counts, totals and "
-                    "summarize-everything questions, 'auto' to let the router choose.",
+                    "summarize-everything questions, 'auto' to let the router choose. "
+                    "Without a profile, evidence-first recall is used: supporting turns "
+                    "are packed whole (or as query-focused excerpts), grouped by dated "
+                    "session, with relative dates resolved. 'now' (ISO date) anchors "
+                    "phrases like 'last weekend'; it defaults to today.",
      "inputSchema": {"type": "object", "properties": {
          "query": {"type": "string"}, "k": {"type": "integer"},
-         "char_budget": {"type": "integer"},
+         "char_budget": {"type": "integer"}, "now": {"type": "string"},
          "profile": {"type": "string",
-                     "enum": ["auto", "facts", "relations", "timeline", "deep", "precision"]},
+                     "enum": ["auto", "evidence", "facts", "relations", "timeline", "deep", "precision"]},
          "channels": {"type": "array", "description":
                       "Optional channel mask (overrides the profile's channels): "
                       "lexical, semantic, entity, temporal — Sanskrit aliases "
@@ -83,7 +89,7 @@ TOOL_DEFS = [
      "inputSchema": {"type": "object", "properties": {
          "query": {"type": "string"}, "k": {"type": "integer"},
          "profile": {"type": "string",
-                     "enum": ["auto", "facts", "relations", "timeline", "deep", "precision"]},
+                     "enum": ["auto", "evidence", "facts", "relations", "timeline", "deep", "precision"]},
          "channels": {"type": "array", "items": {"type": "string"}}},
          "required": ["query"]}},
     {"name": "facts_about",
@@ -145,8 +151,7 @@ class SmritiMCP:
                           "content": _check_str(m.get("content", ""), "content", MAX_CONTENT)})
         return self.mem.add(clean, session_id=a.get("session_id"), timestamp=a.get("timestamp"))
 
-    @staticmethod
-    def _profile_args(a):
+    def _profile_args(self, a):
         """Validate optional profile/channels tool args (drishti selection)."""
         profile = a.get("profile")
         if profile is not None:
@@ -160,9 +165,20 @@ class SmritiMCP:
                 expand_channels(channels)
             except ValueError as e:
                 raise McpError(-32602, str(e))
-            # a bare channel mask still needs a policy to ride on
-            profile = profile or "precision"
+            # a bare channel mask rides on the instance's default read engine
+            profile = profile or ("evidence" if getattr(self.mem, "read_engine", "")
+                                  == "evidence" else "precision")
         return profile, channels
+
+    @staticmethod
+    def _now(a):
+        now = a.get("now")
+        if now is None:
+            return utcnow()[:10]
+        now = _check_str(now, "now", 40)
+        if not re.match(r"^\d{4}-\d{2}-\d{2}", now):
+            raise McpError(-32602, "now must be an ISO date (YYYY-MM-DD...)")
+        return now
 
     def t_recall(self, a):
         q = _check_str(a.get("query", ""), "query", MAX_QUERY)
@@ -171,7 +187,7 @@ class SmritiMCP:
         cb = cb if isinstance(cb, int) and 200 <= cb <= 64000 else 9000
         profile, channels = self._profile_args(a)
         try:
-            return {"context": self.mem.context(q, k=k, char_budget=cb,
+            return {"context": self.mem.context(q, k=k, char_budget=cb, now=self._now(a),
                                                 profile=profile, channels=channels)}
         except ValueError as e:
             raise McpError(-32602, str(e))

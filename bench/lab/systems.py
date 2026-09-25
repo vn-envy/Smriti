@@ -174,6 +174,15 @@ class Mem0System:
             "history_db_path": os.path.join(self.root, "history.db"),
         }
         self.memory = Memory.from_config(cfg)
+        # Mem0's hybrid BM25 half needs fastembed's "Qdrant/bm25" sparse encoder,
+        # normally fetched from Hugging Face. It is a Snowball stemmer plus a
+        # stopword list, so it is built from a local directory holding
+        # english.txt (SMRITI_LAB_QDRANT_BM25) when the hub is unreachable.
+        bm25_dir = os.environ.get("SMRITI_LAB_QDRANT_BM25", "/home/user/data/qdrant_bm25")
+        if os.path.isdir(bm25_dir):
+            from fastembed import SparseTextEmbedding
+            self.memory.vector_store._bm25_encoder = SparseTextEmbedding(
+                model_name="Qdrant/bm25", specific_model_path=bm25_dir)
 
         class _Shim:
             def embed(self, text, memory_action=None):

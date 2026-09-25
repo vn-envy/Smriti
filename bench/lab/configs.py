@@ -55,3 +55,6 @@ def variant(spec: str):
     if base != "ev":
         raise SystemExit(f"unknown variant base {base!r}")
     return _ev(spec, **kw)()
+
+# The shipped 0.3.x default read path, evaluated from the same checkout.
+SYSTEMS["smriti_fusion"] = lambda: SmritiSystem("smriti_fusion", init_kw={"read_engine": "fusion"})

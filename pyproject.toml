@@ -35,6 +35,8 @@ smriti-doctor = "smriti.doctor:main"
 
 [project.optional-dependencies]
 dev = ["pytest>=7"]
+# In-process sentence embeddings (smriti.onnx_embedder.OnnxEmbedder).
+onnx = ["onnxruntime>=1.16", "tokenizers>=0.15"]
 
 [tool.setuptools.packages.find]
 include = ["smriti*", "bench*"]
