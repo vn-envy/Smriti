@@ -2,12 +2,64 @@
 
 | Package | Version | Date | Who it is for |
 |---|---|---|---|
-| [`smriti-agents`](#smriti-040--evidence-first-recall) (core) | **0.4.0** | 2026-09-25 | Developers and individual agents: local, private memory in one SQLite file |
+| [`smriti-agents`](#smriti-041--sharper-evidence-from-chat-logs) (core) | **0.4.1** | 2026-09-25 | Developers and individual agents: local, private memory in one SQLite file |
 | [`smriti-enterprise`](#smriti-enterprise-020) | **0.2.0** | 2026-09-25 | Governed deployments: audit receipts, retention, legal holds, verified packs |
 
 Versions are set in package metadata. No git tag or PyPI publication has
 been made; install from the repository (see
 [Install and upgrade](#install-and-upgrade)).
+
+---
+
+## Smriti 0.4.1 — sharper evidence from chat logs
+
+**More of the right memories reach the LLM when a memory holds long
+assistant replies.** Smriti already ranked the assistant's own replies below
+the user's statements, unless the question asks what the assistant said.
+0.4.1 demotes them more firmly (`RecallConfig.assistant_prior` 0.55 → 0.2).
+The change came out of our decision-model trials: a relevance judge trained
+on labelled memories put its largest weight on exactly this signal.
+
+| Held-out LME-X questions (232) | 0.4.0 | **0.4.1** | Questions better / worse |
+|---|---:|---:|---:|
+| Evidence complete in context, 1,500 characters | 64.8% | **67.4%** | 13 / 1 |
+| Evidence complete in context, 3,000 characters | 78.5% | **83.4%** | 25 / 1 |
+| Evidence complete in context, 9,000 characters | 87.6% | **93.0%** | 26 / 0 |
+
+The value was chosen on the dev split and tested once on held-out questions
+(p = 3×10⁻⁸ at 9,000 characters). LoCoMo, which has no assistant turns, is
+unchanged at every budget. It costs nothing: no model, no extra latency.
+Questions that address the assistant ("what did you recommend…") are not
+affected. Answer-accuracy (QA) runs were not repeated for this release.
+
+### Also new (optional)
+
+- **Decision-model rerankers** in `smriti/decision.py`: `SystemOneReranker`
+  talks to any TypeSafe-compatible `/v1/systemone` endpoint (hosted Jev, a
+  local `laya-serve`, a `clm-serve` GPU host); `LayaReranker` runs Laya in
+  process. Both report calls, tokens, time and cost. Nothing is sent anywhere
+  unless you configure a remote endpoint.
+- **Reranker controls**: `RecallConfig.rerank_depth` (how many top turns a
+  reranker judges, default 48) and `rerank_weight` (1.0 replaces Smriti's
+  score, as before; lower values blend).
+- **Hit-aware rerankers**: a reranker that defines
+  `rerank_hits(query, hits)` sees Smriti's score, rank and role for each
+  candidate.
+
+Trial results so far, including what did not work: a zero-shot Laya-family
+judge ranked memories no better than chance; trained on our labels it beats
+Smriti's order (AUC 0.928 vs 0.890 on held-out questions) and is the best
+option at a 1,500-character budget, at about 5.5 s per question on CPU. It
+remains an experiment. Details: `audit/2026-09-25/decision-models/NOTES.md`.
+
+### Upgrade notes
+
+- Contexts for the same query can differ from 0.4.0 where assistant turns
+  compete with user turns. To keep 0.4.0 ranking for a call, pass
+  `profile=PROFILES["evidence"].with_overrides(recall=RecallConfig(assistant_prior=0.55))`.
+- **Enterprise:** no package change. `smriti-enterprise` 0.2.0 picks up the
+  new ranking with core 0.4.1. Receipt `context_digest` values change where
+  the packed context changes; `versions.core` reads `0.4.1`.
 
 ---
 

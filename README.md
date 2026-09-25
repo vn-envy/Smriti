@@ -28,6 +28,9 @@ The core is a zero-infrastructure, local-first, Apache-2.0 memory layer for AI a
 ## New: evidence-first recall (September 25, 2026)
 
 Released in **Smriti 0.4.0** and **Smriti Enterprise 0.2.0**: [release notes](RELEASE_NOTES.md).
+**0.4.1** demotes assistant replies more firmly and raises LME-X evidence in
+context at 9,000 characters from 87.6% to 93.0% (held-out, LoCoMo unchanged).
+The table below was measured on 0.4.0.
 
 **The old read path usually found the right turn, then lost it while packing.**
 On held-out LongMemEval questions, the 0.3.x path ranked the supporting turn in

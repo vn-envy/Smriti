@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased
+## v0.4.1 — Sharper evidence from chat logs (2026-09-25)
+
+See the [release notes](RELEASE_NOTES.md#smriti-041--sharper-evidence-from-chat-logs).
 
 - **Stronger assistant-turn demotion** (`RecallConfig.assistant_prior` 0.55 → 0.2). Chosen on the LME-X dev split, tested once on held-out questions: evidence complete in context +2.6 / +4.9 / +5.4 points at 1,500 / 3,000 / 9,000 characters (26 questions better, 0 worse at 9,000; p = 3×10⁻⁸); LoCoMo unchanged. Questions that ask what the assistant said still lift the prior.
 - **Decision-model rerankers** (`smriti/decision.py`, optional): `SystemOneReranker` for any TypeSafe `/v1/systemone` endpoint (hosted Jev, `laya-serve`, `clm-serve`) and in-process `LayaReranker`, with call/token/latency/cost accounting. `RecallConfig.rerank_depth` and `rerank_weight` control how many turns a reranker judges and how its score blends with Smriti's.
