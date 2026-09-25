@@ -106,6 +106,7 @@ def _run_case(args):
             dt = time.perf_counter() - t1
             row = score_question(q, ranked, ctx, turns, turn_sess)
             row["query_ms"] = round(dt * 1000, 2)
+            row.update(getattr(sysm, "last_extra", None) or {})
             row["context"] = ctx if os.environ.get("SMRITI_LAB_KEEP_CTX") else None
             rows.append(row)
         if hasattr(sysm, "close"):
@@ -143,6 +144,14 @@ def aggregate(rows: List[dict]) -> dict:
         agg["query_ms_p50"] = lat[len(lat) // 2]
         agg["query_ms_p95"] = lat[min(len(lat) - 1, int(0.95 * len(lat)))]
     agg["ctx_chars_mean"] = round(statistics.mean(r["ctx_chars"] for r in rows), 1) if rows else None
+    rr = [r for r in rows if "rerank_ms" in r]
+    if rr:
+        ms = sorted(r["rerank_ms"] for r in rr)
+        agg["rerank_ms_p50"] = ms[len(ms) // 2]
+        agg["rerank_ms_p95"] = ms[min(len(ms) - 1, int(0.95 * len(ms)))]
+        for key in ("rerank_requests", "rerank_docs", "rerank_tokens", "rerank_errors"):
+            agg[key + "_mean"] = round(statistics.mean(r[key] for r in rr), 2)
+        agg["rerank_usd_per_1k_queries"] = round(1000 * statistics.mean(r["rerank_usd"] for r in rr), 5)
     return agg
 
 

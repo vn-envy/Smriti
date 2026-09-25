@@ -22,9 +22,12 @@ def _ev(name, **recall):
     init = {}
     if "ctx_embed" in recall:
         init["contextual_embeddings"] = recall.pop("ctx_embed")
+    rerank = recall.pop("rerank", None)
+    rerank_mode = recall.pop("rerank_mode", None)
     prof = RetrievalProfile(name=name, engine="evidence", recall=RecallConfig(**recall))
     return lambda: SmritiSystem(name, init_kw=init, search_kw={"profile": prof},
-                                context_kw={"profile": prof})
+                                context_kw={"profile": prof},
+                                rerank=rerank, rerank_mode=rerank_mode)
 
 
 SYSTEMS.update({

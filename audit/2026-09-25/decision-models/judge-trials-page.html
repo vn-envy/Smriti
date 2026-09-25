@@ -1,0 +1,601 @@
+<title>Smriti Judge Trials</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;500&family=Tiro+Devanagari+Sanskrit&display=swap">
+<style>
+:root {
+  --page: #eef1f4;
+  --surface: #fbfcfd;
+  --ink: #0e1620;
+  --ink-2: #475261;
+  --muted: #6f7986;
+  --grid: #e1e6eb;
+  --axis: #c3cad3;
+  --line: rgba(14, 22, 32, 0.10);
+  --brand: #1f5fbf;
+  --ceiling: #5b6470;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4;
+  --good: #0a7f0a; --good-bg: rgba(12, 163, 12, 0.10);
+  --warn: #8a5a00; --warn-bg: rgba(250, 178, 25, 0.18);
+  --bad: #b3261e; --bad-bg: rgba(208, 59, 59, 0.10);
+  --info: #1f5fbf; --info-bg: rgba(42, 120, 214, 0.10);
+  --sans: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --deva: "Tiro Devanagari Sanskrit", "Noto Serif Devanagari", serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --page: #0c1014; --surface: #141a20; --ink: #eef2f6; --ink-2: #b8c1cb; --muted: #8b95a1;
+    --grid: #232a32; --axis: #36404a; --line: rgba(255, 255, 255, 0.10); --brand: #7fb0f0;
+    --ceiling: #a3adb9;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181;
+    --good: #37c237; --good-bg: rgba(12, 163, 12, 0.16);
+    --warn: #f6c35a; --warn-bg: rgba(250, 178, 25, 0.14);
+    --bad: #ff8a80; --bad-bg: rgba(208, 59, 59, 0.18);
+    --info: #7fb0f0; --info-bg: rgba(57, 135, 229, 0.16);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0c1014; --surface: #141a20; --ink: #eef2f6; --ink-2: #b8c1cb; --muted: #8b95a1;
+  --grid: #232a32; --axis: #36404a; --line: rgba(255, 255, 255, 0.10); --brand: #7fb0f0;
+  --ceiling: #a3adb9;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181;
+  --good: #37c237; --good-bg: rgba(12, 163, 12, 0.16);
+  --warn: #f6c35a; --warn-bg: rgba(250, 178, 25, 0.14);
+  --bad: #ff8a80; --bad-bg: rgba(208, 59, 59, 0.18);
+  --info: #7fb0f0; --info-bg: rgba(57, 135, 229, 0.16);
+}
+* { box-sizing: border-box; }
+body { background: var(--page); color: var(--ink); font-family: var(--sans); font-size: 15px;
+  line-height: 1.55; padding-inline: 16px; padding-block: 0 64px; }
+.wrap { max-width: 1080px; margin: 0 auto; display: grid; gap: 56px; }
+a { color: var(--brand); }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+p { margin: 0; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--muted); }
+.topbar { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; justify-content: space-between;
+  padding-block: 20px 0; }
+.brandmark { display: flex; align-items: baseline; gap: 10px; font-weight: 700; font-stretch: 112%; }
+.brandmark .deva { font-family: var(--deva); font-weight: 400; color: var(--muted); font-size: 17px; }
+
+/* hero */
+.hero { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 32px; align-items: end; }
+.hero h1 { font-size: clamp(30px, 4.6vw, 52px); line-height: 1.04; font-weight: 800; font-stretch: 118%;
+  letter-spacing: -0.015em; }
+.hero h1 em { font-style: normal; color: var(--brand); }
+.hero .lede { margin-top: 18px; max-width: 58ch; color: var(--ink-2); font-size: 17px; }
+.figure { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 22px;
+  display: grid; gap: 10px; }
+.figure .big { font-size: clamp(52px, 7vw, 76px); font-weight: 800; font-stretch: 110%; line-height: 1; }
+.figure .vs { display: flex; flex-wrap: wrap; gap: 6px 14px; color: var(--ink-2); font-size: 14px; }
+.figure .vs b { color: var(--ink); }
+.meter { position: relative; height: 10px; border-radius: 5px; background: var(--grid); overflow: hidden; }
+.meter span { position: absolute; inset: 0 auto 0 0; border-radius: 5px; }
+.meter .today { background: var(--s1); }
+.meter .ceil { background: var(--ceiling); opacity: 0.35; }
+
+/* chips */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 8px; border-radius: 999px;
+  font-size: 12.5px; font-weight: 600; letter-spacing: 0.01em; white-space: nowrap; }
+.chip svg { width: 12px; height: 12px; flex: none; }
+.chip.win { color: var(--good); background: var(--good-bg); }
+.chip.loss { color: var(--bad); background: var(--bad-bg); }
+.chip.blocked { color: var(--warn); background: var(--warn-bg); }
+.chip.info { color: var(--info); background: var(--info-bg); }
+
+/* sections */
+section { display: grid; gap: 20px; }
+.sec-head { display: grid; gap: 8px; max-width: 70ch; }
+.sec-head h2 { font-size: clamp(22px, 2.6vw, 30px); font-weight: 800; font-stretch: 112%; letter-spacing: -0.01em; }
+.sec-head p { color: var(--ink-2); }
+
+/* contenders */
+.contenders { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px;
+  display: grid; gap: 10px; align-content: start; }
+.card h3 { font-size: 18px; font-weight: 750; font-stretch: 108%; display: flex; align-items: center; gap: 8px; }
+.card .key { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+.card dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; font-size: 13px; }
+.card dt { color: var(--muted); }
+.card dd { margin: 0; color: var(--ink); }
+.card .note { font-size: 13px; color: var(--ink-2); }
+
+/* charts */
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; }
+.multiples { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.chart-title { font-weight: 700; font-size: 15px; }
+.chart-sub { color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.legend i { display: inline-block; width: 16px; height: 2px; border-radius: 1px; }
+.legend i.box { height: 10px; width: 10px; border-radius: 2px; }
+svg.chart { width: 100%; height: auto; display: block; overflow: visible; }
+svg.chart text { fill: var(--muted); font-family: var(--sans); font-size: 11.5px; font-variant-numeric: tabular-nums; }
+svg.chart text.lbl { fill: var(--ink-2); font-size: 12px; font-weight: 600; }
+svg.chart text.val { fill: var(--ink); font-size: 12px; font-weight: 600; }
+svg.chart .gridline { stroke: var(--grid); stroke-width: 1; }
+svg.chart .axisline { stroke: var(--axis); stroke-width: 1; }
+svg.chart .hit { fill: transparent; cursor: crosshair; }
+svg.chart .xhair { stroke: var(--axis); stroke-width: 1; }
+.tip { position: fixed; z-index: 10; pointer-events: none; background: var(--surface); color: var(--ink);
+  border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-size: 12.5px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.14); min-width: 170px; }
+.tip .t { color: var(--muted); font-size: 11.5px; margin-bottom: 4px; }
+.tip .row { display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+.tip .row span { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); }
+.tip .row i { width: 12px; height: 2px; border-radius: 1px; display: inline-block; }
+.tip .row b { font-variant-numeric: tabular-nums; }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.claims { width: 100%; border-collapse: collapse; font-size: 13px; }
+.claims th, .claims td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+.claims th { color: var(--muted); font-weight: 600; font-size: 12px; }
+.claims td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* updates feed */
+.feed { display: grid; gap: 12px; }
+.post { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px;
+  display: grid; gap: 10px; }
+.post header { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; }
+.post .when { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.post .text { font-size: 16px; line-height: 1.5; max-width: 68ch; }
+.post footer { display: flex; align-items: center; gap: 12px; }
+.post .count { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+button.copy { font: inherit; font-size: 12.5px; font-weight: 600; color: var(--brand); background: transparent;
+  border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+button.copy:hover { background: var(--info-bg); }
+button:focus-visible, .hit:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+/* table */
+.tablewrap { overflow-x: auto; }
+table.data { border-collapse: collapse; width: 100%; font-size: 13px; min-width: 620px; }
+table.data th, table.data td { padding: 7px 10px; border-bottom: 1px solid var(--grid); text-align: right; }
+table.data th:first-child, table.data td:first-child { text-align: left; }
+table.data th { color: var(--muted); font-weight: 600; font-size: 12px; }
+table.data td { font-variant-numeric: tabular-nums; }
+.method { color: var(--ink-2); font-size: 14px; display: grid; gap: 10px; max-width: 75ch; }
+.method code { font-family: var(--mono); font-size: 12.5px; }
+
+@media (max-width: 860px) {
+  .hero { grid-template-columns: 1fr; }
+  .contenders { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .multiples, .two { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .contenders { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .draw path.series { stroke-dasharray: var(--len); stroke-dashoffset: 0; animation: draw 900ms ease-out both; }
+  @keyframes draw { from { stroke-dashoffset: var(--len); } to { stroke-dashoffset: 0; } }
+}
+</style>
+
+<div class="wrap">
+  <div class="topbar">
+    <div class="brandmark"><span>Smriti</span><span class="deva">स्मृति × लय</span></div>
+    <div class="eyebrow" id="updated">Live experiment log</div>
+  </div>
+
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Experiment 01 · decision models as memory judges</p>
+      <h1 style="margin-top:12px">A perfect judge would let Smriti send <em>3× less context</em> and keep 98% of the evidence.</h1>
+      <p class="lede">Laya, Jev and CLM-8B are "System One" models: they answer a yes/no or multiple-choice question about a text in one pass, in milliseconds. We are testing whether any of them can re-rank a private memory store well enough to earn a place in it.</p>
+    </div>
+    <div class="figure" aria-label="Headline result">
+      <p class="eyebrow">LongMemEval-style questions · 3,000-character context</p>
+      <div class="big">97.9%</div>
+      <p>of supporting evidence reaches the LLM with a perfect judge re-ranking Smriti's top 48 memories.</p>
+      <div class="meter" role="img" aria-label="82.8 percent today, 97.9 percent with a perfect judge">
+        <span class="ceil" style="width:97.9%"></span><span class="today" style="width:82.8%"></span>
+      </div>
+      <div class="vs"><span>Smriti today <b>82.8%</b></span><span>Smriti today at 9,000 characters <b>93.2%</b></span></div>
+    </div>
+  </header>
+
+  <section aria-labelledby="h-contenders">
+    <div class="sec-head">
+      <p class="eyebrow">The contenders</p>
+      <h2 id="h-contenders">Three decision models, one question</h2>
+      <p>Each judge sees a question and one candidate memory and answers "does this memory help answer the question?" Smriti's own ranking is the baseline every judge has to beat.</p>
+    </div>
+    <div class="contenders" id="contenders"></div>
+  </section>
+
+  <section aria-labelledby="h-effect">
+    <div class="sec-head">
+      <p class="eyebrow">Effectiveness</p>
+      <h2 id="h-effect">The prize grows as the context shrinks</h2>
+      <p>Share of supporting evidence that reaches the LLM complete, by context budget. The gray line is the ceiling: a judge that is always right about Smriti's top 48 memories. A bad judge falls below Smriti's own ranking.</p>
+    </div>
+    <div class="panel" style="display:grid; gap:14px">
+      <div class="legend" id="legend-effect"></div>
+      <div class="multiples" id="effect"></div>
+    </div>
+    <div class="panel" style="display:grid; gap:14px">
+      <div>
+        <div class="chart-title">Right memory in the top 5 results</div>
+        <div class="chart-sub">Share of evidence turns ranked in the first five results of <code>search()</code> · dev splits</div>
+      </div>
+      <div class="legend" id="legend-top5"></div>
+      <div id="top5"></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-cost">
+    <div class="sec-head">
+      <p class="eyebrow">Latency and cost</p>
+      <h2 id="h-cost">What a judge costs per query</h2>
+      <p>Judging 48 memories means 48 decisions per question. Bars show what we measured on a 4-vCPU box; pending rows fill in as each model runs.</p>
+    </div>
+    <div class="two">
+      <div class="panel" style="display:grid; gap:12px">
+        <div><div class="chart-title">Milliseconds per query, p50</div>
+          <div class="chart-sub">search + context, measured · lower is better</div></div>
+        <div id="latency"></div>
+      </div>
+      <div class="panel" style="display:grid; gap:12px">
+        <div><div class="chart-title">API dollars per 1,000 queries</div>
+          <div class="chart-sub">Jev projected at $0.042 per 1M input tokens · local models cost compute, not API fees</div></div>
+        <div id="cost"></div>
+      </div>
+    </div>
+    <div class="panel" style="display:grid; gap:10px">
+      <div class="chart-title">What the vendors claim</div>
+      <div class="chart-sub">Published figures, not measured by us. They are per decision; a memory query needs up to 48.</div>
+      <div class="tablewrap"><table class="claims" id="claims"></table></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-feed">
+    <div class="sec-head">
+      <p class="eyebrow">Build log</p>
+      <h2 id="h-feed">Wins, losses and blockers, as they land</h2>
+      <p>Each update fits in a post. Copy one and share it.</p>
+    </div>
+    <div class="feed" id="feed"></div>
+  </section>
+
+  <section aria-labelledby="h-data">
+    <div class="sec-head">
+      <p class="eyebrow">All numbers</p>
+      <h2 id="h-data">Data table</h2>
+    </div>
+    <div class="panel tablewrap"><table class="data" id="table"></table></div>
+    <div class="method">
+      <p><b>Data.</b> LoCoMo10 dev conversations (786 questions with evidence labels) and LME-X dev (238 LongMemEval questions, each hidden among 48 other conversations; not the official LongMemEval-S haystack). Tuning happens on dev; model comparisons will be reported on the held-out test split.</p>
+      <p><b>Metric.</b> "Evidence reaching the LLM" is the share of labelled supporting turns that appear complete in the packed context. The judge re-ranks Smriti's top 48 turns; with <code>rerank_weight</code> below 1 its score blends with Smriti's own.</p>
+      <p><b>Harness.</b> <code>smriti/decision.py</code> speaks the TypeSafe <code>/v1/systemone</code> protocol, so hosted Jev, <code>laya-serve</code> and <code>clm-serve</code> plug in the same way; <code>bench/lab</code> records milliseconds, requests, tokens and dollars per query.</p>
+    </div>
+  </section>
+</div>
+<div class="tip" id="tip" hidden></div>
+
+<script>
+const DATA = {
+  updated: "2026-09-25 16:20 UTC",
+  series: [
+    { id: "smriti", name: "Smriti today", color: "--s1" },
+    { id: "oracle", name: "Perfect judge (ceiling)", color: "--ceiling" },
+    { id: "overlap", name: "Word-overlap judge", color: "--s2" },
+    { id: "laya", name: "Laya", color: "--s3", pending: true },
+    { id: "jev", name: "Jev", color: "--s4", pending: true },
+    { id: "clm", name: "CLM-8B", color: "--s5", pending: true }
+  ],
+  effect: {
+    locomo: { title: "LoCoMo", sub: "786 questions · dev", budgets: [1500, 3000, 9000],
+      smriti: [69.0, 77.9, 88.8], oracle: [88.0, 88.1, 89.0], overlap: [57.6, 71.0, 88.7] },
+    lmex: { title: "LME-X (LongMemEval questions + distractors)", sub: "238 questions · dev", budgets: [1500, 3000, 9000],
+      smriti: [67.4, 82.8, 93.2], oracle: [93.1, 97.9, 97.9], overlap: [36.6, 50.9, 68.6] }
+  },
+  top5: [
+    { dataset: "LoCoMo", smriti: 62.6, oracle: 88.0, overlap: 53.1 },
+    { dataset: "LME-X", smriti: 82.1, oracle: 99.1, overlap: 60.4 }
+  ],
+  latency: [
+    { name: "Smriti engine · LoCoMo", ms: 8.0, color: "--s1" },
+    { name: "Smriti engine · LME-X", ms: 13.5, color: "--s1" },
+    { name: "Laya judge (local)", pending: "waiting for weights", color: "--s3" },
+    { name: "Jev judge (hosted)", pending: "waiting for network access", color: "--s4" },
+    { name: "CLM-8B judge (local GPU)", pending: "needs a GPU", color: "--s5" }
+  ],
+  cost: [
+    { name: "Smriti engine", usd: 0, note: "$0 · local", color: "--s1" },
+    { name: "Laya (local)", usd: 0, note: "$0 API · local compute", color: "--s3" },
+    { name: "CLM-8B (local GPU)", usd: 0, note: "$0 API · needs a GPU", color: "--s5" },
+    { name: "Jev · LoCoMo", usd: 0.17, hi: 0.22, note: "$0.17–0.22 projected", color: "--s4" },
+    { name: "Jev · LME-X", usd: 0.45, hi: 0.51, note: "$0.45–0.51 projected", color: "--s4" }
+  ],
+  contenders: [
+    { name: "Smriti engine", color: "--s1", status: ["win", "Baseline"],
+      facts: [["Runs", "In process, CPU"], ["Size", "SQLite + MiniLM"], ["License", "Apache-2.0"], ["Measured", "8–14 ms / query"]],
+      note: "Evidence-first ranking and packing. Every judge must beat this." },
+    { name: "Laya", color: "--s3", status: ["blocked", "Waiting for weights"],
+      facts: [["Runs", "Local, CPU or GPU"], ["Size", "421M (ModernBERT-large)"], ["License", "Apache-2.0"], ["Claimed", "33 ms / decision"]],
+      note: "Open System One model from Convai Innovations. Weights are on Hugging Face, which our sandbox cannot reach yet." },
+    { name: "Jev", color: "--s4", status: ["blocked", "Waiting for network"],
+      facts: [["Runs", "Hosted API"], ["Size", "Closed"], ["Price", "$0.042 / 1M input tokens"], ["Claimed", "70–500 ms / call"]],
+      note: "TypeSafe's hosted System One model. Memories would leave the machine, so it can only ever be opt-in." },
+    { name: "CLM-8B", color: "--s5", status: ["blocked", "Needs a GPU"],
+      facts: [["Runs", "Local GPU + vLLM"], ["Size", "75 MB heads on Qwen3-8B"], ["License", "Apache-2.0"], ["Claimed", "16.5 ms / decision"]],
+      note: "Contrastive-LM's state/action model. Memory embeddings could be cached at write time, which suits a memory store." }
+  ],
+  claims: [
+    ["Laya", "33 ms per decision; 7.2 ms per question batched", "NVIDIA T4", "Laya README"],
+    ["Jev", "70–500 ms per call", "Hosted", "Published pricing and launch coverage"],
+    ["Jev", "149.8 ms per decision on T-Rex", "Hosted", "Contrastive-LM's comparison"],
+    ["CLM-8B", "16.5 ms per decision on T-Rex, up to 9× faster than Jev", "1 NVIDIA GPU", "Contrastive-LM release"]
+  ],
+  posts: [
+    { when: "16:20 UTC", kind: ["blocked", "Blocked"],
+      text: "Honest status: our sandbox can't reach Hugging Face (Laya and CLM weights) or the Jev API yet, and CLM-8B needs a GPU for its Qwen3-8B encoder. The harness is built and tested. Runs start the moment access opens." },
+    { when: "16:15 UTC", kind: ["info", "Cost"],
+      text: "Cost check before the first call: judging 48 memories per query with hosted Jev at list price ($0.042 per 1M input tokens) projects to $0.17 to $0.51 per 1,000 queries. Cheap. The catch for a private memory layer: those memories leave your machine." },
+    { when: "16:10 UTC", kind: ["loss", "Loss"],
+      text: "Judges can hurt. A naive word-overlap judge cut the evidence reaching the LLM from 93.2% to 68.6% on LongMemEval-style questions. Whatever model we add has to beat Smriti's own ranking, or it stays off." },
+    { when: "16:05 UTC", kind: ["win", "Ceiling"],
+      text: "Before testing any model we measured the prize. A perfect \"is this memory relevant?\" judge over Smriti's top 48 memories keeps 97.9% of the evidence at a 3,000-character context, against 82.8% today. Same evidence, a third of the tokens." },
+    { when: "15:55 UTC", kind: ["info", "Setup"],
+      text: "One adapter now speaks the TypeSafe /v1/systemone protocol, so hosted Jev, a local Laya server and a CLM server all plug into Smriti's reranker slot. A blend weight keeps Smriti's own ranking as a safety net." },
+    { when: "15:45 UTC", kind: ["info", "Kickoff"],
+      text: "New experiment: can a 33 ms open decision model make private memory sharper? We're testing Laya, Jev and CLM-8B as relevance judges inside Smriti, a local memory layer in one SQLite file. Wins and losses posted as they land." }
+  ]
+};
+
+const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const NS = "http://www.w3.org/2000/svg";
+const el = (tag, attrs = {}, parent) => {
+  const n = document.createElementNS(NS, tag);
+  for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+  if (parent) parent.appendChild(n);
+  return n;
+};
+const h = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+const seriesById = Object.fromEntries(DATA.series.map((s) => [s.id, s]));
+const ICONS = {
+  win: '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6.5 4.8 9 10 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  loss: '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2v5.5M3 5.5 6 8.5l3-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  blocked: '<svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.2 8.8 8.8 3.2" stroke="currentColor" stroke-width="1.8"/></svg>',
+  info: '<svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M6 5.4v3M6 3.4v.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'
+};
+function chip(kind, label) {
+  const c = h("span", "chip " + kind);
+  c.innerHTML = ICONS[kind] || "";
+  c.appendChild(document.createTextNode(label));
+  return c;
+}
+
+document.getElementById("updated").textContent = "Live experiment log · updated " + DATA.updated;
+
+/* contenders */
+(function () {
+  const root = document.getElementById("contenders");
+  for (const c of DATA.contenders) {
+    const card = h("article", "card");
+    const t = h("h3");
+    const key = h("span", "key"); key.style.background = `var(${c.color})`;
+    t.append(key, document.createTextNode(c.name));
+    const dl = document.createElement("dl");
+    for (const [k, v] of c.facts) { dl.append(h("dt", null, k), h("dd", null, v)); }
+    const chips = h("div", "chips"); chips.appendChild(chip(c.status[0], c.status[1]));
+    card.append(t, chips, dl, h("p", "note", c.note));
+    root.appendChild(card);
+  }
+})();
+
+/* tooltip */
+const tip = document.getElementById("tip");
+function showTip(evt, title, rows) {
+  tip.replaceChildren();
+  tip.appendChild(h("div", "t", title));
+  for (const r of rows) {
+    const row = h("div", "row");
+    const s = h("span"); const i = h("i"); i.style.background = `var(${r.color})`;
+    s.append(i, document.createTextNode(r.name));
+    row.append(s, h("b", null, r.value));
+    tip.appendChild(row);
+  }
+  tip.hidden = false;
+  const pad = 14, w = tip.offsetWidth, hgt = tip.offsetHeight;
+  let x = evt.clientX + pad, y = evt.clientY + pad;
+  if (x + w > window.innerWidth - 8) x = evt.clientX - w - pad;
+  if (y + hgt > window.innerHeight - 8) y = evt.clientY - hgt - pad;
+  tip.style.left = x + "px"; tip.style.top = y + "px";
+}
+function hideTip() { tip.hidden = true; }
+
+/* legend */
+function legend(id, ids, box) {
+  const root = document.getElementById(id);
+  for (const sid of ids) {
+    const s = seriesById[sid];
+    const sp = h("span"); const i = h("i", box ? "box" : null); i.style.background = `var(${s.color})`;
+    sp.append(i, document.createTextNode(s.name));
+    root.appendChild(sp);
+  }
+}
+
+/* effectiveness: small multiples */
+function effectChart(key) {
+  const d = DATA.effect[key];
+  const W = 460, H = 270, m = { l: 40, r: 118, t: 14, b: 34 };
+  const iw = W - m.l - m.r, ih = H - m.t - m.b;
+  const wrap = h("div");
+  wrap.append(h("div", "chart-title", d.title), h("div", "chart-sub", d.sub));
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, class: "chart draw", role: "img",
+    "aria-label": `${d.title}: evidence reaching the LLM by context budget` });
+  wrap.appendChild(svg);
+  const yMin = 30, yMax = 100;
+  const x = (i) => m.l + (iw * i) / (d.budgets.length - 1);
+  const y = (v) => m.t + ih - ((v - yMin) / (yMax - yMin)) * ih;
+  for (let v = 40; v <= 100; v += 20) {
+    el("line", { x1: m.l, x2: m.l + iw, y1: y(v), y2: y(v), class: "gridline" }, svg);
+    el("text", { x: m.l - 8, y: y(v) + 4, "text-anchor": "end" }, svg).textContent = v + "%";
+  }
+  el("line", { x1: m.l, x2: m.l + iw, y1: m.t + ih, y2: m.t + ih, class: "axisline" }, svg);
+  d.budgets.forEach((b, i) => {
+    el("text", { x: x(i), y: H - 12, "text-anchor": i === 0 ? "start" : i === d.budgets.length - 1 ? "end" : "middle" }, svg)
+      .textContent = b.toLocaleString("en-US") + " chars";
+  });
+  const order = ["oracle", "overlap", "smriti"];
+  const ends = [];
+  for (const sid of order) {
+    const vals = d[sid]; if (!vals) continue;
+    const s = seriesById[sid];
+    const pts = vals.map((v, i) => [x(i), y(v)]);
+    const p = el("path", { d: "M" + pts.map((p) => p.join(",")).join("L"), fill: "none",
+      stroke: `var(${s.color})`, "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round", class: "series" }, svg);
+    const len = p.getTotalLength ? p.getTotalLength() : 600; p.style.setProperty("--len", len);
+    for (const [px, py] of pts) el("circle", { cx: px, cy: py, r: 4, fill: `var(${s.color})`, stroke: "var(--surface)", "stroke-width": 2 }, svg);
+    ends.push({ y: pts[pts.length - 1][1], text: `${vals[vals.length - 1].toFixed(1)}%`, name: s.name, sid });
+  }
+  // end labels with collision handling via leader lines
+  ends.sort((a, b) => a.y - b.y);
+  let last = -Infinity;
+  for (const e of ends) {
+    let ly = Math.max(e.y, last + 30); last = ly;
+    const lx = m.l + iw + 12;
+    if (Math.abs(ly - e.y) > 2) el("line", { x1: m.l + iw + 4, x2: lx - 2, y1: e.y, y2: ly - 4, stroke: "var(--axis)", "stroke-width": 1 }, svg);
+    el("text", { x: lx, y: ly - 1, class: "val" }, svg).textContent = e.text;
+    el("text", { x: lx, y: ly + 12 }, svg).textContent = e.name.replace(" (ceiling)", "");
+  }
+  // crosshair + tooltip
+  const xh = el("line", { y1: m.t, y2: m.t + ih, class: "xhair", visibility: "hidden" }, svg);
+  d.budgets.forEach((b, i) => {
+    const half = iw / (d.budgets.length - 1) / 2;
+    const r = el("rect", { x: Math.max(m.l - 12, x(i) - half), y: m.t, width: Math.min(half * 2, iw), height: ih, class: "hit", tabindex: 0,
+      "aria-label": `${b} characters` }, svg);
+    const rows = () => order.filter((sid) => d[sid]).map((sid) => ({ name: seriesById[sid].name, color: seriesById[sid].color, value: d[sid][i].toFixed(1) + "%" }))
+      .sort((a, b2) => parseFloat(b2.value) - parseFloat(a.value));
+    const on = (evt) => { xh.setAttribute("x1", x(i)); xh.setAttribute("x2", x(i)); xh.setAttribute("visibility", "visible");
+      showTip(evt, `${d.title} · ${b.toLocaleString("en-US")}-character context`, rows()); };
+    r.addEventListener("pointermove", on);
+    r.addEventListener("focus", () => { const bb = r.getBoundingClientRect(); on({ clientX: bb.left + bb.width / 2, clientY: bb.top + 20 }); });
+    r.addEventListener("pointerleave", () => { xh.setAttribute("visibility", "hidden"); hideTip(); });
+    r.addEventListener("blur", () => { xh.setAttribute("visibility", "hidden"); hideTip(); });
+  });
+  return wrap;
+}
+legend("legend-effect", ["smriti", "oracle", "overlap"]);
+document.getElementById("effect").append(effectChart("locomo"), effectChart("lmex"));
+
+/* horizontal bars (shared) */
+function hbars(rootId, rows, opts) {
+  const root = document.getElementById(rootId);
+  const W = opts.W || 460, rowH = opts.rowH || 34, m = { l: opts.labelW || 170, r: opts.right || 96, t: 6, b: opts.axis ? 26 : 6 };
+  const H = m.t + m.b + rowH * rows.length;
+  const iw = W - m.l - m.r;
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, class: "chart", role: "img", "aria-label": opts.aria }, root);
+  const x = (v) => m.l + (v / opts.max) * iw;
+  if (opts.ticks) for (const t of opts.ticks) {
+    el("line", { x1: x(t), x2: x(t), y1: m.t, y2: H - m.b, class: "gridline" }, svg);
+    if (opts.axis) el("text", { x: x(t), y: H - 8, "text-anchor": "middle" }, svg).textContent = opts.fmtTick(t);
+  }
+  el("line", { x1: m.l, x2: m.l, y1: m.t, y2: H - m.b, class: "axisline" }, svg);
+  rows.forEach((r, i) => {
+    const cy = m.t + rowH * i + rowH / 2;
+    el("text", { x: m.l - 10, y: cy + 4, "text-anchor": "end", class: "lbl" }, svg).textContent = r.name;
+    if (r.pending) {
+      el("rect", { x: m.l, y: cy - 8, width: iw, height: 16, rx: 4, fill: "none", stroke: "var(--grid)", "stroke-width": 1 }, svg);
+      el("text", { x: m.l + 10, y: cy + 4 }, svg).textContent = "Pending: " + r.pending;
+      return;
+    }
+    const w = Math.max(r.value > 0 ? 3 : 0, x(r.value) - m.l);
+    if (w > 0) {
+      const pth = `M${m.l},${cy - 8} h${Math.max(0, w - 4)} a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h${-Math.max(0, w - 4)} z`;
+      el("path", { d: pth, fill: `var(${r.color})` }, svg);
+      if (r.hi) el("line", { x1: x(r.value), x2: x(r.hi), y1: cy, y2: cy, stroke: `var(${r.color})`, "stroke-width": 2, "stroke-linecap": "round" }, svg);
+    } else {
+      el("circle", { cx: m.l + 5, cy, r: 4, fill: `var(${r.color})`, stroke: "var(--surface)", "stroke-width": 2 }, svg);
+    }
+    el("text", { x: x(r.hi || r.value) + (w > 0 ? 8 : 16), y: cy + 4, class: "val" }, svg).textContent = r.label;
+    const hit = el("rect", { x: 0, y: cy - rowH / 2, width: W, height: rowH, class: "hit", tabindex: 0, "aria-label": `${r.name}: ${r.label}` }, svg);
+    const on = (evt) => showTip(evt, opts.tipTitle, [{ name: r.name, color: r.color, value: r.label }]);
+    hit.addEventListener("pointermove", on);
+    hit.addEventListener("focus", () => { const bb = hit.getBoundingClientRect(); on({ clientX: bb.left + 60, clientY: bb.top }); });
+    hit.addEventListener("pointerleave", hideTip); hit.addEventListener("blur", hideTip);
+  });
+}
+
+/* top-5: grouped rows per dataset */
+legend("legend-top5", ["smriti", "oracle", "overlap"], true);
+(function () {
+  const rows = [];
+  for (const d of DATA.top5) for (const sid of ["smriti", "oracle", "overlap"]) {
+    rows.push({ name: `${d.dataset} · ${seriesById[sid].name.replace(" (ceiling)", "")}`, value: d[sid], color: seriesById[sid].color, label: d[sid].toFixed(1) + "%" });
+  }
+  hbars("top5", rows, { W: 980, rowH: 30, right: 80, max: 100, ticks: [0, 25, 50, 75, 100], axis: true, fmtTick: (t) => t + "%", labelW: 230,
+    aria: "Right memory in the top five results, by dataset and judge", tipTitle: "Evidence in top 5 results" });
+})();
+
+/* latency */
+hbars("latency", DATA.latency.map((r) => ({ ...r, value: r.ms || 0, label: r.ms ? r.ms.toFixed(1) + " ms" : "" })),
+  { max: 20, ticks: [0, 5, 10, 15, 20], axis: true, fmtTick: (t) => t + " ms", labelW: 180,
+    aria: "Milliseconds per query, median", tipTitle: "Median milliseconds per query" });
+
+/* cost */
+hbars("cost", DATA.cost.map((r) => ({ ...r, value: r.usd, label: r.note })),
+  { max: 1.0, right: 150, ticks: [0, 0.25, 0.5, 0.75, 1.0], axis: true, fmtTick: (t) => "$" + t.toFixed(2), labelW: 140,
+    aria: "API dollars per thousand queries", tipTitle: "API dollars per 1,000 queries" });
+
+/* claims */
+(function () {
+  const t = document.getElementById("claims");
+  const hr = document.createElement("tr");
+  for (const c of ["Model", "Claimed latency", "Hardware", "Source"]) hr.appendChild(h("th", null, c));
+  t.appendChild(hr);
+  for (const row of DATA.claims) {
+    const tr = document.createElement("tr");
+    row.forEach((v, i) => tr.appendChild(h("td", i === 1 ? "num" : null, v)));
+    t.appendChild(tr);
+  }
+})();
+
+/* feed */
+(function () {
+  const root = document.getElementById("feed");
+  DATA.posts.forEach((p, idx) => {
+    const art = h("article", "post");
+    const head = h("header");
+    const left = h("div", "chips"); left.appendChild(chip(p.kind[0], p.kind[1]));
+    head.append(left, h("span", "when", "2026-09-25 · " + p.when));
+    const text = h("p", "text", p.text);
+    const foot = h("footer");
+    const btn = h("button", "copy", "Copy post"); btn.type = "button"; btn.id = "copy-" + idx;
+    btn.addEventListener("click", () => {
+      const done = () => { btn.textContent = "Copied"; setTimeout(() => (btn.textContent = "Copy post"), 1600); };
+      const fallback = () => { const r = document.createRange(); r.selectNodeContents(text); const s = getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = "Selected: press Ctrl+C"; };
+      try { navigator.clipboard.writeText(p.text).then(done, fallback); } catch (e) { fallback(); }
+    });
+    foot.append(btn, h("span", "count", `${p.text.length} / 280 characters`));
+    art.append(head, text, foot);
+    root.appendChild(art);
+  });
+})();
+
+/* data table */
+(function () {
+  const t = document.getElementById("table");
+  const hr = document.createElement("tr");
+  for (const c of ["Dataset · budget", "Smriti today", "Perfect judge", "Word-overlap judge", "Laya", "Jev", "CLM-8B"]) hr.appendChild(h("th", null, c));
+  t.appendChild(hr);
+  for (const key of ["locomo", "lmex"]) {
+    const d = DATA.effect[key];
+    d.budgets.forEach((b, i) => {
+      const tr = document.createElement("tr");
+      tr.appendChild(h("td", null, `${key === "locomo" ? "LoCoMo" : "LME-X"} · ${b.toLocaleString("en-US")} chars`));
+      for (const sid of ["smriti", "oracle", "overlap", "laya", "jev", "clm"]) tr.appendChild(h("td", null, d[sid] ? d[sid][i].toFixed(1) + "%" : "pending"));
+      t.appendChild(tr);
+    });
+  }
+  for (const d of DATA.top5) {
+    const tr = document.createElement("tr");
+    tr.appendChild(h("td", null, `${d.dataset} · top-5 hit rate`));
+    for (const sid of ["smriti", "oracle", "overlap", "laya", "jev", "clm"]) tr.appendChild(h("td", null, d[sid] != null ? d[sid].toFixed(1) + "%" : "pending"));
+    t.appendChild(tr);
+  }
+})();
+</script>

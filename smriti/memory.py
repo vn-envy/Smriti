@@ -495,12 +495,15 @@ class Smriti:
                 time_boost=cfg.time_boost if "temporal" in chset else 0.0)
         hits = rank_episodes(self.store, self.embedder, query, now=now, config=cfg)
         if self.reranker is not None and hits:
-            # cross-encoder re-examination of the fused head; the tail keeps
-            # its fused order behind the re-ranked pool
-            pool, tail = hits[:48], hits[48:]
+            # cross-encoder / decision-model re-examination of the fused head;
+            # the tail keeps its fused order behind the re-ranked pool
+            depth = max(1, int(cfg.rerank_depth))
+            w = min(1.0, max(0.0, float(cfg.rerank_weight)))
+            pool, tail = hits[:depth], hits[depth:]
             scores = self.reranker.rerank(query, [h.episode.content for h in pool])
+            top = max((h.score for h in pool), default=0.0) or 1.0
             for h, sc in zip(pool, scores):
-                h.score = float(sc)
+                h.score = float(sc) if w >= 1.0 else (1.0 - w) * h.score / top + w * float(sc)
                 if "rerank" not in h.channels:
                     h.channels.append("rerank")
             pool.sort(key=lambda h: -h.score)

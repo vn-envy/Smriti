@@ -110,17 +110,27 @@ class SmritiSystem:
 
     def __init__(self, name: str = "smriti", init_kw: Optional[dict] = None,
                  search_kw: Optional[dict] = None, context_kw: Optional[dict] = None,
-                 pass_now: bool = True):
+                 pass_now: bool = True, rerank: Optional[str] = None,
+                 rerank_mode: Optional[str] = None):
         self.name = name
         self.init_kw = init_kw or {}
         self.search_kw = search_kw or {}
         self.context_kw = context_kw or {}
         self.pass_now = pass_now
+        self.rerank = rerank
+        self.rerank_mode = rerank_mode
+        self.reranker = None
+        self.last_extra: dict = {}
 
     def build(self, case: Case) -> None:
         from smriti import Smriti
-        self.mem = Smriti(path=":memory:", embedder=lab_embedder(), mode="lite",
-                          **self.init_kw)
+        kw = dict(self.init_kw)
+        if self.rerank:
+            from .rerankers import CachedReranker, make_reranker
+            if self.reranker is None:          # one model load per system instance
+                self.reranker = CachedReranker(make_reranker(self.rerank, self.rerank_mode))
+            kw["reranker"] = self.reranker
+        self.mem = Smriti(path=":memory:", embedder=lab_embedder(), mode="lite", **kw)
         order: List[str] = []
         for s in case.sessions:
             msgs = [{"role": t.role, "content": t.content} for t in s.turns]
@@ -129,15 +139,22 @@ class SmritiSystem:
         rows = [r[0] for r in self.mem.store.db.execute("SELECT id FROM episodes ORDER BY id")]
         assert len(rows) == len(order), (len(rows), len(order))
         self.ep2turn: Dict[int, str] = dict(zip(rows, order))
+        if self.reranker is not None:
+            self.turn_text = {self.ep2turn[i]: c for i, c in self.mem.store.db.execute(
+                "SELECT id, content FROM episodes")}
 
     def query(self, q: Question, budget: int):
         now = q.question_date if self.pass_now else None
+        if self.reranker is not None and hasattr(self.reranker.inner, "set_gold"):
+            self.reranker.inner.set_gold({self.turn_text[t] for t in q.evidence_turns
+                                          if t in self.turn_text})
         res = self.mem.search(q.question, k=RANK_DEPTH, now=now, **self.search_kw)
         ranked = []
         for r in res:
             if r.kind == "episode" and r.id in self.ep2turn:
                 ranked.append(self.ep2turn[r.id])
         ctx = self.mem.context(q.question, now=now, char_budget=budget, **self.context_kw)
+        self.last_extra = self.reranker.usage_delta() if self.reranker is not None else {}
         return ranked, ctx
 
     def close(self):

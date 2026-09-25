@@ -203,6 +203,11 @@ class RecallConfig:
     min_content_terms: int = 0       # turns with fewer content words get ``short_turn_prior``
     short_turn_prior: float = 1.0
     stem_prefix: bool = True         # lexical: match light stems as FTS5 prefixes
+    # optional reranker (Smriti(reranker=...)): how many head turns it judges,
+    # and how its score mixes with the fused score (1.0 = replace, the 0.3.x
+    # contract; 0.5 = equal blend of max-normalised fused score and reranker score)
+    rerank_depth: int = 48
+    rerank_weight: float = 1.0
 
     def with_overrides(self, **kw) -> "RecallConfig":
         kw = {k: v for k, v in kw.items() if v is not None}
