@@ -1,14 +1,14 @@
 # SMRITI Enterprise
 
-**Replaceable enterprise modules over an untouched core.** Zero core edits: the base package (`smriti-agents`) and its 85 tests are unchanged — everything here layers on top. Dependencies: `smriti-agents` + the Python standard library. No graph DB, no Postgres, no server, no vendor cloud.
+**Replaceable enterprise modules over an untouched core.** Zero core edits: the base package (`smriti-agents`) and its test suite run unchanged — everything here layers on top. Dependencies: `smriti-agents` + the Python standard library. No graph DB, no Postgres, no server, no vendor cloud.
 
 > SMRITI is a minimal, customer-controlled temporal-memory kernel for AI agents. It preserves how knowledge changes and emits canonical, integrity-checkable receipts for the evidence delivered to an agent. **It helps customers implement governance controls; it does not make the surrounding AI system compliant by itself.** — [ASSURANCE.md](ASSURANCE.md)
 
 ## Install
 
 ```bash
-pip install -e .          # from this directory (requires smriti-agents >= 0.3.2)
-python -m pytest tests/   # 39 offline tests — no network, no keys
+pip install -e .          # from this directory (requires smriti-agents >= 0.4.0)
+python -m pytest tests/   # 58 offline tests — no network, no keys
 python demo.py            # end-to-end walkthrough
 ```
 

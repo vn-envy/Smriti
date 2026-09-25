@@ -12,7 +12,7 @@ from .recall import RecallConfig
 from .rerank import HTTPReranker, MockReranker
 from .types import Episode, Fact, RetrievalResult
 
-__version__ = "0.3.2"
+__version__ = "0.4.0"
 __all__ = [
     "Smriti", "Fact", "Episode", "RetrievalResult",
     "LLM", "MockLLM", "HashEmbedder", "OllamaEmbedder", "OpenAICompatEmbedder",

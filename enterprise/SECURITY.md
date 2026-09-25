@@ -29,7 +29,7 @@ SMRITI runs **in-process with the host agent's privileges**. It is a library, no
 
 | # | Threat | Mitigation | Residual risk |
 |---|---|---|---|
-| T1 | Untrusted conversation content poisons memory | immutable `origin` set at the host boundary; `quarantined` review state; `strict=True` excludes untrusted/quarantined facts before consequential actions | origin is only as trustworthy as the host that assigns it; no automated poisoning detection |
+| T1 | Untrusted conversation content poisons memory | immutable `origin` set at the host boundary; `quarantined` review state; `strict=True` excludes untrusted/quarantined facts and untrusted-origin raw turns from `search()` before consequential actions (raw turns since 0.2.0) | origin is only as trustworthy as the host that assigns it; no automated poisoning detection |
 | T2 | Agent is talked into destroying its own memory | destructive/identity ops (`erase_*`, `add_alias`, holds) are **owner-API only** — never exposed as MCP tools | a compromised host process can call the owner API directly |
 | T3 | Silent data exfiltration to a model provider | profile egress checks on built-in adapters; `describe_data_flow()`; `local` profile blocks non-loopback | custom Python adapters and process-level egress require container/firewall enforcement |
 | T4 | Secrets persisted into long-term memory | redaction on every write path (incl. direct `add_fact`), forced in `local` | conservative pattern set; not a DLP engine |

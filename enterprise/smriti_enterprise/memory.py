@@ -190,7 +190,7 @@ class EnterpriseSmriti(Smriti):
                               profile=profile, channels=channels)
         self._emit("context", {
             "query_digest": digest(query), "retrieval_profile": str(profile),
-            "k": k, "char_budget": char_budget,
+            "read_engine": self.read_engine, "k": k, "char_budget": char_budget,
             "context_digest": digest(ctx), "context_chars": len(ctx),
         }, correlation_id)
         return ctx
@@ -206,7 +206,7 @@ class EnterpriseSmriti(Smriti):
             hits = kept
         self._emit("search", {
             "query_digest": digest(query), "retrieval_profile": str(profile),
-            "strict": strict, "dropped_by_policy": dropped,
+            "read_engine": self.read_engine, "strict": strict, "dropped_by_policy": dropped,
             "results": self._result_evidence(hits),
         }, correlation_id)
         return hits

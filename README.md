@@ -27,6 +27,8 @@ The core is a zero-infrastructure, local-first, Apache-2.0 memory layer for AI a
 
 ## New: evidence-first recall (September 25, 2026)
 
+Released in **Smriti 0.4.0** and **Smriti Enterprise 0.2.0**: [release notes](RELEASE_NOTES.md).
+
 **The old read path usually found the right turn, then lost it while packing.**
 On held-out LongMemEval questions, the 0.3.x path ranked the supporting turn in
 its top 10 for 78% of questions, but only 43% of evidence turns reached the
@@ -121,9 +123,9 @@ reflection, hosting and connector surfaces remain strengths to learn from in
 other systems. [Full tables and limits ↓](#benchmarks) ·
 [Source-linked competitive review](audit/2026-09-05/COMPETITIVE-RESEARCH.md)
 
-This is an **unreleased PR candidate**, compared with main snapshot `a2afb3d`
-(core v0.3.2 / enterprise v0.1.0). Package version metadata is unchanged; no new
-PyPI release or tag is implied. [Release notes and upgrade guidance](RELEASE_NOTES.md).
+PR #2 was merged into main on September 8, 2026 and is included in core 0.4.0 /
+enterprise 0.2.0. No PyPI release or tag is implied.
+[Release notes and upgrade guidance](RELEASE_NOTES.md).
 
 ```python
 from smriti import Smriti, LLM, OllamaEmbedder
@@ -317,13 +319,9 @@ SMRITI's stance is **ship-and-verify**. The harness lets you measure on your own
 
 ## Install & try it in 60 seconds
 
-To evaluate these **unmerged PR #2 changes**, clone with
-`git clone --branch codex/smriti-hardening-benchmarks-teaser https://github.com/vn-envy/Smriti`.
-The ordinary command below checks out the default branch.
-
 ```bash
 git clone https://github.com/vn-envy/Smriti && cd Smriti
-python -m pip install -e '.[dev]' # install the core and test tools from source
+python -m pip install -e '.[dev]' # install the core and test tools from source ('.[dev,onnx]' adds OnnxEmbedder)
 python -m pytest tests/ -q    # core tests — no network, no API keys
 python examples/quickstart.py # see supersession live
 ```

@@ -93,7 +93,8 @@ def is_quarantined(store, fact_id: int) -> bool:
 
 def strict_filter(store, results, allowed_origins=("owner", "agent", "tool")):
     """The 'strict action profile': drop quarantined and untrusted-origin
-    facts from a result list before it reaches a consequential action."""
+    facts, and raw episodes from untrusted-origin sessions, from a result
+    list before it reaches a consequential action."""
     out = []
     for r in results:
         if r.kind == "fact" and r.id is not None:
@@ -103,5 +104,10 @@ def strict_filter(store, results, allowed_origins=("owner", "agent", "tool")):
                 origin = row[0] or "owner"
                 if row[1] or origin not in allowed_origins:
                     continue
+        elif r.kind == "episode" and r.id is not None:
+            row = store.db.execute(
+                "SELECT origin FROM episodes WHERE id=?", (r.id,)).fetchone()
+            if row and (row[0] or "owner") not in allowed_origins:
+                continue
         out.append(r)
     return out

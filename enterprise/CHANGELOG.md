@@ -1,5 +1,15 @@
 # Changelog — smriti-enterprise
 
+## v0.2.0 — Evidence-first recall compatibility (2026-09-25)
+
+Requires `smriti-agents>=0.4.0`. No enterprise schema migration.
+
+- `search()` and `context()` inherit the core's evidence-first read engine; `read_engine="fusion"` keeps 0.1.0 read behaviour.
+- `search` and `context` receipts record `read_engine`. The field is additive: receipt schema `"0"`, canonicalization and the hash chain are unchanged, and chains written by 0.1.0 continue to verify after the upgrade.
+- **Security:** `search(strict=True)` now also drops raw conversation turns from untrusted-origin sessions. Previously only facts were filtered, so an untrusted turn could reach a consequential action (and rank first under the new engine).
+- New regression tests: erased sessions never reach evidence-first context or search; strict mode drops untrusted raw turns; receipts carry the read engine. 59 offline enterprise tests.
+- Docs: receipt schema, assurance map and threat model updated. See the [release notes](../RELEASE_NOTES.md#smriti-enterprise-020).
+
 ## Unreleased — PR #2 hardening (2026-09-08)
 
 Package metadata remains 0.1.0. Scope now follows facts through enterprise storage, results and receipts. Temporal world/known-time boundaries, policy/hold paths, lineage erasure and signed evidence controls were hardened. Pre-scope verified packs remain readable without modifying schema or checksum.

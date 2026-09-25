@@ -13,7 +13,7 @@ Serialization is `json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_
   "ts": "2026-07-19T09:14:22Z",
   "correlation_id": "req-4f2a",
   "versions": {
-    "core": "0.3.2", "enterprise": "0.1.0", "schema": 1,
+    "core": "0.4.0", "enterprise": "0.2.0", "schema": 1,
     "store_id": "8056c781…", "profile": "regulated"
   },
   "body": { "…op-specific…" }
@@ -26,13 +26,15 @@ Serialization is `json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_
 |---|---|
 | `ingest` | `session_id`, `episodes`, `facts`, `deduped`, `origin` |
 | `add_fact` | `fact_id`, `stored`, `origin` |
-| `search` | `query_digest`, `retrieval_profile`, `strict`, `dropped_by_policy`, `results[]` |
-| `context` | `query_digest`, `retrieval_profile`, `k`, `char_budget`, `context_digest`, `context_chars` |
+| `search` | `query_digest`, `retrieval_profile`, `read_engine`, `strict`, `dropped_by_policy`, `results[]` |
+| `context` | `query_digest`, `retrieval_profile`, `read_engine`, `k`, `char_budget`, `context_digest`, `context_chars` |
 | `erase_session` / `erase_entity` | scope, `episodes`, `facts`, `derived`, `lineage_exact` |
 | `hold_place` / `hold_release` | `hold_id`, scope, `authority`, `released` |
 | `sweep` | `sessions`, `episodes`, `facts`, `skipped_held` |
 | `quarantine` | `fact_id`, `flag`, `ok` |
 | `pack_build` | `name`, `sha256`, `path` |
+
+`read_engine` (enterprise 0.2.0+) is `"evidence"` or `"fusion"`: the instance's default read engine. With `retrieval_profile` it identifies how the context was packed, because a named profile (`facts`, `relations`, `timeline`, `deep`, `auto`) always uses the fusion engine. Receipts from enterprise releases before 0.2.0 omit the field; for those, `versions.core` below `0.4.0` means the fusion engine packed the context.
 
 `results[]` entries: `kind`, `id`, `score`, `valid_from`, `invalid_at`, `channels`, `text_digest` — ordered exactly as delivered, so ranking is reconstructable.
 
