@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased — Evidence-first recall (2026-09-25)
+
+Research-driven read-path overhaul. Package metadata remains 0.3.2.
+
+- **New default read engine: evidence-first recall** (`smriti/recall.py`). Score-level hybrid fusion (stopword-stripped BM25 with light-stem prefix matching + cosine), turn→session roll-up, assistant/speaker/"when"/time-window priors, alternative sub-queries for "X or Y" ordering questions, and budget-adaptive packing: whole turns while they fit, query-focused excerpts instead of a 700-character prefix cut, sessions grouped chronologically under dated headers. The 0.3.x path is unchanged behind `Smriti(read_engine="fusion")` and the named profiles; `profile="evidence"` selects the new engine explicitly.
+- **Deterministic temporal grounding** (`smriti/temporal.py`): relative dates ("yesterday", "last weekend", "two weeks ago", "last Friday", seasons, "in 3 days") resolve against each turn's timestamp and are shown inline (`yesterday [2023-05-07]`); question time windows ("last weekend", "in March", "past two months", explicit dates) become a soft retrieval prior. Zero tokens.
+- **In-process ONNX embeddings** (`OnnxEmbedder`, optional `onnx` extra): fully offline semantic memory without an embedding server.
+- **Opt-in contextual episode embeddings** (`contextual_embeddings=N`): a turn's vector also sees the tail of the previous turn; stored text is unchanged.
+- MCP: `evidence` profile, `now` anchor (defaults to today) and channel masks on the default engine; fixed `_profile_args` referencing `self` from a staticmethod. `context_iterative()` packs with the evidence engine.
+- **pariksha-lab** (`bench/lab/`): LLM-free turn-level evidence recall and context-survival benchmark on LoCoMo10 and a LongMemEval distractor haystack (LME-X), dev/test splits, Mem0 OSS / BM25 / dense adapters, a blinded reader/judge QA pipeline and a scale probe. Results and method: `audit/2026-09-25/`.
+- Research survey of 2025–2026 memory architectures: `audit/2026-09-25/RESEARCH-SURVEY.md`.
+
 ## Unreleased — PR #2: scoped temporal memory and comparative evidence (2026-09-08)
 
 Compared with main `a2afb3d` (core v0.3.2). Package metadata remains 0.3.2; no new published release is implied.

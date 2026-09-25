@@ -117,6 +117,14 @@ _GENERIC_ROLES = frozenset({"user", "assistant", "system", "tool", "human", "ai"
 _SPEAKER_PREFIX = re.compile(r"^\s*([A-Z][\w'.-]{0,30}(?: [A-Z][\w'.-]{0,30}){0,2}):\s")
 
 
+@lru_cache(maxsize=16384)
+def _content_terms(text: str) -> int:
+    """Number of content words in a turn, ignoring a leading "Name:" prefix."""
+    m = _SPEAKER_PREFIX.match(text or "")
+    body = text[m.end():] if m else (text or "")
+    return sum(1 for t in _WORD.findall(body) if len(t) > 2 and t.lower() not in STOPWORDS)
+
+
 def speaker_of(ep: Episode) -> Optional[str]:
     """Named participant of a turn: a non-generic role, else a leading
     "Name: " prefix (the common transcript convention). None if unknown."""
@@ -181,11 +189,16 @@ class RecallConfig:
     min_relative: float = 0.0        # stop packing hits scoring below this share of the best
     annotate_time: bool = True       # resolve relative dates when rendering
     fact_share: float = 0.35         # max share of the budget spent on the facts block
+    layout: str = "chrono"           # "chrono" | "relevance" | "top" (ranked head + chronological rest)
+    top_section: int = 5             # hits shown in the ranked head of the "top" layout
     # levers added after the first sweeps (bench/lab dev split); prf stays off
     when_boost: float = 0.15         # "when …?" questions: boost turns that carry time expressions
     split_alternatives: bool = True  # "X or Y" ordering questions: also retrieve each alternative
     prf: float = 0.0                 # dense pseudo-relevance feedback weight (top-3 turns)
     speaker_prior: float = 0.75      # multiplier on turns by participants the question does not name
+    speaker_terms: bool = False      # keep named speakers' names as lexical terms
+    min_content_terms: int = 0       # turns with fewer content words get ``short_turn_prior``
+    short_turn_prior: float = 1.0
     stem_prefix: bool = True         # lexical: match light stems as FTS5 prefixes
 
     def with_overrides(self, **kw) -> "RecallConfig":
@@ -253,17 +266,20 @@ def rank_episodes(store, embedder, query: str, now: Optional[str] = None,
                     merged[h.episode.id] = Hit(h.episode, h.score, list(h.channels))
         return sorted(merged.values(), key=lambda h: (-h.score, h.episode.id))
     terms = query_terms(query)
-    lexical: Dict[int, float] = {}
-    if terms and cfg.w_lexical > 0:
+
+    def lexical_search(words: List[str]) -> Dict[int, float]:
+        if not words or cfg.w_lexical <= 0:
+            return {}
         if cfg.stem_prefix:
             expr = " OR ".join(
                 (f'"{_stem(t)}"*' if len(_stem(t)) >= 4 and _stem(t) != t else f'"{t}"')
-                for t in terms if '"' not in t)
+                for t in words if '"' not in t)
             found = store.fts_match(expr, "episode", cfg.depth)
         else:
-            found = store.fts_search(" ".join(terms), "episode", cfg.depth)
-        for rid, sc in found:
-            lexical[rid] = sc
+            found = store.fts_search(" ".join(words), "episode", cfg.depth)
+        return {rid: sc for rid, sc in found}
+
+    lexical = lexical_search(terms)
     semantic: Dict[int, float] = {}
     all_ids: List[int] = []
     all_sims = None
@@ -273,13 +289,17 @@ def rank_episodes(store, embedder, query: str, now: Optional[str] = None,
         all_ids, all_sims = store.vector_all(qvec, "episode")
         if all_ids and cfg.prf > 0:
             _ids, mat = store._vectors("episode")
-            seed = np.argsort(-all_sims)[:3]
+            seed = np.argpartition(-all_sims, 3)[:3] if len(all_sims) > 3 else np.arange(len(all_sims))
             q = np.asarray(qvec, dtype="float32")
             q = q / (np.linalg.norm(q) or 1.0)
             q2 = q + cfg.prf * mat[seed].mean(axis=0)
             all_sims = mat @ (q2 / (np.linalg.norm(q2) or 1.0))
         if all_ids:
-            top = np.argsort(-all_sims)[:cfg.depth]
+            # top-`depth` in O(N) instead of a full O(N log N) sort
+            if len(all_ids) > cfg.depth:
+                top = np.argpartition(-all_sims, cfg.depth)[:cfg.depth]
+            else:
+                top = np.arange(len(all_ids))
             semantic = {all_ids[i]: float(all_sims[i]) for i in top}
     window = query_window(query, now) if cfg.time_boost > 0 else None
     windowed: set = set()
@@ -333,9 +353,34 @@ def rank_episodes(store, embedder, query: str, now: Optional[str] = None,
                 counts[sp] = counts.get(sp, 0) + 1
         # a "speaker" must recur; a stray "Note: …" prefix is not a participant
         speakers = {sp for sp, n in counts.items() if n >= 3}
-        named = {sp for sp in speakers if sp and (sp in qtok or sp.split()[0] in qtok)}
-        if named == speakers:
-            named = set()
+        mentioned = {sp for sp in speakers if sp and (sp in qtok or sp.split()[0] in qtok)}
+        named = set() if mentioned == speakers else mentioned
+        if not cfg.speaker_terms and mentioned:
+            # A participant's name sits in the "Name:" prefix of every one of
+            # their turns: as a lexical term it matches them all and BM25's
+            # length normalization then favours their emptiest turns. The
+            # speaker prior carries that signal; search on the content terms.
+            names = {w for sp in mentioned for w in sp.split()}
+            rest = [t for t in terms if t not in names]
+            if rest and len(rest) < len(terms):
+                new_lex = lexical_search(rest)
+                missing = set(new_lex) - set(eps)
+                if missing:
+                    eps.update(store.episodes_by_ids(missing))
+                    for rid in missing:
+                        chans[rid] = []
+                        if rid in semantic:
+                            chans[rid].append("vec_episode")
+                        cand.add(rid)
+                lexical = new_lex
+                for rid in cand:
+                    chans[rid] = [c for c in chans[rid] if c != "bm25_episode"]
+                    if rid in lexical:
+                        chans[rid].insert(0, "bm25_episode")
+                nlex = _normalize(lexical, ratio=True)
+                for rid in cand:
+                    fused[rid] = (cfg.w_lexical * nlex.get(rid, 0.0)
+                                  + cfg.w_semantic * nsem.get(rid, 0.0))
     for rid in cand:
         ep = eps.get(rid)
         if ep is None:
@@ -351,6 +396,8 @@ def rank_episodes(store, embedder, query: str, now: Optional[str] = None,
             fused[rid] += cfg.when_boost
         if named and speaker_of(ep) not in named:
             fused[rid] *= cfg.speaker_prior
+        if cfg.min_content_terms and _content_terms(ep.content) < cfg.min_content_terms:
+            fused[rid] *= cfg.short_turn_prior
 
     session_weight = cfg.session_weight
     if session_weight > 0:
@@ -418,7 +465,14 @@ def _weekday(ts: Optional[str]) -> str:
 def _render_turn(ep: Episode, text: str, annotate_time: bool) -> str:
     body = annotate(text, ep.ts) if annotate_time else text
     role = ep.role or "user"
+    if role.lower() in _GENERIC_ROLES and _SPEAKER_PREFIX.match(body):
+        return body  # "Caroline: …" already names the speaker
     return f"{role}: {body}"
+
+
+def _stamp(ts: Optional[str]) -> str:
+    d = parse_anchor(ts)
+    return f"{d.isoformat()} {d.strftime('%a')}" if d else "undated"
 
 
 def is_aggregation(query: str) -> bool:
@@ -475,41 +529,53 @@ def pack_evidence(store, hits: Sequence[Hit], query: str, char_budget: int = 900
             fact_lines.extend(fl)
             used += fused + 1
 
-    title = ("CONVERSATION EVIDENCE (grouped by session, oldest first; for current-state "
-             "questions the most recent statement wins):")
-    used += len(title) + 1
+    titles = {
+        "chrono": "CONVERSATION EVIDENCE (grouped by session, oldest first; for current-state "
+                  "questions the most recent statement wins):",
+        "relevance": "CONVERSATION EVIDENCE (grouped by session, most relevant session first; "
+                     "check the session dates for time order):",
+        "top": "OTHER CONVERSATION EVIDENCE (grouped by session, oldest first; for "
+               "current-state questions the most recent statement wins):",
+    }
+    layout = cfg.layout if cfg.layout in titles else "chrono"
+    title = titles[layout]
+    head_title = "MOST RELEVANT EXCERPTS (best match first):"
+    used += len(title) + 1 + (len(head_title) + 2 if layout == "top" else 0)
     budget = char_budget - used
 
     top = hits[0].score if hits else 0.0
     selected: Dict[int, Tuple[Episode, str, bool]] = {}   # id -> (episode, text, is_hit)
+    order: Dict[int, int] = {}                            # id -> rank of the hit it serves
     sessions_open: set = set()
     per_session: Dict[str, int] = {}
     cap = cfg.per_session_cap or (cfg.agg_session_cap if aggregate else 0)
     deferred: List[Hit] = []
+    header_cost = len("[Session 2023-05-08 Mon]") + 1
 
-    def session_cost(ep: Episode) -> int:
-        # "[Session YYYY-MM-DD Mon]" header plus a possible "…" gap line
-        return 0 if (ep.session_id or f"#{ep.id}") in sessions_open else 32
-
-    def try_add(ep: Episode, limit: int, is_hit: bool) -> bool:
+    def try_add(ep: Episode, limit: int, is_hit: bool, rank: int) -> bool:
         nonlocal budget
         if ep.id in selected:
             return True
-        overhead = session_cost(ep) + len(ep.role or "user") + 6
-        room = budget - overhead
+        sid = ep.session_id or f"#{ep.id}"
+        overhead = (0 if sid in sessions_open else header_cost) + 4  # line break + possible gap
+        room = budget - overhead - len(ep.role or "user") - 4
         if room < min(cfg.min_turn_chars, len(ep.content)):
             return False
         text = excerpt(ep.content, query, min(limit, room))
-        cost = overhead + len(text) + (24 if cfg.annotate_time else 0)
-        if cost > budget:
-            return False
+        line = "  " + _render_turn(ep, text, cfg.annotate_time)
+        if overhead + len(line) > budget:  # resolved-date annotations can add a little
+            text = excerpt(ep.content, query, max(40, min(limit, room) - (overhead + len(line) - budget)))
+            line = "  " + _render_turn(ep, text, cfg.annotate_time)
+            if overhead + len(line) > budget:
+                return False
         selected[ep.id] = (ep, text, is_hit)
-        sessions_open.add(ep.session_id or f"#{ep.id}")
-        budget -= cost
+        order[ep.id] = rank
+        sessions_open.add(sid)
+        budget -= overhead + len(line)
         return True
 
     for rank, h in enumerate(hits):
-        if budget <= cfg.min_turn_chars:
+        if budget <= 40:
             break
         if cfg.min_relative > 0 and top > 0 and h.score < cfg.min_relative * top:
             break
@@ -518,47 +584,58 @@ def pack_evidence(store, hits: Sequence[Hit], query: str, char_budget: int = 900
             deferred.append(h)
             continue
         limit = cfg.top_turn_chars if rank < cfg.top_hits else cfg.max_turn_chars
-        if try_add(h.episode, limit, True):
+        if try_add(h.episode, limit, True, rank):
             per_session[sid] = per_session.get(sid, 0) + 1
             if rank < cfg.neighbor_top and cfg.neighbors > 0:
                 for nb in store.episode_neighbors(h.episode, cfg.neighbors):
                     if nb.id not in selected:
-                        try_add(nb, cfg.neighbor_chars, False)
+                        try_add(nb, cfg.neighbor_chars, False, rank)
     for h in deferred:
-        if budget <= cfg.min_turn_chars:
+        if budget <= 40:
             break
-        try_add(h.episode, cfg.max_turn_chars, True)
+        try_add(h.episode, cfg.max_turn_chars, True, len(hits))
     if cfg.neighbors > 0:
-        for h in hits:
+        for rank, h in enumerate(hits):
             if budget <= cfg.min_turn_chars:
                 break
             if h.episode.id not in selected:
                 continue
             for nb in store.episode_neighbors(h.episode, cfg.neighbors):
                 if nb.id not in selected:
-                    try_add(nb, cfg.neighbor_chars, False)
+                    try_add(nb, cfg.neighbor_chars, False, rank)
 
-    # render: sessions chronologically, turns in conversation order
-    by_session: Dict[str, List[Tuple[Episode, str, bool]]] = {}
-    for ep, text, is_hit in selected.values():
-        by_session.setdefault(ep.session_id or f"#{ep.id}", []).append((ep, text, is_hit))
-    def s_key(item):
-        eps = item[1]
-        return (min((e.ts or "") for e, _, _ in eps), min(e.id for e, _, _ in eps))
     lines: List[str] = []
     if head:
         lines.append(head)
     lines.extend(fact_lines)
     if fact_lines:
         lines.append("")
+    head_ids: List[int] = []
+    if layout == "top":
+        head_ids = sorted((eid for eid, (_e, _t, is_hit) in selected.items() if is_hit),
+                          key=lambda eid: order[eid])[:cfg.top_section]
+        if head_ids:
+            lines.append(head_title)
+            for eid in head_ids:
+                ep, text, _ = selected[eid]
+                lines.append(f"- [{_stamp(ep.ts)}] " + _render_turn(ep, text, cfg.annotate_time))
+            lines.append("")
+    by_session: Dict[str, List[Tuple[Episode, str, bool]]] = {}
+    for eid, (ep, text, is_hit) in selected.items():
+        if eid in head_ids:
+            continue
+        by_session.setdefault(ep.session_id or f"#{ep.id}", []).append((ep, text, is_hit))
+
+    def s_key(item):
+        eps = item[1]
+        if layout == "relevance":
+            return (min(order[e.id] for e, _, _ in eps), min(e.id for e, _, _ in eps))
+        return (min((e.ts or "") for e, _, _ in eps), min(e.id for e, _, _ in eps))
     if by_session:
         lines.append(title)
     for _sid, items in sorted(by_session.items(), key=s_key):
         items.sort(key=lambda x: x[0].id)
-        ts = items[0][0].ts
-        d = parse_anchor(ts)
-        stamp = f"{d.isoformat()} {d.strftime('%a')}" if d else "undated"
-        lines.append(f"[Session {stamp}]")
+        lines.append(f"[Session {_stamp(items[0][0].ts)}]")
         prev_id = None
         for ep, text, _is_hit in items:
             if prev_id is not None and ep.id != prev_id + 1:

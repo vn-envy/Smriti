@@ -635,10 +635,44 @@ class Smriti:
             raise ValueError(
                 "session_diverse is not supported by iterative retrieval; "
                 "use context() until merged-result selection is defined")
+        if self.read_engine == "evidence":
+            return self._evidence_iterative_context(query, k, now, char_budget, rounds)
         return pack_context(self.search_iterative(
             query, k=k, now=now, rounds=rounds,
             session_overfetch=session_overfetch),
                             now=now, char_budget=char_budget)
+
+    def _evidence_iterative_context(self, query: str, k: int, now: Optional[str],
+                                    char_budget: int, rounds: int) -> str:
+        """Iterative (LLM follow-up) retrieval packed by the evidence engine:
+        each follow-up query's episode ranking is merged by best score and its
+        facts are appended, then everything is packed evidence-first."""
+        p = PROFILES["evidence"]
+        facts, hits = self._evidence(query, p, k, now)
+        if self.llm is not None and rounds >= 2:
+            best = {h.episode.id: h for h in hits}
+            seen = {(r.kind, r.id) for r in facts}
+            notes_budget = min(char_budget, 6000)
+            for _ in range(rounds - 1):
+                notes = pack_evidence(self.store, sorted(best.values(), key=lambda h: -h.score),
+                                      query, char_budget=notes_budget, now=now, facts=facts)
+                follow = self.llm.complete(
+                    build_followup_prompt(query, notes), max_tokens=64).strip()
+                if not follow or follow.upper().startswith("NONE"):
+                    break
+                more_facts, more_hits = self._evidence(follow, p, k, now)
+                for r in more_facts:
+                    if (r.kind, r.id) not in seen:
+                        seen.add((r.kind, r.id))
+                        facts.append(r)
+                for h in more_hits:
+                    cur = best.get(h.episode.id)
+                    if cur is None or h.score > cur.score:
+                        best[h.episode.id] = h
+            hits = sorted(best.values(), key=lambda h: (-h.score, h.episode.id))
+        agg = self.aggregate and is_aggregation_query(query)
+        return pack_evidence(self.store, hits, query, char_budget=char_budget, now=now,
+                             facts=facts, aggregate=agg)
 
     # -------------------------------------------------------- observations
     def _write_observation(self, subject: str, predicate: str, label: str,

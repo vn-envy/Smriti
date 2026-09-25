@@ -186,3 +186,28 @@ def test_onnx_embedder_reports_missing_model(tmp_path):
     from smriti.onnx_embedder import OnnxEmbedder
     with pytest.raises(FileNotFoundError):
         OnnxEmbedder(str(tmp_path))
+
+
+def test_iterative_context_uses_evidence_packing_and_follow_up():
+    from smriti import MockLLM
+    llm = MockLLM(["[]", "[]", "Priya's research field"])
+    mem = Smriti(path=":memory:", embedder=HashEmbedder(), llm=llm, mode="full")
+    mem.add([{"role": "user", "content": "My mentor is Priya."}], session_id="a",
+            timestamp="2023-01-01T00:00:00Z")
+    mem.add([{"role": "user", "content": "Priya researches coral reef ecology."}], session_id="b",
+            timestamp="2023-02-01T00:00:00Z")
+    ctx = mem.context_iterative("What is my mentor's research field?", k=1)
+    assert "CONVERSATION EVIDENCE" in ctx
+    assert "coral reef" in ctx
+
+
+@pytest.mark.parametrize("layout", ["chrono", "relevance", "top"])
+def test_layouts_render_within_budget(layout):
+    from smriti import RetrievalProfile
+    mem = _mem()
+    prof = RetrievalProfile(name="evidence", engine="evidence",
+                            recall=RecallConfig(layout=layout))
+    ctx = mem.context("pottery class bowl", profile=prof, char_budget=2500)
+    assert "pottery" in ctx and len(ctx) <= 2500
+    if layout == "top":
+        assert "MOST RELEVANT EXCERPTS" in ctx

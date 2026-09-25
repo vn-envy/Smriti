@@ -38,7 +38,7 @@ READER_INSTRUCTIONS = """You are an assistant answering a question about a user,
 """
 
 JUDGE_INSTRUCTIONS = """Grade whether the response answers the question correctly given the gold answer.
-- Correct if it contains the gold answer's key information (paraphrase and extra detail are fine).
+- Correct if it contains the gold answer's key information (paraphrase and extra detail are fine; relative wording is fine if it resolves to the same date or period).
 - Numbers, counts and dates must match in substance (a date off by a day is wrong unless the gold is approximate; a different count is wrong).
 - If the gold answer lists several items, the response must contain all of them.
 - A response that abstains ("I don't have enough information") is wrong unless the gold says the information is not available.
@@ -112,6 +112,8 @@ def export(argv=None):
     ap.add_argument("--seed", default="qa-v1")
     ap.add_argument("--out", required=True)
     ap.add_argument("--workers", type=int, default=4)
+    ap.add_argument("--qids-from", default="",
+                    help="reuse the exact question set of an existing export dir (its key.json)")
     a = ap.parse_args(argv)
     names = split_systems(a.systems)
     os.makedirs(a.out, exist_ok=True)
@@ -135,6 +137,9 @@ def export(argv=None):
             if i < len(by_cat[k]) and len(chosen) < a.sample:
                 chosen.append(by_cat[k][i])
         i += 1
+    if a.qids_from:
+        keep = {m["qid"] for m in json.load(open(os.path.join(a.qids_from, "key.json")))["items"].values()}
+        chosen = [(c, q) for c, q in pairs if q.qid in keep]
     wanted: Dict[str, set] = defaultdict(set)
     for c, q in chosen:
         wanted[c.case_id].add(q.qid)
