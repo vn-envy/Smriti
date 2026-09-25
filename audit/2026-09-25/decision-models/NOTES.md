@@ -136,6 +136,58 @@ the best arm at 1,500 characters but costs seconds per question on CPU, was
 trained on one dataset, and has not been retrained against the new prior.
 Files: `round2-summary.json`, `round2-head_*.npz`, `round2-*.png`.
 
+## Correction — lab variants skipped the aggregation header (fixed 2026-09-25)
+
+Until commit `04b8926`, `ev(...)` lab variants built a profile named after
+the variant spec. Smriti's aggregation routing is keyed on the profile name
+`evidence`, so variants skipped the ~150-character counting header that the
+shipped path (and the `evidence` baseline) adds for aggregation questions.
+Variants therefore had slightly more budget at tight contexts. Variants now
+keep the shipped profile name, and `ev()` reproduces the baseline exactly.
+Re-measured on cached judgements (no model or API calls):
+
+| Figure | First reported | Corrected |
+|---|---:|---:|
+| Perfect judge, top 48, LME-X dev, 1,500 chars | 93.1 | 91.9 |
+| Perfect judge, top 48, LME-X dev, 3,000 chars | 97.9 | 97.9 |
+| Word-overlap judge, LME-X dev, 3,000 chars | 50.9 | 50.3 |
+| Round 1: Laya-family alone / 50% / 25% blend (dev, 3,000) | 8.0 / 68.4 / 79.1 | 7.9 / 68.1 / 78.6 |
+| Round 2: Smriti-signals head, test, 1,500 / 3,000 / 9,000 | 66.6 / 83.2 / 89.9 | 64.8 / 83.1 / 89.6 |
+| Round 2: Laya + Smriti head, test, 1,500 / 3,000 / 9,000 | 72.5 / 84.5 / 89.4 | 71.0 / 84.5 / 89.4 |
+| 0.4.1 prior change, test, 1,500 / 3,000 / 9,000 | +2.6 / +4.9 / +5.4 | +0.9 (n.s.) / +4.7 / +5.4 |
+
+Ranking-skill (AUC) figures are unaffected: they do not involve packing.
+Corrected run files: `round3-fixed-summary.json`.
+
+## Round 3 — official Laya vs hosted Jev (network opened)
+
+Candidates are Smriti 0.4.1's top 20 (assistant prior 0.2). Zero-shot
+`noul` relevance judge, same instructions as earlier rounds.
+
+**Jev** (`jev-latest`, TypeSafe API, 10 parallel requests):
+
+| Split | AUC Jev | AUC Smriti order | Right memory first | Better / worse questions | Bill |
+|---|---:|---:|---:|---:|---:|
+| Dev (256 q, 5,120 judgements) | 0.953 | 0.899 | 77.8% vs 64.2% | 115 / 48 | $0.094 |
+| Held-out test (244 q, 4,880) | 0.954 | 0.891 | 72.5% vs 63.8% | 104 / 49 (p = 1×10⁻⁵) | $0.090 |
+
+About 436 input tokens per judgement, 70 ms wall time per judgement and
+1.4 s per question at 10-way concurrency, zero errors. On dev the blend
+weight was chosen end to end at 3,000 characters (replace 89.4, 75% 90.3,
+50% 91.8, **35% 92.7**, 25% 92.1; Smriti 87.7). Held-out, 35% Jev blend:
+
+| Budget | Smriti 0.4.1 | + Jev (35%) | Change | Better / worse | Perfect judge (top 20) |
+|---|---:|---:|---:|---:|---:|
+| 1,500 chars | 65.6 | **74.8** | +9.2 (CI +6.0 to +12.5), p = 2×10⁻⁹ | 41 / 3 | 87.1 |
+| 3,000 chars | 83.2 | **86.5** | +3.4 (CI +1.8 to +5.1), p = 6×10⁻⁶ | 22 / 1 | 91.3 |
+| 9,000 chars | 93.0 | 93.0 | 0 (the top 20 already fit) | 0 / 0 | – |
+
+Recall@5 rises from 79.9% to 86.6%. Jev captures about 42% of the
+perfect-judge headroom at 1,500 and 3,000 characters. It costs about $0.37
+per 1,000 questions and sends each candidate memory to a hosted API.
+
+**Official Laya** (`convaiinnovations/laya`, 421M ModernBERT-large, CPU): see below.
+
 ## Run once access opens
 
 ```bash
