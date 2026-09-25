@@ -178,7 +178,7 @@ class RecallConfig:
     w_semantic: float = 0.5          # convex weight of normalized cosine
     fusion: str = "convex"           # "convex" | "rrf" | "blend" (mean of both, each max-scaled)
     session_weight: float = 0.25     # share of the session's best score inherited
-    assistant_prior: float = 0.55    # multiplier on assistant turns (unless addressed)
+    assistant_prior: float = 0.2     # multiplier on assistant turns (unless addressed)
     time_boost: float = 0.25         # additive boost inside a query's time window
     neighbors: int = 1               # +/- turns attached to packed hits
     neighbor_chars: int = 360        # excerpt size for neighbour turns

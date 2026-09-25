@@ -79,6 +79,63 @@ Latency: 399 ms per judgement, 8.0 s per question (p50) on CPU.
 and CLM-8B remain untested. Files: `round1-laya-family-lmex-dev.json`,
 `round1-card.png`.
 
+## Round 2 — teach the judge our task (LME-X, held-out test)
+
+The same Laya-family encoder, frozen, reads every (question, top-20 candidate)
+pair once (`bench/lab/judge_head/extract.py`, 296 ms per pair on 4 CPU
+cores). Logistic heads train on 256 dev questions (5,120 labelled pairs; L2
+picked by 5-fold CV grouped by question) and are judged once on 244 test
+questions (`train.py`).
+
+**Ranking skill on 228 held-out questions** (AUC within Smriti's top 20):
+
+| Ranker | AUC | Right memory first | Recall@5 of pool |
+|---|---:|---:|---:|
+| Smriti's fused order | 0.890 | 63.6% | 83.6% |
+| Head on Smriti's signals only | 0.897 | 60.1% | 84.3% |
+| Laya-family head alone | 0.871 | 54.4% | 76.5% |
+| **Laya-family + Smriti signals** | **0.928** | **70.2%** | **88.7%** |
+
+Laya + Smriti vs Smriti's order: AUC +0.038 (95% CI +0.023 to +0.053),
+better on 97 questions, worse on 34 (sign p = 3×10⁻⁸). The Smriti-only
+head adds +0.007 (CI touches zero). Training took zero-shot 0.47 to 0.87.
+
+**End to end** (evidence complete in context, 232 held-out questions, judge
+re-ranks the top 20):
+
+| Budget | Smriti (assistant prior 0.55) | + Smriti-signals head | + Laya + Smriti head | Assistant prior 0.2, no head |
+|---|---:|---:|---:|---:|
+| 1,500 | 64.8 | 66.6 | **72.5** | 67.4 |
+| 3,000 | 78.5 | 83.2 | **84.5** | 83.4 |
+| 9,000 | 87.6 | 89.9 | 89.4 | **93.0** |
+
+At 3,000 characters the Laya + Smriti head gains +6.0 (CI +3.3 to +8.8,
+35 better / 5 worse), but +4.7 of that comes from the Smriti-only head, and
+Laya's own increment (+1.2, CI −1.4 to +3.8) is not proven there. It is
+largest at 1,500 characters. Cost: 277 ms per pair, 5.5 s per question on CPU.
+
+**The free win.** The Smriti-only head's largest weight was "assistant
+turn" (−1.1 per standard deviation): demote assistant replies harder. On the
+dev split, lowering `RecallConfig.assistant_prior` from 0.55 to 0.4 / 0.3 /
+0.2 / 0.1 raised evidence-in-context at 3,000 characters from 82.8% to
+87.2 / 87.6 / 88.1 / 88.6%, with assistant-addressed questions unchanged
+(the prior is lifted for them). 0.2 was chosen on dev and tested once:
+
+| LME-X test | 0.55 | 0.2 | Change | Better / worse | p |
+|---|---:|---:|---:|---:|---:|
+| 1,500 chars | 64.8 | 67.4 | +2.6 (CI +0.7 to +4.6) | 13 / 1 | 0.002 |
+| 3,000 chars | 78.5 | 83.4 | +4.9 (CI +2.6 to +7.4) | 25 / 1 | 8×10⁻⁷ |
+| 9,000 chars | 87.6 | 93.0 | +5.4 (CI +3.2 to +7.9) | 26 / 0 | 3×10⁻⁸ |
+
+LoCoMo test (no assistant turns) is unchanged at every budget
+(63.7 / 73.5 / 84.7 → 63.8 / 73.6 / 84.7). The default is now 0.2.
+
+**Verdicts.** Ship the prior change (free, significant, no regression).
+Keep the trained Laya head as an opt-in experiment for tight budgets: it is
+the best arm at 1,500 characters but costs seconds per question on CPU, was
+trained on one dataset, and has not been retrained against the new prior.
+Files: `round2-summary.json`, `round2-head_*.npz`, `round2-*.png`.
+
 ## Run once access opens
 
 ```bash
