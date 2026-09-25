@@ -52,6 +52,33 @@ query in `noul` mode ($0.22 per 1,000 queries), 4.1k in `fanout` mode
 
 Summaries: `dev-ceiling-summary.json`. Page snapshot: `judge-trials-page.html`.
 
+## Round 1 — Laya-family judge (LME-X dev, 3,000 characters)
+
+Official Laya weights sit on huggingface.co (blocked), so round 1 used a
+**community fine-tune of laya-multilingual**: `MacJev-322M-4K-Laya`
+(mmBERT-base, 322M, Apache-2.0), downloaded from its public GitHub release
+mirror and verified by SHA-256. Zero-shot `noul` relevance judge over
+Smriti's top 20 turns, CPU only (4 threads).
+
+| Arm | Evidence complete in context | All evidence | Answer in context | Recall@5 |
+|---|---:|---:|---:|---:|
+| Smriti today | 82.8 | 73.5 | 97.1 | 82.1 |
+| Judge replaces Smriti's order | 8.0 | 5.9 | 39.1 | 19.7 |
+| Judge blended 50% | 68.4 | 53.4 | 88.4 | 71.6 |
+| Judge blended 25% | 79.1 | 68.1 | 94.2 | 80.7 |
+| Perfect judge (top 20) | 93.9 | 89.1 | 100.0 | 95.1 |
+
+Diagnosis on 40 questions (AUC of scores on gold vs other top-20 turns):
+judge 0.470 with A/B labels, 0.485 with default labels, 0.415 as a yes/no
+choice; Smriti's fused score 0.910. The judge is at chance, not inverted.
+Non-gold candidates average 955 characters against 319 for gold, so a
+guessing judge fills a small context with long irrelevant turns.
+Latency: 399 ms per judgement, 8.0 s per question (p50) on CPU.
+
+**Verdict:** this checkpoint stays off. Official Laya (421M English), Jev
+and CLM-8B remain untested. Files: `round1-laya-family-lmex-dev.json`,
+`round1-card.png`.
+
 ## Run once access opens
 
 ```bash

@@ -196,6 +196,19 @@ table.data td { font-variant-numeric: tabular-nums; }
     </div>
   </header>
 
+  <section aria-labelledby="h-round1">
+    <div class="sec-head">
+      <p class="eyebrow">Round 1 · Laya-family judge · LME-X dev · 3,000-character context</p>
+      <h2 id="h-round1">Round 1 goes to Smriti: the judge was guessing</h2>
+      <p>A community fine-tune of laya-multilingual (MacJev-322M, Apache-2.0) judged Smriti's top 20 memories for 238 questions, zero-shot, on 4 CPU cores. Its scores separate real evidence from the rest at an AUC of 0.47, a coin flip; Smriti's own ranking scores 0.91 on the same questions. Official Laya, Jev and CLM-8B are still to come.</p>
+    </div>
+    <div class="panel" style="display:grid; gap:12px">
+      <div><div class="chart-title">Evidence reaching the LLM</div>
+        <div class="chart-sub">238 LME-X dev questions · judge re-ranks Smriti's top 20 · percentage labels on every bar</div></div>
+      <div id="round1"></div>
+    </div>
+  </section>
+
   <section aria-labelledby="h-contenders">
     <div class="sec-head">
       <p class="eyebrow">The contenders</p>
@@ -234,7 +247,7 @@ table.data td { font-variant-numeric: tabular-nums; }
     <div class="two">
       <div class="panel" style="display:grid; gap:12px">
         <div><div class="chart-title">Milliseconds per query, p50</div>
-          <div class="chart-sub">search + context, measured · lower is better</div></div>
+          <div class="chart-sub">search + context (+ judge), measured on 4 CPU cores · log scale · lower is better</div></div>
         <div id="latency"></div>
       </div>
       <div class="panel" style="display:grid; gap:12px">
@@ -276,7 +289,7 @@ table.data td { font-variant-numeric: tabular-nums; }
 
 <script>
 const DATA = {
-  updated: "2026-09-25 16:20 UTC",
+  updated: "2026-09-25 18:20 UTC",
   series: [
     { id: "smriti", name: "Smriti today", color: "--s1" },
     { id: "oracle", name: "Perfect judge (ceiling)", color: "--ceiling" },
@@ -291,6 +304,14 @@ const DATA = {
     lmex: { title: "LME-X (LongMemEval questions + distractors)", sub: "238 questions · dev", budgets: [1500, 3000, 9000],
       smriti: [67.4, 82.8, 93.2], oracle: [93.1, 97.9, 97.9], overlap: [36.6, 50.9, 68.6] }
   },
+  round1: [
+    { name: "Perfect judge (top 20)", value: 93.9, color: "--ceiling" },
+    { name: "Smriti today", value: 82.8, color: "--s1" },
+    { name: "Laya-family judge, 25% blend", value: 79.1, color: "--s3" },
+    { name: "Laya-family judge, 50% blend", value: 68.4, color: "--s3" },
+    { name: "Word-overlap judge (top 48)", value: 50.9, color: "--s2" },
+    { name: "Laya-family judge alone", value: 8.0, color: "--s3" }
+  ],
   top5: [
     { dataset: "LoCoMo", smriti: 62.6, oracle: 88.0, overlap: 53.1 },
     { dataset: "LME-X", smriti: 82.1, oracle: 99.1, overlap: 60.4 }
@@ -298,7 +319,8 @@ const DATA = {
   latency: [
     { name: "Smriti engine · LoCoMo", ms: 8.0, color: "--s1" },
     { name: "Smriti engine · LME-X", ms: 13.5, color: "--s1" },
-    { name: "Laya judge (local)", pending: "waiting for weights", color: "--s3" },
+    { name: "Laya-family judge · top 20", ms: 7983, color: "--s3" },
+    { name: "Official Laya judge", pending: "waiting for weights", color: "--s3" },
     { name: "Jev judge (hosted)", pending: "waiting for network access", color: "--s4" },
     { name: "CLM-8B judge (local GPU)", pending: "needs a GPU", color: "--s5" }
   ],
@@ -313,9 +335,9 @@ const DATA = {
     { name: "Smriti engine", color: "--s1", status: ["win", "Baseline"],
       facts: [["Runs", "In process, CPU"], ["Size", "SQLite + MiniLM"], ["License", "Apache-2.0"], ["Measured", "8–14 ms / query"]],
       note: "Evidence-first ranking and packing. Every judge must beat this." },
-    { name: "Laya", color: "--s3", status: ["blocked", "Waiting for weights"],
-      facts: [["Runs", "Local, CPU or GPU"], ["Size", "421M (ModernBERT-large)"], ["License", "Apache-2.0"], ["Claimed", "33 ms / decision"]],
-      note: "Open System One model from Convai Innovations. Weights are on Hugging Face, which our sandbox cannot reach yet." },
+    { name: "Laya", color: "--s3", status: ["loss", "Round 1: lost"],
+      facts: [["Runs", "Local, CPU or GPU"], ["Tested", "322M community fine-tune"], ["License", "Apache-2.0"], ["Measured", "0.4 s / decision on CPU"]],
+      note: "A Laya-multilingual fine-tune guessed (AUC 0.47). Official Laya (421M English) is still blocked behind Hugging Face." },
     { name: "Jev", color: "--s4", status: ["blocked", "Waiting for network"],
       facts: [["Runs", "Hosted API"], ["Size", "Closed"], ["Price", "$0.042 / 1M input tokens"], ["Claimed", "70–500 ms / call"]],
       note: "TypeSafe's hosted System One model. Memories would leave the machine, so it can only ever be opt-in." },
@@ -330,6 +352,14 @@ const DATA = {
     ["CLM-8B", "16.5 ms per decision on T-Rex, up to 9× faster than Jev", "1 NVIDIA GPU", "Contrastive-LM release"]
   ],
   posts: [
+    { when: "18:20 UTC", kind: ["loss", "Why"],
+      text: "Why so bad: wrong memories are 3× longer than right ones (955 vs 319 characters), so a guessing judge fills a 3,000-character context with long, irrelevant turns. A 25% blend limits the damage (79.1%) but still loses. It stays off. Next: official Laya, Jev, CLM-8B." },
+    { when: "18:16 UTC", kind: ["loss", "Round 1"],
+      text: "Round 1 verdict: loss. A 322M open decision model (a community Laya-multilingual fine-tune) judged 238 LongMemEval-style questions zero-shot. Ranking skill: AUC 0.47, a coin flip. Smriti's own ranking: 0.91. Evidence reaching the LLM fell from 82.8% to 8.0%." },
+    { when: "17:56 UTC", kind: ["info", "Live"],
+      text: "93%. Last call for predictions before the verdict: does an open 322M decision model beat Smriti's own memory ranking, or cost 400 ms per judgement for nothing? Results in minutes." },
+    { when: "17:46 UTC", kind: ["info", "Live"],
+      text: "Live: a 322M open decision model is judging our local memory layer. 62% through 238 LongMemEval-style questions on 4 CPU cores, no GPU. To win, it has to beat Smriti's 82.8%. Perfect judge: 93.9%. Your call?" },
     { when: "16:20 UTC", kind: ["blocked", "Blocked"],
       text: "Honest status: our sandbox can't reach Hugging Face (Laya and CLM weights) or the Jev API yet, and CLM-8B needs a GPU for its Qwen3-8B encoder. The harness is built and tested. Runs start the moment access opens." },
     { when: "16:15 UTC", kind: ["info", "Cost"],
@@ -489,7 +519,9 @@ function hbars(rootId, rows, opts) {
   const H = m.t + m.b + rowH * rows.length;
   const iw = W - m.l - m.r;
   const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, class: "chart", role: "img", "aria-label": opts.aria }, root);
-  const x = (v) => m.l + (v / opts.max) * iw;
+  const lo = opts.min || 1;
+  const x = opts.log ? (v) => m.l + (Math.log10(Math.max(v, lo)) - Math.log10(lo)) / (Math.log10(opts.max) - Math.log10(lo)) * iw
+                     : (v) => m.l + (v / opts.max) * iw;
   if (opts.ticks) for (const t of opts.ticks) {
     el("line", { x1: x(t), x2: x(t), y1: m.t, y2: H - m.b, class: "gridline" }, svg);
     if (opts.axis) el("text", { x: x(t), y: H - 8, "text-anchor": "middle" }, svg).textContent = opts.fmtTick(t);
@@ -520,6 +552,11 @@ function hbars(rootId, rows, opts) {
   });
 }
 
+/* round 1 */
+hbars("round1", DATA.round1.map((r) => ({ ...r, label: r.value.toFixed(1) + "%" })),
+  { W: 980, rowH: 30, right: 80, max: 100, ticks: [0, 25, 50, 75, 100], axis: true, fmtTick: (t) => t + "%", labelW: 300,
+    aria: "Round 1: evidence reaching the LLM by judge", tipTitle: "Evidence reaching the LLM" });
+
 /* top-5: grouped rows per dataset */
 legend("legend-top5", ["smriti", "oracle", "overlap"], true);
 (function () {
@@ -532,8 +569,9 @@ legend("legend-top5", ["smriti", "oracle", "overlap"], true);
 })();
 
 /* latency */
-hbars("latency", DATA.latency.map((r) => ({ ...r, value: r.ms || 0, label: r.ms ? r.ms.toFixed(1) + " ms" : "" })),
-  { max: 20, ticks: [0, 5, 10, 15, 20], axis: true, fmtTick: (t) => t + " ms", labelW: 180,
+hbars("latency", DATA.latency.map((r) => ({ ...r, value: r.ms || 0, label: r.ms ? (r.ms >= 1000 ? (r.ms / 1000).toFixed(1) + " s" : r.ms.toFixed(1) + " ms") : "" })),
+  { log: true, min: 1, max: 10000, right: 70, ticks: [1, 10, 100, 1000, 10000], axis: true,
+    fmtTick: (t) => t >= 1000 ? (t / 1000) + " s" : t + " ms", labelW: 190,
     aria: "Milliseconds per query, median", tipTitle: "Median milliseconds per query" });
 
 /* cost */
