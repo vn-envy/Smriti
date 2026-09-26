@@ -241,7 +241,7 @@ Encoding took 170 s per split; the whole notebook about 9 minutes.
 | Smriti 0.4.1 order | 0.891 | 63.8% | 83.9% |
 | Official Laya zero-shot (`noul`, 244 q) | 0.830 | 45.9% | – |
 | Head on Laya features only | 0.902 | 59.4% | 86.6% |
-| **Head on Laya + Smriti signals** | **0.937** | **74.2%** | **91.6%** |
+| **Head on Laya + Smriti signals** | **0.936** | **74.2%** | **91.6%** |
 | Hosted Jev zero-shot (round 3) | 0.954 | 72.5% | 94.6% |
 | Community Laya + Smriti head (round 2) | 0.928 | – | – |
 
