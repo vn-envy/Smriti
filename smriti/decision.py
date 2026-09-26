@@ -81,8 +81,13 @@ class SystemOneReranker:
       question and up to ``fanout_size`` memories, with one ``noul`` question
       per memory. The shared state is read once, so hosted input tokens drop.
     * ``"choice"`` — one request: a ``choice`` over the candidates, scored by
-      their softmax probabilities (CLM's native primitive; options must fit
-      the backend's option budget).
+      their softmax probabilities; the state holds the question and a fixed
+      instruction asks which memory helps (options must fit the backend's
+      option budget).
+    * ``"rank"`` — as ``choice``, but the user's question itself is the
+      instruction over an empty state: the layout contrastive System One
+      models such as CLM are trained on (question last, each candidate
+      embedded verbatim), i.e. CLM's ``/v1/rank`` primitive.
 
     A failed request scores its candidates 0.0 and is counted in
     ``stats.errors``; the rest of the ranking is kept.
@@ -93,8 +98,8 @@ class SystemOneReranker:
                  instructions: str = RELEVANCE_INSTRUCTIONS, workers: int = 8,
                  timeout: int = 60, max_doc_chars: int = 1500, fanout_size: int = 12,
                  price_per_mtok: float = 0.0, extra_question: Optional[dict] = None):
-        if mode not in ("noul", "fanout", "choice"):
-            raise ValueError("mode must be 'noul', 'fanout' or 'choice'")
+        if mode not in ("noul", "fanout", "choice", "rank"):
+            raise ValueError("mode must be 'noul', 'fanout', 'choice' or 'rank'")
         self.base_url = base_url.rstrip("/")
         self.api_key = api_key
         self.model = model
@@ -107,6 +112,7 @@ class SystemOneReranker:
         self.price_per_mtok = float(price_per_mtok)
         self.extra_question = dict(extra_question or {})
         self.stats = DecisionStats()
+        self._local = threading.local()     # per-thread result of the last call
 
     # ---------------------------------------------------------------- wire
     def _post(self, state, questions: dict) -> dict:
@@ -143,20 +149,25 @@ class SystemOneReranker:
         return [float(out["answers"][f"m{i}"]["noul"]) for i in range(len(docs))]
 
     def _score_choice(self, query: str, docs: Sequence[str]) -> List[float]:
-        q = {"type": "choice", "instructions": CHOICE_INSTRUCTIONS,
-             "criteria": {str(i): _clip(d, self.max_doc_chars) for i, d in enumerate(docs)}}
-        out = self._post({"question": query}, {"best": q})
+        criteria = {str(i): _clip(d, self.max_doc_chars) for i, d in enumerate(docs)}
+        if self.mode == "rank":
+            state, q = "", {"type": "choice", "instructions": query, "criteria": criteria}
+        else:
+            state = {"question": query}
+            q = {"type": "choice", "instructions": CHOICE_INSTRUCTIONS, "criteria": criteria}
+        out = self._post(state, {"best": q})
         probs = out["answers"]["best"].get("probabilities") or {}
         return [float(probs.get(str(i), 0.0)) for i in range(len(docs))]
 
     def rerank(self, query: str, docs: Sequence[str]) -> List[float]:
         docs = list(docs)
+        self._local.errors = 0
         if not docs:
             return []
         t0 = time.perf_counter()
         scores = [0.0] * len(docs)
         errors = 0
-        if self.mode == "choice":
+        if self.mode in ("choice", "rank"):
             try:
                 scores = self._score_choice(query, docs)
             except Exception:
@@ -183,7 +194,16 @@ class SystemOneReranker:
                     errors += err
         self.stats.add(calls=1, docs=len(docs), errors=errors,
                        seconds=time.perf_counter() - t0)
+        self._local.errors = errors
         return scores
+
+    @property
+    def last_errors(self) -> int:
+        """Failed requests in the calling thread's most recent ``rerank()``.
+
+        ``stats`` is shared by every thread; this is not, so concurrent callers
+        can tell their own failures apart."""
+        return getattr(self._local, "errors", 0)
 
     @property
     def cost_usd(self) -> float:
@@ -222,10 +242,12 @@ class LayaReranker:
                                       "false": "no, the memory is unrelated to the question"},
                          "labels": labels or {"true": "A", "false": "B"}}
         self.stats = DecisionStats()
+        self._local = threading.local()     # per-thread result of the last call
         self.price_per_mtok = 0.0
 
     def rerank(self, query: str, docs: Sequence[str]) -> List[float]:
         docs = list(docs)
+        self._local.errors = 0
         if not docs:
             return []
         t0 = time.perf_counter()
@@ -239,7 +261,13 @@ class LayaReranker:
             scores, errors = [0.0] * len(docs), 1
         self.stats.add(calls=1, requests=(len(docs) + self.batch_size - 1) // self.batch_size,
                        docs=len(docs), errors=errors, seconds=time.perf_counter() - t0)
+        self._local.errors = errors
         return scores
+
+    @property
+    def last_errors(self) -> int:
+        """Failed batches in the calling thread's most recent ``rerank()``."""
+        return getattr(self._local, "errors", 0)
 
     @property
     def cost_usd(self) -> float:

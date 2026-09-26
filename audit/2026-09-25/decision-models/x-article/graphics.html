@@ -1,0 +1,339 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Smriti article graphics</title>
+<style>
+@font-face { font-family: "Archivo"; src: url("fonts/Archivo[wdth,wght].ttf") format("truetype"); font-weight: 100 900; font-stretch: 62% 125%; }
+@font-face { font-family: "Plex Mono"; src: url("fonts/IBMPlexMono-Regular.ttf"); font-weight: 400; }
+@font-face { font-family: "Plex Mono"; src: url("fonts/IBMPlexMono-Medium.ttf"); font-weight: 500; }
+@font-face { font-family: "Tiro Deva"; src: url("fonts/TiroDevanagariSanskrit-Regular.ttf"); }
+:root {
+  --page: #eef1f4; --surface: #fbfcfd; --ink: #0e1620; --ink-2: #475261; --muted: #6f7986;
+  --grid: #e1e6eb; --axis: #c3cad3; --line: rgba(14,22,32,.10); --brand: #1f5fbf;
+  --smriti: #2a78d6; --laya: #1baf7a; --jev: #eda100; --clm: #e87ba4; --ceiling: #5b6470;
+  --good: #0a7f0a; --good-bg: rgba(12,163,12,.10); --bad: #b3261e; --bad-bg: rgba(208,59,59,.10);
+  --warn: #8a5a00; --warn-bg: rgba(250,178,25,.18); --info: #1f5fbf; --info-bg: rgba(42,120,214,.10);
+  --sans: "Archivo", system-ui, sans-serif; --mono: "Plex Mono", ui-monospace, monospace; --deva: "Tiro Deva", serif;
+}
+* { box-sizing: border-box; margin: 0; }
+body { background: #888; font-family: var(--sans); color: var(--ink); }
+.slide { width: 1600px; height: 900px; background: var(--page); position: relative; overflow: hidden;
+  padding: 56px 72px 48px; display: grid; grid-template-rows: auto auto 1fr auto; gap: 22px; margin-bottom: 20px; }
+.slide.cover { width: 2000px; height: 800px; padding: 64px 84px; grid-template-rows: auto 1fr auto; }
+.top { display: flex; justify-content: space-between; align-items: baseline; }
+.brand { display: flex; align-items: baseline; gap: 12px; font-weight: 750; font-stretch: 112%; font-size: 26px; }
+.brand .deva { font-family: var(--deva); font-weight: 400; color: var(--muted); font-size: 28px; }
+.eyebrow { font-family: var(--mono); font-size: 17px; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+h1 { font-size: 58px; line-height: 1.03; font-weight: 820; font-stretch: 116%; letter-spacing: -.015em; text-wrap: balance; max-width: 1350px; }
+h1 em { font-style: normal; color: var(--brand); }
+.sub { font-size: 23px; color: var(--ink-2); margin-top: 12px; max-width: 1250px; line-height: 1.4; }
+.foot { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 16px; color: var(--muted); }
+.panel { display: grid; align-content: center; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 26px 30px; }
+svg text { font-family: var(--sans); font-variant-numeric: tabular-nums; }
+.chip { display: inline-flex; align-items: center; gap: 8px; padding: 5px 14px 5px 11px; border-radius: 999px;
+  font-size: 18px; font-weight: 650; white-space: nowrap; }
+.chip svg { width: 15px; height: 15px; }
+.chip.win { color: var(--good); background: var(--good-bg); } .chip.loss { color: var(--bad); background: var(--bad-bg); }
+.chip.warn { color: var(--warn); background: var(--warn-bg); } .chip.info { color: var(--info); background: var(--info-bg); }
+.num { font-variant-numeric: tabular-nums; }
+
+/* cover */
+.cover .body { display: grid; grid-template-columns: 1.25fr 1fr; gap: 56px; align-items: center; }
+.cover h1 { font-size: 82px; max-width: none; }
+.cover .stat { display: grid; gap: 14px; }
+.cover .big { font-size: 168px; font-weight: 850; font-stretch: 112%; line-height: .9; color: var(--smriti); letter-spacing: -.02em; }
+.cover .big small { font-size: 64px; font-weight: 780; }
+.cover .statsub { font-size: 26px; color: var(--ink-2); line-height: 1.35; max-width: 620px; }
+.rounds { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 28px; }
+.dots { position: absolute; right: -30px; top: 20px; opacity: .5; z-index: 0; -webkit-mask-image: linear-gradient(to left, #000 35%, transparent 95%); mask-image: linear-gradient(to left, #000 35%, transparent 95%); }
+.cover .top, .cover .body, .cover .foot { position: relative; z-index: 1; }
+.cover .stat { background: var(--page); border-radius: 22px; padding: 26px 28px; box-shadow: 0 0 0 1px var(--line); }
+
+/* rounds grid */
+.cols4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+.rcard { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 24px 24px 22px;
+  display: grid; grid-template-rows: auto auto auto 1fr auto; gap: 16px; }
+.rcard .rn { font-family: var(--mono); font-size: 16px; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
+.rcard h3 { font-size: 25px; font-weight: 760; font-stretch: 108%; line-height: 1.15; }
+.rcard .kpi { white-space: nowrap; font-size: 62px; font-weight: 830; font-stretch: 110%; line-height: 1; letter-spacing: -.01em; }
+.rcard .kpil { font-size: 17px; color: var(--muted); margin-top: 6px; }
+.rcard p { font-size: 19px; color: var(--ink-2); line-height: 1.38; }
+.mini { display: grid; gap: 8px; align-self: end; }
+.mini .ml { font-size: 15px; color: var(--muted); font-family: var(--mono); letter-spacing: .02em; }
+.mrow { display: grid; grid-template-columns: 70px 1fr 64px; gap: 10px; align-items: center; font-size: 17px; color: var(--ink-2); }
+.mrow i { display: block; height: 14px; background: var(--grid); border-radius: 4px; overflow: hidden; }
+.mrow i b { display: block; height: 100%; border-radius: 4px; }
+.mrow em { font-style: normal; font-weight: 700; color: var(--ink); text-align: right; font-variant-numeric: tabular-nums; }
+.rcard .head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.rcard .kpi.sm { font-size: 50px; }
+.key { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 8px; vertical-align: 1px; }
+
+.cols3k { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 18px; }
+.kcol { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 24px 26px; display: grid; gap: 16px; align-content: start; }
+.khead { font-size: 25px; font-weight: 650; color: var(--ink-2); font-stretch: 108%; }
+.khead b { color: var(--ink); font-weight: 820; }
+.kd { width: 100%; height: auto; display: block; background: var(--page); border-radius: 12px; padding: 6px; }
+.kd text { font-family: var(--sans); }
+.kcol dl { display: grid; grid-template-columns: 118px 1fr; gap: 8px 12px; font-size: 19px; margin: 0; }
+.kcol dt { color: var(--muted); } .kcol dd { margin: 0; color: var(--ink); }
+.kcol .why { font-size: 20px; line-height: 1.4; color: var(--ink-2); border-top: 1px solid var(--grid); padding-top: 14px; }
+.kcol .why b { color: var(--ink); }
+/* ships */
+.cols3 { display: grid; grid-template-columns: 1.15fr 1fr 1fr; gap: 18px; }
+.scol { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 26px; display: grid; gap: 16px; align-content: start; }
+.scol.default { border: 2px solid var(--smriti); }
+.scol h3 { font-size: 32px; font-weight: 800; font-stretch: 110%; }
+.scol ul { list-style: none; padding: 0; display: grid; gap: 16px; }
+.scol li { font-size: 23px; line-height: 1.35; color: var(--ink-2); padding-left: 22px; position: relative; }
+.scol li::before { content: ""; position: absolute; left: 0; top: 11px; width: 9px; height: 9px; border-radius: 2px; background: var(--axis); }
+.scol li b { color: var(--ink); font-weight: 700; }
+.scol .big2 { font-size: 60px; font-weight: 840; font-stretch: 110%; line-height: 1; }
+.strip { display: flex; align-items: center; gap: 16px; font-size: 21px; color: var(--ink-2); }
+.two { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 18px; }
+.ptitle { font-size: 24px; font-weight: 750; }
+.psub { font-size: 17px; color: var(--muted); margin-top: 4px; }
+.legendrow { display: flex; gap: 22px; font-size: 18px; color: var(--ink-2); }
+</style></head>
+<body>
+
+<!-- COVER 2000x800 -->
+<section class="slide cover" id="cover">
+  <svg class="dots" id="dots" width="760" height="760" aria-hidden="true"></svg>
+  <div class="top"><div class="brand"><span>Smriti</span><span class="deva">स्मृति</span></div>
+    <div class="eyebrow">Experiment · decision models as memory judges</div></div>
+  <div class="body">
+    <div>
+      <h1>Three AI judges, four rounds, and the <em>one change</em> Smriti kept.</h1>
+      <div class="rounds">
+        <span class="chip loss" data-i="loss">Round 1 · coin flip</span>
+        <span class="chip win" data-i="win">Round 2 · a free win</span>
+        <span class="chip win" data-i="win">Round 3 · Jev helps</span>
+        <span class="chip win" data-i="win">Round 4 · local Laya ties Jev</span>
+      </div>
+    </div>
+    <div class="stat">
+      <div class="big num">+5.4<small> pts</small></div>
+      <div class="statsub">more of the needed evidence reaches the LLM at 9,000 characters, from one ranking change the judge taught us. Shipped in Smriti 0.4.1. No model, $0, nothing leaves your machine.</div>
+    </div>
+  </div>
+  <div class="foot"><span>10,000 question–memory pairs · 244 unseen test questions</span><span>github.com/vn-envy/Smriti</span></div>
+</section>
+
+
+<!-- 1 KINDS -->
+<section class="slide" id="kinds">
+  <div class="top"><div class="brand"><span>Smriti</span><span class="deva">स्मृति</span></div><div class="eyebrow">1 · Three kinds of System One model</div></div>
+  <div><h1>One question, one pass, <em>a probability back</em>. Three ways to build it.</h1></div>
+  <div class="cols3k">
+    <div class="kcol">
+      <div class="khead"><span class="key" style="background:var(--jev)"></span>Hosted · <b>Jev</b></div>
+      <svg viewBox="0 0 440 150" class="kd">
+        <rect x="4" y="46" width="124" height="58" rx="10" fill="#fbfcfd" stroke="#c3cad3" stroke-width="2"/>
+        <text x="66" y="71" text-anchor="middle" font-size="15" fill="#475261">question</text><text x="66" y="91" text-anchor="middle" font-size="15" fill="#475261">+ memory</text>
+        <path d="M136 75 H176" stroke="#6f7986" stroke-width="2.5" marker-end="url(#ar)"/>
+        <path d="M205 108 H300 a30 30 0 0 0 4 -59 a44 44 0 0 0 -84 -8 a32 32 0 0 0 -15 67 Z" fill="rgba(237,161,0,.12)" stroke="#eda100" stroke-width="2.5"/>
+        <text x="255" y="84" text-anchor="middle" font-size="15" font-weight="700" fill="#0e1620">their API</text>
+        <path d="M320 75 H350" stroke="#6f7986" stroke-width="2.5" marker-end="url(#ar)"/>
+        <rect x="358" y="56" width="78" height="38" rx="19" fill="rgba(12,163,12,.10)"/><text x="397" y="81" text-anchor="middle" font-size="16" font-weight="700" fill="#0a7f0a">yes .92</text>
+      </svg>
+      <dl><dt>Runs</dt><dd>on TypeSafe's servers</dd><dt>License</dt><dd>closed, pay per token</dd><dt>They claim</dt><dd>70–500 ms per call</dd><dt>We tested</dt><dd>jev-latest, no training</dd></dl>
+      <p class="why"><b>For memory:</b> the best quality you can buy today, but every memory it judges leaves your machine.</p>
+    </div>
+    <div class="kcol">
+      <div class="khead"><span class="key" style="background:var(--laya)"></span>Open, small · <b>Laya</b></div>
+      <svg viewBox="0 0 440 150" class="kd">
+        <rect x="4" y="46" width="124" height="58" rx="10" fill="#fbfcfd" stroke="#c3cad3" stroke-width="2"/>
+        <text x="66" y="71" text-anchor="middle" font-size="15" fill="#475261">question</text><text x="66" y="91" text-anchor="middle" font-size="15" fill="#475261">| memory</text>
+        <path d="M136 75 H176" stroke="#6f7986" stroke-width="2.5" marker-end="url(#ar)"/>
+        <rect x="184" y="40" width="134" height="70" rx="12" fill="rgba(27,175,122,.12)" stroke="#1baf7a" stroke-width="2.5"/>
+        <text x="251" y="70" text-anchor="middle" font-size="15" font-weight="700" fill="#0e1620">one encoder</text><text x="251" y="90" text-anchor="middle" font-size="14" fill="#475261">421M params</text>
+        <path d="M320 75 H350" stroke="#6f7986" stroke-width="2.5" marker-end="url(#ar)"/>
+        <rect x="358" y="56" width="78" height="38" rx="19" fill="rgba(12,163,12,.10)"/><text x="397" y="81" text-anchor="middle" font-size="16" font-weight="700" fill="#0a7f0a">yes .92</text>
+      </svg>
+      <dl><dt>Runs</dt><dd>on your machine, CPU or GPU</dd><dt>License</dt><dd>Apache-2.0</dd><dt>They claim</dt><dd>~33 ms per decision on a T4 GPU</dd><dt>We tested</dt><dd>a 322M community fine-tune and the official 421M model, with and without training</dd></dl>
+      <p class="why"><b>For memory:</b> small enough to sit next to the SQLite file, and it can be trained on your own labels.</p>
+    </div>
+    <div class="kcol">
+      <div class="khead"><span class="key" style="background:var(--clm)"></span>Open, contrastive · <b>CLM-8B</b></div>
+      <svg viewBox="0 0 440 150" class="kd">
+        <rect x="4" y="18" width="104" height="44" rx="10" fill="#fbfcfd" stroke="#c3cad3" stroke-width="2"/><text x="56" y="45" text-anchor="middle" font-size="15" fill="#475261">question</text>
+        <rect x="4" y="88" width="104" height="44" rx="10" fill="#fbfcfd" stroke="#c3cad3" stroke-width="2"/><text x="56" y="115" text-anchor="middle" font-size="15" fill="#475261">memory</text>
+        <path d="M112 40 H146" stroke="#6f7986" stroke-width="2.5" marker-end="url(#ar)"/><path d="M112 110 H146" stroke="#6f7986" stroke-width="2.5" marker-end="url(#ar)"/>
+        <circle cx="166" cy="40" r="11" fill="#e87ba4"/><circle cx="166" cy="110" r="11" fill="#e87ba4"/>
+        <text x="186" y="45" font-size="14" fill="#475261">vector</text><text x="186" y="115" font-size="14" fill="#475261">vector, saved</text>
+        <path d="M268 40 L318 70 M290 110 L318 82" stroke="#6f7986" stroke-width="2.5" fill="none"/>
+        <text x="330" y="81" font-size="15" font-weight="700" fill="#0e1620">match</text>
+        <path d="M382 75 H396" stroke="#6f7986" stroke-width="2.5" marker-end="url(#ar)"/>
+        <text x="402" y="81" font-size="16" font-weight="700" fill="#0a7f0a">.92</text>
+      </svg>
+      <dl><dt>Runs</dt><dd>your GPU, 24 GB or more</dd><dt>License</dt><dd>Apache-2.0</dd><dt>They claim</dt><dd>Jev-level on agent tasks, up to 9× faster</dd><dt>We tested</dt><dd>v0.1, no training, three prompt formats</dd></dl>
+      <p class="why"><b>For memory:</b> memories can be turned into vectors once, when saved, so each new question is cheap.</p>
+    </div>
+  </div>
+  <div class="foot"><span>Claims are the vendors' own figures. All three accept the same /v1/systemone request.</span><span>github.com/vn-envy/Smriti</span></div>
+  <svg width="0" height="0" style="position:absolute"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6f7986"/></marker></defs></svg>
+</section>
+
+<!-- 1 PRIZE -->
+<section class="slide" id="prize">
+  <div class="top"><div class="brand"><span>Smriti</span><span class="deva">स्मृति</span></div><div class="eyebrow">2 · What a perfect judge is worth</div></div>
+  <div><h1>A perfect judge would get <em>far more evidence</em> to the model.</h1>
+    <p class="sub">Share of questions where every needed memory fits in the context the LLM reads. The judge re-ranks Smriti's top 20 memories.</p></div>
+  <div class="panel" id="prize-chart"></div>
+  <div class="foot"><span>232 unseen LongMemEval questions · Smriti 0.4.1</span><span>github.com/vn-envy/Smriti</span></div>
+</section>
+
+<!-- 2 ROUNDS -->
+<section class="slide" id="rounds">
+  <div class="top"><div class="brand"><span>Smriti</span><span class="deva">स्मृति</span></div><div class="eyebrow">3 · Four rounds, posted live</div></div>
+  <div><h1>Same 10,000 pairs. Tune on 256 questions, <em>judge once</em> on 244.</h1></div>
+  <div class="cols4">
+    <article class="rcard"><div class="head"><div class="rn">Round 1</div><span class="chip loss" data-i="loss">Loss</span></div><h3><span class="key" style="background:var(--laya)"></span>Laya fine-tune, no training</h3>
+      <div><div class="kpi num">0.47</div><div class="kpil">ranking skill (AUC) · a coin flip is 0.50</div></div>
+      <div class="mini"><div class="ml">Evidence reaching the model · 3,000 chars</div><div class="mrow"><span>Smriti</span><i><b style="width:82.8%;background:var(--smriti);opacity:.45"></b></i><em>82.8%</em></div><div class="mrow"><span>+ judge</span><i><b style="width:8.0%;background:var(--laya)"></b></i><em>8.0%</em></div></div>
+      <p>Evidence reaching the model fell from 82.8% to 8.0%. Its guesses filled the context with long, off-topic memories.</p></article>
+    <article class="rcard"><div class="head"><div class="rn">Round 2</div><span class="chip win" data-i="win">Win, shipped</span></div><h3><span class="key" style="background:var(--laya)"></span>Same model + a small trained layer</h3>
+      <div><div class="kpi num sm">0.55 → 0.2</div><div class="kpil">one ranking weight it taught us</div></div>
+      <div class="mini"><div class="ml">Evidence reaching the model · 3,000 chars</div><div class="mrow"><span>0.4.0</span><i><b style="width:78.5%;background:var(--smriti);opacity:.45"></b></i><em>78.5%</em></div><div class="mrow"><span>0.4.1</span><i><b style="width:83.2%;background:var(--smriti)"></b></i><em>83.2%</em></div></div>
+      <p>Rank the assistant's own replies lower. +4.7 pts at 3,000 characters, with no model.</p></article>
+    <article class="rcard"><div class="head"><div class="rn">Round 3</div><span class="chip warn" data-i="warn">Win, opt-in</span></div><h3><span class="key" style="background:var(--jev)"></span>Hosted Jev, no training</h3>
+      <div><div class="kpi num">72.5%</div><div class="kpil">right memory first · Smriti 63.8%</div></div>
+      <div class="mini"><div class="ml">Evidence reaching the model · 1,500 chars</div><div class="mrow"><span>Smriti</span><i><b style="width:65.6%;background:var(--smriti);opacity:.45"></b></i><em>65.6%</em></div><div class="mrow"><span>+ Jev</span><i><b style="width:74.8%;background:var(--jev)"></b></i><em>74.8%</em></div></div>
+      <p>+9.2 pts at 1,500 characters for $0.37 per 1,000 questions. Every memory leaves your machine.</p></article>
+    <article class="rcard"><div class="head"><div class="rn">Round 4 · GPU</div><span class="chip win" data-i="win">Win, local</span></div><h3><span class="key" style="background:var(--laya)"></span>Official Laya + trained layer</h3>
+      <div><div class="kpi num">74.2%</div><div class="kpil">right memory first · level with Jev</div></div>
+      <div class="mini"><div class="ml">Evidence reaching the model · 1,500 chars</div><div class="mrow"><span>Smriti</span><i><b style="width:65.6%;background:var(--smriti);opacity:.45"></b></i><em>65.6%</em></div><div class="mrow"><span>+ Laya</span><i><b style="width:72.6%;background:var(--laya)"></b></i><em>72.6%</em></div></div>
+      <p>+7.0 pts at 1,500 characters, $0, private. <span class="key" style="background:var(--clm);margin:0 4px 0 2px"></span>CLM-8B stayed below Smriti.</p></article>
+  </div>
+  <div class="foot"><span>Round 1 on 238 tuning questions · rounds 2–4 on unseen questions</span><span>github.com/vn-envy/Smriti</span></div>
+</section>
+
+<!-- 3 FREE WIN -->
+<section class="slide" id="freewin">
+  <div class="top"><div class="brand"><span>Smriti</span><span class="deva">स्मृति</span></div><div class="eyebrow">4 · What the judge taught us</div></div>
+  <div><h1>The judge's biggest lesson made Smriti better <em>with no model</em>.</h1>
+    <p class="sub">Its largest learned weight said the assistant's own replies are rarely the evidence. We ranked them lower (0.55 → 0.2) and tested once on unseen questions.</p></div>
+  <div class="panel" id="freewin-chart"></div>
+  <div class="foot"><span>Evidence complete in context · 232 unseen LongMemEval questions · Smriti 0.4.0 vs 0.4.1</span><span>github.com/vn-envy/Smriti</span></div>
+</section>
+
+<!-- 4 SCOREBOARD -->
+<section class="slide" id="score">
+  <div class="top"><div class="brand"><span>Smriti</span><span class="deva">स्मृति</span></div><div class="eyebrow">5 · Where each judge landed</div></div>
+  <div><h1>The best two judges close <em>a third or more</em> of the gap.</h1></div>
+  <div class="two">
+    <div class="panel"><div class="ptitle">Puts the right memory first</div><div class="psub">judge on its own · 229 unseen questions</div><div id="score-a" style="margin-top:14px"></div></div>
+    <div class="panel"><div class="ptitle">All evidence reaches the model</div><div class="psub">judge plugged into Smriti · 1,500 characters · 232 questions</div><div id="score-b" style="margin-top:14px"></div></div>
+  </div>
+  <div class="foot"><span>Laya trained: $0, local, GPU · Jev: $0.37 per 1,000 questions, hosted · CLM-8B: $0, local, 24 GB GPU</span><span>github.com/vn-envy/Smriti</span></div>
+</section>
+
+<!-- 5 SHIPS -->
+<section class="slide" id="ships">
+  <div class="top"><div class="brand"><span>Smriti</span><span class="deva">स्मृति</span></div><div class="eyebrow">6 · What Smriti ships</div></div>
+  <div><h1>The default got better. <em>The judges stay optional.</em></h1></div>
+  <div class="cols3">
+    <div class="scol default"><span class="chip win" data-i="win">On by default · 0.4.1</span><h3>Assistant replies ranked lower</h3>
+      <div class="big2 num" style="color:var(--smriti)">+4.7 · +5.4 pts</div>
+      <ul><li>more evidence reaching the model at 3,000 and 9,000 characters</li>
+        <li><b>No model.</b> 8–14 ms per query on a CPU</li><li><b>$0.</b> Nothing leaves your machine</li></ul></div>
+    <div class="scol"><span class="chip info" data-i="info">Optional · off by default</span><h3>Bring a judge</h3>
+      <ul><li><b>Hosted Jev:</b> +9.2 pts at 1,500 characters, $0.37 per 1,000 questions. Memories leave your machine.</li>
+        <li><b>Any System One server</b> (Jev, laya-serve, clm-serve) through one adapter</li></ul></div>
+    <div class="scol"><span class="chip warn" data-i="warn">Next</span><h3>Local Laya judge for GPU users</h3>
+      <ul><li>+7.0 pts at 1,500 characters, level with Jev</li><li><b>$0</b> and private</li><li>0.8 s per question on an L4 GPU; too slow on a CPU for now</li></ul></div>
+  </div>
+  <div class="strip"><span class="chip loss" data-i="loss">Not shipping</span><span>CLM-8B as released: it ranked memories below Smriti's own ranking in every prompt format we tried.</span></div>
+</section>
+
+<script>
+const NS = "http://www.w3.org/2000/svg";
+const el = (t, a = {}, p) => { const n = document.createElementNS(NS, t); for (const [k, v] of Object.entries(a)) n.setAttribute(k, v); if (p) p.appendChild(n); return n; };
+const ICON = {
+  win: '<svg viewBox="0 0 12 12"><path d="M2 6.5 4.8 9 10 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  loss: '<svg viewBox="0 0 12 12"><path d="M6 2v5.5M3 5.5 6 8.5l3-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  warn: '<svg viewBox="0 0 12 12"><path d="M6 1.8 10.8 10H1.2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M6 5v2.4M6 8.7v.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+  info: '<svg viewBox="0 0 12 12"><circle cx="6" cy="6" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M6 5.4v3M6 3.4v.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'
+};
+document.querySelectorAll(".chip[data-i]").forEach((c) => c.insertAdjacentHTML("afterbegin", ICON[c.dataset.i]));
+
+/* cover: 100 x 100 dots = the 10,000 pairs */
+(function () {
+  const s = document.getElementById("dots");
+  for (let i = 0; i < 100; i++) for (let j = 0; j < 100; j++) {
+    const hit = (Math.sin(i * 12.9898 + j * 78.233) * 43758.5453 % 1 + 1) % 1 < 0.045;
+    el("circle", { cx: 6 + j * 7.5, cy: 6 + i * 7.5, r: hit ? 2.1 : 1.3, fill: hit ? "#2a78d6" : "#c3cad3", "fill-opacity": hit ? 0.9 : 0.55 }, s);
+  }
+})();
+
+/* horizontal bars: rows [{name, value, color, label, note}] */
+function hbars(root, rows, o) {
+  const W = o.W, rowH = o.rowH || 56, m = { l: o.labelW, r: o.right || 120, t: 8, b: 40 };
+  const H = m.t + m.b + rows.reduce((a, r) => a + (r.gap ? 18 : 0) + rowH, 0);
+  const iw = W - m.l - m.r;
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, style: "width:100%;height:auto;display:block" }, root);
+  const x = (v) => m.l + (v / o.max) * iw;
+  for (const t of o.ticks) {
+    el("line", { x1: x(t), x2: x(t), y1: m.t, y2: H - m.b, stroke: "#e1e6eb", "stroke-width": 1.5 }, svg);
+    el("text", { x: x(t), y: H - 10, "text-anchor": "middle", "font-size": 17, fill: "#6f7986" }, svg).textContent = t + "%";
+  }
+  el("line", { x1: m.l, x2: m.l, y1: m.t, y2: H - m.b, stroke: "#c3cad3", "stroke-width": 1.5 }, svg);
+  let y = m.t;
+  rows.forEach((r) => {
+    if (r.gap) y += 18;
+    const cy = y + rowH / 2;
+    el("text", { x: m.l - 16, y: cy + 7, "text-anchor": "end", "font-size": o.fs || 21, "font-weight": 650, fill: "#475261" }, svg).textContent = r.name;
+    const w = Math.max(3, x(r.value) - m.l), bh = o.bh || 24;
+    el("path", { d: `M${m.l},${cy - bh / 2} h${w - 6} a6,6 0 0 1 6,6 v${bh - 12} a6,6 0 0 1 -6,6 h${-(w - 6)} z`, fill: r.color, "fill-opacity": r.fade ? 0.45 : 1 }, svg);
+    const vt = el("text", { x: x(r.value) + 12, y: cy + 8, "font-size": o.vfs || 22, "font-weight": 750, fill: "#0e1620" }, svg);
+    vt.textContent = r.label;
+    if (r.note) el("text", { x: x(r.value) + 12 + vt.getComputedTextLength() + 14, y: cy + 8, "font-size": 19, fill: "#6f7986" }, svg).textContent = r.note.trim();
+    y += rowH;
+  });
+  return { svg, x, m };
+}
+const pct = (v) => v.toFixed(1) + "%";
+
+/* 1 prize: grouped by budget */
+(function () {
+  const root = document.getElementById("prize-chart");
+  const rows = [
+    { name: "1,500 chars · Smriti today", value: 65.6, color: "#2a78d6", label: "65.6%" },
+    { name: "1,500 chars · perfect judge", value: 87.1, color: "#5b6470", label: "87.1%", note: "  +21.5 pts on the table" },
+    { name: "3,000 chars · Smriti today", value: 83.2, color: "#2a78d6", label: "83.2%", gap: true },
+    { name: "3,000 chars · perfect judge", value: 91.3, color: "#5b6470", label: "91.3%", note: "  +8.1 pts" },
+  ];
+  hbars(root, rows, { W: 1394, labelW: 330, right: 330, max: 100, ticks: [0, 25, 50, 75, 100], rowH: 70, bh: 34, fs: 22, vfs: 26 });
+})();
+
+/* 3 free win: paired bars per budget */
+(function () {
+  const root = document.getElementById("freewin-chart");
+  const rows = [
+    { name: "1,500 chars · 0.4.0", value: 64.8, color: "#2a78d6", fade: true, label: "64.8%" },
+    { name: "1,500 chars · 0.4.1", value: 65.6, color: "#2a78d6", label: "65.6%", note: "   not significant" },
+    { name: "3,000 chars · 0.4.0", value: 78.5, color: "#2a78d6", fade: true, label: "78.5%", gap: true },
+    { name: "3,000 chars · 0.4.1", value: 83.2, color: "#2a78d6", label: "83.2%", note: "   +4.7 pts · 23 better, 1 worse" },
+    { name: "9,000 chars · 0.4.0", value: 87.6, color: "#2a78d6", fade: true, label: "87.6%", gap: true },
+    { name: "9,000 chars · 0.4.1", value: 93.0, color: "#2a78d6", label: "93.0%", note: "   +5.4 pts · 26 better, 0 worse" },
+  ];
+  hbars(root, rows, { W: 1394, labelW: 270, right: 420, max: 100, ticks: [0, 25, 50, 75, 100], rowH: 46, bh: 26, fs: 20, vfs: 23 });
+})();
+
+/* 4 scoreboard */
+(function () {
+  hbars(document.getElementById("score-a"), [
+    { name: "Laya + trained layer", value: 74.2, color: "#1baf7a", label: "74.2%" },
+    { name: "Hosted Jev", value: 72.5, color: "#eda100", label: "72.5%" },
+    { name: "Smriti's own order", value: 63.8, color: "#2a78d6", label: "63.8%" },
+    { name: "Laya, no training", value: 45.9, color: "#1baf7a", fade: true, label: "45.9%" },
+    { name: "CLM-8B, best format", value: 27.1, color: "#e87ba4", label: "27.1%" },
+  ], { W: 670, labelW: 230, right: 80, max: 100, ticks: [0, 50, 100], rowH: 58, bh: 26, fs: 19, vfs: 21 });
+  hbars(document.getElementById("score-b"), [
+    { name: "Perfect judge", value: 87.1, color: "#5b6470", label: "87.1%" },
+    { name: "+ Hosted Jev", value: 74.8, color: "#eda100", label: "74.8%" },
+    { name: "+ Laya trained", value: 72.6, color: "#1baf7a", label: "72.6%" },
+    { name: "+ CLM-8B", value: 68.6, color: "#e87ba4", label: "68.6%" },
+    { name: "Smriti alone", value: 65.6, color: "#2a78d6", label: "65.6%" },
+  ], { W: 670, labelW: 190, right: 80, max: 100, ticks: [0, 50, 100], rowH: 58, bh: 26, fs: 19, vfs: 21 });
+})();
+</script>
+</body></html>

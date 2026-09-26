@@ -1,0 +1,46 @@
+{
+ "smriti_fused_order": {
+  "dev": {
+   "auc": 0.8994,
+   "top1": 0.642,
+   "recall@5_of_pool": 0.8517,
+   "n_q": 243
+  },
+  "test": {
+   "auc": 0.891,
+   "top1": 0.6376,
+   "recall@5_of_pool": 0.8394,
+   "n_q": 229
+  }
+ },
+ "smriti": {
+  "cv_auc_dev": 0.8995,
+  "l2": 0.1,
+  "test": {
+   "auc": 0.8906,
+   "top1": 0.6332,
+   "recall@5_of_pool": 0.8394,
+   "n_q": 229
+  }
+ },
+ "laya": {
+  "cv_auc_dev": 0.9029,
+  "l2": 0.1,
+  "test": {
+   "auc": 0.9016,
+   "top1": 0.5939,
+   "recall@5_of_pool": 0.8661,
+   "n_q": 229
+  }
+ },
+ "both": {
+  "cv_auc_dev": 0.9461,
+  "l2": 0.1,
+  "test": {
+   "auc": 0.9365,
+   "top1": 0.7424,
+   "recall@5_of_pool": 0.9162,
+   "n_q": 229
+  }
+ }
+}

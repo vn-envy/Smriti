@@ -1,0 +1,22 @@
+{
+ "device": "cuda:0",
+ "gpu": "NVIDIA L4",
+ "model": "convaiinnovations/laya",
+ "revision": "55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851",
+ "splits": {
+  "dev": {
+   "questions": 256,
+   "pairs": 5120,
+   "ms_per_question_p50": 764.1,
+   "ms_per_question_p95": 822.8,
+   "wall_s": 169.7
+  },
+  "test": {
+   "questions": 244,
+   "pairs": 4880,
+   "ms_per_question_p50": 812.8,
+   "ms_per_question_p95": 840.2,
+   "wall_s": 168.3
+  }
+ }
+}

@@ -1,0 +1,10 @@
+{
+ "split": "dev",
+ "questions": 256,
+ "pairs": 5120,
+ "positives": 442,
+ "depth": 20,
+ "smriti": "0.4.1",
+ "commit": "14f1215a831be2268cac9bee1f3e916e76b82782",
+ "dataset": "longmemeval_s.json"
+}

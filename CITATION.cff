@@ -5,8 +5,8 @@ type: software
 url: "https://github.com/vn-envy/Smriti"
 repository-code: "https://github.com/vn-envy/Smriti"
 license: Apache-2.0
-version: 0.4.1
-date-released: 2026-09-25
+version: 0.4.2
+date-released: 2026-09-26
 abstract: >-
   A zero-infrastructure, local-first, bi-temporal memory layer for AI agents.
   One SQLite file; stdlib + numpy dependency surface; supersession instead of

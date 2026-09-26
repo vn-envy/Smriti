@@ -2,12 +2,160 @@
 
 | Package | Version | Date | Who it is for |
 |---|---|---|---|
-| [`smriti-agents`](#smriti-041--sharper-evidence-from-chat-logs) (core) | **0.4.1** | 2026-09-25 | Developers and individual agents: local, private memory in one SQLite file |
-| [`smriti-enterprise`](#smriti-enterprise-020) | **0.2.0** | 2026-09-25 | Governed deployments: audit receipts, retention, legal holds, verified packs |
+| [`smriti-agents`](#smriti-042--the-judge-trials-finished) (core) | **0.4.2** | 2026-09-26 | Developers and individual agents: local, private memory in one SQLite file |
+| [`smriti-enterprise`](#smriti-enterprise-020) | **0.2.0** | 2026-09-25 | Governed deployments: audit receipts, retention, legal holds, verified packs. Works with core 0.4.0 to 0.4.2 |
 
 Versions are set in package metadata. No git tag or PyPI publication has
 been made; install from the repository (see
 [Install and upgrade](#install-and-upgrade)).
+
+## The 0.4 series at a glance
+
+| Release | What you get | Default behaviour |
+|---|---|---|
+| [0.4.0](#smriti-040--evidence-first-recall) · evidence-first recall | A new default read engine that keeps whole, dated evidence turns instead of cutting them. Held-out LongMemEval questions (LME-X): evidence complete in context 43.2% → 87.6%; blinded answer accuracy 47.5% → 70.4% (Mem0 OSS on the same turns: 61.7%). | Changed. `read_engine="fusion"` keeps the 0.3.x path. |
+| [0.4.1](#smriti-041--sharper-evidence-from-chat-logs) · sharper evidence | The assistant's own replies rank lower (`assistant_prior` 0.55 → 0.2): +4.7 points of evidence at 3,000 characters and +5.4 at 9,000, no model involved. Optional decision-model rerankers. | Changed (ranking of assistant turns). |
+| [0.4.2](#smriti-042--the-judge-trials-finished) · judge trials finished | A `rank` mode for contrastive judges, and the full results of four rounds testing Jev, Laya and CLM-8B as relevance judges, with guidance on when a judge is worth turning on. | Unchanged. |
+
+---
+
+## Smriti 0.4.2 — the judge trials, finished
+
+**Nothing changes on Smriti's default read path.** 0.4.2 closes the
+decision-model trials that began in 0.4.1. We tested three kinds of
+"System One" model as an extra relevance check on Smriti's top memories:
+hosted **Jev** (TypeSafe), the open **Laya** encoder and the open,
+contrastive **CLM-8B** (Contrastive-LM). The default stays judge-free. This
+release adds one reranker mode and publishes what each judge is worth, so you
+can decide whether to turn one on.
+
+### What's new
+
+- **`SystemOneReranker(mode="rank")`.** Sends an empty state with the user's
+  question as the instruction and each candidate memory as an option. This is
+  the layout contrastive System One models such as CLM-8B are trained on:
+  the question comes last and each candidate is embedded verbatim. The
+  existing `choice` mode ends with a fixed "which memory best helps?" line,
+  which a contrastive model reads as the question, so every query looks the
+  same to it. On CLM-8B, `rank` raised held-out ranking skill (AUC) from 0.605
+  to 0.731. `noul` (one yes/no question per memory) stays the default mode.
+- **`last_errors`** on `SystemOneReranker` and `LayaReranker`: failed
+  requests in the calling thread's most recent `rerank()`. `stats` is shared
+  by every thread, so concurrent callers now have a way to tell their own
+  failures apart.
+- **GPU arms on Google Colab** (`bench/lab/colab/`). Two notebooks run the
+  GPU-bound judges: the official Laya encoder with a trained head (any GPU)
+  and CLM-8B through `clm-serve` on vLLM 0.19.1 (L4 or A100). Results come
+  back as one zip in the runner's Google Drive and replay through the lab's
+  caches with no model on the CPU box.
+- **Fixed candidate pools** (`audit/2026-09-25/decision-models/pools/`).
+  Smriti's top 20 memories for 256 dev and 244 held-out LME-X questions,
+  exported by `bench/lab/judge_head/export_pools.py`. Every judge scored the
+  same 10,000 question and memory pairs; replaying the round 3 Jev scores over
+  the exported pools reproduces its results exactly. The notebooks fetch a
+  pinned revision (`main` by default); the commits of the recorded runs are in
+  the Colab README.
+- **Lab tools:** `pool_eval.py` (judge a pools file, single-stream latency
+  probe, per-question AUC, per-call error counts under concurrency),
+  `extract_pools.py` (frozen-encoder features on a GPU, in the formats
+  `train.py` and the lab's feature cache read), and a thread-safe judge cache
+  for concurrent judging.
+- **Experiment record:** rounds 3 and 4 in
+  [`NOTES.md`](audit/2026-09-25/decision-models/NOTES.md), result files, an
+  [X article](audit/2026-09-25/decision-models/x-article/) and the source of a
+  [2-minute explainer video](audit/2026-09-25/decision-models/explainer-video/).
+
+### What a judge is worth
+
+Held-out LME-X questions (Smriti's top 20 per question). Each judge re-ranks
+the top 20, with settings fixed on dev before the test. "Right memory first"
+and AUC score the judge on its own; the evidence columns score it plugged
+into Smriti.
+
+| Judge | Right memory first | AUC | Evidence at 1,500 chars | Evidence at 3,000 chars | Time per question | Cost | Memories leave the machine |
+|---|---:|---:|---:|---:|---|---|---|
+| Smriti 0.4.x alone | 63.8% | 0.891 | 65.6% | 83.2% | 10–15 ms (CPU) | $0 | No |
+| + hosted Jev, 35% blend | 72.5% | **0.954** | **74.8%** (+9.2) | **86.5%** (+3.4) | 1.4 s | $0.37 per 1,000 questions | **Yes** |
+| + trained Laya head (lab) | **74.2%** | 0.936 | 72.6% (+7.0) | 86.0% (+2.8) | 0.8 s on an L4 GPU; 15–20 s on CPU | $0 | No |
+| + CLM-8B, 65% blend | 27.1% | 0.752 | 68.6% (+2.9) | 82.6% (−0.6, n.s.) | 1.0 s on an L4 GPU | $0 | No |
+| Perfect judge (ceiling) | 100% | 1.000 | 87.1% | 91.3% | – | – | – |
+
+- **Jev** (zero-shot, `noul`, depth 20, 35% blend chosen on dev): +9.2 points
+  at 1,500 characters (95% CI +6.0 to +12.5; 41 questions better, 3 worse)
+  and +3.4 at 3,000 (22 / 1). Its per-question ranking beats Smriti's on 104
+  questions and trails on 49 (p = 1×10⁻⁵). Every candidate memory is sent to
+  `api.typesafe.ai`.
+- **Trained Laya head** (frozen official `convaiinnovations/laya` encoder at
+  `55cf4c4` plus a logistic head on Laya and Smriti signals, trained on 256 dev
+  questions): +7.0 points at 1,500 characters (CI +3.4 to +10.9; 50 / 17) and
+  +2.8 at 3,000 (23 / 6). Against Jev it is a statistical tie: right memory
+  first 34 vs 30 questions (p = 0.71), evidence at 1,500 characters 19 vs 23
+  (p = 0.64). Zero-shot, official Laya ranks below Smriti (AUC 0.830).
+- **CLM-8B** (zero-shot, three prompt layouts): best alone is `noul` at AUC
+  0.752; `rank` 0.731; `choice` 0.605. Blended at 65% (chosen on dev) it adds
+  +2.9 points at 1,500 characters (p = 0.007) and nothing at 3,000.
+- **At 9,000 characters no judge helps:** Smriti's top 20 already fit.
+
+### When to turn a judge on
+
+- **Tight context budgets and hosted processing is acceptable:** Jev as a 35%
+  blend over the top 20. Remember that the memories it judges leave your
+  machine.
+- **Private, with a GPU:** the trained Laya head is the local option that
+  matches Jev. It is not packaged yet: `bench/lab/judge_head/` reproduces it,
+  and packaging it as an optional extra is next on the roadmap.
+- **Large budgets (about 9,000 characters or more):** no judge.
+- **CLM-8B as released:** not recommended for memory ranking.
+
+```python
+import os
+from smriti import Smriti, PROFILES
+from smriti.decision import SystemOneReranker
+from smriti.recall import RecallConfig
+
+# Hosted Jev: every candidate memory is sent to api.typesafe.ai
+jev = SystemOneReranker(api_key=os.environ["TYPESAFE_API_KEY"], price_per_mtok=0.042)
+mem = Smriti(path="memory.db", reranker=jev)          # plus your embedder
+judged = PROFILES["evidence"].with_overrides(
+    recall=RecallConfig(rerank_depth=20, rerank_weight=0.35))
+print(mem.context("When did I go to the support group?", profile=judged))
+print(jev.stats.as_dict(), f"${jev.cost_usd:.4f}")
+```
+
+Without the override, a reranker on the default profile judges the top 48
+turns and replaces Smriti's score (`rerank_weight=1.0`). On dev, blending
+scored higher than replacing for both Jev and CLM-8B.
+
+**Enterprise:** judge endpoints go through the same egress check as any
+remote adapter. The `local` profile allows loopback endpoints only, so a
+`laya-serve` or `clm-serve` on the same machine passes and hosted Jev is
+rejected; `team` and `regulated` profiles need the host on the allowlist.
+`describe_data_flow()` lists the reranker endpoint.
+
+### Behaviour changes
+
+None on default paths. `SystemOneReranker` accepts `mode="rank"`; an unknown
+mode still raises `ValueError`, whose message now lists `rank`.
+
+### Upgrade notes
+
+Drop-in from 0.4.1. No migration, no change to stored data or to `context()`
+output unless you configure a reranker. `smriti-enterprise` 0.2.0 is
+unchanged and works with 0.4.2.
+
+### Known limits
+
+- The judge trials used LME-X only (LongMemEval questions with 48
+  cross-question distractor sessions each; not the official LongMemEval-S
+  haystack). Judges were not tested on LoCoMo.
+- The trials measure evidence reaching the context, not answer accuracy;
+  blinded QA was not re-run with judges.
+- The Laya head was trained on 256 LME-X questions and may not transfer to
+  other conversations without retraining. Latency figures are for the named
+  hardware; Jev's cost uses its list price on 2026-09-25.
+- The first 0.4.1 trial figures were affected by a lab harness bug (see the
+  correction in the 0.4.1 notes); all 0.4.2 figures were measured with the
+  fixed harness.
 
 ---
 
@@ -265,7 +413,7 @@ mode now drops raw turns whose origin is outside the allowed set
 
 ```bash
 git clone https://github.com/vn-envy/Smriti && cd Smriti
-python -m pip install '.[onnx]'        # core 0.4.0 (+ optional in-process embeddings)
+python -m pip install '.[onnx]'        # core 0.4.2 (+ optional in-process embeddings)
 python -m pip install ./enterprise     # enterprise 0.2.0, if you use it
 python -m pytest tests/ -q && python -m pytest enterprise/tests/ -q
 ```
@@ -283,7 +431,9 @@ python -m pytest tests/ -q && python -m pytest enterprise/tests/ -q
 
 ### Validation
 
-- 254 core and 59 enterprise tests pass in the checkout. From freshly built
+- **0.4.2:** 267 core and 59 enterprise tests pass in the checkout and on
+  Python 3.9 and 3.12 in CI.
+- **0.4.0:** 254 core and 59 enterprise tests pass in the checkout. From freshly built
   wheels in a clean virtual environment, 253 core tests pass with 1 skipped
   (`onnxruntime` absent), all 59 enterprise tests pass, and `pip check` is
   clean. The enterprise demo runs end to end.

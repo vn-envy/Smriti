@@ -1,0 +1,655 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Smriti explainer</title>
+<style>
+@font-face { font-family: "Archivo"; src: url("fonts/Archivo[wdth,wght].ttf") format("truetype"); font-weight: 100 900; font-stretch: 62% 125%; }
+@font-face { font-family: "Plex Mono"; src: url("fonts/IBMPlexMono-Regular.ttf"); font-weight: 400; }
+@font-face { font-family: "Plex Mono"; src: url("fonts/IBMPlexMono-Medium.ttf"); font-weight: 500; }
+@font-face { font-family: "Tiro Deva"; src: url("fonts/TiroDevanagariSanskrit-Regular.ttf"); }
+:root {
+  --bg: #07090c; --surface: #121820; --surface2: #18202a; --ink: #eef2f6; --ink2: #b8c1cb; --muted: #7d8794;
+  --grid: #232a32; --line: rgba(255,255,255,.10); --brand: #7fb0f0;
+  --smriti: #3987e5; --laya: #1fa876; --jev: #d49000; --clm: #d55181; --ceiling: #a3adb9;
+  --good: #37c237; --bad: #ff6b5e; --warn: #f6c35a;
+  --sans: "Archivo", sans-serif; --mono: "Plex Mono", monospace; --deva: "Tiro Deva", serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #000; }
+#stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; color: var(--ink); font-family: var(--sans);
+  background: radial-gradient(ellipse 80% 70% at 50% 42%, #0f161e 0%, #07090c 72%); }
+.scene { position: absolute; inset: 0; display: none; transform-origin: 50% 50%; }
+.abs { position: absolute; }
+.glow { position: absolute; width: 1100px; height: 1100px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, var(--c) 0%, transparent 62%); opacity: .16; }
+.eyebrow { font-family: var(--mono); font-size: 24px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+.h { font-weight: 820; font-stretch: 116%; font-size: 88px; line-height: 1.02; letter-spacing: -.02em; }
+.h em, .em { font-style: normal; color: var(--brand); }
+.h2 { font-weight: 760; font-stretch: 112%; font-size: 52px; line-height: 1.1; letter-spacing: -.01em; }
+.body { font-size: 34px; line-height: 1.35; color: var(--ink2); font-weight: 450; }
+.slam { font-weight: 900; font-stretch: 125%; font-size: 250px; line-height: .86; letter-spacing: -.03em; }
+.mono { font-family: var(--mono); }
+.w { display: inline-block; white-space: pre; }
+.num { font-variant-numeric: tabular-nums; }
+.key { display: inline-block; width: 22px; height: 22px; border-radius: 5px; margin-right: 16px; vertical-align: 2px; }
+.chip { display: inline-flex; align-items: center; gap: 12px; padding: 10px 24px; border-radius: 999px; font-size: 30px; font-weight: 700;
+  white-space: nowrap; }
+.chip.good { color: #8ff08f; background: rgba(55,194,55,.16); }
+.chip.bad { color: #ffab9f; background: rgba(255,107,94,.16); }
+.chip.warn { color: var(--warn); background: rgba(246,195,90,.14); }
+.chip.info { color: var(--brand); background: rgba(127,176,240,.14); }
+.chip.plain { color: var(--ink); background: rgba(255,255,255,.07); }
+.card { position: absolute; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 20px 22px; }
+.role { font-family: var(--mono); font-size: 15px; letter-spacing: .14em; color: var(--muted); margin-bottom: 10px; }
+.role.user { color: #9cc3f5; }
+.txt { font-size: 21px; line-height: 1.32; color: var(--ink2); }
+.track { position: absolute; height: 34px; border-radius: 8px; background: rgba(255,255,255,.06); }
+.fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 8px; }
+.lbl { position: absolute; font-size: 30px; font-weight: 650; color: var(--ink2); }
+.val { position: absolute; font-size: 40px; font-weight: 800; font-stretch: 110%; color: var(--ink); }
+#grain { position: absolute; inset: 0; width: 1920px; height: 1080px; opacity: .085; mix-blend-mode: overlay; pointer-events: none; }
+#vignette { position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 75% 70% at 50% 50%, transparent 55%, rgba(0,0,0,.55) 100%); }
+#fade { position: absolute; inset: 0; background: #000; pointer-events: none; }
+</style></head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs id="fdefs"></defs></svg>
+<div id="stage">
+
+<!-- S0 · cold open -->
+<section class="scene" id="s0">
+  <div class="glow" style="--c:#2a5fa8; left:410px; top:-10px"></div>
+  <div class="abs" id="s0-dot" style="left:950px; top:530px; width:20px; height:20px; border-radius:50%; background:#cfe2ff; box-shadow:0 0 40px 12px rgba(127,176,240,.8)"></div>
+  <div class="abs" id="s0-deva" style="left:0; right:0; top:250px; text-align:center; font-family:var(--deva); font-size:290px; line-height:1.1">स्मृति</div>
+  <div class="abs" id="s0-name" style="left:0; right:0; top:640px; text-align:center; font-weight:820; font-stretch:125%; font-size:78px; letter-spacing:.02em">Smriti</div>
+  <div class="abs eyebrow" id="s0-tag" style="left:0; right:0; top:760px; text-align:center">memory for AI agents · on your machine · one SQLite file</div>
+</section>
+
+<!-- S1 · the problem -->
+<section class="scene" id="s1">
+  <div class="glow" style="--c:#1f4f8f; left:900px; top:200px"></div>
+  <div class="abs" id="s1-persp" style="left:0; top:0; width:1920px; height:1080px; perspective:1500px; perspective-origin:50% 30%">
+    <div class="abs" id="s1-wall" style="left:-5px; top:250px; width:1930px; height:760px; transform-style:preserve-3d"></div>
+  </div>
+  <div class="abs" style="left:0; top:0; width:1920px; height:420px; background:linear-gradient(#07090cf2 45%, transparent)"></div>
+  <div class="abs h split" id="s1-h1" data-t="0.5" style="left:140px; top:110px; width:1640px" data-out="3.0">Your agent remembers <em>everything</em>.</div>
+  <div class="abs h split" id="s1-h2" data-t="3.3" style="left:140px; top:110px; width:1640px" data-out="7.2">The model can read <em>only a little</em> of it.</div>
+  <div class="abs h split" id="s1-h3" data-t="7.6" style="left:140px; top:110px; width:1700px; font-size:76px">Pick the wrong memories, and it answers <em>without the facts</em>.</div>
+</section>
+
+<!-- S2 · the prize -->
+<section class="scene" id="s2">
+  <div class="glow" style="--c:#2a5fa8; left:-200px; top:100px"></div>
+  <div class="abs eyebrow rv" data-t="0.3" style="left:160px; top:150px">232 unseen questions · 1,500 characters of memory</div>
+  <div class="abs h split" data-t="0.6" style="left:160px; top:205px; width:1600px">What if a judge checked <em>every memory</em>?</div>
+  <div class="abs lbl rv" data-t="2.4" style="left:160px; top:470px">Smriti today</div>
+  <div class="track rv" data-t="2.4" style="left:160px; top:530px; width:1300px"><div class="fill bar" data-t="2.6" data-d="1.6" data-v="65.6" style="background:var(--smriti)"></div></div>
+  <div class="val cnt rv" data-t="2.6" data-d="1.6" data-v="65.6" data-dec="1" data-suf="%" id="s2-v1" style="left:1500px; top:514px">0%</div>
+  <div class="abs lbl rv" data-t="3.4" style="left:160px; top:640px">Perfect judge</div>
+  <div class="track rv" data-t="3.4" style="left:160px; top:700px; width:1300px"><div class="fill bar" data-t="3.6" data-d="1.8" data-v="87.1" style="background:var(--ceiling)"></div></div>
+  <div class="val cnt rv" data-t="3.6" data-d="1.8" data-v="87.1" data-dec="1" data-suf="%" style="left:1500px; top:684px">0%</div>
+  <div class="abs rv" data-t="5.3" data-y="0" id="s2-gap" style="left:1013px; top:668px; width:280px; height:22px; border:3px solid var(--brand); border-bottom:none; border-radius:6px 6px 0 0; opacity:0"></div>
+  <div class="abs h2 rv" data-t="5.6" data-y="20" style="left:960px; top:785px; color:var(--brand)">+21.5 points on the table</div>
+  <div class="abs body rv" data-t="7.2" style="left:160px; top:900px; width:1500px; font-size:28px; color:var(--muted)">Share of questions where every needed memory reaches the model. The judge re-ranks Smriti's top 20.</div>
+</section>
+
+<!-- S3 · contenders -->
+<section class="scene" id="s3">
+  <div class="glow" style="--c:#6b3a8f; left:1100px; top:-300px"></div>
+  <div class="abs eyebrow rv" data-t="0.3" style="left:140px; top:140px">The contenders</div>
+  <div class="abs h split" data-t="0.5" style="left:140px; top:195px; width:1700px">Three System One models. <em>One question each.</em></div>
+  <div class="card whipin" data-t="2.0" style="left:140px; top:430px; width:520px; height:330px; padding:34px">
+    <div style="font-size:60px; font-weight:820; font-stretch:118%"><span class="key" style="background:var(--laya)"></span>Laya</div>
+    <div class="mono" style="font-size:25px; color:var(--ink2); margin-top:26px; line-height:1.6">open weights<br>runs on your machine<br>421M · English</div></div>
+  <div class="card whipin" data-t="3.1" style="left:700px; top:430px; width:520px; height:330px; padding:34px">
+    <div style="font-size:60px; font-weight:820; font-stretch:118%"><span class="key" style="background:var(--jev)"></span>Jev</div>
+    <div class="mono" style="font-size:25px; color:var(--ink2); margin-top:26px; line-height:1.6">hosted API<br>TypeSafe<br>pay per token</div></div>
+  <div class="card whipin" data-t="4.2" style="left:1260px; top:430px; width:520px; height:330px; padding:34px">
+    <div style="font-size:60px; font-weight:820; font-stretch:118%"><span class="key" style="background:var(--clm)"></span>CLM-8B</div>
+    <div class="mono" style="font-size:25px; color:var(--ink2); margin-top:26px; line-height:1.6">open weights<br>built on an 8B model<br>needs a 24 GB GPU</div></div>
+  <div class="abs mono" id="s3-q" style="left:140px; top:830px; font-size:38px; color:var(--ink)"></div>
+  <div class="abs body rv" data-t="8.4" style="left:140px; top:910px; font-size:30px; color:var(--muted)">Yes or no, in one pass.</div>
+</section>
+
+<!-- S4 · rules -->
+<section class="scene" id="s4">
+  <div class="glow" style="--c:#1f4f8f; left:900px; top:0px"></div>
+  <canvas id="s4-dots" class="abs" width="760" height="760" style="left:1020px; top:160px"></canvas>
+  <div class="abs eyebrow rv" data-t="0.2" style="left:140px; top:190px">The rules</div>
+  <div class="abs cnt" data-t="0.3" data-d="2.2" data-v="10000" data-dec="0" data-comma="1" style="left:136px; top:240px; font-size:180px; font-weight:880; font-stretch:118%; letter-spacing:-.03em">0</div>
+  <div class="abs h2 rv" data-t="0.8" style="left:140px; top:450px; width:820px">question and memory pairs, the same for every judge</div>
+  <div class="abs body rv" data-t="3.1" style="left:140px; top:620px; width:820px"><span class="key" style="background:var(--smriti)"></span>Tune on 256 questions</div>
+  <div class="abs body rv" data-t="3.6" style="left:140px; top:680px; width:820px"><span class="key" style="background:var(--ink)"></span>Judge once on 244 unseen ones</div>
+  <div class="abs h2 rv" data-t="5.0" data-s="1.15" data-b="18" style="left:140px; top:800px; width:860px; color:var(--brand)">Beat Smriti's own ranking, or stay off.</div>
+</section>
+
+<!-- S5 · round 1 -->
+<section class="scene" id="s5">
+  <div class="glow" style="--c:#1d7a58; left:-300px; top:-200px"></div>
+  <div class="abs slam slamin" data-t="0.15" style="left:130px; top:120px">ROUND 1</div>
+  <div class="abs h2 rv" data-t="1.1" style="left:140px; top:360px"><span class="key" style="background:var(--laya)"></span>A Laya fine-tune, no training</div>
+  <div id="s5-gauge" class="abs rv" data-t="1.8" style="left:140px; top:470px; width:1640px; height:190px">
+    <div class="abs mono" style="left:0; top:0; font-size:24px; color:var(--muted); letter-spacing:.1em">RANKING SKILL (AUC)</div>
+    <div class="abs" style="left:0; top:80px; width:1640px; height:6px; border-radius:3px; background:rgba(255,255,255,.12)"></div>
+    <div class="abs mono" style="left:0; top:110px; font-size:24px; color:var(--muted)">0.0</div>
+    <div class="abs mono" style="left:1590px; top:110px; font-size:24px; color:var(--muted)">1.0</div>
+    <div class="abs" style="left:819px; top:56px; width:2px; height:54px; background:var(--ink2); opacity:.6"></div>
+    <div class="abs mono" style="left:740px; top:12px; font-size:24px; color:var(--ink2)">coin flip 0.50</div>
+    <div class="abs" style="left:1491px; top:62px; width:10px; height:42px; border-radius:3px; background:var(--smriti)"></div>
+    <div class="abs mono" style="left:1400px; top:12px; font-size:24px; color:#9cc3f5">Smriti 0.91</div>
+    <div class="abs" id="s5-needle" style="left:0; top:50px; width:14px; height:66px; border-radius:4px; background:var(--laya); box-shadow:0 0 24px rgba(31,168,118,.7)"></div>
+    <div class="abs val" id="s5-nv" style="left:0; top:130px; font-size:44px">0.00</div>
+  </div>
+  <div id="s5-ev" class="abs" style="left:140px; top:700px; width:1640px; height:230px">
+    <div class="abs mono rv" data-t="4.6" style="left:0; top:0; font-size:24px; color:var(--muted); letter-spacing:.1em">EVIDENCE REACHING THE MODEL · 3,000 CHARACTERS</div>
+    <div class="abs lbl rv" data-t="4.6" style="left:0; top:56px; font-size:28px">Smriti</div>
+    <div class="track rv" data-t="4.6" style="left:220px; top:56px; width:1200px"><div class="fill bar" data-t="4.7" data-d="0.9" data-v="82.8" style="background:var(--smriti)"></div></div>
+    <div class="val rv" data-t="5.0" style="left:1450px; top:46px; font-size:36px">82.8%</div>
+    <div class="abs lbl rv" data-t="5.4" style="left:0; top:126px; font-size:28px">+ judge</div>
+    <div class="track rv" data-t="5.4" style="left:220px; top:126px; width:1200px"><div class="fill bar" id="s5-drop" style="background:var(--laya)"></div></div>
+    <div class="val" id="s5-dv" style="left:1450px; top:116px; font-size:36px; opacity:0">82.8%</div>
+  </div>
+  <div class="abs rv" data-t="6.6" data-s="1.4" data-b="10" style="left:1480px; top:370px"><span class="chip bad">LOSS</span></div>
+</section>
+
+<!-- S6 · round 2 -->
+<section class="scene" id="s6">
+  <div class="glow" style="--c:#1d7a58; left:1100px; top:-300px"></div>
+  <div class="abs slam slamin" data-t="0.15" style="left:130px; top:120px">ROUND 2</div>
+  <div class="abs h2 rv" data-t="1.1" style="left:140px; top:360px; width:960px; font-size:44px" data-out="6.6"><span class="key" style="background:var(--laya)"></span>Same model, plus a small layer trained on our labels</div>
+  <div class="abs h split" data-t="2.4" style="left:140px; top:490px; width:1000px; font-size:72px" data-out="6.6">It learned <em>one big lesson</em>.</div>
+  <div id="s6-cards" class="abs" style="left:1170px; top:380px; width:640px; height:520px"></div>
+  <div class="abs body rv" data-t="4.6" style="left:140px; top:690px; width:900px" data-out="6.6">The assistant's own replies are rarely the evidence. The user's statements are.</div>
+  <div class="abs mono rv" data-t="7.0" style="left:140px; top:380px; font-size:34px; color:var(--muted)" data-out="10.0">RecallConfig.assistant_prior</div>
+  <div class="abs" id="s6-flip" style="left:140px; top:430px; width:1200px; height:300px; overflow:hidden">
+    <div class="abs mono" id="s6-old" style="left:0; top:0; font-size:250px; font-weight:500; line-height:1.15">0.55</div>
+    <div class="abs mono" id="s6-new" style="left:0; top:300px; font-size:250px; font-weight:500; line-height:1.15; color:var(--brand)">0.2</div>
+  </div>
+  <div class="abs body rv" data-t="8.7" style="left:140px; top:760px; width:1100px" data-out="10.0">One number. No model.</div>
+  <div id="s6-bars" class="abs" style="left:140px; top:360px; width:1640px; height:560px">
+    <div class="abs mono rv" data-t="10.2" style="left:0; top:0; font-size:24px; color:var(--muted); letter-spacing:.1em">EVIDENCE REACHING THE MODEL · 232 UNSEEN QUESTIONS</div>
+    <div class="abs lbl rv" data-t="10.4" style="left:0; top:80px">3,000 chars</div>
+    <div class="track rv" data-t="10.4" style="left:280px; top:78px; width:1100px">
+      <div class="fill bar" data-t="10.5" data-d="0.8" data-v="78.5" style="background:var(--smriti); opacity:.35"></div>
+      <div class="fill bar" data-t="11.2" data-d="1.2" data-v="83.2" style="background:var(--smriti); mix-blend-mode:screen"></div></div>
+    <div class="val cnt" data-t="11.2" data-d="1.2" data-v="83.2" data-from="78.5" data-dec="1" data-suf="%" style="left:1410px; top:66px">78.5%</div>
+    <div class="abs h2 rv" data-t="12.3" data-s="1.3" data-b="8" style="left:1600px; top:66px; color:var(--brand); font-size:44px">+4.7</div>
+    <div class="abs lbl rv" data-t="10.8" style="left:0; top:190px">9,000 chars</div>
+    <div class="track rv" data-t="10.8" style="left:280px; top:188px; width:1100px">
+      <div class="fill bar" data-t="10.9" data-d="0.8" data-v="87.6" style="background:var(--smriti); opacity:.35"></div>
+      <div class="fill bar" data-t="11.6" data-d="1.2" data-v="93.0" style="background:var(--smriti); mix-blend-mode:screen"></div></div>
+    <div class="val cnt" data-t="11.6" data-d="1.2" data-v="93.0" data-from="87.6" data-dec="1" data-suf="%" style="left:1410px; top:176px">87.6%</div>
+    <div class="abs h2 rv" data-t="12.8" data-s="1.3" data-b="8" style="left:1600px; top:176px; color:var(--brand); font-size:44px">+5.4</div>
+    <div class="abs rv" data-t="13.6" data-s="1.5" data-b="12" style="left:0; top:330px"><span class="chip good">Shipped as the default · Smriti 0.4.1</span></div>
+    <div class="abs body rv" data-t="14.3" style="left:0; top:430px; font-size:30px; color:var(--muted)">no model · no extra latency · $0 · nothing leaves your machine</div>
+  </div>
+</section>
+
+<!-- S7 · round 3 -->
+<section class="scene" id="s7">
+  <div class="glow" style="--c:#8f6a10; left:-250px; top:-250px"></div>
+  <div class="abs slam slamin" data-t="0.15" style="left:130px; top:120px">ROUND 3</div>
+  <div class="abs h2 rv" data-t="1.1" style="left:140px; top:360px"><span class="key" style="background:var(--jev)"></span>Hosted Jev, no training</div>
+  <div class="abs" style="left:140px; top:470px; width:1640px; height:300px" id="s7-a">
+    <div class="abs mono rv" data-t="2.0" style="left:0; top:0; font-size:24px; color:var(--muted); letter-spacing:.1em" data-out="6.4">RIGHT MEMORY RANKED FIRST</div>
+    <div class="abs lbl rv" data-t="2.1" style="left:0; top:60px" data-out="6.4">Smriti</div>
+    <div class="track rv" data-t="2.1" style="left:220px; top:58px; width:1100px" data-out="6.4"><div class="fill bar" data-t="2.2" data-d="1.0" data-v="63.8" style="background:var(--smriti)"></div></div>
+    <div class="val cnt rv" data-t="2.2" data-d="1.0" data-v="63.8" data-dec="1" data-suf="%" style="left:1350px; top:46px" data-out="6.4">0%</div>
+    <div class="abs lbl rv" data-t="2.6" style="left:0; top:150px" data-out="6.4">Jev</div>
+    <div class="track rv" data-t="2.6" style="left:220px; top:148px; width:1100px" data-out="6.4"><div class="fill bar" data-t="2.7" data-d="1.1" data-v="72.5" style="background:var(--jev)"></div></div>
+    <div class="val cnt rv" data-t="2.7" data-d="1.1" data-v="72.5" data-dec="1" data-suf="%" style="left:1350px; top:136px" data-out="6.4">0%</div>
+    <div class="abs rv" data-t="4.3" data-s="1.3" data-b="8" style="left:0; top:250px" data-out="6.4"><span class="chip plain">+9.2 pts of evidence at 1,500 chars</span><span class="chip plain" style="margin-left:16px">$0.37 per 1,000 questions</span></div>
+  </div>
+  <svg id="s7-laptop" class="abs" width="520" height="360" viewBox="0 0 520 360" style="left:200px; top:560px">
+    <rect x="60" y="20" width="400" height="260" rx="16" fill="none" stroke="#b8c1cb" stroke-width="5"/>
+    <path d="M10 300 H510 L480 336 H40 Z" fill="none" stroke="#b8c1cb" stroke-width="5" stroke-linejoin="round"/></svg>
+  <svg id="s7-cloud" class="abs" width="420" height="260" viewBox="0 0 420 260" style="left:1330px; top:430px">
+    <path d="M110 220 H320 a70 70 0 0 0 10 -139 a100 100 0 0 0 -190 -20 a75 75 0 0 0 -30 159 Z" fill="none" stroke="#d49000" stroke-width="6" stroke-linejoin="round"/></svg>
+  <div id="s7-mem"></div>
+  <div class="abs mono rv" data-t="7.0" style="left:1330px; top:710px; font-size:26px; color:var(--jev)">api.typesafe.ai</div>
+  <div class="abs rv" data-t="9.2" data-s="1.3" data-b="10" style="left:140px; top:960px"><span class="chip warn">Every candidate memory leaves your machine</span></div>
+</section>
+
+<!-- S8 · round 4 -->
+<section class="scene" id="s8">
+  <div class="glow" style="--c:#1d7a58; left:-200px; top:200px"></div>
+  <div class="glow" style="--c:#8f2d58; left:1100px; top:200px"></div>
+  <div class="abs slam slamin" data-t="0.15" style="left:130px; top:120px">ROUND 4</div>
+  <div class="abs eyebrow rv" data-t="0.9" style="left:1340px; top:330px; font-size:26px; color:var(--ink2)">on a GPU · NVIDIA L4</div>
+  <div class="abs" style="left:959px; top:400px; width:2px; height:560px; background:var(--line)"></div>
+  <div class="abs" style="left:140px; top:400px; width:760px">
+    <div class="h2 rv" data-t="1.6" style="font-size:44px"><span class="key" style="background:var(--laya)"></span>Official Laya + a trained layer</div>
+    <div class="cnt rv" data-t="2.4" data-d="1.4" data-v="74.2" data-dec="1" data-suf="%" style="font-size:160px; font-weight:880; font-stretch:115%; letter-spacing:-.03em; margin-top:10px; line-height:1; color:var(--ink)">0%</div>
+    <div class="body rv" data-t="3.0" style="margin-top:4px">right memory first · <span style="color:var(--jev)">Jev 72.5%</span></div>
+    <div class="rv" data-t="4.2" data-s="1.4" data-b="10" style="margin-top:22px"><span class="chip good">A tie with Jev</span></div>
+    <div class="rv mono" data-t="5.0" style="margin-top:22px; font-size:26px; color:var(--ink2); line-height:1.6">+7.0 pts of evidence at 1,500 chars<br>$0 · stays on your machine<br>0.8 s per question on the GPU</div>
+  </div>
+  <div class="abs" style="left:1020px; top:400px; width:760px">
+    <div class="h2 rv" data-t="7.2" style="font-size:44px"><span class="key" style="background:var(--clm)"></span>CLM-8B, no training</div>
+    <div class="cnt rv" data-t="8.0" data-d="1.2" data-v="27.1" data-dec="1" data-suf="%" style="font-size:160px; font-weight:880; font-stretch:115%; letter-spacing:-.03em; margin-top:10px; line-height:1; color:var(--ink)">0%</div>
+    <div class="body rv" data-t="8.6" style="margin-top:4px">right memory first · <span style="color:#9cc3f5">Smriti 63.8%</span></div>
+    <div class="rv" data-t="9.8" data-s="1.4" data-b="10" style="margin-top:22px"><span class="chip bad">Stays off</span></div>
+    <div class="rv mono" data-t="10.6" style="margin-top:22px; font-size:26px; color:var(--ink2); line-height:1.6">best of three prompt formats<br>below Smriti's own ranking in all</div>
+  </div>
+</section>
+
+<!-- S9 · scoreboard -->
+<section class="scene" id="s9">
+  <div class="glow" style="--c:#2a5fa8; left:400px; top:-400px"></div>
+  <div class="abs eyebrow rv" data-t="0.2" style="left:140px; top:130px">232 unseen questions · 1,500 characters</div>
+  <div class="abs h split" data-t="0.4" style="left:140px; top:180px; width:1640px; font-size:80px">Evidence that reaches the model</div>
+  <div id="s9-rows"></div>
+  <div class="abs body rv" data-t="6.0" style="left:140px; top:940px; font-size:30px">Jev closes <b style="color:var(--jev)">43%</b> of the gap to perfect. Local Laya closes <b style="color:var(--laya)">33%</b>.</div>
+</section>
+
+<!-- S10 · what Smriti keeps -->
+<section class="scene" id="s10">
+  <div class="glow" style="--c:#2a5fa8; left:400px; top:0px"></div>
+  <div class="abs eyebrow rv" data-t="0.2" style="left:140px; top:170px">What Smriti kept</div>
+  <div class="abs h split" data-t="0.4" style="left:140px; top:225px; width:1650px; font-size:104px">The default got better <em>with no model</em>.</div>
+  <div class="abs" style="left:140px; top:520px; width:1650px; display:flex; flex-wrap:wrap; gap:18px">
+    <span class="chip info rv" data-t="2.6" data-s="1.3" data-b="8" style="font-size:36px">+4.7 pts at 3,000 chars</span>
+    <span class="chip info rv" data-t="3.0" data-s="1.3" data-b="8" style="font-size:36px">+5.4 pts at 9,000 chars</span>
+    <span class="chip plain rv" data-t="3.6" data-s="1.3" data-b="8" style="font-size:36px">8–14 ms per query</span>
+    <span class="chip plain rv" data-t="4.0" data-s="1.3" data-b="8" style="font-size:36px">$0</span>
+    <span class="chip plain rv" data-t="4.4" data-s="1.3" data-b="8" style="font-size:36px">nothing leaves your machine</span>
+  </div>
+  <div class="abs body rv" data-t="5.8" style="left:140px; top:740px; width:1600px">Judges stay optional. Jev is one setting away, if you're happy to send memories out.</div>
+  <div class="abs body rv" data-t="7.0" style="left:140px; top:830px; width:1600px; color:var(--laya)">Next: the trained local Laya judge, for anyone with a GPU.</div>
+</section>
+
+<!-- S11 · outro -->
+<section class="scene" id="s11">
+  <div class="glow" style="--c:#2a5fa8; left:410px; top:-10px"></div>
+  <div class="abs body split" data-t="0.3" style="left:0; right:0; top:200px; text-align:center; font-size:40px; color:var(--ink2)" data-out="2.3">Wins, losses and one correction, posted as they landed.</div>
+  <div class="abs" id="s11-deva" style="left:0; right:0; top:250px; text-align:center; font-family:var(--deva); font-size:250px; line-height:1.1">स्मृति</div>
+  <div class="abs" id="s11-name" style="left:0; right:0; top:590px; text-align:center; font-weight:820; font-stretch:125%; font-size:72px">Smriti</div>
+  <div class="abs mono" id="s11-url" style="left:0; right:0; top:700px; text-align:center; font-size:32px; color:var(--brand)">github.com/vn-envy/Smriti</div>
+</section>
+
+<canvas id="grain" width="480" height="270"></canvas>
+<div id="vignette"></div>
+<div id="fade"></div>
+</div>
+
+<script>
+const DUR = 127;
+const SC = { s0: [0, 6], s1: [6, 19], s2: [19, 30], s3: [30, 41], s4: [41, 49], s5: [49, 58], s6: [58, 75],
+  s7: [75, 87], s8: [87, 101], s9: [101, 111], s10: [111, 121], s11: [121, 127] };
+const TR = { s0: "zoom", s1: "zoom", s2: "whip", s3: "zoom", s4: "whip", s5: "zoom", s6: "zoom", s7: "whip", s8: "zoom", s9: "whip", s10: "zoom", s11: "zoom" };
+const KB = { s0: [1.0, 1.05, 0, 0], s1: [1.0, 1.04, 0, -10], s2: [1.02, 1.07, -20, -8], s3: [1.0, 1.05, 20, 0], s4: [1.0, 1.06, -16, 0],
+  s5: [1.0, 1.05, 0, -12], s6: [1.0, 1.05, -12, 0], s7: [1.0, 1.05, 14, -6], s8: [1.0, 1.05, 0, -10], s9: [1.03, 1.08, -24, 0],
+  s10: [1.0, 1.06, 0, -12], s11: [1.0, 1.05, 0, 0] };
+const IN0 = 0.35, IN1 = 0.45, OUT = 0.5;
+
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const lerp = (a, b, t) => a + (b - a) * t;
+const E = {
+  lin: (t) => t, outExpo: (t) => (t >= 1 ? 1 : 1 - Math.pow(2, -10 * t)), inExpo: (t) => (t <= 0 ? 0 : Math.pow(2, 10 * t - 10)),
+  inOutExpo: (t) => (t <= 0 ? 0 : t >= 1 ? 1 : t < 0.5 ? Math.pow(2, 20 * t - 10) / 2 : (2 - Math.pow(2, -20 * t + 10)) / 2),
+  outCubic: (t) => 1 - Math.pow(1 - t, 3), inCubic: (t) => t * t * t, inOutCubic: (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2),
+  outQuint: (t) => 1 - Math.pow(1 - t, 5), outBack: (t) => { const c1 = 1.5, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); },
+};
+const P = (t, a, d, e = "outExpo") => E[e](clamp((t - a) / d));
+function rng(seed) { let a = seed >>> 0; return () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+const $ = (id) => document.getElementById(id);
+function st(el, o) {
+  const x = o.x || 0, y = o.y || 0, s = o.s == null ? 1 : o.s, r = o.r || 0, z = o.z || 0;
+  el.style.transform = `translate3d(${x.toFixed(2)}px,${y.toFixed(2)}px,${z}px) scale(${s.toFixed(4)}) rotate(${r.toFixed(3)}deg)` + (o.extra || "");
+  if (o.o != null) el.style.opacity = clamp(o.o).toFixed(3);
+  if (o.f != null) el.style.filter = o.f;
+  else el.style.filter = o.b > 0.25 ? `blur(${o.b.toFixed(2)}px)` : "none";
+}
+
+/* directional blur filters, one per scene + spares */
+const FD = $("fdefs");
+function mkFilter(id) {
+  FD.insertAdjacentHTML("beforeend", `<filter id="${id}" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="0 0"/></filter>`);
+  return FD.lastElementChild.firstElementChild;
+}
+const MB = {};
+for (const id of Object.keys(SC)) MB[id] = mkFilter("mb-" + id);
+for (let i = 0; i < 12; i++) MB["m" + i] = mkFilter("mb-m" + i);
+
+/* split words */
+document.querySelectorAll(".split").forEach((el) => {
+  const walk = (node) => {
+    for (const ch of [...node.childNodes]) {
+      if (ch.nodeType === 3) {
+        const frag = document.createDocumentFragment();
+        ch.textContent.split(/(\s+)/).forEach((w) => { if (!w) return; if (/^\s+$/.test(w)) { frag.appendChild(document.createTextNode(w)); return; }
+          const sp = document.createElement("span"); sp.className = "w"; sp.textContent = w; frag.appendChild(sp); });
+        node.replaceChild(frag, ch);
+      } else if (ch.nodeType === 1 && !ch.classList.contains("w")) walk(ch);
+    }
+  };
+  walk(el);
+});
+
+/* S1 wall of memories */
+const MEMS = [
+  ["USER", "We adopted a beagle last spring. His name is Bruno."],
+  ["ASSISTANT", "Congratulations! Beagles are curious and energetic. Here are twelve tips for the first month together…"],
+  ["USER", "I switched from oat milk to almond milk last week."],
+  ["ASSISTANT", "Great question! There are many ways to plan a long weekend in Lisbon. First, consider the season…"],
+  ["USER", "My sister's wedding is in Lisbon on June 14."],
+  ["ASSISTANT", "Sure! Here is a seven-day meal plan with a shopping list for each day…"],
+  ["ASSISTANT", "Time management workshops often cover prioritisation, batching and focus blocks…"],
+  ["USER", "I went to the time management workshop on March 3."],
+  ["ASSISTANT", "Here's a detailed comparison of the five most popular budgeting apps…"],
+  ["ASSISTANT", "Cellos come in several sizes. For adult beginners a 4/4 cello is usual…"],
+  ["USER", "Our team moved the launch to the 21st."],
+  ["ASSISTANT", "Absolutely. A good morning routine can include light exercise, hydration…"],
+  ["USER", "I've been learning the cello since January."],
+  ["ASSISTANT", "Beagles need about an hour of exercise a day. Consider puzzle feeders…"],
+  ["USER", "The car's next service is due at 60,000 km."],
+  ["ASSISTANT", "Here are ten podcasts about productivity you might enjoy…"],
+  ["USER", "I prefer window seats on long flights."],
+  ["ASSISTANT", "Lisbon's trams are iconic. Line 28 passes many historic sites…"],
+  ["USER", "I started the Data Analysis with Python webinar on March 10."],
+  ["ASSISTANT", "Here's a breakdown of common data analysis libraries and when to use each…"],
+  ["USER", "My landlord raised the rent to 1,450 a month."],
+  ["ASSISTANT", "Rent negotiations can go several ways. Start by researching the local market…"],
+  ["USER", "I finished reading Middlemarch on Sunday."],
+  ["ASSISTANT", "Middlemarch is often called one of the great English novels. Its themes include…"],
+];
+const WALL = [];
+(function () {
+  const wall = $("s1-wall"); const cw = 300, ch = 172, g = 26;
+  MEMS.forEach(([role, text], i) => {
+    const c = document.createElement("div"); c.className = "card";
+    const col = i % 6, row = Math.floor(i / 6);
+    c.style.cssText = `left:${col * (cw + g)}px; top:${row * (ch + g)}px; width:${cw}px; height:${ch}px; padding:16px 18px`;
+    c.innerHTML = `<div class="role ${role === "USER" ? "user" : ""}">${role}</div><div class="txt" style="font-size:18px">${text}</div>`;
+    wall.appendChild(c); WALL.push({ el: c, col, row, role });
+  });
+  const f = document.createElement("div"); f.id = "s1-frame";
+  f.style.cssText = `position:absolute; left:${2 * (cw + g) - 16}px; top:${1 * (ch + g) - 16}px; width:${2 * cw + g + 32}px; height:${2 * ch + g + 32}px; border:4px solid #7fb0f0; border-radius:24px; box-shadow:0 0 60px rgba(127,176,240,.45), inset 0 0 40px rgba(127,176,240,.12)`;
+  f.innerHTML = `<div class="mono" style="position:absolute; left:18px; top:-46px; font-size:24px; color:#7fb0f0; letter-spacing:.08em">CONTEXT · 1,500 CHARACTERS</div>`;
+  wall.appendChild(f);
+})();
+const EVID = [4, 7, 18];            // needed facts: wedding date, workshop, webinar
+const INFRAME = (w) => w.col >= 2 && w.col <= 3 && w.row >= 1 && w.row <= 2;
+
+/* S6 user vs assistant cards */
+const S6C = [];
+(function () {
+  const root = $("s6-cards");
+  const user = ["My sister's wedding is in Lisbon on June 14.", "I went to the workshop on March 3.", "Bruno is our beagle."];
+  const asst = ["Great question! There are many ways to plan a trip…", "Workshops often cover prioritisation and…", "Beagles need an hour of exercise a day…"];
+  user.forEach((t, i) => { const c = document.createElement("div"); c.className = "card"; c.style.cssText = `left:0; top:${i * 172}px; width:300px; height:150px`;
+    c.innerHTML = `<div class="role user">USER</div><div class="txt">${t}</div>`; root.appendChild(c); S6C.push({ el: c, user: true, i }); });
+  asst.forEach((t, i) => { const c = document.createElement("div"); c.className = "card"; c.style.cssText = `left:330px; top:${i * 172}px; width:300px; height:150px`;
+    c.innerHTML = `<div class="role">ASSISTANT</div><div class="txt">${t}</div>`; root.appendChild(c); S6C.push({ el: c, user: false, i }); });
+})();
+
+/* S7 memory chips flying to the cloud */
+const S7M = [];
+(function () {
+  const root = $("s7-mem");
+  for (let i = 0; i < 6; i++) {
+    const c = document.createElement("div"); c.className = "abs";
+    c.style.cssText = `width:84px; height:52px; border-radius:10px; background:#18202a; border:2px solid #b8c1cb; left:0; top:0`;
+    root.appendChild(c); S7M.push(c);
+  }
+})();
+
+/* S9 scoreboard rows */
+const S9R = [
+  ["Smriti alone", 65.6, "var(--smriti)"], ["+ CLM-8B", 68.6, "var(--clm)"], ["+ trained Laya", 72.6, "var(--laya)"],
+  ["+ hosted Jev", 74.8, "var(--jev)"], ["Perfect judge", 87.1, "var(--ceiling)"],
+];
+(function () {
+  const root = $("s9-rows");
+  S9R.forEach(([n, v, c], i) => {
+    const y = 360 + i * 110;
+    root.insertAdjacentHTML("beforeend",
+      `<div class="abs lbl" id="s9-l${i}" style="left:140px; top:${y + 2}px; width:360px; text-align:right">${n}</div>
+       <div class="track" id="s9-t${i}" style="left:540px; top:${y}px; width:1100px"><div class="fill" id="s9-f${i}" style="background:${c}"></div></div>
+       <div class="val num" id="s9-v${i}" style="left:1670px; top:${y - 12}px">0%</div>`);
+  });
+})();
+
+/* grain */
+const G = $("grain"), GX = G.getContext("2d"), GI = GX.createImageData(480, 270);
+
+function sceneEnv(id, t) {
+  const [a, b] = SC[id];
+  if (t < a - IN0 || t > b) return null;
+  const tin = clamp((t - (a - IN0)) / (IN0 + IN1)), tout = clamp((t - (b - OUT)) / OUT);
+  return { a, b, l: t - a, tin: E.outCubic(tin), tout: E.inCubic(tout), rawin: tin, rawout: tout };
+}
+
+function renderScene(id, t) {
+  const el = $(id), env = sceneEnv(id, t);
+  if (!env) { el.style.display = "none"; return null; }
+  el.style.display = "block";
+  const kb = KB[id], dur = env.b - env.a, k = clamp(env.l / dur);
+  let s = lerp(kb[0], kb[1], E.inOutCubic(k)), x = lerp(0, kb[2], k), y = lerp(0, kb[3], k), o = 1, blur = 0, bx = 0;
+  if (TR[id] === "whip") {
+    x += (1 - env.tin) * 900 - env.tout * 1100;
+    bx = (1 - env.tin) * 60 + env.tout * 70;
+    o = Math.min(clamp(env.rawin * 3), 1 - env.tout * 0.9);
+  } else {
+    s *= lerp(0.9, 1, env.tin) * lerp(1, 1.16, env.tout);
+    blur = (1 - env.tin) * 22 + env.tout * 26;
+    o = Math.min(env.tin * 1.2, 1 - env.tout);
+  }
+  const sh = shake(id, t);
+  x += sh[0]; y += sh[1];
+  if (bx > 0.3) { MB[id].setAttribute("stdDeviation", `${bx.toFixed(1)} 0`); st(el, { x, y, s, o, f: `url(#mb-${id})` }); }
+  else st(el, { x, y, s, o, b: blur });
+  return env;
+}
+
+/* camera shake after slams */
+const SHAKES = { s5: [0.35], s6: [0.35], s7: [0.35], s8: [0.35] };
+function shake(id, t) {
+  const list = SHAKES[id]; if (!list) return [0, 0];
+  let dx = 0, dy = 0; const a = SC[id][0];
+  for (const t0 of list) {
+    const l = t - (a + t0); if (l < 0 || l > 0.6) continue;
+    const amp = 18 * Math.exp(-l * 7);
+    dx += amp * Math.sin(l * 70); dy += amp * Math.cos(l * 53);
+  }
+  return [dx, dy];
+}
+
+/* generic element animation inside a scene */
+function animEls(root, l) {
+  root.querySelectorAll(".rv").forEach((e) => {
+    const t0 = +e.dataset.t, d = +(e.dataset.d || 0.8), q = P(l, t0, d, e.dataset.e || "outExpo");
+    const y0 = e.dataset.y != null ? +e.dataset.y : 36, s0 = e.dataset.s != null ? +e.dataset.s : 1, b0 = e.dataset.b != null ? +e.dataset.b : 12;
+    let o = q, y = (1 - q) * y0, s = lerp(s0, 1, q), b = (1 - q) * b0;
+    if (e.dataset.out) { const qo = P(l, +e.dataset.out, 0.45, "inCubic"); o *= 1 - qo; y -= qo * 30; b += qo * 12; }
+    st(e, { o, y, s, b });
+  });
+  root.querySelectorAll(".split").forEach((e) => {
+    const t0 = +e.dataset.t, stg = +(e.dataset.st || 0.055);
+    const qo = e.dataset.out ? P(l, +e.dataset.out, 0.45, "inCubic") : 0;
+    e.querySelectorAll(".w").forEach((w, i) => {
+      const q = P(l, t0 + i * stg, 0.75, "outExpo");
+      st(w, { o: q * (1 - qo), y: (1 - q) * 60 - qo * 40, b: (1 - q) * 16 + qo * 14, r: (1 - q) * 3 });
+    });
+  });
+  root.querySelectorAll(".bar").forEach((e) => {
+    if (e.dataset.t == null) return;
+    const q = P(l, +e.dataset.t, +(e.dataset.d || 1), "outQuint");
+    e.style.width = (+e.dataset.v * q).toFixed(3) + "%";
+  });
+  root.querySelectorAll(".cnt").forEach((e) => {
+    const q = P(l, +e.dataset.t, +(e.dataset.d || 1), "outQuint");
+    const from = +(e.dataset.from || 0), v = lerp(from, +e.dataset.v, q), dec = +(e.dataset.dec || 0);
+    let txt = v.toFixed(dec); if (e.dataset.comma) txt = Math.round(v).toLocaleString("en-US");
+    e.textContent = (e.dataset.pre || "") + txt + (e.dataset.suf || "");
+    if (!e.classList.contains("rv")) st(e, { o: P(l, +e.dataset.t, 0.3), b: 0 });
+  });
+  root.querySelectorAll(".slamin").forEach((e) => {
+    const t0 = +e.dataset.t, q = P(l, t0, 0.4, "outExpo");
+    st(e, { o: clamp(q * 2), s: lerp(1.9, 1, q), b: (1 - q) * 30, x: (1 - q) * -60 });
+  });
+  root.querySelectorAll(".whipin").forEach((e, i) => {
+    const t0 = +e.dataset.t, q = P(l, t0, 0.55, "outExpo");
+    const f = MB["m" + i]; const bx = (1 - q) * 80;
+    f.setAttribute("stdDeviation", `${bx.toFixed(1)} 0`);
+    st(e, { o: clamp(q * 2.2), x: (1 - q) * 900, f: bx > 0.3 ? `url(#mb-m${i})` : "none" });
+  });
+}
+
+/* per-scene custom motion */
+const CUSTOM = {
+  s0(l) {
+    const dotQ = P(l, 0.1, 1.2, "outExpo");
+    st($("s0-dot"), { o: dotQ * (1 - P(l, 1.1, 0.5)), s: lerp(0.2, 1.6, dotQ) + P(l, 1.0, 0.5) * 12, b: P(l, 1.0, 0.5) * 20 });
+    const dq = P(l, 1.05, 1.4, "outExpo");
+    const e = $("s0-deva"); st(e, { o: dq, s: lerp(1.25, 1, dq), b: (1 - dq) * 34 }); e.style.letterSpacing = ((1 - dq) * 0.3).toFixed(3) + "em";
+    const nq = P(l, 2.2, 0.9), tq = P(l, 2.7, 0.9);
+    st($("s0-name"), { o: nq, y: (1 - nq) * 40, b: (1 - nq) * 12 });
+    st($("s0-tag"), { o: tq, y: (1 - tq) * 30, b: (1 - tq) * 10 });
+  },
+  s1(l) {
+    const wall = $("s1-wall"), k = clamp(l / 13);
+    const rx = lerp(26, 18, E.inOutCubic(k)), rz = lerp(-7, -3, k), tx = lerp(220, -180, E.inOutCubic(k)), sc = lerp(1.0, 1.12, k);
+    const wq = P(l, -0.3, 1.4, "outExpo");
+    wall.style.transform = `translate3d(${tx}px, ${lerp(120, 40, k)}px, ${lerp(-500, 0, wq)}px) rotateX(${rx}deg) rotateZ(${rz}deg) scale(${sc})`;
+    wall.style.opacity = wq.toFixed(3);
+    const fq = P(l, 4.6, 0.9, "outExpo");
+    const fr = $("s1-frame");
+    fr.style.transform = `translateZ(${lerp(420, 0, fq)}px) scale(${lerp(1.35, 1, fq)})`; fr.style.opacity = fq.toFixed(3);
+    const dimQ = P(l, 5.6, 0.8, "outCubic"), evQ = P(l, 7.9, 0.6, "outExpo");
+    WALL.forEach((w, i) => {
+      const cq = P(l, 0.1 + (w.col + w.row) * 0.08, 0.9, "outExpo");
+      const inside = INFRAME(w), ev = EVID.includes(i);
+      let o = cq * (inside ? 1 : lerp(1, 0.28, dimQ));
+      if (ev) o = Math.max(o, evQ * 0.95);
+      w.el.style.opacity = o.toFixed(3);
+      w.el.style.transform = `translateZ(${((1 - cq) * -200).toFixed(1)}px)`;
+      if (ev) {
+        w.el.style.borderColor = evQ > 0 ? `rgba(55,194,55,${(0.9 * evQ).toFixed(3)})` : "";
+        w.el.style.boxShadow = evQ > 0 ? `0 0 ${(40 * evQ).toFixed(0)}px rgba(55,194,55,${(0.35 * evQ).toFixed(3)})` : "none";
+        w.el.style.borderWidth = evQ > 0 ? "3px" : "1px";
+      }
+    });
+  },
+  s3(l) {
+    const q = "Does this memory help answer the question?", n = Math.floor(clamp((l - 6.2) / 1.6) * q.length);
+    const e = $("s3-q"); e.textContent = n > 0 ? q.slice(0, n) + (n < q.length && Math.floor(l * 6) % 2 ? "▌" : "") : "";
+  },
+  s4(l) {
+    const c = $("s4-dots"), x = c.getContext("2d"); x.clearRect(0, 0, 760, 760);
+    const r = rng(42), wave = P(l, 0.2, 2.4, "inOutCubic") * 1.25, split = P(l, 3.0, 0.8, "outCubic");
+    for (let i = 0; i < 100; i++) for (let j = 0; j < 100; j++) {
+      const d = Math.hypot(i - 50, j - 50) / 70.7, jit = r() * 0.08;
+      const on = clamp((wave - d - jit) * 6);
+      if (on <= 0) continue;
+      const tune = i * 100 + j < 5120;
+      const base = [58, 68, 80], hi = tune ? [57, 135, 229] : [238, 242, 246];
+      const col = base.map((v, k) => Math.round(lerp(v, hi[k], split)));
+      x.fillStyle = `rgba(${col[0]},${col[1]},${col[2]},${(0.35 + 0.65 * on).toFixed(3)})`;
+      const sz = 2.2 + on * 1.4 + (on < 1 ? (1 - on) * 3 : 0);
+      x.fillRect(4 + j * 7.5 - sz / 2, 4 + i * 7.5 - sz / 2, sz, sz);
+    }
+    if (split > 0) { x.fillStyle = `rgba(127,176,240,${split})`; x.fillRect(0, 51.2 * 7.5 + 4 - 1, 760 * split, 2); }
+  },
+  s5(l) {
+    const nq = P(l, 2.3, 1.8, "outBack"), v = lerp(0.95, 0.47, nq);
+    const needle = $("s5-needle"); needle.style.left = (v * 1640 - 7).toFixed(1) + "px";
+    const nv = $("s5-nv"); nv.textContent = v.toFixed(2); nv.style.left = (v * 1640 - 40).toFixed(1) + "px";
+    const dq = P(l, 5.5, 1.3, "outCubic"), val = lerp(82.8, 8.0, dq);
+    $("s5-drop").style.width = (l < 5.5 ? P(l, 5.4, 0.1) * 82.8 : val).toFixed(2) + "%";
+    const dv = $("s5-dv"); dv.textContent = val.toFixed(1) + "%"; dv.style.opacity = P(l, 5.4, 0.3).toFixed(3);
+    const g = l > 6.0 && l < 6.9, ev = $("s5-ev");
+    if (g) { const r = rng(Math.floor(l * 30)); const jx = (r() - 0.5) * 26, jy = (r() - 0.5) * 8;
+      ev.style.transform = `translate(${jx}px,${jy}px)`; ev.style.textShadow = `${(r() * 8).toFixed(1)}px 0 rgba(255,60,60,.8), ${(-r() * 8).toFixed(1)}px 0 rgba(60,220,255,.8)`;
+      ev.style.filter = r() > 0.5 ? "contrast(1.4) saturate(1.6)" : "none"; }
+    else { ev.style.transform = "none"; ev.style.textShadow = "none"; ev.style.filter = "none"; }
+  },
+  s6(l) {
+    S6C.forEach((c) => {
+      const q = P(l, 2.6 + c.i * 0.12 + (c.user ? 0 : 0.2), 0.8, "outExpo"), sink = P(l, 4.5, 1.1, "inOutCubic"), gone = P(l, 6.4, 0.5, "inCubic");
+      const y = (1 - q) * 80 + (c.user ? -sink * 20 : sink * 110);
+      const o = q * (c.user ? 1 : lerp(1, 0.25, sink)) * (1 - gone);
+      st(c.el, { o, y, b: (c.user ? 0 : sink * 3) + (1 - q) * 10 + gone * 16, s: c.user ? lerp(1, 1.04, sink) : lerp(1, 0.94, sink) });
+      c.el.style.borderColor = c.user ? `rgba(57,135,229,${(sink * 0.9).toFixed(3)})` : "";
+    });
+    const fin = P(l, 7.2, 0.6), fq = P(l, 8.0, 0.55, "inOutExpo"), fout = P(l, 10.0, 0.45, "inCubic");
+    st($("s6-old"), { o: fin * (1 - fq), y: -fq * 300, b: fq * 20 + (1 - fin) * 20 });
+    st($("s6-new"), { o: fq * (1 - fout), y: -fq * 300 - fout * 40, b: (1 - fq) * 20 + fout * 16 });
+  },
+  s7(l) {
+    const lp = P(l, 6.4, 0.7), cl = P(l, 6.8, 0.7);
+    st($("s7-laptop"), { o: lp, y: (1 - lp) * 40, b: (1 - lp) * 10 });
+    st($("s7-cloud"), { o: cl, y: (1 - cl) * 40, b: (1 - cl) * 10 });
+    S7M.forEach((m, i) => {
+      const sx = 290 + (i % 3) * 110, sy = 620 + Math.floor(i / 3) * 80;
+      const ex = 1420 + (i % 3) * 70, ey = 540 + Math.floor(i / 3) * 50;
+      const appear = P(l, 6.9 + i * 0.08, 0.4), fly = P(l, 7.6 + i * 0.28, 0.9, "inOutExpo");
+      const x = lerp(sx, ex, fly), y = lerp(sy, ey, fly) - Math.sin(fly * Math.PI) * 220;
+      const speed = Math.sin(fly * Math.PI);
+      const f = MB["m" + (6 + i)]; f.setAttribute("stdDeviation", `${(speed * 26).toFixed(1)} ${(speed * 6).toFixed(1)}`);
+      m.style.left = x.toFixed(1) + "px"; m.style.top = y.toFixed(1) + "px";
+      m.style.opacity = (appear * (1 - P(l, 7.6 + i * 0.28 + 0.8, 0.3) * 0.7)).toFixed(3);
+      m.style.filter = speed > 0.05 ? `url(#mb-m${6 + i})` : "none";
+      m.style.borderColor = fly > 0.95 ? "#d49000" : "#b8c1cb";
+    });
+  },
+  s9(l) {
+    S9R.forEach(([n, v], i) => {
+      const t0 = 1.4 + i * 0.55, q = P(l, t0, 1.1, "outQuint"), a = P(l, t0 - 0.15, 0.5);
+      ["l", "t", "v"].forEach((p) => st($(`s9-${p}${i}`), { o: a, y: (1 - a) * 30, b: (1 - a) * 10 }));
+      $(`s9-f${i}`).style.width = (v * q).toFixed(3) + "%";
+      $(`s9-v${i}`).textContent = (v * q).toFixed(1) + "%";
+    });
+  },
+  s11(l) {
+    const dq = P(l, 2.4, 1.3, "outExpo"), nq = P(l, 3.1, 0.9), uq = P(l, 3.6, 0.9);
+    const e = $("s11-deva"); st(e, { o: dq, s: lerp(1.2, 1, dq), b: (1 - dq) * 30 }); e.style.letterSpacing = ((1 - dq) * 0.25).toFixed(3) + "em";
+    st($("s11-name"), { o: nq, y: (1 - nq) * 30, b: (1 - nq) * 10 });
+    st($("s11-url"), { o: uq, y: (1 - uq) * 24, b: (1 - uq) * 8 });
+  },
+};
+
+function render(t) {
+  for (const id of Object.keys(SC)) {
+    const env = renderScene(id, t);
+    if (!env) continue;
+    animEls($(id), env.l);
+    if (CUSTOM[id]) CUSTOM[id](env.l);
+  }
+  const r = rng(Math.floor(t * 30) + 7), d = GI.data;
+  for (let i = 0; i < d.length; i += 4) { const v = (r() * 255) | 0; d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 255; }
+  GX.putImageData(GI, 0, 0);
+  const fo = Math.max(1 - P(t, 0, 0.6, "outCubic"), P(t, DUR - 1.2, 1.2, "inCubic"));
+  $("fade").style.opacity = fo.toFixed(3);
+}
+
+/* sound cues, derived from the same timeline */
+function cues() {
+  const c = [], at = (id, dt, type, g = 1, pan = 0) => c.push({ t: +(SC[id][0] + dt).toFixed(3), type, g, pan });
+  at("s0", 0.1, "sub", 0.9); at("s0", 0.2, "shimmer", 0.6); at("s0", 1.05, "impact", 0.8); at("s0", 2.2, "tick", 0.5); at("s0", 5.3, "whoosh", 0.8);
+  at("s1", -0.2, "riser_short", 0.5); at("s1", 0.5, "whoosh_soft", 0.5); at("s1", 3.3, "whoosh_soft", 0.5); at("s1", 4.6, "whoosh", 0.7);
+  at("s1", 5.45, "lock", 0.9); at("s1", 7.6, "whoosh_soft", 0.5); at("s1", 7.9, "chime_low", 0.6); at("s1", 12.5, "whoosh", 0.8);
+  at("s2", -0.3, "whip", 0.9); at("s2", 0.6, "whoosh_soft", 0.4);
+  for (let i = 0; i < 16; i++) at("s2", 2.6 + i * 0.1, "tick", 0.35 - i * 0.015);
+  for (let i = 0; i < 18; i++) at("s2", 3.6 + i * 0.1, "tick", 0.35 - i * 0.015, 0.3);
+  at("s2", 5.6, "impact", 0.9); at("s2", 10.5, "whip", 0.9);
+  at("s3", 0.5, "whoosh_soft", 0.4); at("s3", 2.0, "whip", 0.7, -0.4); at("s3", 2.25, "pop", 0.6, -0.4); at("s3", 3.1, "whip", 0.7, 0);
+  at("s3", 3.35, "pop", 0.6, 0); at("s3", 4.2, "whip", 0.7, 0.4); at("s3", 4.45, "pop", 0.6, 0.4);
+  for (let i = 0; i < 14; i++) at("s3", 6.2 + i * 0.115, "type", 0.3);
+  at("s3", 10.4, "whoosh", 0.8);
+  at("s4", -0.3, "whip", 0.8); at("s4", 0.2, "sparkle", 0.7); at("s4", 3.0, "lock", 0.7); at("s4", 5.0, "impact", 0.8); at("s4", 7.6, "whip", 0.8);
+  at("s5", 0.15, "slam", 1.0); at("s5", 2.3, "sweep_down", 0.6); at("s5", 5.5, "sweep_down", 0.7); at("s5", 6.0, "glitch", 0.8); at("s5", 6.6, "thud", 0.7); at("s5", 8.4, "whoosh", 0.8);
+  at("s6", 0.15, "slam", 1.0); at("s6", 2.4, "whoosh_soft", 0.5); at("s6", 4.5, "sweep_down", 0.4); at("s6", 7.9, "riser_short", 0.6); at("s6", 8.45, "lock", 1.0);
+  at("s6", 10.4, "whoosh_soft", 0.4); for (let i = 0; i < 10; i++) at("s6", 11.2 + i * 0.12, "tick", 0.3); at("s6", 12.3, "pop", 0.7); at("s6", 12.8, "pop", 0.7);
+  at("s6", 13.6, "success", 0.9); at("s6", 16.4, "whoosh", 0.8);
+  at("s7", -0.3, "whip", 0.7); at("s7", 0.15, "slam", 1.0); for (let i = 0; i < 10; i++) at("s7", 2.7 + i * 0.11, "tick", 0.3); at("s7", 4.3, "pop", 0.6);
+  for (let i = 0; i < 6; i++) at("s7", 7.6 + i * 0.28, "whoosh_up", 0.45, 0.5); at("s7", 9.2, "warn", 0.8); at("s7", 11.4, "whip", 0.8);
+  at("s8", 0.15, "slam", 1.0); for (let i = 0; i < 12; i++) at("s8", 2.4 + i * 0.11, "tick", 0.3, -0.3); at("s8", 4.2, "success", 0.8, -0.2);
+  for (let i = 0; i < 10; i++) at("s8", 8.0 + i * 0.11, "tick", 0.3, 0.3); at("s8", 9.8, "thud", 0.8, 0.2); at("s8", 13.4, "whip", 0.8);
+  at("s9", 0.4, "whoosh_soft", 0.4); for (let i = 0; i < 5; i++) at("s9", 1.4 + i * 0.55, "pop", 0.45 + i * 0.05); at("s9", 6.0, "chime_low", 0.6); at("s9", 9.5, "whoosh", 0.8);
+  at("s10", 0.4, "whoosh_soft", 0.5); for (let i = 0; i < 5; i++) at("s10", [2.6, 3.0, 3.6, 4.0, 4.4][i], "pop", 0.55); at("s10", 5.8, "whoosh_soft", 0.4); at("s10", 9.5, "whoosh", 0.7);
+  at("s11", 0.3, "whoosh_soft", 0.4); at("s11", 2.4, "impact", 1.0); at("s11", 2.45, "shimmer", 0.7); at("s11", 3.6, "tick", 0.4);
+  return c;
+}
+window.render = render; window.cues = cues; window.DUR = DUR; window.SC = SC;
+render(0);
+</script>
+</body></html>
