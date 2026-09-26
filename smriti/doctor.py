@@ -25,12 +25,14 @@ def inspect_database(path: str) -> dict:
         required = {"episodes", "facts", "entities", "entity_aliases", "ingest_log",
                     "episodes_fts", "facts_fts", "fact_keys_fts"}
         missing = sorted(required - tables)
+        allowed_tables = {"episodes", "facts", "entities"}
         counts = {table: db.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
-                  for table in ("episodes", "facts", "entities") if table in tables}
+                  for table in ("episodes", "facts", "entities")
+                  if table in tables and table in allowed_tables}
         dimensions = {}
         inconsistent = []
         for table in ("episodes", "facts"):
-            if table not in tables:
+            if table not in tables or table not in allowed_tables:
                 continue
             sizes = [r[0] for r in db.execute(
                 f"SELECT DISTINCT length(emb) FROM {table} WHERE emb IS NOT NULL")]
