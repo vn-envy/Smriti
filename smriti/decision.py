@@ -112,6 +112,7 @@ class SystemOneReranker:
         self.price_per_mtok = float(price_per_mtok)
         self.extra_question = dict(extra_question or {})
         self.stats = DecisionStats()
+        self._local = threading.local()     # per-thread result of the last call
 
     # ---------------------------------------------------------------- wire
     def _post(self, state, questions: dict) -> dict:
@@ -160,6 +161,7 @@ class SystemOneReranker:
 
     def rerank(self, query: str, docs: Sequence[str]) -> List[float]:
         docs = list(docs)
+        self._local.errors = 0
         if not docs:
             return []
         t0 = time.perf_counter()
@@ -192,7 +194,16 @@ class SystemOneReranker:
                     errors += err
         self.stats.add(calls=1, docs=len(docs), errors=errors,
                        seconds=time.perf_counter() - t0)
+        self._local.errors = errors
         return scores
+
+    @property
+    def last_errors(self) -> int:
+        """Failed requests in the calling thread's most recent ``rerank()``.
+
+        ``stats`` is shared by every thread; this is not, so concurrent callers
+        can tell their own failures apart."""
+        return getattr(self._local, "errors", 0)
 
     @property
     def cost_usd(self) -> float:
@@ -231,10 +242,12 @@ class LayaReranker:
                                       "false": "no, the memory is unrelated to the question"},
                          "labels": labels or {"true": "A", "false": "B"}}
         self.stats = DecisionStats()
+        self._local = threading.local()     # per-thread result of the last call
         self.price_per_mtok = 0.0
 
     def rerank(self, query: str, docs: Sequence[str]) -> List[float]:
         docs = list(docs)
+        self._local.errors = 0
         if not docs:
             return []
         t0 = time.perf_counter()
@@ -248,7 +261,13 @@ class LayaReranker:
             scores, errors = [0.0] * len(docs), 1
         self.stats.add(calls=1, requests=(len(docs) + self.batch_size - 1) // self.batch_size,
                        docs=len(docs), errors=errors, seconds=time.perf_counter() - t0)
+        self._local.errors = errors
         return scores
+
+    @property
+    def last_errors(self) -> int:
+        """Failed batches in the calling thread's most recent ``rerank()``."""
+        return getattr(self._local, "errors", 0)
 
     @property
     def cost_usd(self) -> float:

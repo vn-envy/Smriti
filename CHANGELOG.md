@@ -6,7 +6,8 @@ See the [release notes](RELEASE_NOTES.md#smriti-042--the-judge-trials-finished).
 
 - **`SystemOneReranker(mode="rank")`**: an empty state with the user's question as the instruction and each memory as a candidate, the layout contrastive System One models (CLM-8B) are trained on. CLM-8B held-out AUC 0.605 (`choice`) → 0.731 (`rank`).
 - **Decision-model trial results**, held-out LME-X, judge re-ranking Smriti's top 20: hosted Jev (35% blend) +9.2 / +3.4 points of evidence at 1,500 / 3,000 characters, $0.37 per 1,000 questions, memories leave the machine; trained official-Laya head +7.0 / +2.8, $0, local GPU, a statistical tie with Jev; CLM-8B (65% blend) +2.9 / −0.6; no judge helps at 9,000 characters. Record: `audit/2026-09-25/decision-models/NOTES.md`.
-- Lab: Colab notebooks for the GPU arms (`bench/lab/colab/`), fixed candidate pools (`export_pools.py`, `audit/2026-09-25/decision-models/pools/`), `pool_eval.py` and `extract_pools.py`, thread-safe judge cache.
+- **`last_errors`** on `SystemOneReranker` and `LayaReranker`: failed requests in the calling thread's latest `rerank()`, so concurrent callers can separate their own failures; the lab judge cache and `pool_eval.py` use it (shared-counter diffs over-counted errors under concurrency).
+- Lab: Colab notebooks for the GPU arms (`bench/lab/colab/`, pinned to a fetched revision, `main` by default), fixed candidate pools (`export_pools.py`, `audit/2026-09-25/decision-models/pools/`), `pool_eval.py` and `extract_pools.py`, thread-safe judge cache.
 - Docs: X article and explainer-video sources for the trials (`audit/2026-09-25/decision-models/`); README reorganised around the 0.4 read path.
 
 ## v0.4.1 — Sharper evidence from chat logs (2026-09-25)

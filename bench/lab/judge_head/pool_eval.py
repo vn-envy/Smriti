@@ -46,7 +46,11 @@ def judge_one(p):
     t0 = time.perf_counter()
     errors_before = judge.stats.errors
     scores = judge.rerank(p["question"], p["docs"])
-    return p, scores, 1000 * (time.perf_counter() - t0), judge.stats.errors - errors_before
+    ms = 1000 * (time.perf_counter() - t0)
+    errors = getattr(judge, "last_errors", None)      # this call's own failures, thread-safe
+    if errors is None:                                # judges without it never fail concurrently:
+        errors = judge.stats.errors - errors_before   # lab oracles, or --workers 1
+    return p, scores, ms, errors
 
 
 rows, t_start = [], time.time()

@@ -101,6 +101,7 @@ class DiskCachedJudge:
         self.inner, self.tag = inner, tag
         self.stats = inner.stats
         self._lock = threading.Lock()          # pool_eval.py judges questions in threads
+        self._local = threading.local()
         self.db = sqlite3.connect(path, timeout=60, check_same_thread=False)
         self.db.execute("PRAGMA journal_mode=WAL")
         self.db.execute("CREATE TABLE IF NOT EXISTS judge(k TEXT PRIMARY KEY, v REAL)")
@@ -119,10 +120,15 @@ class DiskCachedJudge:
                 marks = ",".join("?" * len(chunk))
                 have.update(self.db.execute(f"SELECT k, v FROM judge WHERE k IN ({marks})", chunk))
         todo = [i for i, k in enumerate(keys) if k not in have]
+        self._local.errors = 0
         if todo:
             errors_before = self.stats.errors
             vals = self.inner.rerank(query, [docs[i] for i in todo])
-            if self.stats.errors == errors_before:        # never cache a failed batch
+            errors = getattr(self.inner, "last_errors", None)
+            if errors is None:                      # judges without per-thread accounting
+                errors = self.stats.errors - errors_before
+            self._local.errors = errors
+            if errors == 0:                         # never cache a failed batch
                 with self._lock:
                     self.db.executemany("INSERT OR REPLACE INTO judge VALUES (?, ?)",
                                         [(keys[i], float(v)) for i, v in zip(todo, vals)])
@@ -130,6 +136,11 @@ class DiskCachedJudge:
             for i, v in zip(todo, vals):
                 have[keys[i]] = float(v)
         return [have[k] for k in keys]
+
+    @property
+    def last_errors(self) -> int:
+        """Failed requests in the calling thread's most recent ``rerank()``."""
+        return getattr(self._local, "errors", 0)
 
     @property
     def cost_usd(self) -> float:

@@ -14,9 +14,15 @@ own order (0.891).
 | [`laya_head.ipynb`](laya_head.ipynb) | any (T4 is enough) | 15–25 min | Frozen official Laya encoder (`convaiinnovations/laya` @ `55cf4c4`) + logistic head trained on dev, scored on test; zero-shot Laya on the full pools; GPU latency |
 | [`clm_8b.ipynb`](clm_8b.ipynb) | L4 or A100 (≥ 22 GB) | 30–45 min on L4 | CLM-8B zero-shot (`clm-serve` over vLLM 0.19.1 + Qwen3-8B), `rank`, `choice` and `noul` modes, dev and test; latency |
 
-**Run:** open the notebook in Colab (File → Open notebook → GitHub, or the
-links in the session), Runtime → Change runtime type → GPU, Runtime → Run all,
+**Run:** open the notebook in Colab (File → Open notebook → GitHub,
+`vn-envy/Smriti`), Runtime → Change runtime type → GPU, Runtime → Run all,
 approve the Google sign-in pop-up in step 1.
+
+**Revision:** step 1 fetches `REV` (default `main`) and records the commit it
+ran in the results (`env.json`). To repeat the recorded round 4 trials
+exactly, set `REV` to `2b52da2173e5275da3c13cee8fd3185fc14b18c3` for the Laya
+head or `97a657275b72c6da1328eb7b46d95b77fdbc5756` for CLM-8B (all three
+modes); the pools and scoring code are the same at both.
 
 **Results:** `runner.DriveResults` zips the output folder into one file in the
 runner's Google Drive (`smriti-colab-laya-head.zip`, `smriti-colab-clm8b.zip`),

@@ -92,6 +92,24 @@ def test_rank_mode_puts_the_question_last(server):
     assert list(q["criteria"].values()) == DOCS
 
 
+def test_last_errors_belongs_to_the_calling_thread(server):
+    rr = SystemOneReranker(base_url=server, model=None)
+    seen = {}
+
+    def call(name, docs):
+        rr.rerank("beagle name?", docs)
+        seen[name] = rr.last_errors
+
+    threads = [threading.Thread(target=call, args=("bad", ["fail this one"])),
+               threading.Thread(target=call, args=("good", ["beagle Bruno", "report due"]))]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    assert seen == {"bad": 1, "good": 0}
+    assert rr.stats.errors == 1                     # the shared total still counts both
+
+
 def test_failed_request_scores_zero_and_is_counted(server):
     rr = SystemOneReranker(base_url=server, model=None)
     scores = rr.rerank("beagle name?", ["beagle Bruno", "fail this one"])

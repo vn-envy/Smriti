@@ -39,6 +39,10 @@ can decide whether to turn one on.
   which a contrastive model reads as the question, so every query looks the
   same to it. On CLM-8B, `rank` raised held-out ranking skill (AUC) from 0.605
   to 0.731. `noul` (one yes/no question per memory) stays the default mode.
+- **`last_errors`** on `SystemOneReranker` and `LayaReranker`: failed
+  requests in the calling thread's most recent `rerank()`. `stats` is shared
+  by every thread, so concurrent callers now have a way to tell their own
+  failures apart.
 - **GPU arms on Google Colab** (`bench/lab/colab/`). Two notebooks run the
   GPU-bound judges: the official Laya encoder with a trained head (any GPU)
   and CLM-8B through `clm-serve` on vLLM 0.19.1 (L4 or A100). Results come
@@ -48,11 +52,14 @@ can decide whether to turn one on.
   Smriti's top 20 memories for 256 dev and 244 held-out LME-X questions,
   exported by `bench/lab/judge_head/export_pools.py`. Every judge scored the
   same 10,000 question and memory pairs; replaying the round 3 Jev scores over
-  the exported pools reproduces its results exactly.
+  the exported pools reproduces its results exactly. The notebooks fetch a
+  pinned revision (`main` by default); the commits of the recorded runs are in
+  the Colab README.
 - **Lab tools:** `pool_eval.py` (judge a pools file, single-stream latency
-  probe, per-question AUC), `extract_pools.py` (frozen-encoder features on a
-  GPU, in the formats `train.py` and the lab's feature cache read), and a
-  thread-safe judge cache for concurrent judging.
+  probe, per-question AUC, per-call error counts under concurrency),
+  `extract_pools.py` (frozen-encoder features on a GPU, in the formats
+  `train.py` and the lab's feature cache read), and a thread-safe judge cache
+  for concurrent judging.
 - **Experiment record:** rounds 3 and 4 in
   [`NOTES.md`](audit/2026-09-25/decision-models/NOTES.md), result files, an
   [X article](audit/2026-09-25/decision-models/x-article/) and the source of a
@@ -424,7 +431,7 @@ python -m pytest tests/ -q && python -m pytest enterprise/tests/ -q
 
 ### Validation
 
-- **0.4.2:** 266 core and 59 enterprise tests pass in the checkout and on
+- **0.4.2:** 267 core and 59 enterprise tests pass in the checkout and on
   Python 3.9 and 3.12 in CI.
 - **0.4.0:** 254 core and 59 enterprise tests pass in the checkout. From freshly built
   wheels in a clean virtual environment, 253 core tests pass with 1 skipped
