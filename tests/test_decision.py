@@ -37,7 +37,8 @@ class _Handler(BaseHTTPRequestHandler):
                 mem = state.get("memory") or state["memories"][name]
                 answers[name] = {"noul": _relevance(state["question"], mem)}
             else:
-                probs = {k: _relevance(state["question"], v) + 1e-3
+                question = state["question"] if isinstance(state, dict) else q["instructions"]
+                probs = {k: _relevance(question, v) + 1e-3
                          for k, v in q["criteria"].items()}
                 z = sum(probs.values())
                 answers[name] = {"choice": max(probs, key=probs.get),
@@ -66,7 +67,7 @@ DOCS = ["We adopted a beagle named Bruno last spring.",
         "Bruno the beagle loves the park near our house."]
 
 
-@pytest.mark.parametrize("mode", ["noul", "fanout", "choice"])
+@pytest.mark.parametrize("mode", ["noul", "fanout", "choice", "rank"])
 def test_modes_rank_relevant_memories_first(server, mode):
     rr = SystemOneReranker(base_url=server, api_key="k", model="laya", mode=mode,
                            fanout_size=2, price_per_mtok=0.042)
@@ -74,11 +75,21 @@ def test_modes_rank_relevant_memories_first(server, mode):
     assert len(scores) == 3 and scores[1] < min(scores[0], scores[2])
     assert all(s["path"] == "/v1/systemone" for s in _Handler.seen)
     assert all(s["auth"] == "Bearer k" and s["body"]["model"] == "laya" for s in _Handler.seen)
-    expected = {"noul": 3, "fanout": 2, "choice": 1}[mode]
+    expected = {"noul": 3, "fanout": 2, "choice": 1, "rank": 1}[mode]
     st = rr.stats.as_dict()
     assert st["requests"] == expected and st["docs"] == 3 and st["calls"] == 1
     assert st["input_tokens"] == 10 * expected and st["errors"] == 0
     assert rr.cost_usd == pytest.approx(10 * expected / 1e6 * 0.042)
+
+
+def test_rank_mode_puts_the_question_last(server):
+    rr = SystemOneReranker(base_url=server, model=None, mode="rank")
+    rr.rerank("What is the name of our beagle?", DOCS)
+    body = _Handler.seen[0]["body"]
+    q = body["questions"]["best"]
+    assert body["state"] == "" and q["type"] == "choice"
+    assert q["instructions"] == "What is the name of our beagle?"
+    assert list(q["criteria"].values()) == DOCS
 
 
 def test_failed_request_scores_zero_and_is_counted(server):
