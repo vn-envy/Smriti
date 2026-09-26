@@ -217,6 +217,26 @@ full dev run and the end-to-end test were not spent on it.
 
 The Jev API key used for these runs was deleted after testing.
 
+## Round 4 — GPU arms on Colab (set up, awaiting runs)
+
+The two arms that need a GPU run on Google Colab against fixed pools, so
+their numbers compare one-to-one with rounds 1–3:
+
+- **Official Laya + trained head** (`bench/lab/colab/laya_head.ipynb`, any
+  GPU): frozen `convaiinnovations/laya` encoder at `55cf4c4`, head trained on
+  dev, scored once on held-out test; plus zero-shot Laya on the full pools.
+- **CLM-8B zero-shot** (`bench/lab/colab/clm_8b.ipynb`, L4 or A100):
+  `clm-serve` over vLLM Qwen3-8B with the released head, `choice` (native
+  ranking) and `noul`.
+
+Pools: `pools/` (256 dev + 244 test questions, 10,000 pairs), exported by
+`judge_head/export_pools.py`; replaying the round 3 Jev cache over them
+reproduces 0.953 / 0.954 exactly. Judging: `judge_head/pool_eval.py`
+(latency probe on the first 30 questions, single stream). Encoding:
+`judge_head/extract_pools.py` (fp32, writes `train.py` inputs and the lab's
+feature cache). Results come back as one zip per notebook and replay through
+the lab's caches with no model on the CPU box (`bench/lab/colab/README.md`).
+
 ## Run once access opens
 
 ```bash
