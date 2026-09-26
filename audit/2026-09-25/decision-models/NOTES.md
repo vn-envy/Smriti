@@ -217,25 +217,74 @@ full dev run and the end-to-end test were not spent on it.
 
 The Jev API key used for these runs was deleted after testing.
 
-## Round 4 — GPU arms on Colab (set up, awaiting runs)
+## Round 4 — GPU arms on Colab
 
 The two arms that need a GPU run on Google Colab against fixed pools, so
-their numbers compare one-to-one with rounds 1–3:
+their numbers compare one-to-one with rounds 1–3. Pools: `pools/` (256 dev +
+244 test questions, 10,000 pairs), exported by `judge_head/export_pools.py`;
+replaying the round 3 Jev cache over them reproduces 0.953 / 0.954 exactly.
+Judging: `judge_head/pool_eval.py` (latency probe on the first 30 questions,
+single stream). Encoding: `judge_head/extract_pools.py` (fp32, writes
+`train.py` inputs and the lab's feature cache). Results return as one zip
+per notebook and replay through the lab's caches with no model on the CPU
+box (`bench/lab/colab/README.md`).
 
-- **Official Laya + trained head** (`bench/lab/colab/laya_head.ipynb`, any
-  GPU): frozen `convaiinnovations/laya` encoder at `55cf4c4`, head trained on
-  dev, scored once on held-out test; plus zero-shot Laya on the full pools.
-- **CLM-8B zero-shot** (`bench/lab/colab/clm_8b.ipynb`, L4 or A100):
-  `clm-serve` over vLLM Qwen3-8B with the released head, `choice` (native
-  ranking) and `noul`.
+### Official Laya + trained head (`bench/lab/colab/laya_head.ipynb`, NVIDIA L4)
 
-Pools: `pools/` (256 dev + 244 test questions, 10,000 pairs), exported by
-`judge_head/export_pools.py`; replaying the round 3 Jev cache over them
-reproduces 0.953 / 0.954 exactly. Judging: `judge_head/pool_eval.py`
-(latency probe on the first 30 questions, single stream). Encoding:
-`judge_head/extract_pools.py` (fp32, writes `train.py` inputs and the lab's
-feature cache). Results come back as one zip per notebook and replay through
-the lab's caches with no model on the CPU box (`bench/lab/colab/README.md`).
+Frozen `convaiinnovations/laya` encoder at `55cf4c4` (421M, English), mean
+pool of "question [SEP] memory" (384 tokens, fp32), L2 logistic heads trained
+on dev (5-fold CV grouped by question), scored once on held-out test.
+Encoding took 170 s per split; the whole notebook about 9 minutes.
+
+| Held-out test (229 q with evidence) | AUC | Right memory first | Recall@5 of pool |
+|---|---:|---:|---:|
+| Smriti 0.4.1 order | 0.891 | 63.8% | 83.9% |
+| Official Laya zero-shot (`noul`, 244 q) | 0.830 | 45.9% | – |
+| Head on Laya features only | 0.902 | 59.4% | 86.6% |
+| **Head on Laya + Smriti signals** | **0.937** | **74.2%** | **91.6%** |
+| Hosted Jev zero-shot (round 3) | 0.954 | 72.5% | 94.6% |
+| Community Laya + Smriti head (round 2) | 0.928 | – | – |
+
+Head vs Smriti: right memory first on 38 questions Smriti misses, 14 the
+other way (McNemar p = 0.001); per-question AUC better on 102, worse on 36
+(p = 2×10⁻⁸). Head vs Jev: 34 / 30 on right-first (p = 0.71), 64 / 70 on
+per-question AUC (p = 0.67): no significant difference. Zero-shot on the full
+pools confirms the round 3 sample (dev 0.834, test 0.830; loses to Smriti on
+122 of 229 test questions, wins 56).
+
+GPU time per question (20 memories, one batch, single stream, L4): encoder
+for the head 0.76 s (dev) / 0.81 s (test) p50 in fp32; zero-shot Laya 0.32 s.
+Jev: 1.4 s and $0.37 per 1,000 questions.
+
+End to end on held-out test (232 q), head re-ranks Smriti's top 20 and
+replaces its order (weight 1.0, fixed in advance as in round 2: the head
+already weighs Smriti's signals, and dev cannot pick a weight because the
+head was trained on it). All encoder features came from the Colab cache
+(0 fresh encodings).
+
+| Budget | Smriti 0.4.1 | + Laya head | Change | Better / worse | + Jev 35% | Head vs Jev |
+|---|---:|---:|---:|---:|---:|---:|
+| 1,500 chars | 65.6 | **72.6** | +7.0 (CI +3.4 to +10.9), p = 7×10⁻⁵ | 50 / 17 | 74.8 | 19 / 23, p = 0.64 |
+| 3,000 chars | 83.2 | **86.0** | +2.8 (CI +0.3 to +5.4), p = 0.002 | 23 / 6 | 86.5 | 10 / 11, p = 1.0 |
+| 9,000 chars | 93.0 | 92.6 | −0.4 (n.s.) | 0 / 1 | 93.0 | 0 / 1 |
+
+A 35% blend (untuned, for parity with Jev) gives 72.8 / 85.5 / 93.0.
+
+Files: `round4-laya/` (report, timings, heads, zero-shot and end-to-end
+summaries), cards `card-r4-laya-*.png`.
+
+**Verdict (Laya):** a local, $0 judge that matches hosted Jev within noise,
+with the same privacy as the rest of Smriti. It needs task training (zero-shot
+it hurts) and a GPU to be interactive (about 0.8 s per question on an L4 in
+fp32; the CPU encoder is about 20 s per question). Candidate for an optional
+`smriti[judge]` extra for GPU users, not the default read path.
+
+### CLM-8B zero-shot (`bench/lab/colab/clm_8b.ipynb`, L4 or A100)
+
+`clm-serve` over vLLM Qwen3-8B with the released head, `choice` (native
+ranking) and `noul`. First attempt failed at vLLM start-up: vLLM >= 0.20 pins
+torch >= 2.11, whose PyPI wheels need CUDA 13, and Colab ships CUDA 12; the
+notebook now pins vLLM 0.19.1 (torch 2.10, CUDA 12.8). Running.
 
 ## Run once access opens
 

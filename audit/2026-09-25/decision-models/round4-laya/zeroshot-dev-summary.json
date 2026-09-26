@@ -1,0 +1,21 @@
+{
+ "judge": "laya",
+ "pools": "pools-dev.jsonl.gz",
+ "questions": 256,
+ "auc_judge": 0.8337,
+ "auc_smriti": 0.8994,
+ "better_worse_tied": [
+  58,
+  128,
+  57
+ ],
+ "top1_judge": 0.4691,
+ "top1_smriti": 0.642,
+ "ms_per_question_p50": 346.9,
+ "ms_per_question_p95": 403.2,
+ "latency_probe_questions": 30,
+ "wall_s": 75.8,
+ "workers": 1,
+ "input_tokens": 0,
+ "errors": 0
+}
