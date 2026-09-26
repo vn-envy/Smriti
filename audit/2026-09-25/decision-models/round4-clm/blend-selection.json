@@ -1,0 +1,21 @@
+{
+ "selection": "mode and blend weight chosen on dev by mean per-question AUC: {rank, choice, noul} x {0.1, 0.2, 0.35, 0.5}; noul extended to {0.65, 0.8, 1.0} because 0.5 was the grid edge (rank and choice already fall by 0.5)",
+ "chosen": "noul @ 0.65",
+ "dev_auc": {
+  "smriti": 0.8995,
+  "noul@0.65": 0.9161
+ },
+ "test_auc": {
+  "smriti": 0.891,
+  "noul@0.65": 0.9072
+ },
+ "test_better_worse": [
+  66,
+  38
+ ],
+ "test_sign_p": 0.0078,
+ "test_top1": {
+  "smriti": 0.6376,
+  "noul@0.65": 0.6419
+ }
+}

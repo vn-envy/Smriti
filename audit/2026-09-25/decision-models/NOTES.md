@@ -279,12 +279,75 @@ it hurts) and a GPU to be interactive (about 0.8 s per question on an L4 in
 fp32; the CPU encoder is about 20 s per question). Candidate for an optional
 `smriti[judge]` extra for GPU users, not the default read path.
 
-### CLM-8B zero-shot (`bench/lab/colab/clm_8b.ipynb`, L4 or A100)
+### CLM-8B zero-shot (`bench/lab/colab/clm_8b.ipynb`, NVIDIA L4)
 
-`clm-serve` over vLLM Qwen3-8B with the released head, `choice` (native
-ranking) and `noul`. First attempt failed at vLLM start-up: vLLM >= 0.20 pins
-torch >= 2.11, whose PyPI wheels need CUDA 13, and Colab ships CUDA 12; the
-notebook now pins vLLM 0.19.1 (torch 2.10, CUDA 12.8). Running.
+`clm-serve` (contrastive-lm 0.1.0, reference head `clm-latest`) over vLLM
+0.19.1 serving Qwen3-8B with the CLM repo's settings (last-token pooling,
+prefix caching, 2,048 tokens). vLLM >= 0.20 pins torch >= 2.11, whose PyPI
+wheels need CUDA 13; Colab ships CUDA 12, hence the pin. Three layouts, all
+over the same pools, zero failed requests:
+
+- `choice`: state = the question, instruction = "Which memory best helps
+  answer the question?", options = the memories.
+- `rank` (added after `choice`): empty state, instruction = the user's
+  question, options = the memories: CLM's documented layout (question last;
+  `/v1/rank`). CLM reads the last line as the question, so in `choice` every
+  query ended with the same sentence.
+- `noul`: one yes/no relevance question per memory (as for Jev and Laya).
+
+| Held-out test (229 q with evidence) | AUC | Right memory first | Better / worse than Smriti (per-q AUC) | GPU time / question |
+|---|---:|---:|---:|---:|
+| Smriti 0.4.1 order | 0.891 | 63.8% | – | – |
+| CLM-8B `choice` | 0.605 | 11.3% | 27 / 194 | 0.41 s |
+| CLM-8B `rank` | 0.731 | 24.5% | – | 0.08 s* |
+| CLM-8B `noul` | 0.752 | 27.1% | 43 / 164 | 1.00 s |
+| Laya + trained head (above) | 0.936 | 74.2% | 102 / 36 | 0.81 s |
+| Hosted Jev | 0.954 | 72.5% | 104 / 49 | 1.4 s |
+
+Dev: `choice` 0.628, `rank` 0.739, `noul` 0.734. *`rank` ran after
+`choice`, so every memory was already in clm-serve's embedding cache: 0.08 s
+is the cost when memories are embedded at write time (one question embedding
+plus dot products); cold, a pool costs about what `choice` did (0.4–0.6 s).
+Diagnostics rule out a pipeline fault: scores are well-formed
+probabilities, texts were not truncated, CLM's top pick is an assistant turn
+only 3–4% of the time (a fifth of candidates are), and its scores fall with
+candidate length (rank correlation −0.3 with length).
+
+**Blend with Smriti's score** (as Jev was blended). Mode and weight chosen on
+dev (grid in `round4-clm/blend-selection.json`): `noul` at 65% (dev AUC
+0.916 vs 0.900). Held-out: AUC 0.907 vs 0.891 (per-question better on 66,
+worse on 38, p = 0.008); right memory first 64.2% vs 63.8% (no change).
+End to end on held-out test (232 q, all judgements from the Colab cache):
+
+| Budget | Smriti 0.4.1 | + CLM `noul` 65% | Change | Better / worse |
+|---|---:|---:|---:|---:|
+| 1,500 chars | 65.6 | 68.6 | +2.9 (CI +0.2 to +5.9), p = 0.007 | 24 / 8 |
+| 3,000 chars | 83.2 | 82.6 | −0.6 (CI −2.7 to +1.1), n.s. | 10 / 8 |
+| 9,000 chars | 93.0 | 93.0 | 0 | 0 / 0 |
+
+(Also run, as the dev-best `rank` weight: `rank` at 20% gives +0.8 / +1.3 /
+0, none significant.)
+
+Files: `round4-clm/` (per-mode summaries, blend selection, end-to-end
+summaries, versions), card `card-r4-clm-result.png`.
+
+**Verdict (CLM-8B):** not for Smriti as released. Zero-shot, in every
+layout, it ranks memories far worse than Smriti's own fused order; blended,
+it adds a small gain at 1,500 characters and nothing at 3,000, for a 24 GB
+GPU and 16 GB of weights. Its design (memory embeddings cached at write
+time, 0.08 s per query afterwards) would suit a memory store if a head were
+trained on relevance labels, as the Laya head was; that is a possible
+round 5, not a shipping candidate.
+
+### Round 4 scoreboard (held-out test)
+
+| Judge | Runs | AUC | Right first | Evidence @1,500 | Evidence @3,000 | $ / 1k q |
+|---|---|---:|---:|---:|---:|---:|
+| Smriti 0.4.1 alone | CPU | 0.891 | 63.8% | 65.6 | 83.2 | 0 |
+| + Laya head (trained) | local GPU | 0.936 | **74.2%** | 72.6 | 86.0 | 0 |
+| + CLM-8B `noul` 65% | local 24 GB GPU | 0.907 | 64.2% | 68.6 | 82.6 | 0 |
+| + Jev 35% | hosted API | **0.954** | 72.5% | **74.8** | **86.5** | 0.37 |
+| + perfect judge (top 20) | – | 1.0 | 100% | 87.1 | 91.3 | – |
 
 ## Run once access opens
 

@@ -12,7 +12,7 @@ own order (0.891).
 | Notebook | GPU | Time | What it measures |
 |---|---|---|---|
 | [`laya_head.ipynb`](laya_head.ipynb) | any (T4 is enough) | 15–25 min | Frozen official Laya encoder (`convaiinnovations/laya` @ `55cf4c4`) + logistic head trained on dev, scored on test; zero-shot Laya on the full pools; GPU latency |
-| [`clm_8b.ipynb`](clm_8b.ipynb) | L4 or A100 (≥ 22 GB) | 45–75 min on L4 | CLM-8B zero-shot (`clm-serve` over vLLM Qwen3-8B), `choice` and `noul` modes, dev and test; latency |
+| [`clm_8b.ipynb`](clm_8b.ipynb) | L4 or A100 (≥ 22 GB) | 30–45 min on L4 | CLM-8B zero-shot (`clm-serve` over vLLM 0.19.1 + Qwen3-8B), `rank`, `choice` and `noul` modes, dev and test; latency |
 
 **Run:** open the notebook in Colab (File → Open notebook → GitHub, or the
 links in the session), Runtime → Change runtime type → GPU, Runtime → Run all,
@@ -35,7 +35,7 @@ python bench/lab/judge_head/pool_eval.py clm:choice audit/2026-09-25/decision-mo
 # end to end: evidence reaching the LLM at a context budget
 SMRITI_LAB_JUDGE_CACHE=round4/clm8b/judge-cache.sqlite CLM_BASE_URL=http://127.0.0.1:9 \
 python -m bench.lab.run --dataset lmex --split test --budget 1500 \
-  --systems "evidence,ev(rerank=clm,rerank_mode=choice,rerank_depth=20,rerank_weight=0.35)"
+  --systems "evidence,ev(rerank=clm,rerank_mode=noul,rerank_depth=20,rerank_weight=0.65)"
 
 unzip smriti-colab-laya-head.zip -d round4
 python bench/lab/judge_head/train.py round4/laya-head          # same heads, same report
