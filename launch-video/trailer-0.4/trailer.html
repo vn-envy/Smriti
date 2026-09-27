@@ -1,0 +1,857 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Smriti 0.4 trailer</title>
+<style>
+@font-face { font-family: "Archivo"; src: url("fonts/Archivo[wdth,wght].ttf") format("truetype"); font-weight: 100 900; font-stretch: 62% 125%; }
+@font-face { font-family: "Plex Mono"; src: url("fonts/IBMPlexMono-Regular.ttf"); font-weight: 400; }
+@font-face { font-family: "Plex Mono"; src: url("fonts/IBMPlexMono-Medium.ttf"); font-weight: 500; }
+@font-face { font-family: "Tiro Deva"; src: url("fonts/TiroDevanagariSanskrit-Regular.ttf"); }
+:root {
+  --bg: #07090c; --surface: #121820; --surface2: #18202a; --ink: #eef2f6; --ink2: #b8c1cb; --muted: #7d8794;
+  --line: rgba(255,255,255,.10); --brand: #7fb0f0; --user: #2a6fd0;
+  --smriti: #3987e5; --laya: #1fa876; --jev: #d49000; --clm: #d55181; --ceiling: #a3adb9; --ent: #b794e0;
+  --good: #37c237; --warn: #f6c35a;
+  --sans: "Archivo", sans-serif; --mono: "Plex Mono", monospace; --deva: "Tiro Deva", serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #000; }
+#stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; color: var(--ink); font-family: var(--sans);
+  background: radial-gradient(ellipse 80% 70% at 50% 42%, #0f161e 0%, #07090c 72%); }
+#cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+.shot { position: absolute; inset: 0; display: none; transform-origin: 50% 50%; }
+.world { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+.abs { position: absolute; }
+.glow { position: absolute; width: 1100px; height: 1100px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, var(--c) 0%, transparent 62%); opacity: .18; }
+.eyebrow { font-family: var(--mono); font-size: 26px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
+.h { font-weight: 840; font-stretch: 118%; font-size: 96px; line-height: 1.02; letter-spacing: -.02em; }
+.h em, .em, .h2 em { font-style: normal; color: var(--brand); }
+.h2 { font-weight: 760; font-stretch: 112%; font-size: 56px; line-height: 1.1; letter-spacing: -.01em; }
+.body { font-size: 34px; line-height: 1.35; color: var(--ink2); font-weight: 450; }
+.mono { font-family: var(--mono); }
+.w { display: inline-block; white-space: pre; }
+.chip { display: inline-flex; align-items: center; gap: 12px; padding: 12px 28px; border-radius: 999px; font-size: 32px; font-weight: 700; white-space: nowrap; }
+.chip.info { color: var(--brand); background: rgba(127,176,240,.14); }
+.chip.plain { color: var(--ink); background: rgba(255,255,255,.08); }
+.dot { display: inline-block; width: 20px; height: 20px; border-radius: 50%; }
+.bubble { position: absolute; padding: 28px 38px; border-radius: 38px; font-size: 48px; line-height: 1.2; white-space: nowrap; font-weight: 500; }
+.bubble.user { background: var(--user); color: #fff; border-bottom-right-radius: 10px; transform-origin: 100% 100%; }
+.bubble.agent { background: var(--surface2); border: 1.5px solid var(--line); color: var(--ink); border-bottom-left-radius: 10px; transform-origin: 0 100%; }
+.caret { display: inline-block; width: .5em; height: 1em; vertical-align: -.12em; background: currentColor; margin-left: 4px; }
+.pane { position: absolute; left: 140px; top: 110px; width: 1640px; height: 860px; border-radius: 30px; overflow: hidden;
+  background: linear-gradient(125deg, rgba(160,200,255,.13) 0%, rgba(160,200,255,.03) 34%, rgba(255,255,255,.11) 47%, rgba(160,200,255,.02) 58%, rgba(160,200,255,.07) 100%), #0c131b;
+  border: 2px solid rgba(190,215,255,.30); box-shadow: inset 0 0 90px rgba(127,176,240,.10); }
+.pane-text { position: absolute; left: 0; right: 0; top: 150px; text-align: center; font-weight: 900; font-stretch: 118%; font-size: 250px; line-height: .9; letter-spacing: -.03em; color: #eef2f6; }
+.pane-wh { position: absolute; left: 0; right: 0; bottom: 92px; text-align: center; font-family: var(--mono); font-size: 36px; letter-spacing: .34em; text-transform: uppercase; color: var(--brand); }
+.shard { position: absolute; overflow: hidden; }
+.shard > .in { position: absolute; width: 1920px; height: 1080px; }
+.shard > .glint { position: absolute; inset: 0; }
+.term { position: absolute; background: #0b1016; border: 1.5px solid rgba(255,255,255,.14); border-radius: 22px; box-shadow: 0 40px 140px rgba(0,0,0,.7), 0 0 0 1px rgba(127,176,240,.05); }
+.term-bar { height: 58px; border-bottom: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; gap: 12px; padding-left: 24px; }
+.term-bar i { width: 16px; height: 16px; border-radius: 50%; background: #2a323c; display: inline-block; }
+.tool { display: inline-block; font-family: var(--mono); font-size: 36px; font-weight: 500; padding: 12px 26px; border-radius: 14px;
+  color: #cfe2ff; background: rgba(127,176,240,.12); border: 1.5px solid rgba(127,176,240,.35); }
+.card { position: absolute; background: var(--surface); border: 1.5px solid var(--line); border-radius: 22px; padding: 30px 34px; }
+.badge { display: inline-block; font-family: var(--mono); font-size: 24px; font-weight: 500; letter-spacing: .08em; padding: 8px 16px; border-radius: 10px; }
+.badge.cur { color: #8ff08f; background: rgba(55,194,55,.16); }
+.badge.sup { color: var(--warn); background: rgba(246,195,90,.14); }
+.strike { position: absolute; left: -6px; top: 52%; height: 6px; border-radius: 3px; background: #ff6b5e; width: 0; }
+.track { position: absolute; height: 18px; border-radius: 9px; background: rgba(255,255,255,.07); overflow: hidden; }
+.fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 9px; }
+.slamw { position: absolute; left: 0; right: 0; top: 200px; text-align: center; font-weight: 900; font-stretch: 118%; font-size: 250px; line-height: .9; letter-spacing: -.03em; }
+#flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+#flare { position: absolute; left: -200px; width: 2320px; top: 537px; height: 6px; border-radius: 3px; opacity: 0; pointer-events: none;
+  background: radial-gradient(ellipse 50% 50% at 50% 50%, #ffffff 0%, #9cc3ff 30%, rgba(90,150,255,.0) 70%);
+  box-shadow: 0 0 40px 10px rgba(110,170,255,.55); }
+#leak { position: absolute; inset: -200px; opacity: 0; pointer-events: none; mix-blend-mode: screen; }
+#grain { position: absolute; inset: 0; width: 1920px; height: 1080px; opacity: .06; mix-blend-mode: overlay; pointer-events: none; }
+#vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 75% 70% at 50% 50%, transparent 55%, rgba(0,0,0,.6) 100%); }
+#fade { position: absolute; inset: 0; background: #000; pointer-events: none; }
+</style></head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs id="fdefs">
+  <filter id="rgb" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
+    <feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="r"/>
+    <feOffset id="rgb-r" in="r" dx="0" dy="0" result="ro"/>
+    <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="g"/>
+    <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="b"/>
+    <feOffset id="rgb-b" in="b" dx="0" dy="0" result="bo"/>
+    <feBlend in="ro" in2="g" mode="screen" result="rg"/>
+    <feBlend in="rg" in2="bo" mode="screen"/>
+  </filter>
+</defs></svg>
+<div id="stage">
+<div id="cam">
+
+<!-- K0 · cold open: the agent forgets -->
+<section class="shot" id="k0"><div class="world" id="k0-w">
+  <div class="glow" style="--c:#2a5fa8; left:410px; top:-60px"></div>
+  <div class="abs" id="k0-c1" style="left:0; top:0; width:1920px; height:1080px">
+    <div class="abs eyebrow" id="k0-e1" style="left:380px; top:330px">Session 1 · Monday</div>
+    <div class="bubble user" id="k0-u1" style="right:380px; top:410px"><span id="k0-u1t"></span></div>
+    <div class="bubble agent" id="k0-a1" style="left:380px; top:610px">Got it. I'll remember that.</div>
+  </div>
+  <div class="abs" id="k0-c2" style="left:0; top:0; width:1920px; height:1080px">
+    <div class="abs eyebrow" id="k0-e2" style="left:380px; top:330px">Session 2 · a month later</div>
+    <div class="bubble user" id="k0-u2" style="right:380px; top:410px"><span id="k0-u2t"></span></div>
+    <div class="bubble agent" id="k0-a2" style="left:380px; top:610px"><span id="k0-a2t">Sorry, I don't know.</span></div>
+  </div>
+  <div class="abs" id="k0-pane" style="left:0; top:0; width:1920px; height:1080px"></div>
+</div></section>
+
+<!-- K1 · title -->
+<section class="shot" id="k1"><div class="world" id="k1-w">
+  <div class="glow" style="--c:#2a5fa8; left:410px; top:-40px"></div>
+  <div class="abs" id="k1-deva" style="left:0; right:0; top:90px; text-align:center; font-family:var(--deva); font-size:500px; line-height:1.1; color:#7fb0f0; opacity:0">स्मृति</div>
+  <div class="abs" id="k1-name" style="left:0; right:0; top:330px; text-align:center; font-weight:900; font-stretch:125%; font-size:300px; letter-spacing:-.02em; line-height:1">SMRITI</div>
+  <div class="abs eyebrow rv" data-t="1.0" style="left:0; right:0; top:680px; text-align:center">Open source · memory for AI agents</div>
+  <div class="abs h split" data-t="2.0" data-st="0.24" style="left:0; right:0; top:750px; text-align:center">Memory that <em>knows when</em>.</div>
+</div></section>
+
+<!-- K2 · the release -->
+<section class="shot" id="k2"><div class="world" id="k2-w">
+  <div class="glow" style="--c:#3a5fd8; left:-240px; top:-120px"></div>
+  <div class="abs eyebrow rv" data-t="0.15" style="left:190px; top:215px">Smriti · the new release</div>
+  <div class="abs" id="k2-num" style="left:170px; top:260px; font-size:470px; font-weight:900; font-stretch:112%; line-height:1; letter-spacing:-.04em">
+    <span id="k2-outline" style="color:transparent; -webkit-text-stroke:4px #7fb0f0">0.4</span>
+    <span id="k2-fill" style="position:absolute; left:0; top:0; color:#eef2f6; clip-path:inset(0 100% 0 0)">0.4</span>
+  </div>
+  <div class="abs" style="left:1010px; top:330px; width:820px">
+    <div class="rv" data-t="1.0" data-x="90" data-y="0" style="margin-bottom:40px"><div class="mono" style="font-size:26px; color:var(--brand); letter-spacing:.1em">0.4.0</div><div class="h2">Evidence-first recall</div></div>
+    <div class="rv" data-t="1.5" data-x="90" data-y="0" style="margin-bottom:40px"><div class="mono" style="font-size:26px; color:var(--brand); letter-spacing:.1em">0.4.1</div><div class="h2">Sharper evidence</div></div>
+    <div class="rv" data-t="2.0" data-x="90" data-y="0"><div class="mono" style="font-size:26px; color:var(--brand); letter-spacing:.1em">0.4.2</div><div class="h2">Judges, tested in public</div></div>
+  </div>
+  <div class="abs rv" data-t="2.6" data-s="1.4" data-y="0" style="left:190px; top:820px"><span class="chip info" style="font-size:36px"><span class="dot" style="background:#37c237; box-shadow:0 0 16px #37c237"></span>Out now · Apache-2.0</span></div>
+</div></section>
+
+<!-- K3 · MCP terminal -->
+<section class="shot" id="k3"><div class="world" id="k3-w">
+  <div class="glow" style="--c:#2a5fa8; left:900px; top:-200px"></div>
+  <div class="term" id="k3-term" style="left:250px; top:170px; width:1420px; height:480px">
+    <div class="term-bar"><i></i><i></i><i></i></div>
+    <div style="padding:44px 56px">
+      <div class="mono" style="font-size:46px; color:var(--ink)"><span style="color:var(--muted)">$ </span><span id="k3-cmd"></span></div>
+      <div class="mono" id="k3-ready" style="font-size:32px; color:#8ff08f; margin-top:34px; opacity:0">● smriti-mcp ready · offline · 6 typed tools</div>
+      <div id="k3-tools" style="margin-top:40px; display:flex; flex-wrap:wrap; gap:22px; width:1300px"></div>
+    </div>
+  </div>
+  <div class="abs h split" data-t="2.85" data-st="0.07" style="left:250px; top:740px; width:1500px; font-size:88px">Plugs into <em>any MCP client</em>.</div>
+</div></section>
+
+<!-- K4 · one file -->
+<section class="shot" id="k4"><div class="world" id="k4-w">
+  <div class="glow" style="--c:#2a5fa8; left:-200px; top:0px"></div>
+  <div class="abs" id="k4-file" style="left:230px; top:250px; width:380px; height:480px">
+    <div style="position:absolute; inset:0; background:linear-gradient(160deg, #1d2835, #121820); border:2px solid rgba(127,176,240,.45); border-radius:26px; clip-path:polygon(0 0, 72% 0, 100% 19%, 100% 100%, 0 100%); box-shadow:0 0 60px rgba(127,176,240,.25)"></div>
+    <div style="position:absolute; right:0; top:0; width:28%; height:19%; background:linear-gradient(225deg, transparent 50%, rgba(127,176,240,.55) 50%); border-bottom-left-radius:14px"></div>
+    <svg class="abs" style="left:110px; top:120px" width="160" height="180" viewBox="0 0 160 180"><g fill="none" stroke="#7fb0f0" stroke-width="7">
+      <ellipse cx="80" cy="30" rx="66" ry="22"/><path d="M14 30v120c0 12 30 22 66 22s66-10 66-22V30"/><path d="M14 70c0 12 30 22 66 22s66-10 66-22M14 110c0 12 30 22 66 22s66-10 66-22"/></g></svg>
+    <div class="mono" style="position:absolute; left:0; right:0; bottom:48px; text-align:center; font-size:38px; font-weight:500; color:var(--ink)">memory.db</div>
+  </div>
+  <div class="abs h split" data-t="0.3" data-st="0.08" style="left:760px; top:200px; width:1100px; font-size:104px">One <em>SQLite</em> file.</div>
+  <div class="abs" id="k4-list" style="left:764px; top:400px"></div>
+  <div class="abs rv" data-t="3.0" data-s="1.3" data-y="0" style="left:760px; top:830px"><span class="chip plain mono" style="font-size:32px; font-weight:500">Python stdlib + numpy</span></div>
+</div></section>
+
+<!-- K5 · knows when -->
+<section class="shot" id="k5">
+  <div class="world" id="k5-w">
+    <div class="abs" style="left:200px; top:640px; width:2900px; height:4px; background:rgba(255,255,255,.14); border-radius:2px"></div>
+    <div class="abs" id="k5-trail" style="left:581px; top:638px; width:0; height:8px; background:linear-gradient(90deg, rgba(127,176,240,.1), #7fb0f0); border-radius:4px; box-shadow:0 0 24px rgba(127,176,240,.6)"></div>
+    <div id="k5-ticks"></div>
+    <div class="abs" id="k5-dotA" style="left:563px; top:624px; width:36px; height:36px; border-radius:50%; background:#0c131b; border:5px solid #7fb0f0"></div>
+    <div class="abs" id="k5-dotB" style="left:2382px; top:624px; width:36px; height:36px; border-radius:50%; background:#0c131b; border:5px solid #7fb0f0"></div>
+    <div class="abs" id="k5-head" style="left:568px; top:629px; width:26px; height:26px; border-radius:50%; background:#cfe2ff; box-shadow:0 0 30px 10px rgba(127,176,240,.8)"></div>
+    <div class="card" id="k5-A" style="left:300px; top:330px; width:760px; height:250px">
+      <div class="mono" style="font-size:28px; color:var(--brand)">2026-01-15</div>
+      <div style="font-size:46px; font-weight:650; margin:16px 0 20px">The user lives in <span id="k5-city1">Hyderabad</span>.</div>
+      <div id="k5-badgeA"><span class="badge cur">CURRENT</span></div>
+    </div>
+    <div class="card" id="k5-B" style="left:2020px; top:330px; width:760px; height:250px">
+      <div class="mono" style="font-size:28px; color:var(--brand)">2026-06-01</div>
+      <div style="font-size:46px; font-weight:650; margin:16px 0 20px">The user lives in Bengaluru.</div>
+      <div><span class="badge cur">CURRENT</span></div>
+    </div>
+  </div>
+  <div class="abs h split" data-t="0.0" data-st="0.06" style="left:140px; top:110px; width:1640px; font-size:92px">It knows <em>what changed</em>.</div>
+  <div class="abs h2 rv" data-t="2.75" style="left:140px; top:880px; width:1640px">Superseded, <em>never deleted</em>.</div>
+</section>
+
+<!-- K6 · dated evidence -->
+<section class="shot" id="k6">
+  <div class="world" id="k6-w">
+    <div class="card" id="k6-card" style="left:200px; top:330px; width:1520px; height:330px; padding:46px 54px">
+      <div class="mono rv" data-t="0.35" style="font-size:36px; color:var(--muted); line-height:1.7">(Current date: 2023-07-01 Sat)</div>
+      <div class="mono rv" data-t="0.6" style="font-size:36px; color:var(--brand); line-height:1.7">[Session 2023-05-08 Mon]</div>
+      <div class="mono" id="k6-l3" style="font-size:36px; color:var(--ink); line-height:1.7; white-space:nowrap">&nbsp;&nbsp;user: I went to a support group <span id="k6-y">yesterday</span> <span id="k6-chip" style="display:inline-block; color:#07090c; background:#7fb0f0; border-radius:8px; padding:0 10px; font-weight:500">[2023-05-07]</span>.</div>
+    </div>
+  </div>
+  <div class="abs h split" data-t="0.0" data-st="0.06" style="left:140px; top:110px; width:1640px; font-size:92px">Whole evidence. <em>Real dates.</em></div>
+  <div class="abs h2 rv" data-t="2.6" style="left:140px; top:880px; width:1640px">Evidence-first recall: <em>the new default</em>.</div>
+</section>
+
+<!-- K7 · breakdown -->
+<section class="shot" id="k7">
+  <canvas id="k7-cv" class="abs" width="1920" height="1080" style="left:0; top:0"></canvas>
+  <div class="abs" id="k7-t1" style="left:0; right:0; top:430px; text-align:center; font-size:120px; font-stretch:112%; letter-spacing:-.01em">Runs on <span class="em">your machine</span>.</div>
+  <div class="abs mono" id="k7-s1" style="left:0; right:0; top:590px; text-align:center; font-size:30px; color:var(--ink2); letter-spacing:.12em">ONE SQLITE FILE · NO SERVER · NO CLOUD ACCOUNT</div>
+  <div class="abs" id="k7-t2" style="left:0; right:0; top:430px; text-align:center; font-size:120px; font-stretch:112%; letter-spacing:-.01em">Offline <span class="em">by default</span>.</div>
+  <div class="abs mono" id="k7-s2" style="left:0; right:0; top:590px; text-align:center; font-size:30px; color:var(--ink2); letter-spacing:.12em">LITE MODE MAKES ZERO LLM CALLS</div>
+  <div class="abs" id="k7-t3" style="left:0; right:0; top:430px; text-align:center; font-size:120px; font-stretch:112%; letter-spacing:-.01em">Apache-2.0. <span class="em">All of it.</span></div>
+  <div class="abs mono" id="k7-s3" style="left:0; right:0; top:590px; text-align:center; font-size:30px; color:var(--ink2); letter-spacing:.12em">NO PAID TIER · BENCHMARKS SHIP WITH THE CODE</div>
+  <div class="abs" id="k7-t4" style="left:0; right:0; top:440px; text-align:center; font-size:150px; font-weight:900; font-stretch:125%; letter-spacing:-.02em">The numbers.</div>
+</section>
+
+<div id="k8"></div>
+
+<!-- K9 · recap slams -->
+<section class="shot" id="k9">
+  <div class="abs" id="k9-1" style="inset:0"><div class="slamw">One<br>file.</div></div>
+  <div class="abs" id="k9-2" style="inset:0; background:#eef2f6"><div class="slamw" style="color:#07090c">Knows<br>when.</div></div>
+  <div class="abs" id="k9-3" style="inset:0"><div class="slamw" style="color:transparent; -webkit-text-stroke:5px #7fb0f0">Evidence<br>first.</div></div>
+  <div class="abs" id="k9-4" style="left:0; top:0; width:1920px; height:1080px"></div>
+</section>
+
+<!-- K10 · end card -->
+<section class="shot" id="k10"><div class="world" id="k10-w">
+  <div class="glow" style="--c:#2a5fa8; left:410px; top:-80px"></div>
+  <div class="abs" id="k10-deva" style="left:0; right:0; top:40px; text-align:center; font-family:var(--deva); font-size:520px; line-height:1.1; color:#7fb0f0; opacity:0">स्मृति</div>
+  <div class="abs" id="k10-name" style="left:0; right:0; top:250px; text-align:center; font-weight:900; font-stretch:125%; font-size:290px; letter-spacing:-.02em; line-height:1"></div>
+  <div class="abs" id="k10-sweep" style="left:0; right:0; top:250px; text-align:center; font-weight:900; font-stretch:125%; font-size:290px; letter-spacing:-.02em; line-height:1; color:transparent;
+    background:linear-gradient(100deg, transparent 42%, rgba(255,255,255,.95) 50%, transparent 58%); background-size:300% 100%; -webkit-background-clip:text; background-clip:text; opacity:0">SMRITI</div>
+  <div class="abs h2 split" data-t="1.5" data-st="0.12" style="left:0; right:0; top:590px; text-align:center; font-size:64px">Memory that <em>knows when</em>.</div>
+  <div class="abs rv" data-t="2.5" data-s="1.4" data-y="0" style="left:0; right:0; top:700px; text-align:center"><span class="chip info" style="font-size:34px">Smriti 0.4 · out now</span></div>
+  <div class="abs mono" id="k10-url" style="left:0; right:0; top:800px; text-align:center; font-size:44px; font-weight:500; color:var(--ink)"></div>
+  <div class="abs" id="k10-chips" style="left:0; right:0; top:890px; display:flex; justify-content:center; gap:18px"></div>
+</div></section>
+
+</div><!-- /cam -->
+<div class="abs" id="shA" style="left:0; top:0; width:1920px; height:1080px; display:none; transform-origin:50% 50%"></div>
+<div class="abs" id="shB" style="left:0; top:0; width:1920px; height:1080px; display:none; transform-origin:50% 50%"></div>
+<div id="leak"></div>
+<div id="flare"></div>
+<div id="flash"></div>
+<canvas id="grain" width="480" height="270"></canvas>
+<div id="vignette"></div>
+<div id="fade"></div>
+</div>
+
+<script>
+const W = 1920, H = 1080, FPS = 60, DT = 1 / FPS;
+const DUR = 69;
+const SC = { k0: [0, 8], k1: [8, 12], k2: [12, 16], k3: [16, 20], k4: [20, 24], k5: [24, 28], k6: [28, 32], k7: [32, 42],
+  k8a: [42, 44], k8b: [44, 46], k8c: [46, 48], k8d: [48, 50], k8e: [50, 52], k8f: [52, 54], k9: [54, 58], k10: [58, 69] };
+const TIN = { k0: { type: "none" }, k1: { type: "none" }, k2: { type: "zoom", d: 0.35 }, k3: { type: "whipL", d: 0.32 }, k4: { type: "none" },
+  k5: { type: "whipL", d: 0.32 }, k6: { type: "whipL", d: 0.32 }, k7: { type: "zoom", d: 0.7 }, k9: { type: "none" }, k10: { type: "none" } };
+const TOUT = { k1: { type: "zoom", d: 0.3 }, k2: { type: "whipL", d: 0.22 }, k3: { type: "whipD", d: 0.22 }, k4: { type: "whipL", d: 0.22 },
+  k5: { type: "whipL", d: 0.22 }, k6: { type: "zoom", d: 0.5 } };
+const GROOVE = [[8, 16], [20, 32], [42, 54], [58, 66]];
+const FLASH = [[8.0, 0.95, 0.35], [12.0, 0.25, 0.2], [42.0, 0.9, 0.35], [44, 0.22, 0.15], [46, 0.22, 0.15], [48, 0.22, 0.15], [50, 0.22, 0.15], [52, 0.22, 0.15],
+  [54.0, 0.35, 0.2], [56.0, 0.3, 0.2], [57.5, 0.3, 0.2], [58.0, 0.95, 0.4], [66.0, 0.45, 0.4]];
+const SHAKE = [[4.0, 9], [4.5, 12], [8.0, 26], [12.0, 7], [20.33, 12], [26.0, 8], [42.0, 20], [44, 8], [46, 8], [48, 8], [50, 8], [52, 8],
+  [54.0, 12], [55.5, 10], [56.0, 12], [57.5, 12], [58.0, 26], [66.0, 12]];
+const CHROMA = [[4.0, 8], [4.5, 10], [8.0, 22], [12.0, 10], [42.0, 20], [44, 10], [46, 10], [48, 10], [50, 10], [52, 10], [54.0, 12], [55.5, 12], [56.0, 12], [57.5, 12], [58.0, 22], [66.0, 12]];
+const LEAKS = [[8.0, "#3a78ff", 0.55], [42.0, "#ff7a3a", 0.4], [58.0, "#3a78ff", 0.55]];
+
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const lerp = (a, b, t) => a + (b - a) * t;
+const E = {
+  lin: (t) => t, outExpo: (t) => (t >= 1 ? 1 : 1 - Math.pow(2, -10 * t)), inExpo: (t) => (t <= 0 ? 0 : Math.pow(2, 10 * t - 10)),
+  inOutExpo: (t) => (t <= 0 ? 0 : t >= 1 ? 1 : t < 0.5 ? Math.pow(2, 20 * t - 10) / 2 : (2 - Math.pow(2, -20 * t + 10)) / 2),
+  outCubic: (t) => 1 - Math.pow(1 - t, 3), inCubic: (t) => t * t * t, inOutCubic: (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2),
+  inQuad: (t) => t * t, outQuint: (t) => 1 - Math.pow(1 - t, 5),
+  outBack: (t) => { const c1 = 1.7, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); },
+};
+const P = (t, a, d, e = "outExpo") => E[e](clamp((t - a) / d));
+function rng(seed) { let a = seed >>> 0; return () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+const $ = (id) => document.getElementById(id);
+
+/* ---------- transforms, blur ---------- */
+const FD = $("fdefs"), FLT = {};
+function mkFilter(id) {
+  FD.insertAdjacentHTML("beforeend", `<filter id="${id}" x="-40%" y="-40%" width="180%" height="180%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="0 0"/></filter>`);
+  FLT[id] = FD.lastElementChild.firstElementChild;
+}
+for (let i = 0; i < 40; i++) mkFilter("f" + i);
+for (const id of Object.keys(SC)) { mkFilter("s-" + id); mkFilter("w-" + id); }
+const WBLUR = { k5: 0.22, k6: 0.3 };
+function xf(el, c) {
+  const s = c.s == null ? 1 : c.s;
+  let tr = `translate3d(${(c.x || 0).toFixed(2)}px,${(c.y || 0).toFixed(2)}px,0) scale(${s.toFixed(4)})`;
+  if (c.r) tr += ` rotate(${c.r.toFixed(3)}deg)`;
+  if (c.pre) tr = c.pre + " " + tr;
+  el.style.transform = tr;
+  if (c.o != null) el.style.opacity = clamp(c.o).toFixed(3);
+}
+function blurTo(el, bx, by, fid) {
+  bx = Math.min(bx, 110); by = Math.min(by, 110);
+  if (bx < 0.35 && by < 0.35) { el.style.filter = "none"; return; }
+  if (fid && Math.abs(bx - by) > 0.6) { FLT[fid].setAttribute("stdDeviation", `${bx.toFixed(1)} ${by.toFixed(1)}`); el.style.filter = `url(#${fid})`; }
+  else el.style.filter = `blur(${Math.max(bx, by).toFixed(1)}px)`;
+}
+/* place an element from a motion function f(l); blur follows its velocity */
+function layer(el, f, l, fid, k = 0.42) {
+  const c = f(l), p = f(l - DT);
+  const vx = (c.x || 0) - (p.x || 0), vy = (c.y || 0) - (p.y || 0), vs = (c.s == null ? 1 : c.s) - (p.s == null ? 1 : p.s);
+  const iso = (c.b || 0) + Math.abs(vs) * 300;
+  xf(el, c);
+  blurTo(el, Math.max(iso, Math.abs(vx) * k), Math.max(iso, Math.abs(vy) * k), fid);
+  return c;
+}
+
+/* ---------- split words ---------- */
+function splitWords(el) {
+  const walk = (node) => {
+    for (const ch of [...node.childNodes]) {
+      if (ch.nodeType === 3) {
+        const frag = document.createDocumentFragment();
+        ch.textContent.split(/(\s+)/).forEach((w) => { if (!w) return; if (/^\s+$/.test(w)) { frag.appendChild(document.createTextNode(w)); return; }
+          const sp = document.createElement("span"); sp.className = "w"; sp.textContent = w; frag.appendChild(sp); });
+        node.replaceChild(frag, ch);
+      } else if (ch.nodeType === 1 && !ch.classList.contains("w")) walk(ch);
+    }
+  };
+  walk(el);
+}
+
+/* ---------- panes and shards ---------- */
+function paneHTML(lines, whisper) {
+  return `<div class="pane"><div class="pane-text">${lines}</div>${whisper ? `<div class="pane-wh">${whisper}</div>` : ""}</div>`;
+}
+const PANE_A = paneHTML(`<span class="pw" id="pwA1" style="display:inline-block">Agents</span><br><span class="pw" id="pwA2" style="display:inline-block">forget.</span>`, `<span id="pwA3" style="display:inline-block">Until now.</span>`);
+const PANE_A_STATIC = paneHTML(`Agents<br>forget.`, `Until now.`);
+const PANE_B = paneHTML(`Open<br>source.`, "");
+const PR = { x0: 140, y0: 110, x1: 1780, y1: 970 };
+function makeShards(rootId, html, seed, ix, iy, tc1, tc2, tb, cam) {
+  const root = $(rootId), r = rng(seed), NA = 13, RINGS = [0, 90, 240, 470, 800, 1300];
+  const ang = []; const a0 = r() * Math.PI * 2;
+  for (let i = 0; i < NA; i++) ang.push(a0 + (i + (r() - 0.5) * 0.55) * (Math.PI * 2 / NA));
+  const V = [];
+  for (let i = 0; i < NA; i++) { V.push([]); for (let j = 0; j < RINGS.length; j++) {
+    const rr = RINGS[j] * (j ? 0.82 + r() * 0.36 : 0), aa = ang[i] + (j ? (r() - 0.5) * 0.16 : 0);
+    V[i].push([ix + Math.cos(aa) * rr, iy + Math.sin(aa) * rr]); } }
+  const shards = [];
+  for (let i = 0; i < NA; i++) for (let j = 0; j < RINGS.length - 1; j++) {
+    const i2 = (i + 1) % NA;
+    const pts = j === 0 ? [V[i][0], V[i][1], V[i2][1]] : [V[i][j], V[i][j + 1], V[i2][j + 1], V[i2][j]];
+    let bx0 = Math.min(...pts.map((p) => p[0])), bx1 = Math.max(...pts.map((p) => p[0]));
+    let by0 = Math.min(...pts.map((p) => p[1])), by1 = Math.max(...pts.map((p) => p[1]));
+    bx0 = Math.max(bx0, PR.x0 - 2); by0 = Math.max(by0, PR.y0 - 2); bx1 = Math.min(bx1, PR.x1 + 2); by1 = Math.min(by1, PR.y1 + 2);
+    if (bx1 - bx0 < 4 || by1 - by0 < 4) continue;
+    bx0 = Math.floor(bx0); by0 = Math.floor(by0);
+    const cx = pts.reduce((s, p) => s + p[0], 0) / pts.length, cy = pts.reduce((s, p) => s + p[1], 0) / pts.length;
+    const d = document.createElement("div"); d.className = "shard";
+    d.style.cssText = `left:${bx0}px; top:${by0}px; width:${Math.ceil(bx1 - bx0)}px; height:${Math.ceil(by1 - by0)}px;
+      clip-path:polygon(${pts.map((p) => `${(p[0] - bx0).toFixed(1)}px ${(p[1] - by0).toFixed(1)}px`).join(",")});
+      transform-origin:${(clamp(cx, bx0, bx1) - bx0).toFixed(1)}px ${(clamp(cy, by0, by1) - by0).toFixed(1)}px`;
+    d.innerHTML = `<div class="in" style="left:${-bx0}px; top:${-by0}px">${html}</div><div class="glint" style="background:linear-gradient(${Math.floor(r() * 360)}deg, rgba(210,230,255,${(0.04 + r() * 0.14).toFixed(3)}), transparent 65%)"></div>`;
+    root.appendChild(d);
+    shards.push({ el: d, cx, cy, r1: r(), r2: r(), r3: r(), r4: r(), r5: r() });
+  }
+  const lines = [];
+  let svg = `<svg class="abs" width="1920" height="1080" style="left:0; top:0; clip-path:inset(${PR.y0}px ${1920 - PR.x1}px ${1080 - PR.y1}px ${PR.x0}px round 30px); filter:drop-shadow(0 0 6px rgba(200,225,255,.9))">`;
+  const addL = (p, q, stage) => { svg += `<line x1="${p[0].toFixed(1)}" y1="${p[1].toFixed(1)}" x2="${q[0].toFixed(1)}" y2="${q[1].toFixed(1)}" pathLength="1" stroke="#f2f7ff" stroke-width="${stage === 1 ? 3 : 2.2}" stroke-dasharray="1" stroke-dashoffset="1" data-s="${stage}"/>`; };
+  for (let i = 0; i < NA; i++) for (let j = 0; j < RINGS.length - 1; j++) {
+    addL(V[i][j], V[i][j + 1], j < 2 ? 1 : 2);
+    if (j >= 1) addL(V[i][j], V[(i + 1) % NA][j], j < 2 ? 1 : 2);
+  }
+  root.insertAdjacentHTML("beforeend", svg + "</svg>");
+  root.lastElementChild.querySelectorAll("line").forEach((ln) => lines.push({ el: ln, s: +ln.dataset.s }));
+  return { root, shards, lines, svg: root.lastElementChild, ix, iy, tc1, tc2, tb, cam };
+}
+function renderShards(S, t) {
+  if (t < S.tc1 || t > S.tb + 1.5) { S.root.style.display = "none"; return; }
+  S.root.style.display = "block";
+  xf(S.root, S.cam(Math.min(t, S.tb)));
+  const c1 = P(t, S.tc1, 0.09, "outCubic"), c2 = P(t, S.tc2, 0.12, "outCubic");
+  for (const ln of S.lines) ln.el.setAttribute("stroke-dashoffset", (1 - (ln.s === 1 ? c1 : c2)).toFixed(3));
+  S.svg.style.opacity = (1 - P(t, S.tb, 0.08, "lin")).toFixed(3);
+  for (const s of S.shards) {
+    const dx = s.cx - S.ix, dy = s.cy - S.iy, dist = Math.hypot(dx, dy) || 1, ux = dx / dist, uy = dy / dist;
+    if (t < S.tb) {
+      const tr = P(t, S.tc2, 0.5, "lin") * 3.5, j = Math.sin(t * 95 + s.r1 * 20) * tr * 0.5;
+      s.el.style.transform = `translate3d(${(ux * tr + j).toFixed(2)}px, ${(uy * tr - j).toFixed(2)}px, 0)`;
+      s.el.style.opacity = "1"; s.el.style.filter = "none";
+      continue;
+    }
+    const u = t - S.tb;
+    const sp = (700 + s.r1 * 900) * (1 + 220 / (dist + 80));
+    const x = ux * sp * u, y = uy * sp * u + 520 * u * u;
+    const z = Math.min(1350, u * (400 + s.r2 * 1500));
+    const rx = (s.r3 - 0.5) * 520 * u, ry = (s.r4 - 0.5) * 520 * u, rz = (s.r5 - 0.5) * 380 * u;
+    s.el.style.transform = `perspective(1500px) translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, ${z.toFixed(1)}px) rotateX(${rx.toFixed(1)}deg) rotateY(${ry.toFixed(1)}deg) rotateZ(${rz.toFixed(1)}deg)`;
+    s.el.style.opacity = (1 - P(u, 0.28 + s.r2 * 0.4, 0.35, "inCubic")).toFixed(3);
+    const bl = 1.2 + (1 - clamp(u / 0.5)) * 5 * s.r1 + u * 6;
+    s.el.style.filter = `blur(${bl.toFixed(1)}px)`;
+  }
+}
+const paneCamA = (t) => ({ s: lerp(1.0, 1.07, E.inOutCubic(clamp((t - 4) / 4))) });
+const paneCamB = (t) => ({ s: lerp(1.0, 1.03, clamp((t - 57.5) / 0.5)) });
+
+/* ---------- build dynamic DOM ---------- */
+$("k0-pane").innerHTML = PANE_A;
+$("k9-4").innerHTML = PANE_B;
+const SHA = makeShards("shA", PANE_A_STATIC, 11, 1010, 500, 7.0, 7.5, 8.0, paneCamA);
+const SHB = makeShards("shB", PANE_B, 29, 930, 540, 57.75, 57.82, 58.0, paneCamB);
+
+const TOOLS = ["remember", "recall", "search", "facts_about", "add_fact", "stats"];
+TOOLS.forEach((n) => $("k3-tools").insertAdjacentHTML("beforeend", `<span class="tool" style="opacity:0">${n}</span>`));
+const NOS = ["No Postgres", "No Neo4j", "No Docker", "No cloud account"];
+NOS.forEach((n, i) => $("k4-list").insertAdjacentHTML("beforeend",
+  `<div class="abs" style="left:0; top:${i * 92}px"><span class="nt" style="position:relative; display:inline-block; white-space:nowrap; font-size:58px; font-weight:700; font-stretch:110%; color:var(--ink2)">${n}<span class="strike"></span></span></div>`));
+(function () {
+  const root = $("k5-ticks"), months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG"];
+  months.forEach((m, i) => root.insertAdjacentHTML("beforeend",
+    `<div class="abs" style="left:${400 + i * 400}px; top:656px; width:2px; height:18px; background:rgba(255,255,255,.2)"></div>
+     <div class="abs mono" style="left:${400 + i * 400 - 40}px; top:684px; width:80px; text-align:center; font-size:22px; color:var(--muted)">${m}</div>`));
+})();
+const STATS = [
+  { id: "k8a", eye: "0.4.0 · evidence-first recall", v: 87.6, dec: 1, suf: "%", bar: [43.2, 87.6, 100], lbl: "of evidence turns reach the model complete",
+    cmp: "0.3.x path: 43.2%  ·  Mem0 OSS on the same turns: 69.1%", foot: "Held-out LME-X · 9,000-character budget · self-run, raw results in the repo", c: "#3987e5", g: "#2a5fa8" },
+  { id: "k8b", eye: "0.4.0 · answer quality", v: 70.4, dec: 1, suf: "%", bar: [47.5, 70.4, 100], lbl: "blinded answer accuracy",
+    cmp: "0.3.x path: 47.5%  ·  Mem0 OSS: 61.7%", foot: "Held-out LME-X · 120 questions × 2 reads · blinded reader, strict judge", c: "#1fa876", g: "#14694c" },
+  { id: "k8c", eye: "0.4.0 · speed at scale", v: 32.2, from: 131.6, dec: 1, suf: " ms", bar: [131.6, 32.2, 131.6], lbl: "median search over 100,000 stored turns",
+    cmp: "0.3.x path: 131.6 ms", foot: "p50 search latency · synthetic store", c: "#7fb0f0", g: "#2a5fa8" },
+  { id: "k8d", eye: "0.4.1 · sharper evidence", v: 93.0, from: 87.6, dec: 1, suf: "%", bar: [87.6, 93.0, 100], lbl: "evidence complete in context. No model added.",
+    cmp: "The assistant's own replies now rank lower: 26 questions better, 0 worse", foot: "Held-out LME-X · 232 questions · 9,000 characters", c: "#3987e5", g: "#2a5fa8" },
+  { id: "k8e", eye: "0.4.2 · judge trials", v: 3, dec: 0, suf: " judges", chips: [["Jev", "#d49000"], ["Laya", "#1fa876"], ["CLM-8B", "#d55181"]],
+    lbl: "tested in four public rounds", cmp: "One optional judge hook. Off by default.", foot: "Every win and every loss is published in the repo", c: "#d49000", g: "#7a5200" },
+  { id: "k8f", eye: "optional · smriti-enterprise 0.2", word: "Enterprise", chips: [["Audit receipts"], ["Retention"], ["Legal holds"], ["Verified packs"]],
+    lbl: "for memory that needs a paper trail", cmp: "A separate package. Zero edits to the core.", foot: "Works with core 0.4.0 to 0.4.2", c: "#b794e0", g: "#5b3a8f" },
+];
+STATS.forEach((S) => {
+  const hasChips = !!S.chips;
+  const chips = hasChips ? S.chips.map(([n, c]) => `<span class="chip plain" style="font-size:36px">${c ? `<span class="dot" style="background:${c}"></span>` : ""}${n}</span>`).join("") : "";
+  $("k8").insertAdjacentHTML("beforeend", `
+  <section class="shot" id="${S.id}"><div class="world" id="${S.id}-w">
+    <div class="glow" style="--c:${S.g}; left:${S.id === "k8c" || S.id === "k8e" ? 900 : -250}px; top:-250px; opacity:.28"></div>
+    <div class="abs eyebrow" id="${S.id}-eye" style="left:150px; top:160px; color:${S.c}">${S.eye}</div>
+    <div class="abs" id="${S.id}-num" style="left:136px; top:190px; font-size:${S.word ? 250 : 330}px; font-weight:900; font-stretch:${S.word ? 100 : 112}%; letter-spacing:-.035em; line-height:1.05; white-space:nowrap">${S.word || ""}</div>
+    ${S.bar ? `<div class="track" style="left:150px; top:585px; width:1620px"><div class="fill" id="${S.id}-ghost" style="background:rgba(255,255,255,.16)"></div><div class="fill" id="${S.id}-fill" style="background:${S.c}"></div></div>` : ""}
+    ${hasChips ? `<div class="abs" id="${S.id}-chips" style="left:150px; top:560px; display:flex; gap:18px">${chips}</div>` : ""}
+    <div class="abs h2" id="${S.id}-lbl" style="left:150px; top:${hasChips ? 670 : 640}px; width:1640px">${S.lbl}</div>
+    <div class="abs body" id="${S.id}-cmp" style="left:150px; top:${hasChips ? 760 : 730}px; width:1640px">${S.cmp}</div>
+    <div class="abs mono" id="${S.id}-foot" style="left:150px; top:950px; font-size:22px; color:var(--muted); letter-spacing:.04em">${S.foot}</div>
+  </div></section>`);
+});
+TIN.k8a = { type: "zoom", d: 0.3 };
+["k8b", "k8c", "k8d", "k8e", "k8f"].forEach((id) => (TIN[id] = { type: "punch", d: 0.28 }));
+TIN.k9 = { type: "none" };
+(function () {
+  const root = $("k10-name");
+  "SMRITI".split("").forEach((ch) => root.insertAdjacentHTML("beforeend", `<span class="L" style="display:inline-block">${ch}</span>`));
+  ["Apache-2.0", "One SQLite file", "Runs on your machine", "MCP-ready"].forEach((n) =>
+    $("k10-chips").insertAdjacentHTML("beforeend", `<span class="chip plain" style="font-size:28px; opacity:0">${n}</span>`));
+})();
+document.querySelectorAll(".split").forEach(splitWords);
+
+/* k5 / k6 camera anchors, measured once from layout */
+function worldPos(el, worldEl) {
+  const a = el.getBoundingClientRect(), b = worldEl.getBoundingClientRect();
+  return { x: a.left - b.left + a.width / 2, y: a.top - b.top + a.height / 2 };
+}
+let CHIP6 = { x: 1500, y: 560 };
+(function () { const s = $("k6"); s.style.display = "block"; CHIP6 = worldPos($("k6-chip"), $("k6-w")); s.style.display = "none"; })();
+
+/* particles for the breakdown */
+const PTS = [];
+(function () { const r = rng(7); for (let i = 0; i < 760; i++) PTS.push({ x: (r() - 0.5) * 4400, y: (r() - 0.5) * 2800, z: r() * 4000, s: 0.6 + r() * 1.9, c: r() < 0.22 }); })();
+
+/* grain */
+const G = $("grain"), GX = G.getContext("2d"), GI = GX.createImageData(480, 270);
+
+/* ---------- shots ---------- */
+function trans(id, l) {
+  const dur = SC[id][1] - SC[id][0], r = { x: 0, y: 0, s: 1, o: 1, b: 0 };
+  const ti = TIN[id] || { type: "none" }, to = TOUT[id] || { type: "none" };
+  if (ti.type !== "none") {
+    const q = clamp((l + DT) / ti.d);
+    if (ti.type === "whipL") r.x += (1 - E.outExpo(q)) * 1500;
+    if (ti.type === "whipU") r.y += (1 - E.outExpo(q)) * 1100;
+    if (ti.type === "zoom") { const e = E.outCubic(q); r.s *= lerp(0.7, 1, e); r.b += (1 - e) * 16; r.o *= clamp(q * 2.2); }
+    if (ti.type === "punch") r.s *= lerp(1.16, 1, E.outCubic(q));
+  }
+  if (to.type !== "none") {
+    const q = clamp((l - (dur - to.d)) / to.d), e = E.inCubic(q);
+    if (to.type === "whipL") r.x -= e * 1500;
+    if (to.type === "whipU") r.y -= e * 1100;
+    if (to.type === "whipD") r.y += e * 1100;
+    if (to.type === "zoom") { r.s *= lerp(1, 2.8, e); r.b += e * 20; r.o *= 1 - E.inCubic(clamp((q - 0.35) / 0.65)); }
+  }
+  return r;
+}
+const CAM = {
+  k0: (l) => ({ x: 0, y: 0, s: 1 }),
+  k1: (l) => ({ x: 960 * (1 - lerp(1, 1.06, l / 4)), y: 540 * (1 - lerp(1, 1.06, l / 4)), s: lerp(1, 1.06, l / 4) }),
+  k2: (l) => { const s = lerp(1.0, 1.05, l / 4); return { x: 960 * (1 - s) - lerp(0, 24, E.inOutCubic(clamp((l - 0.8) / 2))), y: 540 * (1 - s), s }; },
+  k3: (l) => { const s = lerp(1.0, 1.07, E.inOutCubic(clamp(l / 3.8))); return { x: 960 * (1 - s) - lerp(0, 40, E.inOutCubic(clamp((l - 1.3) / 1.6))), y: 540 * (1 - s) - lerp(0, 30, clamp((l - 1.3) / 1.6)), s }; },
+  k4: (l) => {
+    const fy = fileY(l), s = lerp(1.06, 1.0, E.outCubic(clamp(l / 3.8)));
+    return { x: 960 * (1 - s) + lerp(20, -20, l / 4), y: 540 * (1 - s) - fy * 0.3, s };
+  },
+  k5: (l) => {
+    const follow = E.inOutCubic(clamp((l - 0.85) / 0.8)), zo = E.inOutExpo(clamp((l - 1.85) / 0.75));
+    const cxw = lerp(lerp(700, 2400, follow), 1540, zo), s = lerp(1.0, 0.72, zo);
+    const cyw = lerp(470, 470, zo), sy = lerp(470, 560, zo);
+    return { x: 960 - cxw * s, y: sy - cyw * s, s };
+  },
+  k6: (l) => {
+    const q = E.inOutCubic(clamp((l - 1.75) / 0.9)), s = lerp(1.0, 1.12, q);
+    const cx = lerp(960, lerp(960, CHIP6.x, 0.1), q), cy = lerp(500, lerp(500, CHIP6.y, 0.5), q);
+    return { x: 960 - cx * s, y: lerp(0, 540 - cy * s, q) + (1 - q) * 0, s };
+  },
+  k10: (l) => { const s = lerp(1.0, 1.045, clamp(l / 10)); return { x: 960 * (1 - s), y: 540 * (1 - s), s }; },
+};
+for (const S of STATS) CAM[S.id] = (l) => { const s = lerp(1.0, 1.035, l / 2); return { x: 960 * (1 - s) + lerp(14, -14, l / 2), y: 540 * (1 - s), s }; };
+function fileY(l) {
+  if (l < 0.34) { const q = clamp(l / 0.34); return lerp(-900, 0, E.inQuad(q)); }
+  const u = l - 0.34; return -Math.abs(Math.sin(u * 13)) * 40 * Math.exp(-u * 7);
+}
+
+function renderShot(id, t) {
+  const [a, b] = SC[id], el = $(id);
+  if (t < a || t >= b) { el.style.display = "none"; return null; }
+  el.style.display = "block";
+  const l = t - a, w = $(id + "-w");
+  const tr = trans(id, l), trp = trans(id, l - DT);
+  let vx = tr.x - trp.x, vy = tr.y - trp.y, vs = tr.s - trp.s;
+  if (w && CAM[id]) {
+    const c = CAM[id](l), cp = CAM[id](l - DT), k = WBLUR[id] ?? 0.42;
+    xf(w, c);
+    const wi = Math.abs(c.s - cp.s) * 190;
+    blurTo(w, Math.max(wi, Math.abs(c.x - cp.x) * k), Math.max(wi, Math.abs(c.y - cp.y) * k), "w-" + id);
+  }
+  xf(el, tr);
+  const iso = tr.b + Math.abs(vs) * 320;
+  blurTo(el, Math.max(iso, Math.abs(vx) * 0.42), Math.max(iso, Math.abs(vy) * 0.42), "s-" + id);
+  return { l };
+}
+
+/* generic reveals inside a shot */
+function animEls(root, l) {
+  root.querySelectorAll(".rv").forEach((e) => {
+    const t0 = +e.dataset.t, d = +(e.dataset.d || 0.6), q = P(l, t0, d, e.dataset.e || "outExpo");
+    const y0 = e.dataset.y != null ? +e.dataset.y : 40, x0 = e.dataset.x != null ? +e.dataset.x : 0, s0 = e.dataset.s != null ? +e.dataset.s : 1, b0 = e.dataset.b != null ? +e.dataset.b : 14;
+    let o = clamp(q * 1.6), y = (1 - q) * y0, x = (1 - q) * x0, s = lerp(s0, 1, q), b = (1 - q) * b0;
+    if (e.dataset.out) { const qo = P(l, +e.dataset.out, 0.35, "inCubic"); o *= 1 - qo; y -= qo * 30; b += qo * 12; }
+    xf(e, { x, y, s, o }); e.style.filter = b > 0.35 ? `blur(${b.toFixed(1)}px)` : "none";
+  });
+  root.querySelectorAll(".split").forEach((e) => {
+    const t0 = +e.dataset.t, stg = +(e.dataset.st || 0.06);
+    const qo = e.dataset.out ? P(l, +e.dataset.out, 0.35, "inCubic") : 0;
+    e.querySelectorAll(".w").forEach((w, i) => {
+      const q = P(l, t0 + i * stg, 0.6, "outExpo");
+      xf(w, { o: clamp(q * 1.8) * (1 - qo), y: (1 - q) * 80 - qo * 40, r: (1 - q) * 4 });
+      const b = (1 - q) * 18 + qo * 14; w.style.filter = b > 0.35 ? `blur(${b.toFixed(1)}px)` : "none";
+    });
+  });
+}
+function pop(el, l, t0, d = 0.38) {
+  const q = P(l, t0, d, "outBack"), a = P(l, t0, 0.12, "lin");
+  el.style.opacity = a.toFixed(3);
+  el.style.transform = `translateY(${((1 - clamp(q)) * 30).toFixed(1)}px) scale(${lerp(0.55, 1, q).toFixed(4)})`;
+}
+function typeInto(el, text, l, t0, t1, caret = true) {
+  const n = Math.floor(clamp((l - t0) / (t1 - t0)) * text.length);
+  const showCaret = caret && l >= t0 - 0.1 && l < t1 + 0.35 && (l < t1 || Math.floor(l * 5) % 2 === 0);
+  el.innerHTML = text.slice(0, n).replace(/&/g, "&amp;").replace(/</g, "&lt;") + (showCaret ? `<span class="caret"></span>` : "");
+}
+function reveal(el, l, t0, d = 0.6, outAt = null, opts = {}) {
+  const q = P(l, t0, d, "outExpo"), qo = outAt == null ? 0 : P(l, outAt, 0.35, "inCubic");
+  const o = clamp(q * 1.6) * (1 - qo), b = (1 - q) * (opts.b ?? 18) + qo * 16;
+  xf(el, { y: (1 - q) * (opts.y ?? 40) - qo * 30, s: lerp(opts.s ?? 1, 1, q) * lerp(1, opts.so ?? 1, qo), o });
+  el.style.filter = b > 0.35 ? `blur(${b.toFixed(1)}px)` : "none";
+  return q;
+}
+function chroma(el, amt) {
+  el.style.textShadow = amt > 0.3 ? `${amt.toFixed(1)}px 0 rgba(255,40,90,.75), ${(-amt).toFixed(1)}px 0 rgba(40,200,255,.75)` : "none";
+}
+
+const CUSTOM = {
+  k0(l) {
+    const c1 = $("k0-c1"), c2 = $("k0-c2"), pane = $("k0-pane");
+    const on1 = l < 2.1, on2 = l >= 1.9 && l < 4.3, onP = l >= 3.9 && l < 7.0;
+    c1.style.display = on1 ? "block" : "none"; c2.style.display = on2 ? "block" : "none"; pane.style.display = onP ? "block" : "none";
+    if (on1) {
+      layer(c1, (u) => { const q = P(u, 1.9, 0.2, "inCubic"); const s = lerp(1, 1.05, clamp(u / 2)); return { x: 960 * (1 - s), y: 540 * (1 - s) - q * 1000, s, o: 1 }; }, l, "f0");
+      reveal($("k0-e1"), l, 0.05, 0.5);
+      pop($("k0-u1"), l, 0.18); typeInto($("k0-u1t"), "I moved to Bengaluru last week.", l, 0.28, 1.3);
+      pop($("k0-a1"), l, 1.52);
+    }
+    if (on2) {
+      layer(c2, (u) => {
+        const qi = P(u + DT, 1.95, 0.32, "outExpo"), qo = P(u, 4.0, 0.3, "inCubic"), s = lerp(1, 1.05, clamp((u - 2) / 2)) * lerp(1, 2.2, qo);
+        return { x: 960 * (1 - s), y: 540 * (1 - s) + (1 - qi) * 1000, s, o: 1 - E.inCubic(clamp((u - 4.05) / 0.2)), b: qo * 14 };
+      }, l, "f1");
+      reveal($("k0-e2"), l, 2.05, 0.5);
+      pop($("k0-u2"), l, 2.18); typeInto($("k0-u2t"), "Where do I live now?", l, 2.28, 2.95);
+      pop($("k0-a2"), l, 3.2);
+      const a2 = $("k0-a2t"), g = l >= 3.5 && l < 4.0;
+      if (g) {
+        const r = rng(Math.floor(l * 30) + 5), base = "Sorry, I don't know.";
+        a2.textContent = base.split("").map((ch) => (ch !== " " && r() < 0.18 ? "▓░#%01"[Math.floor(r() * 6)] : ch)).join("");
+        a2.style.display = "inline-block";
+        a2.style.transform = `translate(${((r() - 0.5) * 30).toFixed(1)}px, ${((r() - 0.5) * 8).toFixed(1)}px)`;
+        chroma(a2, 6 + r() * 8);
+      } else { a2.textContent = "Sorry, I don't know."; a2.style.transform = "none"; chroma(a2, 0); }
+    }
+    if (onP) {
+      const qp = P(l + DT, 3.95, 0.3, "outExpo");
+      xf(pane, { s: paneCamA(l).s * lerp(0.85, 1, qp), o: clamp(qp * 3) });
+      pane.style.transformOrigin = "50% 50%";
+      const w1 = $("pwA1"), w2 = $("pwA2"), w3 = $("pwA3");
+      const q1 = P(l, 4.0, 0.3, "outExpo"), q2 = P(l, 4.5, 0.3, "outExpo"), q3 = P(l, 6.25, 0.6, "outExpo");
+      xf(w1, { s: lerp(1.7, 1, q1), o: clamp(q1 * 3) }); w1.style.filter = q1 < 0.98 ? `blur(${((1 - q1) * 26).toFixed(1)}px)` : "none"; chroma(w1, (1 - P(l, 4.0, 0.45, "outCubic")) * 16);
+      xf(w2, { s: lerp(1.7, 1, q2), o: clamp(q2 * 3) }); w2.style.filter = q2 < 0.98 ? `blur(${((1 - q2) * 26).toFixed(1)}px)` : "none"; chroma(w2, (1 - P(l, 4.5, 0.45, "outCubic")) * 16);
+      xf(w3, { y: (1 - q3) * 20, o: q3 }); w3.style.letterSpacing = lerp(0.9, 0.34, q3).toFixed(3) + "em"; w3.style.filter = q3 < 0.98 ? `blur(${((1 - q3) * 12).toFixed(1)}px)` : "none";
+    }
+  },
+  k1(l) {
+    const n = $("k1-name"), q = P(l, 0, 0.9, "outExpo");
+    xf(n, { s: lerp(1.35, 1, q), o: clamp(l * 10) });
+    n.style.fontStretch = lerp(62, 125, P(l, 0.0, 1.1, "outExpo")).toFixed(1) + "%";
+    n.style.letterSpacing = lerp(0.25, -0.02, P(l, 0, 1.1, "outExpo")).toFixed(3) + "em";
+    chroma(n, (1 - P(l, 0, 0.55, "outCubic")) * 22);
+    const dq = P(l, 0.25, 1.6, "outCubic");
+    xf($("k1-deva"), { s: lerp(1.2, 1, dq), x: -l * 14, o: 0.13 * dq });
+  },
+  k2(l) {
+    const q = P(l, 0, 0.6, "outExpo"), f = P(l, 0.45, 0.55, "inOutCubic");
+    xf($("k2-num"), { s: lerp(1.5, 1, q), o: clamp(l * 6) }); $("k2-num").style.transformOrigin = "0 50%";
+    $("k2-fill").style.clipPath = `inset(0 ${((1 - f) * 100).toFixed(2)}% 0 0)`;
+    $("k2-num").style.filter = q < 0.98 ? `blur(${((1 - q) * 20).toFixed(1)}px)` : "none";
+  },
+  k3(l) {
+    const term = $("k3-term"), q = P(l + DT, 0, 0.7, "outExpo");
+    xf(term, { pre: `perspective(1800px) rotateY(${lerp(-26, -5, q).toFixed(2)}deg) rotateX(${lerp(10, 3, q).toFixed(2)}deg)`, s: 1, o: 1 });
+    term.style.transform = `perspective(1800px) rotateY(${lerp(-26, -5, q).toFixed(2)}deg) rotateX(${lerp(10, 3, q).toFixed(2)}deg)`;
+    typeInto($("k3-cmd"), "smriti-mcp --db memory.db", l, 0.3, 1.0);
+    const rq = reveal($("k3-ready"), l, 1.15, 0.4, null, { y: 16, b: 8 });
+    [...$("k3-tools").children].forEach((c, i) => pop(c, l, 1.4 + i * 0.25, 0.35));
+  },
+  k4(l) {
+    const fy = fileY(l);
+    layer($("k4-file"), (u) => ({ y: fileY(u), s: u < 0.34 ? 1 : 1 + Math.sin(clamp((u - 0.34) / 0.25) * Math.PI) * 0.04, o: 1 }), l, "f2");
+    [...$("k4-list").children].forEach((row, i) => {
+      const t0 = 1.0 + i * 0.5, q = reveal(row, l, t0, 0.45, null, { y: 30 });
+      const sq = P(l, t0 + 0.16, 0.22, "outCubic");
+      row.querySelector(".strike").style.width = (sq * 104).toFixed(1) + "%";
+      row.querySelector(".nt").style.color = sq > 0.5 ? "#6b7480" : "";
+    });
+  },
+  k5(l) {
+    const hx = lerp(581, 2400, E.inOutCubic(clamp((l - 0.85) / 0.8)));
+    $("k5-head").style.left = (hx - 13).toFixed(1) + "px";
+    $("k5-trail").style.width = Math.max(0, hx - 581).toFixed(1) + "px";
+    reveal($("k5-A"), l, 0.35, 0.5, null, { y: 40, s: 0.9 });
+    reveal($("k5-B"), l, 1.6, 0.5, null, { y: 40, s: 0.9 });
+    const hB = P(l, 1.6, 0.3); $("k5-dotB").style.borderColor = hB > 0.5 ? "#7fb0f0" : "rgba(127,176,240,.35)";
+    $("k5-head").style.opacity = (1 - P(l, 1.7, 0.3)).toFixed(3);
+    const flip = l >= 2.0, sq = P(l, 2.0, 0.35, "outExpo");
+    const bA = $("k5-badgeA");
+    bA.innerHTML = flip ? `<span class="badge sup">SUPERSEDED ON 2026-06-01</span>` : `<span class="badge cur">CURRENT</span>`;
+    const bb = bA.firstElementChild; bb.style.display = "inline-block";
+    if (flip) { bb.style.transform = `scale(${lerp(1.9, 1, sq).toFixed(3)}) rotate(${lerp(-8, -2, sq).toFixed(2)}deg)`; bb.style.transformOrigin = "0 50%"; }
+    $("k5-A").style.opacity = (flip ? lerp(1, 0.62, P(l, 2.2, 0.5)) : $("k5-A").style.opacity);
+  },
+  k6(l) {
+    const l3 = $("k6-l3"), w = P(l, 0.85, 0.75, "lin");
+    l3.style.clipPath = `inset(0 ${((1 - w) * 100).toFixed(2)}% 0 0)`;
+    const chip = $("k6-chip"), cq = P(l, 1.75, 0.4, "outBack");
+    chip.style.transform = `scale(${lerp(0.2, 1, clamp(cq, 0, 1.2)).toFixed(3)})`; chip.style.opacity = P(l, 1.75, 0.08, "lin").toFixed(3);
+    chip.style.boxShadow = `0 0 ${(40 * P(l, 1.75, 0.5)).toFixed(0)}px rgba(127,176,240,.8)`;
+    const y = $("k6-y"), yq = P(l, 1.55, 0.3);
+    y.style.boxShadow = `inset 0 -6px 0 rgba(127,176,240,${(0.7 * yq).toFixed(3)})`;
+  },
+  k7(l) {
+    const cv = $("k7-cv"), x = cv.getContext("2d"); x.clearRect(0, 0, W, H);
+    const camZ = (u) => 170 * u + 520 * Math.pow(Math.max(0, u - 7.4), 3);
+    const z0 = camZ(l), z1 = camZ(l - DT * 1.6), roll = l * 0.035, F = 900;
+    const cr = Math.cos(roll), sr = Math.sin(roll), fin = P(l, 0, 0.35, "outCubic");
+    for (const p of PTS) {
+      const zz = (((p.z - z0) % 4000) + 4000) % 4000 + 60, zp = zz + (z0 - z1);
+      const px0 = p.x * cr - p.y * sr, py0 = p.x * sr + p.y * cr;
+      const sx = 960 + px0 * F / zz, sy = 540 + py0 * F / zz;
+      if (sx < -60 || sx > W + 60 || sy < -60 || sy > H + 60) continue;
+      const qx = 960 + px0 * F / zp, qy = 540 + py0 * F / zp;
+      const a = clamp(1 - zz / 4000) * clamp(zz / 260) * fin;
+      const rad = Math.max(0.6, p.s * F / zz * 2.0);
+      const col = p.c ? `rgba(207,226,255,${(a * 0.95).toFixed(3)})` : `rgba(90,150,240,${(a * 0.8).toFixed(3)})`;
+      const len = Math.hypot(sx - qx, sy - qy);
+      if (len > 2.5) { x.strokeStyle = col; x.lineWidth = rad * 1.6; x.lineCap = "round"; x.beginPath(); x.moveTo(qx, qy); x.lineTo(sx, sy); x.stroke(); }
+      else { x.fillStyle = col; x.beginPath(); x.arc(sx, sy, rad, 0, Math.PI * 2); x.fill(); }
+    }
+    const T = [["k7-t1", "k7-s1", 0.3, 2.9], ["k7-t2", "k7-s2", 3.25, 5.6], ["k7-t3", "k7-s3", 5.95, 7.9]];
+    for (const [ti, si, a, b] of T) {
+      const e = $(ti), q = P(l, a, 1.0, "outExpo"), qo = P(l, b, 0.4, "inCubic");
+      xf(e, { s: lerp(1.12, 1, q) * lerp(1, 0.92, qo), y: -qo * 20, o: clamp(q * 1.5) * (1 - qo) });
+      e.style.fontWeight = Math.round(lerp(200, 820, q));
+      e.style.letterSpacing = lerp(0.25, -0.01, q).toFixed(3) + "em";
+      const bl = (1 - q) * 22 + qo * 18; e.style.filter = bl > 0.35 ? `blur(${bl.toFixed(1)}px)` : "none";
+      reveal($(si), l, a + 0.45, 0.6, b - 0.05, { y: 16, b: 8 });
+    }
+    const t4 = $("k7-t4"), q4 = P(l, 8.05, 0.5, "outExpo"), g4 = E.inCubic(clamp((l - 8.05) / 1.95));
+    xf(t4, { s: lerp(0.6, 1, q4) * lerp(1, 1.22, g4), o: clamp(q4 * 2) });
+    t4.style.filter = q4 < 0.98 ? `blur(${((1 - q4) * 20).toFixed(1)}px)` : "none";
+    t4.style.letterSpacing = lerp(-0.02, 0.03, g4).toFixed(3) + "em";
+    chroma(t4, g4 * 14);
+  },
+  k9(l) {
+    const WIN = [["k9-1", 0, 1.5, -2.5], ["k9-2", 1.5, 2.0, 1.8], ["k9-3", 2.0, 3.5, -1.5], ["k9-4", 3.5, 3.75, 0]];
+    for (const [id, a, b, rot] of WIN) {
+      const e = $(id), on = l >= a && l < b; e.style.display = on ? "block" : "none"; if (!on) continue;
+      const q = P(l + DT, a, 0.24, "outExpo"), drift = 1 + (l - a) * 0.035;
+      if (id === "k9-4") { xf(e, { x: 960 * (1 - lerp(1.3, 1, q)), y: 540 * (1 - lerp(1.3, 1, q)), s: lerp(1.3, 1, q), o: clamp(q * 3) }); e.style.transformOrigin = "0 0"; continue; }
+      const inner = e.firstElementChild;
+      xf(inner, { s: lerp(1.6, 1, q) * drift, r: lerp(rot * 3, rot, q), o: clamp(q * 3) });
+      inner.style.filter = q < 0.98 ? `blur(${((1 - q) * 26).toFixed(1)}px)` : "none";
+      if (id !== "k9-3") chroma(inner, (1 - P(l, a, 0.4, "outCubic")) * 18);
+    }
+  },
+  k10(l) {
+    const Ls = [...$("k10-name").children], order = [2, 1, 3, 0, 4, 5];
+    Ls.forEach((e, i) => {
+      const t0 = 0.02 + order.indexOf(i) * 0.055, q = P(l, t0, 0.6, "outExpo");
+      xf(e, { s: lerp(3.0, 1, q), y: (1 - q) * (i % 2 ? -90 : 90), r: (1 - q) * (i % 2 ? 10 : -10), o: clamp(q * 3) });
+      e.style.filter = q < 0.98 ? `blur(${((1 - q) * 30).toFixed(1)}px)` : "none";
+    });
+    chroma($("k10-name"), (1 - P(l, 0, 0.6, "outCubic")) * 20 + (1 - P(l, 8.0, 0.4, "outCubic")) * (l >= 8 ? 12 : 0));
+    const dq = P(l, 0.5, 1.8, "outCubic");
+    xf($("k10-deva"), { s: lerp(1.15, 1, dq), x: -l * 10, o: 0.12 * dq });
+    typeInto($("k10-url"), "github.com/vn-envy/Smriti", l, 4.0, 4.85);
+    [...$("k10-chips").children].forEach((c, i) => pop(c, l, 5.5 + i * 0.5, 0.35));
+    const sw = $("k10-sweep"), sq = P(l, 8.0, 0.9, "inOutCubic");
+    sw.style.opacity = l >= 8.0 && sq < 1 ? "1" : "0";
+    sw.style.backgroundPosition = `${lerp(100, 0, sq).toFixed(1)}% 0`;
+    const pq = P(l, 8.0, 0.5, "outCubic");
+    $("k10-name").style.transform = l >= 8 ? `scale(${lerp(1.07, 1, pq).toFixed(4)})` : "none";
+    sw.style.transform = $("k10-name").style.transform;
+  },
+};
+for (const S of STATS) CUSTOM[S.id] = (l) => {
+  const num = $(S.id + "-num");
+  if (S.word) {
+    const q = P(l + DT, 0, 0.35, "outExpo");
+    xf(num, { s: lerp(1.35, 1, q), o: clamp(q * 3) }); num.style.transformOrigin = "0 50%";
+    num.style.filter = q < 0.98 ? `blur(${((1 - q) * 20).toFixed(1)}px)` : "none";
+  } else {
+    const q = P(l, 0.02, 0.55, "outQuint"), v = lerp(S.from || 0, S.v, q);
+    num.innerHTML = `${v.toFixed(S.dec)}<span style="font-size:.42em; letter-spacing:0; font-weight:800; color:${S.c}">${S.suf}</span>`;
+    xf(num, { s: lerp(1.25, 1, P(l + DT, 0, 0.3, "outExpo")), o: 1 }); num.style.transformOrigin = "0 50%";
+  }
+  chroma(num, (1 - P(l, 0, 0.35, "outCubic")) * 14);
+  reveal($(S.id + "-eye"), l, 0.05, 0.4, null, { y: 16, b: 8 });
+  reveal($(S.id + "-lbl"), l, 0.2, 0.5, null, { y: 30 });
+  reveal($(S.id + "-cmp"), l, 0.45, 0.5, null, { y: 24 });
+  reveal($(S.id + "-foot"), l, 0.6, 0.5, null, { y: 12, b: 6 });
+  if (S.bar) {
+    const [g, f, max] = S.bar, gq = P(l, 0.05, 0.45, "outQuint"), fq = P(l, 0.1, 0.6, "outQuint");
+    $(S.id + "-ghost").style.width = (g / max * 100 * gq).toFixed(2) + "%";
+    const fv = S.from ? lerp(S.from, f, fq) : f * fq;
+    $(S.id + "-fill").style.width = (fv / max * 100).toFixed(2) + "%";
+  }
+  if (S.chips) [...$(S.id + "-chips").children].forEach((c, i) => pop(c, l, (S.word ? 0.5 : 0.35) + i * 0.25, 0.3));
+};
+
+/* ---------- global camera and overlays ---------- */
+function punch(t) {
+  let s = 0;
+  for (const [a, b] of GROOVE) {
+    if (t < a || t >= b + 0.5) continue;
+    const k = Math.floor((t - a) / 0.5), tb = a + k * 0.5; if (tb >= b) continue;
+    s += (k % 4 === 0 ? 0.013 : 0.005) * Math.exp(-(t - tb) / 0.09);
+  }
+  return s;
+}
+function shake(t) {
+  let dx = 0, dy = 0, rz = 0;
+  for (const [t0, amp] of SHAKE) { const u = t - t0; if (u < 0 || u > 0.7) continue; const a = amp * Math.exp(-u * 8);
+    dx += a * Math.sin(u * 78 + t0); dy += a * Math.cos(u * 61 + t0 * 2); rz += a * 0.02 * Math.sin(u * 50); }
+  return [dx, dy, rz];
+}
+function spike(list, t, dur = 0.35) { let v = 0; for (const [t0, a, d] of list) { const u = t - t0; if (u < 0 || u > (d || dur) * 2.5) continue; v = Math.max(v, a * Math.exp(-u / (d || dur) * 3)); } return v; }
+
+function render(t) {
+  for (const id of Object.keys(SC)) {
+    const env = renderShot(id, t);
+    if (!env) continue;
+    animEls($(id), env.l);
+    if (CUSTOM[id]) CUSTOM[id](env.l);
+  }
+  renderShards(SHA, t); renderShards(SHB, t);
+  const [dx, dy, rz] = shake(t), s = 1 + punch(t);
+  const cam = $("cam");
+  cam.style.transform = `translate3d(${dx.toFixed(2)}px,${dy.toFixed(2)}px,0) scale(${s.toFixed(4)}) rotate(${rz.toFixed(3)}deg)`;
+  $("shA").style.translate = $("shB").style.translate = `${(dx * 0.6).toFixed(2)}px ${(dy * 0.6).toFixed(2)}px`;
+  let ch = 0; for (const [t0, a] of CHROMA) { const u = t - t0; if (u >= 0 && u < 0.4) ch = Math.max(ch, a * Math.exp(-u * 11)); }
+  if (ch > 0.5) { $("rgb-r").setAttribute("dx", ch.toFixed(1)); $("rgb-b").setAttribute("dx", (-ch).toFixed(1)); cam.style.filter = "url(#rgb)"; } else cam.style.filter = "none";
+  const fl = spike(FLASH, t);
+  $("flash").style.opacity = clamp(fl).toFixed(3);
+  let fr = 0; for (const [t0, a] of FLASH) { const u = t - t0; if (u >= 0 && u < 0.8) fr = Math.max(fr, a * Math.exp(-u * 4.5)); }
+  const flare = $("flare"); flare.style.opacity = clamp(fr * 1.1).toFixed(3); flare.style.transform = `scaleX(${lerp(0.4, 1.25, clamp(fr)).toFixed(3)}) scaleY(${lerp(1, 3, clamp(fr)).toFixed(3)})`;
+  let lk = 0, lc = "#3a78ff", lx = 0; for (const [t0, c, a] of LEAKS) { const u = t - t0; if (u >= -0.1 && u < 1.6) { const v = a * Math.sin(clamp((u + 0.1) / 1.7) * Math.PI); if (v > lk) { lk = v; lc = c; lx = u; } } }
+  const leak = $("leak"); leak.style.opacity = lk.toFixed(3);
+  leak.style.background = `radial-gradient(ellipse 40% 60% at ${(20 + lx * 45).toFixed(1)}% 45%, ${lc} 0%, transparent 70%)`;
+  const r = rng(Math.floor(t * 30) + 7), d = GI.data;
+  for (let i = 0; i < d.length; i += 4) { const v = (r() * 255) | 0; d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 255; }
+  GX.putImageData(GI, 0, 0);
+  $("fade").style.opacity = Math.max(1 - P(t, 0, 0.35, "outCubic"), P(t, DUR - 1.6, 1.6, "inCubic")).toFixed(3);
+}
+
+/* ---------- sound cues, from the same timeline ---------- */
+function cues() {
+  const c = [], at = (t, type, g = 1, pan = 0, x = {}) => c.push(Object.assign({ t: +t.toFixed(3), type, g, pan }, x));
+  const keys = (t0, t1, n, seed, g = 0.7) => { const r = rng(seed); for (let i = 0; i < n; i++) at(t0 + (t1 - t0) * (i / n) + (r() - 0.5) * 0.02, "key", g * (0.75 + r() * 0.3), (r() - 0.5) * 0.3, { v: Math.floor(r() * 3), p: 0.94 + r() * 0.12 }); };
+  // K0 cold open
+  at(0.18, "bubble", 0.55, 0.25, { p: 1.0 }); keys(0.28, 1.3, 14, 1); at(1.52, "bubble", 0.6, -0.25, { p: 0.85 });
+  at(1.92, "whoosh_up", 0.6); at(2.18, "bubble", 0.55, 0.25, { p: 1.0 }); keys(2.28, 2.95, 9, 2); at(3.2, "bubble", 0.6, -0.25, { p: 0.85 });
+  at(3.5, "glitch", 0.8); at(3.6, "sweep_down", 0.5);
+  at(3.95, "whoosh", 0.55); at(4.0, "slam", 0.85); at(4.5, "slam", 0.9);
+  at(6.0, "riser", 0.75, 0, { d: 2.0 }); at(6.25, "tick", 0.35); at(7.0, "crack", 0.8, 0.1); at(7.5, "crack", 1.0, -0.1); at(7.55, "rev", 0.7, 0, { d: 0.45 });
+  // K1 title drop
+  at(8.0, "glass1", 1.0); at(8.0, "impact_big", 0.8); at(8.0, "sub", 0.9); at(8.02, "glass4", 0.45, 0.4);
+  at(9.0, "whoosh_soft", 0.4); at(10.0, "whoosh_soft", 0.45); at(11.72, "whoosh", 0.7);
+  // K2 release
+  at(12.0, "impact", 0.6); at(12.45, "shimmer", 0.5); at(13.0, "bubble", 0.5, 0.4, { p: 1.0 }); at(13.5, "bubble", 0.5, 0.45, { p: 1.1 }); at(14.0, "bubble", 0.5, 0.5, { p: 1.2 });
+  at(14.6, "bubble", 0.65, -0.3, { p: 0.8 }); at(16.0, "whip", 0.8);
+  // K3 terminal
+  keys(16.3, 1.0 + 16.0, 12, 3, 0.75); at(17.02, "key", 0.95, 0, { v: 0, p: 0.8 }); at(17.15, "tick", 0.45);
+  for (let i = 0; i < 6; i++) at(17.4 + i * 0.25, "bubble", 0.5, -0.5 + i * 0.2, { p: 0.9 + i * 0.07 });
+  at(18.85, "whoosh_soft", 0.45); at(20.0, "whip", 0.8, 0, { vert: 1 });
+  // K4 one file
+  at(20.05, "whoosh_down", 0.7); at(20.34, "thud", 0.95); at(20.34, "impact", 0.45);
+  for (let i = 0; i < 4; i++) { at(21.0 + i * 0.5, "tick", 0.4, 0.3); at(21.16 + i * 0.5, "strike", 0.65, 0.2); }
+  at(23.0, "bubble", 0.6, 0, { p: 0.95 }); at(24.0, "whip", 0.8);
+  // K5 knows when
+  at(24.35, "bubble", 0.5, -0.4, { p: 0.9 }); at(24.85, "whoosh", 0.65, 0, { p0: -0.8, p1: 0.8 }); at(25.6, "bubble", 0.55, 0.4, { p: 1.05 });
+  at(26.0, "stamp", 0.9); at(25.85, "whoosh_soft", 0.4); at(26.75, "whoosh_soft", 0.35); at(28.0, "whip", 0.8);
+  // K6 dates
+  at(28.35, "tick", 0.3); at(28.6, "tick", 0.3); keys(28.85, 29.6, 10, 4, 0.6); at(29.75, "bubble", 0.7, 0.3, { p: 1.1 }); at(29.8, "whoosh_soft", 0.45);
+  at(30.6, "whoosh_soft", 0.35); at(31.45, "whoosh", 0.7); at(31.6, "sweep_down", 0.4);
+  // K7 breakdown
+  at(32.0, "sub", 0.5); at(32.1, "shimmer", 0.5); at(32.3, "whoosh_soft", 0.4); at(35.25, "whoosh_soft", 0.4); at(37.95, "whoosh_soft", 0.4);
+  at(39.5, "riser", 0.8, 0, { d: 2.5 }); at(40.05, "whoosh", 0.5); at(41.55, "rev", 0.75, 0, { d: 0.45 });
+  // K8 numbers
+  at(42.0, "impact_big", 0.85); at(42.0, "sub", 0.8); at(42.02, "glass2", 0.4, -0.3);
+  for (let k = 0; k < 6; k++) {
+    const t0 = 42 + k * 2;
+    if (k > 0) at(t0, "slam", 0.55);
+    if (k < 4) { for (let i = 0; i < 9; i++) at(t0 + 0.02 + i * 0.055, "tick", 0.32 - i * 0.02, -0.3 + i * 0.07); at(t0 + 0.55, "bubble", 0.5, 0, { p: 1.0 + k * 0.05 }); }
+    if (k === 4) for (let i = 0; i < 3; i++) at(t0 + 0.35 + i * 0.25, "bubble", 0.5, -0.4 + i * 0.4, { p: 0.9 + i * 0.1 });
+    if (k === 5) for (let i = 0; i < 4; i++) at(t0 + 0.5 + i * 0.25, "bubble", 0.5, -0.45 + i * 0.3, { p: 0.9 + i * 0.08 });
+    at(t0 + 0.2, "whoosh_soft", 0.3);
+  }
+  // K9 recap slams
+  at(54.0, "slam", 0.8); at(55.5, "slam", 0.8); at(56.0, "slam", 0.85); at(57.5, "slam", 0.9); at(57.75, "crack", 1.0); at(57.6, "rev", 0.7, 0, { d: 0.4 });
+  at(55.45, "whoosh", 0.4); at(56.95, "riser", 0.5, 0, { d: 1.05 });
+  // K10 end card
+  at(58.0, "glass3", 1.0); at(58.0, "impact_big", 0.8); at(58.0, "sub", 0.9); at(58.03, "glass5", 0.4, 0.4);
+  at(58.1, "whoosh_soft", 0.5); at(59.45, "whoosh_soft", 0.4); at(60.5, "bubble", 0.6, 0, { p: 0.85 });
+  keys(62.0, 62.85, 13, 5, 0.65);
+  for (let i = 0; i < 4; i++) at(63.5 + i * 0.5, "bubble", 0.5, -0.45 + i * 0.3, { p: 0.9 + i * 0.07 });
+  at(66.0, "shimmer", 0.7); at(66.0, "sparkle", 0.5); at(66.0, "sub", 0.55);
+  return c;
+}
+window.render = render; window.cues = cues; window.DUR = DUR; window.SC = SC; window.FPS = FPS;
+render(0);
+</script>
+</body></html>

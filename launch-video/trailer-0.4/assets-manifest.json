@@ -1,0 +1,26 @@
+{
+  "source_media_committed": false,
+  "note": "Supplied music and sound effects are licensed to the project owner and are not redistributed. Place them under assets/ with these names; trailer_audio.py decodes funky_launch.mp3 to funky_launch.wav first (see README).",
+  "files_sha256": {
+    "funky_launch.mp3 (Funky Launch Groove)": "908bcbb29626d4218802f98cafdb519e57f3eae3963070693091073628c821ae",
+    "sfx/Glass Plate Smash Shatter 01.wav": "15f81afa1b8e9221a12404adb7eb9ed9e5864ee37c6c2d7e28a1b7bb577cf4be",
+    "sfx/Glass Plate Smash Shatter 02.wav": "07fdb972f8fecb94be8bb15130a7c837c0d85f5edcc8920415270c95f4c7c7e5",
+    "sfx/Glass Plate Smash Shatter 03.wav": "212495cb605ab60ddd395ba7589cdf8a6b61a753be64f0e4041c3436fb4cc216",
+    "sfx/Glass Plate Smash Shatter 04.wav": "9ce06e3ed9813410c19dc0cf19efcb67754ff3068bc93a7ad5ab18d100a36f58",
+    "sfx/Glass Plate Smash Shatter 05.wav": "4fe1efd51f9b35a11e5c645819195d995a67fe6d4869f49cd87f862b72c200d5",
+    "sfx/Ui Click Bubble 02.wav": "93fa38a37430cea970201ba07a511477a114da50cc908bd4f7fd78a017b20a61",
+    "sfx/Keyboard Button Press SFX/Keyboard_button_01.wav": "62ffb1f881ed4cd7a522dccbfbb0eed16e70e2813e3ce664a01b6f322b6a2684",
+    "sfx/Keyboard Button Press SFX/Keyboard_button_02.wav": "7b48c4c963ce55803c6707aec76340fbc37ced7e60eeb759596a072114816b1b",
+    "sfx/Keyboard Button Press SFX/Keyboard_button_03.wav": "079bdf2a265cfc659bef475eb63b78b76b1a47ebbaf201fb7ebc9f2ffe0abcb2"
+  },
+  "music_edit": {
+    "tempo_bpm": 120,
+    "first_bar_line_s": 0.145,
+    "segments": [
+      {"track_s": [0.145, 32.145], "video_s": [0, 32], "what": "intro, first drop at 8 s, break at 16 s"},
+      {"track_s": [106.154, 128.154], "video_s": [32, 54], "what": "breakdown, drop at 42 s"},
+      {"track_s": [144.157, 159.15], "video_s": [54, 69], "what": "break, final drop at 58 s, ending stab at 66 s"}
+    ],
+    "crossfade_ms": 10
+  }
+}
