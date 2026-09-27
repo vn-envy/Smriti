@@ -36,16 +36,33 @@ svg text { font-family: var(--sans); font-variant-numeric: tabular-nums; }
 .num { font-variant-numeric: tabular-nums; }
 
 /* cover */
-.cover .body { display: grid; grid-template-columns: 1.25fr 1fr; gap: 56px; align-items: center; }
-.cover h1 { font-size: 82px; max-width: none; }
-.cover .stat { display: grid; gap: 14px; }
-.cover .big { font-size: 168px; font-weight: 850; font-stretch: 112%; line-height: .9; color: var(--smriti); letter-spacing: -.02em; }
-.cover .big small { font-size: 64px; font-weight: 780; }
-.cover .statsub { font-size: 26px; color: var(--ink-2); line-height: 1.35; max-width: 620px; }
-.rounds { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 28px; }
-.dots { position: absolute; right: -30px; top: 20px; opacity: .5; z-index: 0; -webkit-mask-image: linear-gradient(to left, #000 35%, transparent 95%); mask-image: linear-gradient(to left, #000 35%, transparent 95%); }
-.cover .top, .cover .body, .cover .foot { position: relative; z-index: 1; }
-.cover .stat { background: var(--page); border-radius: 22px; padding: 26px 28px; box-shadow: 0 0 0 1px var(--line); }
+.slide.cover { background: radial-gradient(ellipse 65% 95% at 74% 42%, #152030 0%, #0a0e13 72%); color: #eef2f6; }
+.cover .brand { color: #eef2f6; } .cover .brand .deva { color: #8a95a3; }
+.cover .eyebrow, .cover .foot { color: #8a95a3; }
+.cover .top, .cover .foot { position: relative; z-index: 2; }
+.cover h1 { font-size: 79px; line-height: .97; font-weight: 880; font-stretch: 118%; letter-spacing: -.02em; color: #eef2f6; max-width: none; }
+.cover h1 em { color: #7fb0f0; }
+.cv-body { display: grid; grid-template-columns: 860px 1fr; gap: 24px; align-items: center; position: relative; z-index: 1; }
+.cv-sub { font-size: 25px; line-height: 1.4; color: #b8c1cb; margin-top: 30px; max-width: 640px; }
+.cv-sub b { color: #eef2f6; font-weight: 650; }
+.cv-cards { display: flex; gap: 22px; justify-content: flex-end; padding-top: 6px; }
+.cv-card { width: 304px; height: 430px; background: #fbfcfd; color: #0e1620; border-radius: 24px; padding: 28px 24px 22px; position: relative; overflow: hidden;
+  transform: translateY(var(--y)) rotate(var(--r)); display: grid; grid-template-rows: auto 132px auto 1fr auto;
+  box-shadow: 0 34px 90px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.1), 0 0 90px -18px var(--k); }
+.cv-card::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 9px; background: var(--k); }
+.cv-kind { display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 15px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: #475261; }
+.cv-kind i { width: 12px; height: 12px; border-radius: 50%; background: var(--k); }
+.cv-logo { display: flex; align-items: center; justify-content: center; gap: 18px; border-bottom: 1px solid rgba(14,22,32,.1); }
+.cv-logo img { max-width: 100%; max-height: 90px; display: block; }
+.cv-logo .mark { height: 78px; width: 78px; }
+.cv-logo .wm { font-size: 76px; font-weight: 880; font-stretch: 112%; letter-spacing: -.02em; line-height: 1; }
+.cv-by { font-family: var(--mono); font-size: 16px; color: #475261; margin-top: 18px; }
+.cv-card ul { list-style: none; padding: 0; margin: 12px 0 0; font-size: 23px; line-height: 1.3; display: grid; gap: 10px; align-content: start; }
+.cv-card li { display: flex; gap: 12px; align-items: baseline; }
+.cv-card li::before { content: ""; flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--k); transform: translateY(-3px); }
+.cv-round { justify-self: start; font-family: var(--mono); font-size: 15px; letter-spacing: .06em; text-transform: uppercase; color: #0e1620; background: color-mix(in srgb, var(--k) 20%, transparent); padding: 7px 12px; border-radius: 8px; }
+.cv-glow { position: absolute; width: 760px; height: 760px; border-radius: 50%; background: radial-gradient(circle, var(--c) 0%, transparent 62%); opacity: .2; z-index: 0; }
+.dots { position: absolute; right: -40px; top: 10px; opacity: .55; z-index: 0; -webkit-mask-image: linear-gradient(to left, #000 30%, transparent 92%); mask-image: linear-gradient(to left, #000 30%, transparent 92%); }
 
 /* rounds grid */
 .cols4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
@@ -97,24 +114,41 @@ svg text { font-family: var(--sans); font-variant-numeric: tabular-nums; }
 <!-- COVER 2000x800 -->
 <section class="slide cover" id="cover">
   <svg class="dots" id="dots" width="760" height="760" aria-hidden="true"></svg>
+  <div class="cv-glow" style="--c:#eda100; left:800px; top:40px"></div>
+  <div class="cv-glow" style="--c:#1baf7a; left:1150px; top:-160px"></div>
+  <div class="cv-glow" style="--c:#e87ba4; left:1420px; top:80px"></div>
   <div class="top"><div class="brand"><span>Smriti</span><span class="deva">स्मृति</span></div>
-    <div class="eyebrow">Experiment · decision models as memory judges</div></div>
-  <div class="body">
+    <div class="eyebrow">System One models as memory judges · 4 public rounds</div></div>
+  <div class="cv-body">
     <div>
-      <h1>Three AI judges, four rounds, and the <em>one change</em> Smriti kept.</h1>
-      <div class="rounds">
-        <span class="chip loss" data-i="loss">Round 1 · coin flip</span>
-        <span class="chip win" data-i="win">Round 2 · a free win</span>
-        <span class="chip win" data-i="win">Round 3 · Jev helps</span>
-        <span class="chip win" data-i="win">Round 4 · local Laya ties Jev</span>
-      </div>
+      <h1>Three AI judges.<br>Four rounds.<br><em>One change kept.</em></h1>
+      <p class="cv-sub">A <b>hosted API</b>, an <b>open encoder</b> and an <b>open contrastive model</b>, each tested as the judge that picks which memories reach the LLM.</p>
     </div>
-    <div class="stat">
-      <div class="big num">+5.4<small> pts</small></div>
-      <div class="statsub">more of the needed evidence reaches the LLM at 9,000 characters, from one ranking change the judge taught us. Shipped in Smriti 0.4.1. No model, $0, nothing leaves your machine.</div>
+    <div class="cv-cards">
+      <article class="cv-card" style="--k:#eda100; --r:-5deg; --y:26px">
+        <div class="cv-kind"><i></i>Hosted API</div>
+        <div class="cv-logo"><img class="mark" src="logos/typesafe-mark.png" alt="TypeSafe"><span class="wm">Jev</span></div>
+        <div class="cv-by">by TypeSafe</div>
+        <ul><li>Closed API</li><li>Pay per token</li></ul>
+        <div class="cv-round">Round 3</div>
+      </article>
+      <article class="cv-card" style="--k:#1baf7a; --r:0deg; --y:-8px">
+        <div class="cv-kind"><i></i>Open · small encoder</div>
+        <div class="cv-logo"><img src="logos/laya-lockup.png" alt="Laya"></div>
+        <div class="cv-by">convaiinnovations/laya</div>
+        <ul><li>Apache-2.0</li><li>421M, runs locally</li></ul>
+        <div class="cv-round">Rounds 1, 2 and 4</div>
+      </article>
+      <article class="cv-card" style="--k:#e87ba4; --r:5deg; --y:26px">
+        <div class="cv-kind"><i></i>Open · contrastive</div>
+        <div class="cv-logo"><img src="logos/clm-lockup.png" alt="CLM"></div>
+        <div class="cv-by">CLM-8B · Contrastive-LM</div>
+        <ul><li>Apache-2.0</li><li>8B, needs a big GPU</li></ul>
+        <div class="cv-round">Round 4</div>
+      </article>
     </div>
   </div>
-  <div class="foot"><span>10,000 question–memory pairs · 244 unseen test questions</span><span>github.com/vn-envy/Smriti</span></div>
+  <div class="foot"><span>10,000 question–memory pairs · every result published</span><span>github.com/vn-envy/Smriti</span></div>
 </section>
 
 
@@ -260,7 +294,7 @@ document.querySelectorAll(".chip[data-i]").forEach((c) => c.insertAdjacentHTML("
   const s = document.getElementById("dots");
   for (let i = 0; i < 100; i++) for (let j = 0; j < 100; j++) {
     const hit = (Math.sin(i * 12.9898 + j * 78.233) * 43758.5453 % 1 + 1) % 1 < 0.045;
-    el("circle", { cx: 6 + j * 7.5, cy: 6 + i * 7.5, r: hit ? 2.1 : 1.3, fill: hit ? "#2a78d6" : "#c3cad3", "fill-opacity": hit ? 0.9 : 0.55 }, s);
+    el("circle", { cx: 6 + j * 7.5, cy: 6 + i * 7.5, r: hit ? 2.1 : 1.3, fill: hit ? "#7fb0f0" : "#3a4654", "fill-opacity": hit ? 0.9 : 0.6 }, s);
   }
 })();
 

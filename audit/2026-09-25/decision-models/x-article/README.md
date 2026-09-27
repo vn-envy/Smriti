@@ -6,3 +6,5 @@ System One model (hosted Jev, open Laya, contrastive CLM-8B) and why each matter
 to a memory layer, then goes through the experiment. Graphics are rendered from
 `graphics.html` with `node shoot.js` (fonts in `./fonts`, see
 `../explainer-video/README.md`). Every number comes from `../NOTES.md`.
+The cover shows the three models' own marks, unmodified, from their official
+sources; see `logos/README.md`.
